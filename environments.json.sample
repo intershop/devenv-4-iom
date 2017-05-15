@@ -1,14 +1,14 @@
 [
   {
     "id": "2.2.1.0",
-		"docker_image":"2.2.1.0-SNAPSHOT",
+		"docker_image":"jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.2.1.0-SNAPSHOT",
 		"oms_etc":"F:\\svn\\oms\\trunk\\oms.deployment\\etc",
 		"oms_app":"F:\\svn\\oms\\trunk",
 		"oms_log":"F:\\docker\\2.2.1.0\\log"
   },
   {
     "id": "SB_2.1.7.X",
-		"docker_image":"SB_2.1.7.X-SNAPSHOT",
+		"docker_image":"jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:SB_2.1.7.X-SNAPSHOT",
 		"oms_etc":"F:\\svn\\oms\\trunk\\oms.deployment\\etc",
 		"oms_app":"F:\\svn\\oms\\trunk",
 		"oms_log":"F:\\docker\\SB_2.1.7.X\\log"

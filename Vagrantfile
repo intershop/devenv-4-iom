@@ -104,7 +104,10 @@ Vagrant.configure(2) do |config|
       # configure the etc path
       node.vm.synced_folder "#{environment['oms_etc']}", "/tmp/#{environment['id']}/etc"
 
-      node.vm.synced_folder "#{environment['oms_app']}", "/tmp/#{environment['id']}/app"
+      # configure the app path
+      if environment['oms_app']
+        node.vm.synced_folder "#{environment['oms_app']}", "/tmp/#{environment['id']}/app"
+      end
 
       # configure the log path
       node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
