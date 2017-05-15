@@ -1,7 +1,24 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Require modules
+require 'json'
+require 'yaml'
+
 VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
+
+# Read environment details from either yml or json file
+
+configuration_file = File.join(VAGRANT_ROOT, 'environments.yml')
+
+if File.file?(configuration_file)
+  environments = YAML.load_file(configuration_file)
+  # print "'" + configuration_file + "' configuration will be used."
+else
+  configuration_file = File.join(VAGRANT_ROOT, 'environments.json')
+  environments = JSON.parse(configuration_file)
+  # print "'" + configuration_file + "' configuration will be used."
+end
 
 Vagrant.configure(2) do |config|
 
@@ -12,75 +29,87 @@ Vagrant.configure(2) do |config|
 
   config.vm.define "iomdev" do |node|
 
-      ################# dockerize the vm ##################
+    ################# dockerize the vm ##################
 
-      node.vm.provision "docker"
+    node.vm.provision "docker"
 
-      # The following line terminates all ssh connections. Therefore
-      # Vagrant will be forced to reconnect.
-      # That's a workaround to have the docker command in the PATH
-      node.vm.provision "shell", inline: <<-SCRIPT
-          ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
-      SCRIPT
+    # The following line terminates all ssh connections. Therefore
+    # Vagrant will be forced to reconnect.
+    # That's a workaround to have the docker command in the PATH
+    node.vm.provision "shell", inline: <<-SCRIPT
+        ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
+    SCRIPT
 
-      # provide a private docker registry
-      node.vm.network :forwarded_port, guest: 5000, host: 5000
+    # provide a private docker registry
+    node.vm.network :forwarded_port, guest: 5000, host: 5000
 
-      node.vm.provision :shell, inline: <<-SHELL
-        # configure docker daemon
-        echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
+    node.vm.provision :shell, inline: <<-SHELL
+      # configure docker daemon
+      echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
 
-        # restart docker daemon
-        systemctl restart docker
+      # restart docker daemon
+      systemctl restart docker
 
-        # install the Intershop Root Certification Authority for Docker
-        # please see: https://confluence.intershop.de/pages/viewpage.action?spaceKey=ATEAMDOC&title=How+to+install+the+Intershop+Root+Certification+Authority+for+Docker
+      # install the Intershop Root Certification Authority for Docker
+      # please see: https://confluence.intershop.de/pages/viewpage.action?spaceKey=ATEAMDOC&title=How+to+install+the+Intershop+Root+Certification+Authority+for+Docker
 
-        # create the docker certificate store
-        mkdir /etc/docker/certs.d/
+      # create the docker certificate store
+      mkdir /etc/docker/certs.d/
 
-        # create also a certificate for the private docker registry
-        mkdir /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000
+      # create also a certificate for the private docker registry
+      mkdir /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000
 
-        # download file from a file path
-        curl http://pki.intershop.de:81/CertEnroll/ISH-CA01.crt -o /tmp/ISH-CA01.crt
+      # download file from a file path
+      curl http://pki.intershop.de:81/CertEnroll/ISH-CA01.crt -o /tmp/ISH-CA01.crt
 
-        # convert the downloaded file from DER format to PEM format using Openssl
-        openssl x509 -inform der -in /tmp/ISH-CA01.crt -out /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000/ca.crt
+      # convert the downloaded file from DER format to PEM format using Openssl
+      openssl x509 -inform der -in /tmp/ISH-CA01.crt -out /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000/ca.crt
 
-        # login to the docker registry with Artifactory API KEY
-        docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X jengdocker01.rnd.j.intershop.de:5000
+      # login to the docker registry with Artifactory API KEY
+      docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X jengdocker01.rnd.j.intershop.de:5000
 
-      SHELL
+    SHELL
 
-      #####################################################
+    #####################################################
 
-      node.vm.hostname = "iomdev"
+    node.vm.hostname = "iomdev"
 
-      node.vm.network :private_network, ip: "10.0.10.0"
+    node.vm.network :private_network, ip: "10.0.10.0"
 
-      ### port forwarding
+    ### port forwarding
+
+    environments.each.with_index(10) do |environment , index|
 
       # OMT
-      node.vm.network :forwarded_port, guest: 8080, host: "18080"
+      node.vm.network :forwarded_port, guest: "#{8080 + index}", host: "#{18080 + index}"
       # wildfly console
-      node.vm.network :forwarded_port, guest: 9990, host: "19990"
+      node.vm.network :forwarded_port, guest: "#{9990 + index}", host: "#{19990 + index}"
       # debug port
-      node.vm.network :forwarded_port, guest: 8787, host: "18787"
+      node.vm.network :forwarded_port, guest: "#{8787 + index}", host: "#{18787 + index}"
 
-      node.vm.network :forwarded_port, guest: 5432, host: "15432"
+      # node.vm.network :forwarded_port, guest: ""#{5432 + index}", host: "#{15432 + index}"
 
-      node.vm.provider "virtualbox" do |vb|
-        vb.name = "iomdev"
-        vb.memory = "4096"
+    end
 
-      end
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "iomdev"
+      vb.memory = "4096"
 
-      # configure the path to the required development version
-      node.vm.synced_folder "F:/svn/oms", "/home/vagrant/oms"
+    end
 
-      # configure the path to the required oms ci version
-      # node.vm.synced_folder "F:/svn/oms/projects/CI", "/home/vagrant/ci"
+    ### file synchronization
+
+    environments.each.with_index(10) do |environment , index|
+
+      # configure the etc path
+      node.vm.synced_folder "#{environment['oms_etc']}", "/tmp/#{environment['id']}/etc"
+
+      node.vm.synced_folder "#{environment['oms_app']}", "/tmp/#{environment['id']}/app"
+
+      # configure the log path
+      node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
+
+    end
 
   end
 
