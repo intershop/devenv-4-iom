@@ -1,18 +1,15 @@
 ---
 ### description
-
 # id (required): must be a unique identifier
 # docker_image (required): docker image that should be used for the container. Please see https://jengdocker01.rnd.j.intershop.de:5000/v2/iom-centos7-env/tags/list
 # oms_etc (required): path to your local etc folder
 # oms_app (optional): path to your local application
 # oms_log (required): path to your local log folder
-
 - id: 2.2.1.0
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.2.1.0-SNAPSHOT
-  oms_etc: F:\svn\oms\trunk\oms.deployment\etc
+  oms_etc: F:\docker\2.2.1.0\etc
   oms_app: F:\svn\oms\trunk
   oms_log: F:\docker\2.2.1.0\log
-  
 - id: SB_2.1.7.X
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:SB_2.1.7.X-SNAPSHOT
   oms_etc: F:\svn\oms\trunk\oms.deployment\etc

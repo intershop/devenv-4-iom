@@ -2,7 +2,7 @@
   {
     "id": "2.2.1.0",
 		"docker_image":"jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.2.1.0-SNAPSHOT",
-		"oms_etc":"F:\\svn\\oms\\trunk\\oms.deployment\\etc",
+		"oms_etc":"F:\\docker\\2.2.1.0\\etc",
 		"oms_app":"F:\\svn\\oms\\trunk",
 		"oms_log":"F:\\docker\\2.2.1.0\\log"
   },
