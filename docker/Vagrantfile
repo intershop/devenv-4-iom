@@ -11,6 +11,8 @@ DOCKER_HOST_VAGRANTFILE = "../Vagrantfile"
 
 VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
+PORT_OFFSET = 10
+
 # Read environment details from either yml or json file
 
 configuration_file = File.join(VAGRANT_ROOT, '../environments.yml')
@@ -40,11 +42,11 @@ Vagrant.configure(2) do |config|
         # [host port:container port]
         d.ports = [
           # OMT
-          "#{8080 + index}:8080",
+          "#{8080 + (index * PORT_OFFSET)}:8080",
           # wildfly console
-          "#{9990 + index}:9990",
+          "#{9990 + (index * PORT_OFFSET)}:9990",
           # debug port
-          "#{8787 + index}:8787",
+          "#{8787 + (index * PORT_OFFSET)}:8787",
         ]
 
         volumes = [
@@ -71,7 +73,7 @@ Vagrant.configure(2) do |config|
         d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
       end
 
-      config.vm.post_up_message = "\n\nYour container '#{environment['id']}' requires a reconfiguration. \nLogin into your docker host and run following command:\ndocker exec #{environment['id']} bash /usr/local/bin/docker_reconfigure.sh\n\nVisit http://localhost:#{18080 + index}/omt for the OMT application! \nVisit http://localhost:#{19990 + index}/console for the wildfly console.\n\n"
+      config.vm.post_up_message = "\n\nYour container '#{environment['id']}' requires a reconfiguration. \nLogin into your docker host and run following command:\ndocker exec #{environment['id']} bash /usr/local/bin/docker_reconfigure.sh\n\nVisit http://localhost:#{8080 + (index * PORT_OFFSET)}/omt for the OMT application! \nVisit http://localhost:#{9990 + (index * PORT_OFFSET)}/console for the wildfly console.\n\n"
 
     end
   end

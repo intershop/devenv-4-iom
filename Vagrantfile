@@ -7,6 +7,8 @@ require 'yaml'
 
 VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
+PORT_OFFSET = 10
+
 # Read environment details from either yml or json file
 
 configuration_file = File.join(VAGRANT_ROOT, 'environments.yml')
@@ -81,13 +83,13 @@ Vagrant.configure(2) do |config|
     environments.each.with_index(10) do |environment , index|
 
       # OMT
-      node.vm.network :forwarded_port, guest: "#{8080 + index}", host: "#{18080 + index}"
+      node.vm.network :forwarded_port, guest: "#{8080 + (index * PORT_OFFSET)}", host: "#{8080 + (index * PORT_OFFSET)}"
       # wildfly console
-      node.vm.network :forwarded_port, guest: "#{9990 + index}", host: "#{19990 + index}"
+      node.vm.network :forwarded_port, guest: "#{9990 + (index * PORT_OFFSET)}", host: "#{9990 + (index * PORT_OFFSET)}"
       # debug port
-      node.vm.network :forwarded_port, guest: "#{8787 + index}", host: "#{18787 + index}"
+      node.vm.network :forwarded_port, guest: "#{8787 + (index * PORT_OFFSET)}", host: "#{8787 + (index * PORT_OFFSET)}"
 
-      # node.vm.network :forwarded_port, guest: ""#{5432 + index}", host: "#{15432 + index}"
+      # node.vm.network :forwarded_port, guest: ""#{5432 + (index * PORT_OFFSET)}", host: "#{15432 + (index * PORT_OFFSET)}"
 
     end
 
