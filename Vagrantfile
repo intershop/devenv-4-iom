@@ -18,7 +18,7 @@ if File.file?(configuration_file)
   # print "'" + configuration_file + "' configuration will be used."
 else
   configuration_file = File.join(VAGRANT_ROOT, 'environments.json')
-  environments = JSON.parse(configuration_file)
+  environments = JSON.parse(File.read(configuration_file))
   # print "'" + configuration_file + "' configuration will be used."
 end
 
@@ -80,7 +80,7 @@ Vagrant.configure(2) do |config|
 
     ### port forwarding
 
-    environments.each.with_index(10) do |environment , index|
+    environments.each.with_index(1) do |environment , index|
 
       # OMT
       node.vm.network :forwarded_port, guest: "#{8080 + (index * PORT_OFFSET)}", host: "#{8080 + (index * PORT_OFFSET)}"
@@ -101,7 +101,7 @@ Vagrant.configure(2) do |config|
 
     ### file synchronization
 
-    environments.each.with_index(10) do |environment , index|
+    environments.each.with_index(1) do |environment , index|
 
       # configure the etc path
       node.vm.synced_folder "#{environment['oms_etc']}", "/tmp/#{environment['id']}/etc"

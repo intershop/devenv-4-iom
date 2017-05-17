@@ -22,13 +22,13 @@ if File.file?(configuration_file)
   # print "'" + configuration_file + "' configuration will be used."
 else
   configuration_file = File.join(VAGRANT_ROOT, '../environments.json')
-  environments = JSON.parse(configuration_file)
+  environments = JSON.parse(File.read(configuration_file))
   # print "'" + configuration_file + "' configuration will be used."
 end
 
 Vagrant.configure(2) do |config|
 
-  environments.each.with_index(10) do |environment , index|
+  environments.each.with_index(1) do |environment , index|
 
     # provide a private docker registry
     config.vm.define "#{environment['id']}", autostart: false do |container|
@@ -55,6 +55,8 @@ Vagrant.configure(2) do |config|
 
           # configure the log path
           "/tmp/#{environment['id']}/log:/var/opt/oms.standalone/log"
+
+          # "/usr/local/bin:/usr/local/bin"
         ]
 
         # configure the app path
