@@ -46,7 +46,7 @@ Vagrant.configure(2) do |config|
           # wildfly console
           "#{9990 + (index * PORT_OFFSET)}:9990",
           # debug port
-          "#{8787 + (index * PORT_OFFSET)}:8787",
+          "#{8787 + (index * PORT_OFFSET)}:8787"
         ]
 
         volumes = [
@@ -55,8 +55,6 @@ Vagrant.configure(2) do |config|
 
           # configure the log path
           "/tmp/#{environment['id']}/log:/var/opt/oms.standalone/log"
-
-          # "/usr/local/bin:/usr/local/bin"
         ]
 
         # configure the app path

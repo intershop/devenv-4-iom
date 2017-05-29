@@ -46,6 +46,10 @@ Vagrant.configure(2) do |config|
     node.vm.network :forwarded_port, guest: 5000, host: 5000
 
     node.vm.provision :shell, inline: <<-SHELL
+
+      # ensure IPv4 forwarding is enabled
+      sysctl -w net.ipv4.ip_forward=1
+
       # configure docker daemon
       echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
 
@@ -88,8 +92,6 @@ Vagrant.configure(2) do |config|
       node.vm.network :forwarded_port, guest: "#{9990 + (index * PORT_OFFSET)}", host: "#{9990 + (index * PORT_OFFSET)}"
       # debug port
       node.vm.network :forwarded_port, guest: "#{8787 + (index * PORT_OFFSET)}", host: "#{8787 + (index * PORT_OFFSET)}"
-
-      # node.vm.network :forwarded_port, guest: ""#{5432 + (index * PORT_OFFSET)}", host: "#{15432 + (index * PORT_OFFSET)}"
 
     end
 
