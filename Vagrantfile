@@ -38,17 +38,14 @@ Vagrant.configure(2) do |config|
     # The following line terminates all ssh connections. Therefore
     # Vagrant will be forced to reconnect.
     # That's a workaround to have the docker command in the PATH
-    node.vm.provision "shell", inline: <<-SCRIPT
+    node.vm.provision "shell", inline: <<-SHELL
         ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
-    SCRIPT
+    SHELL
 
     # provide a private docker registry
     node.vm.network :forwarded_port, guest: 5000, host: 5000
 
     node.vm.provision :shell, inline: <<-SHELL
-
-      # ensure IPv4 forwarding is enabled
-      sysctl -w net.ipv4.ip_forward=1
 
       # configure docker daemon
       echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
@@ -60,10 +57,10 @@ Vagrant.configure(2) do |config|
       # please see: https://confluence.intershop.de/pages/viewpage.action?spaceKey=ATEAMDOC&title=How+to+install+the+Intershop+Root+Certification+Authority+for+Docker
 
       # create the docker certificate store
-      mkdir /etc/docker/certs.d/
+      mkdir -p /etc/docker/certs.d/
 
       # create also a certificate for the private docker registry
-      mkdir /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000
+      mkdir -p /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000
 
       # download file from a file path
       curl http://pki.intershop.de:81/CertEnroll/ISH-CA01.crt -o /tmp/ISH-CA01.crt
@@ -77,6 +74,16 @@ Vagrant.configure(2) do |config|
     SHELL
 
     #####################################################
+
+    node.vm.provision :shell, run: "always", inline: <<-SHELL
+
+      # ensure IPv4 forwarding is enabled
+      sysctl -w net.ipv4.ip_forward=1
+
+      # restart docker daemon
+      systemctl restart docker
+
+    SHELL
 
     node.vm.hostname = "iomdev"
 

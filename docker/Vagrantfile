@@ -105,10 +105,10 @@ Vagrant.configure(2) do |config|
       message << "docker exec #{environment['id']}_db bash -c 'cd /tmp/src/postgres/dumps && \\\n"
       message << "bash reset_test_data.sh -U #{oms_db_user} -d #{oms_db_name} #{oms_db_dump} -c en_US.utf8 -n'\n\n"
       message << "Your postgres container '#{environment['id']}_db' is accessible from your host system with following connection data:\n\n"
-      message << "host:\tlocalhost\n"
-      message << "port:\t#{5432 + (index * PORT_OFFSET)}\n"
-      message << "name:\t#{oms_db_name}\n"
-      message << "user:\t#{oms_db_user}\n"
+      message << "host:\t\tlocalhost\n"
+      message << "port:\t\t#{5432 + (index * PORT_OFFSET)}\n"
+      message << "name:\t\t#{oms_db_name}\n"
+      message << "user:\t\t#{oms_db_user}\n"
       message << "password:\t#{oms_db_password}\n\n"
       message << "In order to use the postgres container '#{environment['id']}_db' for your IOM container '#{environment['id']}' \n"
       message << "please set following connection data in your cluser.properties:\n\n"
@@ -175,7 +175,7 @@ Vagrant.configure(2) do |config|
       message << "Your IOM container '#{environment['id']}' requires a reconfiguration. \n"
       message << "Login into your docker host and run following command:\n\n"
       message << "docker exec #{environment['id']} bash /usr/local/bin/docker_reconfigure.sh\n\n"
-      message << "Visit http://localhost:#{8080 + (index * PORT_OFFSET)}/omt for the OMT application! \n"
+      message << "Visit http://localhost:#{8080 + (index * PORT_OFFSET)}/omt (resp. /bakery.omt) for the OMT application! \n"
       message << "Visit http://localhost:#{9990 + (index * PORT_OFFSET)}/console for the wildfly console.\n\n"
 
       container.vm.post_up_message = message
