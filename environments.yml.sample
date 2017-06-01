@@ -1,17 +1,37 @@
 ---
 ### description
-# id (required): must be a unique identifier
-# docker_image (required): docker image that should be used for the container. Please see https://jengdocker01.rnd.j.intershop.de:5000/v2/iom-centos7-env/tags/list
-# oms_etc (required): path to your local etc folder
-# oms_app (optional): path to your local application
-# oms_log (required): path to your local log folder
+
+### required parameters
+
+# id: must be a unique identifier
+# docker_image: docker image that should be used for the container. Please see https://jengdocker01.rnd.j.intershop.de:5000/v2/iom-centos7-env/tags/list
+# oms_etc: path to your local etc folder
+# oms_log: path to your local log folder
+# oms_src: path to your source folder
+# docker_db_image: name of the docker postgres image
+
+### optional parameters
+
+# oms_app: path to your local application
+# oms_db_name: name of the database (default: oms_db)
+# oms_db_user: name of the database user (default: oms_user)
+# oms_db_password: password of the database user (default: OmsDB)
+# oms_dump: name of the database dump (default: latest test data dump)
+
 - id: 2.2.1.0
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.2.1.0-SNAPSHOT
   oms_etc: F:\docker\2.2.1.0\etc
   oms_app: F:\svn\oms\trunk
   oms_log: F:\docker\2.2.1.0\log
-- id: SB_2.1.7.X
-  docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:SB_2.1.7.X-SNAPSHOT
+  oms_src: F:\svn\oms\trunk
+  docker_db_image: postgres:9.5
+  oms_db_name: oms_db
+  oms_db_user: oms_user
+  oms_db_password: OmsDB
+  oms_db_dump: OmsTestData.2.2.0.0.dmp.gz
+- id: SB_2.1.X.0
+  docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.1.8.0-SNAPSHOT
   oms_etc: F:\svn\oms\trunk\oms.deployment\etc
-  oms_app: F:\svn\oms\trunk
-  oms_log: F:\docker\SB_2.1.7.X\log
+  oms_log: F:\docker\SB_2.1.X.0\log
+  oms_src: F:\svn\oms\SB_2.1.X.0
+  docker_db_image: postgres:9.5

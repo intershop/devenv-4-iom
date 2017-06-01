@@ -92,6 +92,8 @@ Vagrant.configure(2) do |config|
       node.vm.network :forwarded_port, guest: "#{9990 + (index * PORT_OFFSET)}", host: "#{9990 + (index * PORT_OFFSET)}"
       # debug port
       node.vm.network :forwarded_port, guest: "#{8787 + (index * PORT_OFFSET)}", host: "#{8787 + (index * PORT_OFFSET)}"
+      # database port
+      node.vm.network :forwarded_port, guest: "#{5432 + (index * PORT_OFFSET)}", host: "#{5432 + (index * PORT_OFFSET)}"
 
     end
 
@@ -115,6 +117,11 @@ Vagrant.configure(2) do |config|
 
       # configure the log path
       node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
+
+      # configure the src path
+      if environment['oms_src']
+        node.vm.synced_folder "#{environment['oms_src']}", "/tmp/#{environment['id']}/src"
+      end
 
     end
 
