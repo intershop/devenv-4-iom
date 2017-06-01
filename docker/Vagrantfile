@@ -111,7 +111,7 @@ Vagrant.configure(2) do |config|
       message << "user:\t\t#{oms_db_user}\n"
       message << "password:\t#{oms_db_password}\n\n"
       message << "In order to use the postgres container '#{environment['id']}_db' for your IOM container '#{environment['id']}' \n"
-      message << "please set following connection data in your cluser.properties:\n\n"
+      message << "please set following connection data in your cluster.properties:\n\n"
       message << "/system-property=is.oms.db.hostlist: \"postgres:5432\"\n"
       message << "/system-property=is.oms.db.name: \"#{oms_db_name}\"\n"
       message << "/system-property=is.oms.db.user: \"#{oms_db_user}\"\n"
