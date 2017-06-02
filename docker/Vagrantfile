@@ -75,7 +75,10 @@ Vagrant.configure(2) do |config|
           "#{5432 + (index * PORT_OFFSET)}:5432"
         ]
 
-        volumes = []
+        volumes = [
+          # configure the log path
+          "/tmp/#{environment['id']}/log/pg_log:/tmp/pg_log"
+        ]
 
         # configure the src path
         if environment['oms_src']
@@ -85,11 +88,24 @@ Vagrant.configure(2) do |config|
         ### file synchronization
         d.volumes = volumes
 
-        d.env = {
+        env = {
           POSTGRES_DB: "#{oms_db_name}",
           POSTGRES_USER: "#{oms_db_user}",
           POSTGRES_PASSWORD: "#{oms_db_password}"
         }
+
+        d.env = env
+
+        d.cmd = [
+          "postgres",
+          "-c", "log_directory=/tmp/pg_log"
+          ### please see posgres.conf for further configurations
+          # ,
+          # "-c", "logging_collector=on",
+          # "-c", "log_destination=stderr",
+          # "-c", "log_statement=all",
+          # "-c", "log_min_error_statement=info"
+        ]
 
         d.name = "#{environment['id']}_db"
         d.pull = true
