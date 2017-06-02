@@ -32,6 +32,39 @@ end
 Vagrant.configure(2) do |config|
 
   ###
+  # provide the postgres data containers
+  ###
+  environments.each.with_index(1) do |environment , index|
+
+    # provide postgres data containers
+    config.vm.define "#{environment['id']}_db_data", autostart: false do |container|
+
+      container.vm.provider "docker" do |d|
+
+        # configure the docker config
+        d.image = "busybox"
+        d.remains_running = false
+
+        volumes = [
+          # configure the path for the postgres data
+          "/var/lib/postgresql/data"
+        ]
+
+        ### file synchronization
+        d.volumes = volumes
+
+        d.name = "#{environment['id']}_db_data"
+        d.pull = true
+
+        # configure a dedicated docker host
+        d.vagrant_machine = "#{DOCKER_HOST_NAME}"
+        d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
+      end
+
+    end
+  end
+
+  ###
   # provide the postgres containers
   ###
   environments.each.with_index(1) do |environment , index|
@@ -67,6 +100,7 @@ Vagrant.configure(2) do |config|
 
         # configure the docker config
         d.image = "#{environment['docker_db_image']}"
+        d.create_args = ["--volumes-from=#{environment['id']}_db_data"]
         d.remains_running = true
 
         # [host port:container port]
