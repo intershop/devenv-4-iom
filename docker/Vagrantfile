@@ -41,6 +41,9 @@ Vagrant.configure(2) do |config|
 
       container.vm.provider "docker" do |d|
 
+        # a host VM will be spun up even if the computer running Vagrant supports Linux containers
+        d.force_host_vm = true
+
         # configure the docker config
         d.image = "busybox"
         d.remains_running = false
@@ -97,6 +100,9 @@ Vagrant.configure(2) do |config|
     config.vm.define "#{environment['id']}_db", autostart: false do |container|
 
       container.vm.provider "docker" do |d|
+
+        # a host VM will be spun up even if the computer running Vagrant supports Linux containers
+        d.force_host_vm = true
 
         # configure the docker config
         d.image = "#{environment['docker_db_image']}"
@@ -180,6 +186,9 @@ Vagrant.configure(2) do |config|
     config.vm.define "#{environment['id']}", autostart: false do |container|
 
       container.vm.provider "docker" do |d|
+
+        # a host VM will be spun up even if the computer running Vagrant supports Linux containers
+        d.force_host_vm = true
 
         # configure the docker config
         d.image = "#{environment['docker_image']}"
