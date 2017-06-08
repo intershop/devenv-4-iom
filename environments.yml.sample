@@ -17,6 +17,7 @@
 # oms_db_user: name of the database user (default: oms_user)
 # oms_db_password: password of the database user (default: OmsDB)
 # oms_dump: name of the database dump (default: latest test data dump)
+# oms_skip_business_config: indicates if the business config should be skipped (default: false)
 
 - id: 2.2.1.0
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.2.1.0-SNAPSHOT
@@ -29,6 +30,7 @@
   oms_db_user: oms_user
   oms_db_password: OmsDB
   oms_db_dump: OmsTestData.2.2.0.0.dmp.gz
+  oms_skip_business_config: false
 - id: SB_2.1.X.0
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.1.8.0-SNAPSHOT
   oms_etc: F:\svn\oms\SB_2.1.X.0\oms.deployment\etc
