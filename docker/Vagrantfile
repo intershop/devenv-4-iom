@@ -201,14 +201,27 @@ Vagrant.configure(2) do |config|
         d.create_args = ["--privileged"]
         d.remains_running = true
         # [host port:container port]
-        d.ports = [
+
+
+
+        ports = [
           # OMT
           "#{8080 + (index * PORT_OFFSET)}:8080",
           # wildfly console
           "#{9990 + (index * PORT_OFFSET)}:9990",
           # debug port
-          "#{8787 + (index * PORT_OFFSET)}:8787"
+          "#{8787 + (index * PORT_OFFSET)}:8787",
+          # ftp port
+          "#{21 + (index * PORT_OFFSET)}:21"
         ]
+
+        # "30000-30009:30000-30009"
+        # does not work poperly
+        (30000..30009).each do |p|
+          ports.push("#{p}:#{p}")
+        end
+
+        d.ports = ports
 
         volumes = [
           # configure the etc path
@@ -241,7 +254,8 @@ Vagrant.configure(2) do |config|
       message << "Login into your docker host and run following command:\n\n"
       message << "docker exec #{environment['id']} bash /usr/local/bin/docker_reconfigure.sh\n\n"
       message << "Visit http://localhost:#{8080 + (index * PORT_OFFSET)}/omt (resp. /bakery.omt) for the OMT application! \n"
-      message << "Visit http://localhost:#{9990 + (index * PORT_OFFSET)}/console for the wildfly console.\n\n"
+      message << "Visit http://localhost:#{9990 + (index * PORT_OFFSET)}/console for the wildfly console.\n"
+      message << "Use localhost:#{21 + (index * PORT_OFFSET)} to connect via FTP.\n\n"
 
       container.vm.post_up_message = message
 
