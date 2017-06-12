@@ -62,6 +62,9 @@ elif [ -z "$LOG_DIR" -o ! -d "$LOG_DIR" ]; then
 elif [ -z "$SRC_DIR" -o ! -d "$SRC_DIR" ]; then
     echo "SRC_DIR is not a valid directory: '$SRC_DIR'" 1>&2
     exit 1
+elif [ -z "$APP_DIR" -o ! -d "$APP_DIR" ]; then
+    echo "$APP_DIR is not a valid directory: '$APP_DIR'" 1>&2
+    exit 1
 elif [ ! -z "$PGDATA_DIR" -a ! -d "$PGDATA_DIR" ]; then
     echo "PGDATA_DIR is not a valid directory: '$PGDATA_DIR'" 1>&2
     exit 1
