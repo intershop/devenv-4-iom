@@ -7,13 +7,59 @@ $ME
     initializes a dockerized DB
 
 SYNOPSIS
-    $ME <config-file>
+    $ME <config-file> -sb | -nb | -b=<biz.conf>
 
 DESCRIPTION
     Reads <config-file> to get information about DB-configuration. The name of
     config-file is used as part of the ID of the container to be reseted: <ID>_db.
+
+    Arguments:
+    -sb | -nb | -b=<biz.conf>
+      Passed to script reset_test_data.sh
+      -nb: skipp business configuration
+      -sb: use "test data dump" business onfiguration
+      -b=<biz.conf> directory location of business configuration
 EOF
 }
+
+# $1 is name of the config-file
+# check $1
+CONFIG_FILE=$1
+shift
+
+RESET_TEST_DATA_ARGS=
+
+for OPT in "$@"; do
+    case $OPT in
+        -sb)
+            RESET_TEST_DATA_ARGS=-sb
+            shift
+            ;;
+        -nb)
+            RESET_TEST_DATA_ARGS=-nb
+            shift
+            ;;
+        -b=*)
+            RESET_TEST_DATA_ARGS="-b ${OPT#*=}"
+            shift
+            ;;
+        -h)
+            usage
+            exit
+            ;;
+        *)  echo "invalid option $OPT" 1>&2
+            echo 1>&2
+            usage 1>&2
+            exit 1
+            ;;
+    esac
+done
+
+# check parameters
+if [ -z "$RESET_TEST_DATA_ARGS" ]; then
+    usage 1>&2
+    exit 1
+fi
 
 # returns value of requested property from cluster.properties
 clusterProperty() {
@@ -30,10 +76,6 @@ clusterProperty() {
     echo "$LINE" | sed -e 's/^[^:]*:[ \t]*"\([^"]*\).*/\1/g'
 }
 
-# $1 is name of the config-file
-# check $1
-
-CONFIG_FILE=$1
 
 # check config-file
 if [ -z "$CONFIG_FILE" -o ! -f "$CONFIG_FILE" ]; then
@@ -88,4 +130,4 @@ POSTGRES_USER=$(clusterProperty "$ETC_DIR" "is.oms.db.user")
 set -x
 docker exec ${ID}_db \
        bash -c "cd /tmp/src/postgres/dumps && \
-                bash reset_test_data.sh -U $POSTGRES_USER -d $POSTGRES_DB -f $DUMP -c en_US.utf8 -n"
+                bash reset_test_data.sh -U $POSTGRES_USER -d $POSTGRES_DB -f $DUMP -c en_US.utf8 -n $RESET_TEST_DATA_ARGS"
