@@ -92,7 +92,7 @@ docker run -d \
        -e POSTGRES_DB=$POSTGRES_DB \
        -e POSTGRES_USER=$POSTGRES_USER \
        -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-       -v $LOG_DIR:/tmp/pglog \
+       -v $LOG_DIR:/tmp/pg_log \
        $( if [ ! -z "$PGDATA_DIR" ]; then echo "-v $PGDATA_DIR:/var/lib/postgresql/data"; fi ) \
        -v $SRC_DIR:/tmp/src \
        -p 5432:5432 \
