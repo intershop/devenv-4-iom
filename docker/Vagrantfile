@@ -6,6 +6,10 @@ require 'json'
 require 'yaml'
 require 'socket'
 
+
+
+
+
 # disable parallellism so that the containers come up in order
 ENV['VAGRANT_NO_PARALLEL'] = "1"
 
@@ -223,15 +227,16 @@ Vagrant.configure(2) do |config|
           "#{9990 + (index * PORT_OFFSET)}:9990",
           # debug port
           "#{8787 + (index * PORT_OFFSET)}:8787",
-          # ftp port
-          "#{21 + (index * PORT_OFFSET)}:21"
+          # ftp port (can not be used for multiple enironments)
+          # "#{21 + (index * PORT_OFFSET)}:21"
         ]
 
         # "30000-30009:30000-30009"
         # does not work poperly
-        (30000..30009).each do |p|
-          ports.push("#{p}:#{p}")
-        end
+        #  (can not be used for multiple enironments)
+        # (30000..30009).each do |p|
+        #   ports.push("#{p}:#{p}")
+        # end
 
         d.ports = ports
 
@@ -269,6 +274,9 @@ Vagrant.configure(2) do |config|
       message << "Visit http://localhost:#{9990 + (index * PORT_OFFSET)}/console for the wildfly console.\n"
       message << "Use port #{8787 + (index * PORT_OFFSET)} for debugging purposes.\n"
       # message << "Use localhost:#{21 + (index * PORT_OFFSET)} to connect via FTP.\n\n"
+
+      # (cd /vagrant/scripts && ./template_engine.sh ../templates/index.template 2.3.0.0 > index.html)
+      # source <(cd /vagrant/scripts/ && ./template_engine.sh ../templates/alias.template 2.3.0.0)
 
       container.vm.post_up_message = message
 
