@@ -4,10 +4,12 @@
 # Require modules
 require 'json'
 require 'yaml'
+require 'socket'
 
 VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
 PORT_OFFSET = 10
+
 
 # Read environment details from either yml or json file
 
@@ -21,6 +23,37 @@ else
   environments = JSON.parse(File.read(configuration_file))
   # print "'" + configuration_file + "' configuration will be used."
 end
+
+# check required plugins
+required_plugins = ['vagrant-vbguest']#'vagrant-docker-compose']
+
+required_plugins.each do |plugin|
+
+  unless Vagrant.has_plugin?(plugin)
+    puts "Vagrant plugin '#{plugin}' is required, try installing..."
+    system("vagrant plugin install #{plugin}")
+    puts "Please run 'vagrant up' again.\n\n"
+    exit
+  end
+
+end
+
+# check required variables
+required_vars = ['id', 'path', 'docker_image', 'oms_src', 'docker_db_image']
+
+required_vars.each do |var|
+
+  environments.each.with_index(1) do |environment , index|
+
+    unless environment[var]
+      puts "required variable '#{var}' is missing for environment #{environment['id']} in environment.yml. Please set it and restart. For details please see environment.yml.sample"
+      exit
+    end
+  end
+
+end
+
+
 
 Vagrant.configure(2) do |config|
 
@@ -85,6 +118,41 @@ Vagrant.configure(2) do |config|
 
     SHELL
 
+    environments.each.with_index(1) do |environment , index|
+
+      node.vm.provision :shell, run: "always", inline: <<-SHELL
+
+        cd /vagrant/scripts
+
+        ### Static variables
+        export ID=#{environment['id']}
+        export INDEX=#{index}
+        export HOST_IOM=#{Socket.gethostname}
+        export PROJECT_PATH=#{VAGRANT_ROOT}
+
+        export PORT_OFFSET=#{PORT_OFFSET}
+        export PORT_IOM=8080
+        export PORT_DEBUG=8787
+        export PORT_DB=5432
+        export PORT_WILDFLY=9990
+
+        export OMS_DB_NAME=#{environment['oms_db_name']}
+        export OMS_DB_USER=#{environment['oms_db_user']}
+        export OMS_DB_PASSWORD=#{environment['oms_db_password']}
+        export OMS_DB_DUMP=#{environment['oms_db_dump']}
+
+        # create documentations
+        ./template_engine.sh ../templates/index.template > /tmp/#{environment['id']}/index.html
+
+        # create alias scripts
+        ./template_engine.sh ../templates/alias.template > /tmp/#{environment['id']}/alias.sh
+
+      SHELL
+
+    end
+
+
+
     node.vm.hostname = "iomdev"
 
     node.vm.network :private_network, ip: "10.0.10.0"
@@ -106,20 +174,34 @@ Vagrant.configure(2) do |config|
 
     node.vm.provider "virtualbox" do |vb|
       vb.name = "iomdev"
-      vb.memory = "4096"
-
+      vb.memory = "#{environments.length * 3 * 1024}"
+      vb.cpus = 2
     end
 
     ### file synchronization
 
     environments.each.with_index(1) do |environment , index|
 
+      # configure the project path
+      node.vm.synced_folder "#{environment['path']}", "/tmp/#{environment['id']}"
+
       # configure the etc path
-      node.vm.synced_folder "#{environment['oms_etc']}", "/tmp/#{environment['id']}/etc"
+      if environment['oms_etc']
+        node.vm.synced_folder "#{environment['oms_etc']}", "/tmp/#{environment['id']}/etc"
+      else
+        node.vm.synced_folder File.join("#{environment['path']}", "etc"), "/tmp/#{environment['id']}/etc", create: true
+      end
 
       # configure the app path
       if environment['oms_app']
         node.vm.synced_folder "#{environment['oms_app']}", "/tmp/#{environment['id']}/app"
+      end
+
+      # configure the log path
+      if environment['oms_etc']
+        node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
+      else
+        node.vm.synced_folder File.join("#{environment['path']}", "log"), "/tmp/#{environment['id']}/log", create: true
       end
 
       # configure the log path
