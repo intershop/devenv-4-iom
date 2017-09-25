@@ -1,0 +1,350 @@
+<html>
+<head>
+<title>2.3.0.0 IOM development environment</title>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- google code-prettify -->
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+<!-- https://github.com/daylerees/colour-schemes -->
+<style>
+
+body > .container {
+margin-top: 50px;
+}
+
+</style>
+
+</head>
+<body>
+<!-- Fixed navbar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+<div class="container">
+<div class="navbar-header">
+<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<a class="navbar-brand" href="#">2.3.0.0</a>
+</div>
+<div id="navbar" class="navbar-collapse collapse">
+<ul class="nav navbar-nav">
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="#configurations--cluster-properties">Database configuration in cluster.properties</a></li>
+<li><a href="#configurations--database-connetion-properties">Database connetion properties</a></li>
+<li><a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a></li>
+</ul>
+</li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Setup <span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="#setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</a></li>
+<li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
+</ul>
+</li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development process <span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="#development--reconfiguration">Reconfiguration</a></li>
+<li><a href="#development--deployment">Deployment</a></li>
+<li><a href="#development--debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="#database--init">(Re)Initialization of the database</a></li>
+<li><a href="#database--migrate">Migrate the database</a></li>
+<li><a href="#database--create-dump">Create database dump</a></li>
+</ul>
+</li>
+</ul>
+</div><!--/.nav-collapse -->
+</div>
+</nav>
+
+<div class="container">
+
+
+
+
+
+
+<h1>2.3.0.0 IOM development environment</h1>
+<h2 id="configurations">Configurations</h2>
+
+<h3 id="configurations--cluster-properties">Database configuration in cluster.properties</h3>
+<p>In order to use the postgres container '2.3.0.0_db' for your IOM container '2.3.0.0' please set following connection data in your cluster.properties.</p>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+...
+/system-property=is.oms.db.hostlist: "postgres:5432"
+/system-property=is.oms.db.name: "oms_db"
+/system-property=is.oms.db.user: "oms_user"
+/system-property=is.oms.db.pass: "OmsDB"
+...
+
+
+</div></code></pre>
+
+<h3 id="configurations--database-connetion-properties">Database connetion properties</h3>
+<p>Your postgres container '2.3.0.0_db' is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>Host</td>
+<td>localhost</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>Port</td>
+<td>5482</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>Name</td>
+<td>oms_db</td>
+</tr>
+<tr>
+<th scope="row">4</th>
+<td>User</td>
+<td>oms_user</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>Password</td>
+<td>OmsDB</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="configurations--automatic-port-forwarding">Automatic port forwarding</h3>
+<p>Behind the scenes 'vagrant up' resp. 'vagrant reload' do the port forwarding automatically.</p>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>#</th>
+<th>Developer host</th>
+<th>Docker host</th>
+<th>IOM container</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>8130</td>
+<td>8130</td>
+<td>8080</td>
+<td>OMT</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>8837</td>
+<td>8837</td>
+<td>8787</td>
+<td>Debug Port</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>10040</td>
+<td>10040</td>
+<td>9990</td>
+<td>WildFly Console</td>
+</tr>
+<tr>
+<th scope="row">4</th>
+<td>5482</td>
+<td>5482</td>
+<td>5432</td>
+<td>PostgreSQL Database</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="setup">Setup</h2>
+<h3 id="setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</h3>
+
+<p>In order to use your configurations, the postgres database container have to be initialized and the IOM container have to be reconfigured. You can use following script with the id and the database parameters of your configuration.</p>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd F:/svn/oms/projects/iom_dev_env
+
+# Login into the dockerhost
+vagrant ssh
+
+# Initialize the postgres database container
+alias docker_2.3.0.0_database_init="docker exec 2.3.0.0_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U oms_user -d oms_db -f OmsDB.initial.2.3.0.0.sql.gz -sb -c en_US.utf8 -n'"
+
+docker_2.3.0.0_database_init
+
+# Reconfigure the IOM container
+alias docker_2.3.0.0_setup_reconfigure="docker exec 2.3.0.0 bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=localhost --wsdl-port=8130"
+
+docker_2.3.0.0_setup_reconfigure
+
+
+</div></code></pre>
+
+<h3 id="setup--remove-environment">Remove the IOM environment</h3>
+
+<p>In order to remove the IOM environment you can use following script.</p>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove the whole IOM environment
+docker rm -f 2.3.0.0
+docker rm -f 2.3.0.0_db
+docker rm -f 2.3.0.0_db_data
+
+
+</div></code></pre>
+
+<div class="alert alert-warning" role="alert">
+<strong>Note!</strong>
+<p>If you would like to keep the state of the database you must not remove the postgres data container (2.3.0.0_db_data). If you restart the postgres database container (2.3.0.0_db) it will automatically reconnects the data container (2.3.0.0_db_data) and all data is available again.</p>
+</div>
+
+
+<h2 id="development">Development process</h2>
+
+<h3 id="development--reconfiguration">Reconfiguration</h3>
+
+<p>Configuration changes (e. g. cluster.properties) can be made with following docker command.</p>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Reconfigure the IOM container
+alias docker_2.3.0.0_setup_reconfigure="docker exec 2.3.0.0 bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=localhost --wsdl-port=8130"
+
+docker_2.3.0.0_setup_reconfigure
+
+
+</div></code></pre>
+
+<h3 id="development--deployment">Deployment</h3>
+
+<p>A deployment resp. un- or redeployment of IOM artifacts can be done with following docker commands.</p>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Undeploy all artifacts
+alias docker_2.3.0.0_development_undeploy="docker exec 2.3.0.0 bash /usr/local/bin/docker_undeploy.sh"
+
+docker_2.3.0.0_development_undeploy
+
+# Undeploy bakery.omt only
+docker exec 2.3.0.0 bash /usr/local/bin/docker_undeploy.sh --pattern=omt
+
+# Deploy all artifacts
+alias docker_2.3.0.0_development_deploy="docker exec 2.3.0.0 bash /usr/local/bin/docker_deploy.sh"
+
+docker_2.3.0.0_development_deploy
+
+# Redeploy all artifacts
+alias docker_2.3.0.0_development_redeploy="docker exec 2.3.0.0 bash /usr/local/bin/docker_redeploy.sh"
+
+docker_2.3.0.0_development_redeploy
+
+# Redeploy bakery.omt only
+docker exec 2.3.0.0 bash /usr/local/bin/docker_redeploy.sh --pattern=omt
+
+
+</div></code></pre>
+
+<h3 id="development--debugging">Debugging</h3>
+
+<p>Port 8837 for Remote Java Debugging is available out of the box. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
+
+<div class="alert alert-warning" role="alert">
+<strong>Note!</strong>
+<p>Please note that the listening debug port will not get restored when restarting the WildFly application server on service level via</p><br>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+systemctl restart jboss-as-standalone.service
+
+
+</div></code></pre>
+</div>
+
+<h2 id="database">Database</h2>
+<h3 id="database--init">(Re)Initialization of the database</h3>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Initialize the postgres database container
+alias docker_2.3.0.0_database_init="docker exec 2.3.0.0_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U oms_user -d oms_db -f OmsDB.initial.2.3.0.0.sql.gz -sb -c en_US.utf8 -n'"
+
+docker_2.3.0.0_database_init
+
+
+</div></code></pre>
+
+<h3 id="database--migrate">Migrate the database</h3>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Migrate the database in the postgres database container
+alias docker_2.3.0.0_database_migrate="docker exec 2.3.0.0_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U oms_user -p 5432 -d oms_db -n"
+
+docker_2.3.0.0_database_migrate
+
+
+</div></code></pre>
+
+<h3 id="database--create-dump">Create database dump</h3>
+
+<p>Somtimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Create a timestamped datbase dump in your local postgres/dumps directory
+alias docker_2.3.0.0_database_create_dump="docker exec 2.3.0.0_db bash -c \"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > 2.3.0.0-2017-09-25-10-00-03.dmp.gz\""
+
+docker_2.3.0.0_database_create_dump
+
+
+</div></code></pre>
+
+<div class="alert alert-warning" role="alert">
+<strong>Note!</strong>
+<p>Up to (and including) version 1.1 the following command shoud be used!</p><br>
+
+<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Create a timestamped datbase dump in your local postgres/dumps directory
+alias docker_2.3.0.0_database_create_dump_v_1_1="docker exec 2.3.0.0_db bash -c \"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf -n dwh |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > 2.3.0.0-2017-09-25-10-00-03.dmp.gz\""
+
+docker_2.3.0.0_database_create_dump_v_1_1
+
+
+</div></code></pre>
+</div>
+
+
+
+
+
+
+
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>
+</html>
