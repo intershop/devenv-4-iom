@@ -198,14 +198,11 @@ Vagrant.configure(2) do |config|
       end
 
       # configure the log path
-      if environment['oms_etc']
+      if environment['oms_log']
         node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
       else
         node.vm.synced_folder File.join("#{environment['path']}", "log"), "/tmp/#{environment['id']}/log", create: true
       end
-
-      # configure the log path
-      node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
 
       # configure the src path
       if environment['oms_src']
