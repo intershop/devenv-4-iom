@@ -1,7 +1,8 @@
 ### Static variables
 
 ID=2.3.0.0
-INDEX=5
+# used for calculation of automatic port forwarding in vagrant environments
+INDEX=0
 HOST_IOM=localhost
 PROJECT_PATH=F:/svn/oms/projects/iom_dev_env
 
