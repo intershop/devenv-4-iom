@@ -114,7 +114,7 @@
             <tr>
               <th scope="row">1</th>
               <td>Host</td>
-              <td>localhost</td>
+              <td>${HOST_IOM}</td>
             </tr>
             <tr>
               <th scope="row">2</th>
