@@ -10,7 +10,6 @@ VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
 PORT_OFFSET = 10
 
-
 # Read environment details from either yml or json file
 
 configuration_file = File.join(VAGRANT_ROOT, 'environments.yml')
@@ -129,6 +128,8 @@ Vagrant.configure(2) do |config|
         export INDEX=#{index}
         export HOST_IOM=#{Socket.gethostname}
         export PROJECT_PATH=#{VAGRANT_ROOT}
+        export UNIX_PROJECT_PATH="/vagrant"
+        export VAGRANT_SSH="\n# Login into the dockerhost\nvagrant ssh\n"
 
         export PORT_OFFSET=#{PORT_OFFSET}
         # export PORT_IOM=8080
@@ -215,135 +216,141 @@ Vagrant.configure(2) do |config|
 
 end
 
-environments.each.with_index(1) do |environment , index|
 
-  html_docu = File.join(environment['path'], 'index.html')
+# generate a dumy page to have a starting point.
+# generation should be done for vagrant up/reload
+if ['up', 'reload'].include?(ARGV[0])
 
-  # generate a dumy page ti have a starting point
-  dummy_html_docu = File.new(html_docu, "w+")
+  environments.each.with_index(1) do |environment , index|
 
-  dummy_html_docu.write <<EOH
+    html_docu = File.join(environment['path'], 'index.html')
 
-  <html>
-    <head>
-      <title>#{environment['id']} IOM development environment</title>
+    dummy_html_docu = File.new(html_docu, "w+")
 
-      <meta http-equiv="refresh" content="5" >
+    dummy_html_docu.write <<EOH
 
-      <!-- Latest compiled and minified CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <html>
+      <head>
+        <title>#{environment['id']} IOM development environment</title>
 
-      <!-- google code-prettify -->
-      <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+        <meta http-equiv="refresh" content="10" >
 
-      <!-- font awesome -->
-      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-      <!-- https://github.com/daylerees/colour-schemes -->
-      <style>
+        <!-- google code-prettify -->
+        <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 
-        body > .container {
-          margin-top: 50px;
-        }
+        <!-- font awesome -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
-      </style>
+        <!-- https://github.com/daylerees/colour-schemes -->
+        <style>
 
-    </head>
-    <body>
-      <!-- Fixed navbar -->
-        <nav class="navbar navbar-default navbar-fixed-top">
+          body > .container {
+            margin-top: 50px;
+          }
+
+        </style>
+
+      </head>
+      <body>
+        <!-- Fixed navbar -->
+          <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">#{environment['id']}</a>
+              </div>
+              <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#configurations--cluster-properties">Database configuration in cluster.properties</a></li>
+                      <li><a href="#configurations--database-connetion-properties">Database connetion properties</a></li>
+                      <li><a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a></li>
+                    </ul>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Setup <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</a></li>
+                      <li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
+                    </ul>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development process <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#development--reconfiguration">Reconfiguration</a></li>
+                      <li><a href="#development--deployment">Deployment</a></li>
+                      <li><a href="#development--debugging">Debugging</a></li>
+                    </ul>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#database--init">(Re)Initialization of the database</a></li>
+                      <li><a href="#database--migrate">Migrate the database</a></li>
+                      <li><a href="#database--create-dump">Create database dump</a></li>
+                    </ul>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt" target="_blank">OMT</a></li>
+                      <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div><!--/.nav-collapse -->
+            </div>
+          </nav>
+
           <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">#{environment['id']}</a>
+
+            <div class="row">
+              <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+              <div class="col-xs-12 text-center">
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <span class="sr-only">Loading...</span><br><br>
+                The documentation for your #{environment['id']} IOM development environment will be available soon!
+              </div>
             </div>
-            <div id="navbar" class="navbar-collapse collapse">
-              <ul class="nav navbar-nav">
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#configurations--cluster-properties">Database configuration in cluster.properties</a></li>
-                    <li><a href="#configurations--database-connetion-properties">Database connetion properties</a></li>
-                    <li><a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a></li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Setup <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</a></li>
-                    <li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development process <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#development--reconfiguration">Reconfiguration</a></li>
-                    <li><a href="#development--deployment">Deployment</a></li>
-                    <li><a href="#development--debugging">Debugging</a></li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="#database--init">(Re)Initialization of the database</a></li>
-                    <li><a href="#database--migrate">Migrate the database</a></li>
-                    <li><a href="#database--create-dump">Create database dump</a></li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt" target="_blank">OMT</a></li>
-                    <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </div><!--/.nav-collapse -->
-          </div>
-        </nav>
 
-        <div class="container">
-
-          <div class="row">
-            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-            <div class="col-xs-12 text-center">
-              <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-              <span class="sr-only">Loading...</span><br><br>
-              The documentation for your #{environment['id']} IOM development environment will be available soon!
-            </div>
-          </div>
-
-        </div> <!-- /container -->
+          </div> <!-- /container -->
 
 
-        <!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+          <!-- Bootstrap core JavaScript
+          ================================================== -->
+          <!-- Placed at the end of the document so the pages load faster -->
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+          <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
 
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+          <!-- Latest compiled and minified JavaScript -->
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-      </body>
-  </html>
+        </body>
+    </html>
 
 EOH
 
-  dummy_html_docu.close()
+    dummy_html_docu.close()
 
-  # open the docu in the browser
-  if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
-    system "start #{html_docu}"
-  elsif RbConfig::CONFIG['host_os'] =~ /darwin/
-    system "open #{html_docu}"
-  elsif RbConfig::CONFIG['host_os'] =~ /linux|bsd/
-    system "xdg-open #{html_docu}"
+    # open the docu in the browser
+    if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
+      system "start #{html_docu}"
+    elsif RbConfig::CONFIG['host_os'] =~ /darwin/
+      system "open #{html_docu}"
+    elsif RbConfig::CONFIG['host_os'] =~ /linux|bsd/
+      system "xdg-open #{html_docu}"
+    end
+
   end
 
 end

@@ -2,6 +2,8 @@
   <head>
     <title>${ID} IOM development environment</title>
 
+    <meta http-equiv="refresh" content="30" >
+
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
@@ -193,17 +195,18 @@
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
+${VAGRANT_SSH}
 
-# Login into the dockerhost
-vagrant ssh
+# Set alias
+${SET_ALIAS}
 
 # Initialize the postgres database container
-alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
+# alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
 
 ${DOCKER_DATABASE_INIT_ALIAS}
 
 # Reconfigure the IOM container
-alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
+# alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
 
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
 
@@ -236,8 +239,14 @@ docker rm -f ${ID}_db_data
         <p>Configuration changes (e. g. cluster.properties) can be made with following docker command.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Set alias
+${SET_ALIAS}
+
 # Reconfigure the IOM container
-alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
+# alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
 
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
 
@@ -249,8 +258,14 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         <p>A deployment resp. un- or redeployment of IOM artifacts can be done with following docker commands.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Set alias
+${SET_ALIAS}
+
 # Undeploy all artifacts
-alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"
+# alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"
 
 ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
 
@@ -258,12 +273,12 @@ ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
 ${DOCKER_DEVELOPMENT_UNDEPLOY} --pattern=omt
 
 # Deploy all artifacts
-alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"
+# alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"
 
 ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}
 
 # Redeploy all artifacts
-alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"
+# alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"
 
 ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
 
@@ -292,8 +307,14 @@ systemctl restart jboss-as-standalone.service
         <h3 id="database--init">(Re)Initialization of the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Set alias
+${SET_ALIAS}
+
 # Initialize the postgres database container
-alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
+# alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
 
 ${DOCKER_DATABASE_INIT_ALIAS}
 
@@ -303,8 +324,14 @@ ${DOCKER_DATABASE_INIT_ALIAS}
         <h3 id="database--migrate">Migrate the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Set alias
+${SET_ALIAS}
+
 # Migrate the database in the postgres database container
-alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"
+# alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"
 
 ${DOCKER_DATABASE_MIGRATE_ALIAS}
 
@@ -316,8 +343,14 @@ ${DOCKER_DATABASE_MIGRATE_ALIAS}
         <p>Somtimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Set alias
+${SET_ALIAS}
+
 # Create a timestamped datbase dump in your local postgres/dumps directory
-alias ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP}"
+# alias ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP}"
 
 ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
 
@@ -329,8 +362,14 @@ ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
           <p>Up to (and including) version 1.1 the following command shoud be used!</p><br>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Set alias
+${SET_ALIAS}
+
 # Create a timestamped datbase dump in your local postgres/dumps directory
-alias ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP_V_1_1}"
+# alias ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP_V_1_1}"
 
 ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}
 

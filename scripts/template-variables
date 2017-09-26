@@ -5,6 +5,7 @@ INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 
 # development host
 HOST_IOM="${HOST_IOM:-localhost}"
@@ -39,6 +40,9 @@ DOCKER_DATABASE_CREATE_DUMP_ALIAS=docker_${ID}_database_create_dump
 DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS=docker_${ID}_database_create_dump_v_1_1
 
 ### Commands
+
+VAGRANT_SSH="${VAGRANT_SSH:-}"
+SET_ALIAS="source <(ID=${ID} OMS_DB_NAME=${OMS_DB_NAME} OMS_DB_USER=${OMS_DB_USER} OMS_DB_PASSWORD=${OMS_DB_PASSWORD} OMS_DB_DUMP=${OMS_DB_DUMP} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/alias.template)"
 
 # Setup
 DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
