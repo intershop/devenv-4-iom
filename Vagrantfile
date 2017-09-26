@@ -131,10 +131,10 @@ Vagrant.configure(2) do |config|
         export PROJECT_PATH=#{VAGRANT_ROOT}
 
         export PORT_OFFSET=#{PORT_OFFSET}
-        export PORT_IOM=8080
-        export PORT_DEBUG=8787
-        export PORT_DB=5432
-        export PORT_WILDFLY=9990
+        # export PORT_IOM=8080
+        # export PORT_DEBUG=8787
+        # export PORT_DB=5432
+        # export PORT_WILDFLY=9990
 
         export OMS_DB_NAME=#{environment['oms_db_name']}
         export OMS_DB_USER=#{environment['oms_db_user']}

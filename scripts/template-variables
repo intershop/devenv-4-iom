@@ -1,3 +1,20 @@
+### Defaults
+
+# used for calculation of automatic port forwarding in vagrant environments
+INDEX="${INDEX:-0}"
+PORT_OFFSET="${PORT_OFFSET:-10}"
+
+PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+
+# development host
+HOST_IOM="${HOST_IOM:-localhost}"
+
+# ports
+PORT_IOM="${PORT_IOM:-8080}"
+PORT_DEBUG="${PORT_DEBUG:-8787}"
+PORT_DB="${PORT_DB:-5432}"
+PORT_WILDFLY="${PORT_WILDFLY:-9990}"
+
 ### Dynamic variables
 
 FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))

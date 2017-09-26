@@ -1,17 +1,6 @@
-### Static variables
-
+# variables that are required
+# defaults makes no sense
 ID=2.3.0.0
-# used for calculation of automatic port forwarding in vagrant environments
-INDEX=0
-HOST_IOM=localhost
-PROJECT_PATH=F:/svn/oms/projects/iom_dev_env
-
-PORT_OFFSET=10
-PORT_IOM=8080
-PORT_DEBUG=8787
-PORT_DB=5432
-PORT_WILDFLY=9990
-
 OMS_DB_NAME=oms_db
 OMS_DB_USER=oms_user
 OMS_DB_PASSWORD=OmsDB
