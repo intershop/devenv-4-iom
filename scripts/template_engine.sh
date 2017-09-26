@@ -47,7 +47,7 @@ render(){
 }
 
 # name of template-variables file
-TEMPLATE_VAR_FILE=template-variables
+TEMPLATE_VAR_FILE="$(dirname $0)/template-variables"
 
 # $1 is name of the template-file
 TEMPLATE_FILE=$1
