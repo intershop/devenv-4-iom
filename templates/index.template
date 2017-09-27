@@ -197,9 +197,6 @@
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Set alias
-${SET_ALIAS}
-
 # Initialize the postgres database container
 # alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
 
@@ -220,9 +217,6 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
-
-# Set alias
-${SET_ALIAS}
 
 # Remove the whole IOM environment
 # alias ${DOCKER_SETUP_REMOVE_ENV_ALIAS}="${DOCKER_SETUP_REMOVE_ENV}"
@@ -248,9 +242,6 @@ ${DOCKER_SETUP_REMOVE_ENV_ALIAS}
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Set alias
-${SET_ALIAS}
-
 # Reconfigure the IOM container
 # alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
 
@@ -266,9 +257,6 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
-
-# Set alias
-${SET_ALIAS}
 
 # Undeploy all artifacts
 # alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"
@@ -316,9 +304,6 @@ systemctl restart jboss-as-standalone.service
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Set alias
-${SET_ALIAS}
-
 # Initialize the postgres database container
 # alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
 
@@ -332,9 +317,6 @@ ${DOCKER_DATABASE_INIT_ALIAS}
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
-
-# Set alias
-${SET_ALIAS}
 
 # Migrate the database in the postgres database container
 # alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"
@@ -352,9 +334,6 @@ ${DOCKER_DATABASE_MIGRATE_ALIAS}
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Set alias
-${SET_ALIAS}
-
 # Create a timestamped datbase dump in your local postgres/dumps directory
 # alias ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP}"
 
@@ -370,9 +349,6 @@ ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
-
-# Set alias
-${SET_ALIAS}
 
 # Create a timestamped datbase dump in your local postgres/dumps directory
 # alias ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP_V_1_1}"

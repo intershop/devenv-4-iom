@@ -117,11 +117,16 @@ Vagrant.configure(2) do |config|
 
     SHELL
 
+    node.vm.provision "housekeeping", type: "shell", run: "always", inline: <<-SHELL
+
+      # remove alias scripts for old environments
+      rm -f /home/vagrant/.bash_docker_aliases_*
+
+    SHELL
+
     environments.each.with_index(1) do |environment , index|
 
-      node.vm.provision "generate_docu_#{environment['id']}", type: "shell", run: "always", inline: <<-SHELL
-
-        cd /vagrant/scripts
+      node.vm.provision "generate_docu_alias_#{environment['id']}", type: "shell", run: "always", inline: <<-SHELL
 
         ### Static variables
         export ID=#{environment['id']}
@@ -142,11 +147,28 @@ Vagrant.configure(2) do |config|
         export OMS_DB_PASSWORD=#{environment['oms_db_password']}
         export OMS_DB_DUMP=#{environment['oms_db_dump']}
 
-        # create documentations
-        ./template_engine.sh ../templates/index.template > /tmp/#{environment['id']}/index.html
+
+
+
+        cd /vagrant/scripts        
 
         # create alias scripts
-        ./template_engine.sh ../templates/alias.template > /tmp/#{environment['id']}/alias.sh
+        ./template_engine.sh ../templates/alias.template > /home/vagrant/.bash_docker_aliases_#{environment['id']}
+        chown vagrant:vagrant /home/vagrant/.bash_docker_aliases_#{environment['id']}
+
+        # include alias file in /home/vagrant/.bashrc
+        if ! grep -q "# add aliases for the #{environment['id']} environment" "/home/vagrant/.bashrc"; then
+          cat <<EOT >> /home/vagrant/.bashrc
+
+# add aliases for the #{environment['id']} environment
+if [ -f ~/.bash_docker_aliases_#{environment['id']} ]; then
+  . ~/.bash_docker_aliases_#{environment['id']}
+fi
+EOT
+        fi
+
+        # create documentations
+        ./template_engine.sh ../templates/index.template > /tmp/#{environment['id']}/index.html
 
       SHELL
 
