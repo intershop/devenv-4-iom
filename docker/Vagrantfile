@@ -6,10 +6,6 @@ require 'json'
 require 'yaml'
 require 'socket'
 
-
-
-
-
 # disable parallellism so that the containers come up in order
 ENV['VAGRANT_NO_PARALLEL'] = "1"
 
@@ -179,26 +175,6 @@ Vagrant.configure(2) do |config|
         d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
       end
 
-      message = "\n"
-      message << "Your postgres container '#{environment['id']}_db' requires an initialization. \n"
-      message << "Login into your docker host and run following command:\n\n"
-      message << "docker exec #{environment['id']}_db bash -c 'cd /tmp/src/postgres/dumps && \\\n"
-      message << "bash reset_test_data.sh -U #{oms_db_user} -d #{oms_db_name}#{oms_db_dump}#{oms_skip_business_config} -c en_US.utf8 -n'\n\n"
-      message << "Your postgres container '#{environment['id']}_db' is accessible from your host system with following connection data:\n\n"
-      message << "host:\t\tlocalhost\n"
-      message << "port:\t\t#{5432 + (index * PORT_OFFSET)}\n"
-      message << "name:\t\t#{oms_db_name}\n"
-      message << "user:\t\t#{oms_db_user}\n"
-      message << "password:\t#{oms_db_password}\n\n"
-      message << "In order to use the postgres container '#{environment['id']}_db' for your IOM container '#{environment['id']}' \n"
-      message << "please set following connection data in your cluster.properties:\n\n"
-      message << "/system-property=is.oms.db.hostlist: \"postgres:5432\"\n"
-      message << "/system-property=is.oms.db.name: \"#{oms_db_name}\"\n"
-      message << "/system-property=is.oms.db.user: \"#{oms_db_user}\"\n"
-      message << "/system-property=is.oms.db.pass: \"#{oms_db_password}\"\n\n"
-
-      container.vm.post_up_message = message
-
     end
   end
 
@@ -266,17 +242,11 @@ Vagrant.configure(2) do |config|
         d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
       end
 
-      message = "\n"
-      message << "Your IOM container '#{environment['id']}' requires a reconfiguration. \n"
-      message << "Login into your docker host and run following command:\n\n"
-      message << "docker exec #{environment['id']} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=#{Socket.gethostname} --wsdl-port=#{8080 + (index * PORT_OFFSET)}\n\n"
-      message << "Visit http://localhost:#{8080 + (index * PORT_OFFSET)}/omt (resp. /bakery.omt) for the OMT application! \n"
-      message << "Visit http://localhost:#{9990 + (index * PORT_OFFSET)}/console for the wildfly console.\n"
-      message << "Use port #{8787 + (index * PORT_OFFSET)} for debugging purposes.\n"
-      # message << "Use localhost:#{21 + (index * PORT_OFFSET)} to connect via FTP.\n\n"
+      html_docu = File.join(environment['path'], 'index.html')
 
-      # (cd /vagrant/scripts && ./template_engine.sh ../templates/index.template 2.3.0.0 > index.html)
-      # source <(cd /vagrant/scripts/ && ./template_engine.sh ../templates/alias.template 2.3.0.0)
+      message = ""
+      message << "You can find the documentation for your '#{environment['id']}' environment here:\n"
+      message << "#{html_docu} \n"
 
       container.vm.post_up_message = message
 
