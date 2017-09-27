@@ -126,6 +126,12 @@ Vagrant.configure(2) do |config|
 
     environments.each.with_index(1) do |environment , index|
 
+      oms_skip_business_config = "-sb"
+
+      if environment['oms_skip_business_config']
+        oms_skip_business_config = "-nb"
+      end
+
       node.vm.provision "generate_docu_alias_#{environment['id']}", type: "shell", run: "always", inline: <<-SHELL
 
         ### Static variables
@@ -147,10 +153,11 @@ Vagrant.configure(2) do |config|
         export OMS_DB_PASSWORD=#{environment['oms_db_password']}
         export OMS_DB_DUMP=#{environment['oms_db_dump']}
 
+        export OMS_SKIP_BUSINESS_CONFIG=#{oms_skip_business_config}
 
 
 
-        cd /vagrant/scripts        
+        cd /vagrant/scripts
 
         # create alias scripts
         ./template_engine.sh ../templates/alias.template > /home/vagrant/.bash_docker_aliases_#{environment['id']}
