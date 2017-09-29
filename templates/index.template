@@ -212,7 +212,7 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
 
-        <p>In order to remove the IOM environment you can use following script.</p>
+        <p>In order to remove all IOM containers you can use following script.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
@@ -328,7 +328,7 @@ ${DOCKER_DATABASE_MIGRATE_ALIAS}
 
         <h3 id="database--create-dump">Create database dump</h3>
 
-        <p>Somtimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
+        <p>Sometimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
