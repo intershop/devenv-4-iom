@@ -18,6 +18,12 @@ PORT_DEBUG="${PORT_DEBUG:-8787}"
 PORT_DB="${PORT_DB:-5432}"
 PORT_WILDFLY="${PORT_WILDFLY:-9990}"
 
+# docker
+DOCKER_REGISTRY_URL="${DOCKER_REGISTRY_URL:-jengdocker01.rnd.j.intershop.de:5000}"
+DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom-centos7-env:latest}"
+DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
+DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")
+
 ### Dynamic variables
 
 FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
@@ -28,6 +34,8 @@ FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
 ### Alias
 
 # Setup
+DOCKER_SETUP_RUN_IOM_ALIAS=docker_${ID}_setup_run_iom
+DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS=docker_${ID}_setup_provide_var_directory
 DOCKER_SETUP_RECONFIGURE_ALIAS=docker_${ID}_setup_reconfigure
 DOCKER_SETUP_REMOVE_ENV_ALIAS=docker_${ID}_setup_remove_env
 
@@ -48,7 +56,13 @@ VAGRANT_SSH="${VAGRANT_SSH:-}"
 SET_ALIAS="source <(ID=${ID} OMS_DB_NAME=${OMS_DB_NAME} OMS_DB_USER=${OMS_DB_USER} OMS_DB_PASSWORD=${OMS_DB_PASSWORD} OMS_DB_DUMP=${OMS_DB_DUMP} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/alias.template)"
 
 # Setup
+
+DOCKER_SETUP_PROVIDE_VAR_DIRECTORY="docker exec ${ID} bash /usr/local/bin/docker_provide_var_directory.sh"
 DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
+
+DOCKER_SETUP_RUN_IOM="docker pull ${DOCKER_REGISTRY_URL}/${DOCKER_IOM_IMAGE} && docker run --name ${ID} -d --link ${ID}_db:postgres -p ${FORWARD_PORT_IOM}:${PORT_IOM} -p ${FORWARD_PORT_WILDFLY}:${PORT_WILDFLY} -p ${FORWARD_PORT_DEBUG}:${PORT_DEBUG} -v ${OMS_ETC_DIR}:/etc/opt/oms.standalone -v ${OMS_VAR_DIR}:/var/opt/oms.standalone/ -v ${OMS_APP_DIR}:/opt/oms.standalone/application --privileged ${DOCKER_REGISTRY_URL}/${DOCKER_IOM_IMAGE} && ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY} && ${DOCKER_SETUP_RECONFIGURE}"
+
+
 DOCKER_SETUP_REMOVE_ENV="docker rm -f ${ID} && docker rm -f ${ID}_db && docker rm -f ${ID}_db_data"
 
 # Development
@@ -61,3 +75,32 @@ DOCKER_DATABASE_INIT="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps &
 DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${OMS_DB_USER} -p 5432 -d ${OMS_DB_NAME} -n'"
 DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 DOCKER_DATABASE_CREATE_DUMP_V_1_1="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf -n dwh |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
+
+### Versioning
+
+# IOM-7183
+# available for images >= 2.1.11.0, 2.2.3.0, 2.3.0.0
+if (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.1.11.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )) ||
+   (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.3.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )) ||
+   ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )
+then
+  DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="# Make the fully orchestrated OMS_VAR directory accessible
+# alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"
+
+${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}"
+
+DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS_PASSAGE="alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\""
+fi
+
+# >= 2.2.0.0
+if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )
+then
+  CLUSTER_PROPERTIES_DB_HOST_CONFIG="/system-property=is.oms.db.hostlist: \"postgres:${PORT_DB}\""
+
+  OMT_URL="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt"
+else
+  CLUSTER_PROPERTIES_DB_HOST_CONFIG="/system-property=is.oms.db.host: \"postgres\"
+/system-property=is.oms.db.port: \"${PORT_DB}\""
+
+  OMT_URL="http://${HOST_IOM}:${FORWARD_PORT_IOM}/bakery.omt"
+fi

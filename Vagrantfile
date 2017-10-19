@@ -10,6 +10,7 @@ VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
 PORT_OFFSET = 10
 
+
 # Read environment details from either yml or json file
 
 configuration_file = File.join(VAGRANT_ROOT, 'environments.yml')
@@ -52,6 +53,18 @@ required_vars.each do |var|
 
 end
 
+# add required variables
+environments.each.with_index(1) do |environment , index|
+
+  environment['oms_etc_dir'] = "/tmp/#{environment['id']}/etc"
+  environment['oms_var_dir'] = "/tmp/#{environment['id']}/var"
+  environment['oms_app_dir'] = "/tmp/#{environment['id']}/app"
+  environment['oms_src_dir'] = "/tmp/#{environment['id']}/src"
+
+  docker_image_version = environment['docker_image'][/\d\.\d\.\d\.\d/x]
+  environment['docker_image_version'] = docker_image_version
+
+end
 
 
 Vagrant.configure(2) do |config|
@@ -126,10 +139,25 @@ Vagrant.configure(2) do |config|
 
     environments.each.with_index(1) do |environment , index|
 
+      # business config
       oms_skip_business_config = "-sb"
 
       if environment['oms_skip_business_config']
         oms_skip_business_config = "-nb"
+      end
+
+      # docker config
+      export_docker_registry_url = ""
+      export_docker_iom_image = ""
+
+      if ( environment['docker_image'] =~ /\// )
+        docker_registry_url = environment['docker_image'].sub(/\/.*$/, "")
+        docker_iom_image = environment['docker_image'].sub(/^.*\//, "")
+        export_docker_registry_url = "export DOCKER_REGISTRY_URL=#{docker_registry_url}"
+        export_docker_iom_image = "export DOCKER_IOM_IMAGE=#{docker_iom_image}"
+      else
+        docker_iom_image = environment['docker_image']
+        export_docker_iom_image = "export DOCKER_IOM_IMAGE=#{docker_iom_image}"
       end
 
       node.vm.provision "generate_docu_alias_#{environment['id']}", type: "shell", run: "always", inline: <<-SHELL
@@ -148,6 +176,11 @@ Vagrant.configure(2) do |config|
         # export PORT_DB=5432
         # export PORT_WILDFLY=9990
 
+        export OMS_ETC_DIR=#{environment['oms_etc_dir']}
+        export OMS_VAR_DIR=#{environment['oms_var_dir']}
+        export OMS_SRC_DIR=#{environment['oms_app_dir']}
+        export OMS_APP_DIR=#{environment['oms_src_dir']}
+
         export OMS_DB_NAME=#{environment['oms_db_name']}
         export OMS_DB_USER=#{environment['oms_db_user']}
         export OMS_DB_PASSWORD=#{environment['oms_db_password']}
@@ -155,7 +188,8 @@ Vagrant.configure(2) do |config|
 
         export OMS_SKIP_BUSINESS_CONFIG=#{oms_skip_business_config}
 
-
+        #{export_docker_registry_url}
+        #{export_docker_iom_image}
 
         cd /vagrant/scripts
 
@@ -217,26 +251,29 @@ EOT
 
       # configure the etc path
       if environment['oms_etc']
-        node.vm.synced_folder "#{environment['oms_etc']}", "/tmp/#{environment['id']}/etc"
+        node.vm.synced_folder "#{environment['oms_etc']}", "#{environment['oms_etc_dir']}"
       else
-        node.vm.synced_folder File.join("#{environment['path']}", "etc"), "/tmp/#{environment['id']}/etc", create: true
+        node.vm.synced_folder File.join("#{environment['path']}", "etc"), "#{environment['oms_etc_dir']}", create: true
       end
 
       # configure the app path
       if environment['oms_app']
-        node.vm.synced_folder "#{environment['oms_app']}", "/tmp/#{environment['id']}/app"
+        node.vm.synced_folder "#{environment['oms_app']}", "#{environment['oms_app_dir']}"
       end
 
-      # configure the log path
-      if environment['oms_log']
-        node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
-      else
-        node.vm.synced_folder File.join("#{environment['path']}", "log"), "/tmp/#{environment['id']}/log", create: true
-      end
+      # # configure the log path
+      # if environment['oms_log']
+      #   node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
+      # else
+      #   node.vm.synced_folder File.join("#{environment['path']}", "log"), "/tmp/#{environment['id']}/log", create: true
+      # end
+
+      # configure the var path
+      node.vm.synced_folder File.join("#{environment['path']}", "var"), "#{environment['oms_var_dir']}", create: true
 
       # configure the src path
       if environment['oms_src']
-        node.vm.synced_folder "#{environment['oms_src']}", "/tmp/#{environment['id']}/src"
+        node.vm.synced_folder "#{environment['oms_src']}", "#{environment['oms_src_dir']}"
       end
 
     end

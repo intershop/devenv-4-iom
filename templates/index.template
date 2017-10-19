@@ -2,7 +2,7 @@
   <head>
     <title>${ID} IOM development environment</title>
 
-    <meta http-equiv="refresh" content="30" >
+    <meta http-equiv="refresh" content="60" >
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -42,7 +42,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="#configurations--cluster-properties">Database configuration in cluster.properties</a></li>
-                  <li><a href="#configurations--database-connetion-properties">Database connetion properties</a></li>
+                  <li><a href="#configurations--database-connection-properties">Database connection properties</a></li>
                   <li><a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a></li>
                 </ul>
               </li>
@@ -72,7 +72,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt" target="_blank">OMT</a></li>
+                  <li><a href="${OMT_URL}" target="_blank">OMT</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
                 </ul>
               </li>
@@ -96,7 +96,7 @@
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ...
-/system-property=is.oms.db.hostlist: "postgres:${PORT_DB}"
+${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
 /system-property=is.oms.db.name: "${OMS_DB_NAME}"
 /system-property=is.oms.db.user: "${OMS_DB_USER}"
 /system-property=is.oms.db.pass: "${OMS_DB_PASSWORD}"
@@ -105,9 +105,9 @@
 
         </div></code></pre>
 
-        <h3 id="configurations--database-connetion-properties">Database connetion properties</h3>
+        <h3 id="configurations--database-connection-properties">Database connection properties</h3>
         <p>Your postgres container '${ID}_db' is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
-        <table class="table table-striped">
+        <table class="table table-striped table-condensed">
           <thead>
             <tr>
               <th>#</th>
@@ -146,7 +146,8 @@
 
         <h3 id="configurations--automatic-port-forwarding">Automatic port forwarding</h3>
         <p>Behind the scenes 'vagrant up' resp. 'vagrant reload' do the port forwarding automatically.</p>
-        <table class="table table-striped">
+
+        <table class="table table-striped table-condensed">
           <thead>
             <tr>
               <th>#</th>
@@ -189,11 +190,28 @@
         </table>
 
         <h2 id="setup">Setup</h2>
-        <h3 id="setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</h3>
+        <!--h3 id="setup--run-iom-container">Run IOM container</h3>
 
-        <p>In order to use your configurations, the postgres database container have to be initialized and the IOM container have to be reconfigured. You can use following script with the id and the database parameters of your configuration.</p>
+        <p>The following creates a new IOM container.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Creates a new IOM container
+# alias ${DOCKER_SETUP_RUN_IOM_ALIAS}="${DOCKER_SETUP_RUN_IOM}"
+
+${DOCKER_SETUP_RUN_IOM_ALIAS}
+
+
+        </div></code></pre-->
+
+        <h3 id="setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</h3>
+
+        <p>In order to use your configurations, the postgres database container have to be initialized and the IOM container have to be reconfigured. Please use following script. For further information, please see the following <a href="https://confluence.intershop.de/display/ISEXTBAKER/Concept+-+Usage+of+Docker+images" target="_blank">documentation</a>.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
@@ -201,6 +219,8 @@ ${VAGRANT_SSH}
 # alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
 
 ${DOCKER_DATABASE_INIT_ALIAS}
+
+${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
 
 # Reconfigure the IOM container
 # alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
@@ -341,8 +361,8 @@ ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
 
 
         </div></code></pre>
-
-        <div class="alert alert-warning" role="alert">
+        <!-- no docker images for this version -->
+        <!-- div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
           <p>Up to (and including) version 1.1 the following command shoud be used!</p><br>
 
@@ -357,7 +377,7 @@ ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}
 
 
           </div></code></pre>
-        </div>
+        </div-->
 
 
 

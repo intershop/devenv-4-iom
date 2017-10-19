@@ -29,7 +29,27 @@ EXAMPLES
 EOF
 }
 
-# render the template and replace the variables
+# checks if version 1 is greater than version 2
+version_gt() {
+  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
+}
+
+# checks if version 1 is greater than or equal to version 2
+version_ge() {
+  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1";
+}
+
+# checks if version 1 is less than or equal to version 2
+version_le() {
+  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1";
+}
+
+# checks if version 1 is less than  version 2
+version_lt() {
+  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
+}
+
+# renders the template and replace the variables
 render(){
 	FILE="$1"
   # read the lines of the template
