@@ -261,13 +261,6 @@ EOT
         node.vm.synced_folder "#{environment['oms_app']}", "#{environment['oms_app_dir']}"
       end
 
-      # # configure the log path
-      # if environment['oms_log']
-      #   node.vm.synced_folder "#{environment['oms_log']}", "/tmp/#{environment['id']}/log"
-      # else
-      #   node.vm.synced_folder File.join("#{environment['path']}", "log"), "/tmp/#{environment['id']}/log", create: true
-      # end
-
       # configure the var path
       node.vm.synced_folder File.join("#{environment['path']}", "var"), "#{environment['oms_var_dir']}", create: true
 
