@@ -38,7 +38,7 @@ environments.each.with_index(1) do |environment , index|
   environment['oms_app_dir'] = "/tmp/#{environment['id']}/app"
   environment['oms_src_dir'] = "/tmp/#{environment['id']}/src"
 
-  docker_image_version = environment['docker_image'][/\d\.\d\.\d\.\d/x]
+  docker_image_version = environment['docker_image'][/\d+\.\d+\.\d+\.\d+/x]
   environment['docker_image_version'] = docker_image_version
 
 end
