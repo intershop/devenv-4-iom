@@ -58,7 +58,7 @@ SET_ALIAS="source <(ID=${ID} OMS_DB_NAME=${OMS_DB_NAME} OMS_DB_USER=${OMS_DB_USE
 # Setup
 
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY="docker exec ${ID} bash /usr/local/bin/docker_provide_var_directory.sh"
-DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
+
 
 DOCKER_SETUP_RUN_IOM="docker pull ${DOCKER_REGISTRY_URL}/${DOCKER_IOM_IMAGE} && docker run --name ${ID} -d --link ${ID}_db:postgres -p ${FORWARD_PORT_IOM}:${PORT_IOM} -p ${FORWARD_PORT_WILDFLY}:${PORT_WILDFLY} -p ${FORWARD_PORT_DEBUG}:${PORT_DEBUG} -v ${OMS_ETC_DIR}:/etc/opt/oms.standalone -v ${OMS_VAR_DIR}:/var/opt/oms.standalone/ -v ${OMS_APP_DIR}:/opt/oms.standalone/application --privileged ${DOCKER_REGISTRY_URL}/${DOCKER_IOM_IMAGE} && ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY} && ${DOCKER_SETUP_RECONFIGURE}"
 
@@ -78,18 +78,27 @@ DOCKER_DATABASE_CREATE_DUMP_V_1_1="docker exec ${ID}_db bash -c \\\"cd /tmp/src/
 
 ### Versioning
 
+# IOM-7111
 # IOM-7183
 # available for images >= 2.1.11.0, 2.2.3.0, 2.3.0.0
 if (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.1.11.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )) ||
    (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.3.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )) ||
    ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )
 then
+  # IOM-7111
+  DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
+
+  # IOM-7183
   DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="# Make the fully orchestrated OMS_VAR directory accessible
 # alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"
 
 ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}"
 
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS_PASSAGE="alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\""
+
+else
+  # IOM-7111
+  DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh"
 fi
 
 # >= 2.2.0.0
