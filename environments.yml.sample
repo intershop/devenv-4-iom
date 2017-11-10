@@ -32,7 +32,7 @@
   oms_db_dump: OmsTestData.2.2.0.0.dmp.gz
   oms_skip_business_config: false
 - id: SB_2.1.X.0
-  oms_etc: F:\docker\SB_2.1.X.0
+  path: F:\docker\SB_2.1.X.0
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.1.8.0-SNAPSHOT
   oms_etc: F:\svn\oms\SB_2.1.X.0\oms.deployment\etc
   oms_log: F:\docker\SB_2.1.X.0\log
