@@ -80,6 +80,10 @@ Vagrant.configure(2) do |config|
 
     node.vm.provision "docker"
 
+    node.vm.provision "init", type: "shell", run: "always", inline: <<-SHELL
+        timedatectl set-timezone Europe/Berlin
+    SHELL
+
     # The following line terminates all ssh connections. Therefore
     # Vagrant will be forced to reconnect.
     # That's a workaround to have the docker command in the PATH
@@ -169,6 +173,8 @@ Vagrant.configure(2) do |config|
         export PROJECT_PATH=#{VAGRANT_ROOT}
         export UNIX_PROJECT_PATH="/vagrant"
         export VAGRANT_SSH="\n# Login into the dockerhost\nvagrant ssh\n"
+
+        export TIMEZONE=#{environment['timezone']}
 
         export PORT_OFFSET=#{PORT_OFFSET}
         # export PORT_IOM=8080

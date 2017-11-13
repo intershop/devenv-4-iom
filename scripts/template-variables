@@ -9,6 +9,8 @@ UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 
 OMS_SKIP_BUSINESS_CONFIG="${OMS_SKIP_BUSINESS_CONFIG:--sb}"
 
+TIMEZONE="${TIMEZONE:-Europe/Berlin}"
+
 # development host
 HOST_IOM="${HOST_IOM:-localhost}"
 
@@ -100,6 +102,17 @@ else
   # IOM-7111
   DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh"
 fi
+
+# IOM-7205
+# available for images >= 2.1.11.0, 2.2.4.0, 2.3.0.0
+if (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.1.11.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )) ||
+   (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.4.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )) ||
+   ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )
+then
+  # IOM-7205
+  DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM} --timezone=${TIMEZONE}"
+fi
+
 
 # >= 2.2.0.0
 if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )
