@@ -98,4 +98,4 @@ docker run -d \
        -p 5432:5432 \
        --name ${ID}_db \
        $PG_IMAGE \
-       postgres -c log_directory=/tmp/pg_log -c max_prepared_transactions=100 -c logging_collector=on -c log_destination=stderr,csvlog -c log_filename=pg-VM-%Y%m%d_%H%M.log -c log_rotation_age=1h -c log_min_duration_statement=200
+       postgres -c log_directory=/tmp/pg_log -c max_prepared_transactions=100 -c logging_collector=on -c log_destination=stderr,csvlog -c log_filename=pg-VM-%Y%m%d_%H%M.log -c log_rotation_age=1h -c log_min_duration_statement=200 -c timezone=Europe/Berlin

@@ -177,7 +177,8 @@ Vagrant.configure(2) do |config|
           "-c", "log_filename=pg-VM-%Y%m%d_%H%M.log",
           "-c", "log_rotation_age=1h",
           "-c", "log_min_duration_statement=200",
-          "-c", "max_prepared_transactions=100"
+          "-c", "max_prepared_transactions=100",
+          "-c", "timezone=#{environment['timezone']}"
         ]
 
         d.name = "#{environment['id']}_db"
