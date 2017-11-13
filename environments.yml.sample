@@ -11,6 +11,7 @@
 
 ### optional parameters
 
+# timezone: used to set the timezone for the iom container and the dockered database (default: Europe/Berlin)
 # oms_etc: path to your local etc folder - if not set an 'etc' folder will be created within the path folder
 # oms_log: path to your local log folder - if not set a 'log' folder will be created within the path folder
 # oms_app: path to your local application
@@ -21,6 +22,7 @@
 # oms_skip_business_config: indicates if the business config should be skipped (default: false)
 
 - id: 2.2.1.0
+  timezone: Europe/Berlin
   path: F:\docker\2.2.1.0
   docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:2.2.1.0-SNAPSHOT
   oms_app: F:\svn\oms\trunk
