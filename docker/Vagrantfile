@@ -41,6 +41,11 @@ environments.each.with_index(1) do |environment , index|
   docker_image_version = environment['docker_image'][/\d+\.\d+\.\d+\.\d+/x]
   environment['docker_image_version'] = docker_image_version
 
+  # set default timezone
+  unless environment['timezone']
+    environment['timezone'] = "Europe/Berlin"
+  end
+
 end
 
 # get the IP and hostname
