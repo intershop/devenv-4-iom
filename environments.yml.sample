@@ -26,7 +26,7 @@
 - id: trunk
   timezone: Europe/Berlin
   path: F:\docker\trunk
-  docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-trunk:2.2.4.0-SNAPSHOT
+  docker_image: jengdocker01.rnd.j.intershop.de:5000/iom-trunk:2.4.0.0-SNAPSHOT
   oms_app: F:\svn\oms\trunk
   oms_src: F:\svn\oms\trunk
   docker_db_image: postgres:9.5
