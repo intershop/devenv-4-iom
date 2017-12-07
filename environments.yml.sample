@@ -6,7 +6,7 @@
 # id: must be a unique identifier
 # path: path to a local folder that should hold configuration and documentation data
 # docker_image: docker image that should be used for the container.
-#               Please see all repositories with https://rnd-docker-dev.test.intershop.de/v2/_catalog and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
+#               Please use https://rnd-docker-dev.test.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
 #               Use the specific repository url (e.g. https://rnd-docker-dev.test.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
 # oms_src: path to your source folder
 # docker_db_image: name of the docker postgres image
