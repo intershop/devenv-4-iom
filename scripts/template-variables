@@ -21,7 +21,7 @@ PORT_DB="${PORT_DB:-5432}"
 PORT_WILDFLY="${PORT_WILDFLY:-9990}"
 
 # docker
-DOCKER_REGISTRY_URL="${DOCKER_REGISTRY_URL:-jengdocker01.rnd.j.intershop.de:5000}"
+DOCKER_REGISTRY_URL="${DOCKER_REGISTRY_URL:-rnd-docker-dev.test.intershop.de}"
 DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom-centos7-env:latest}"
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
 DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")

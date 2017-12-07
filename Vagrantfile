@@ -10,6 +10,8 @@ VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
 PORT_OFFSET = 10
 
+DOCKER_REGISTRY_HOST = 'rnd-docker-dev.test.intershop.de'
+
 
 # Read environment details from either yml or json file
 
@@ -85,6 +87,11 @@ Vagrant.configure(2) do |config|
 
     node.vm.provision "docker"
 
+    node.vm.provision "upgrade_centos", type: "shell", inline: <<-SHELL
+        yum update -y
+        yum install -y kernel-headers kernel-devel
+    SHELL
+
     node.vm.provision "init", type: "shell", run: "always", inline: <<-SHELL
         timedatectl set-timezone Europe/Berlin
     SHELL
@@ -107,23 +114,8 @@ Vagrant.configure(2) do |config|
       # restart docker daemon
       systemctl restart docker
 
-      # install the Intershop Root Certification Authority for Docker
-      # please see: https://confluence.intershop.de/pages/viewpage.action?spaceKey=ATEAMDOC&title=How+to+install+the+Intershop+Root+Certification+Authority+for+Docker
-
-      # create the docker certificate store
-      mkdir -p /etc/docker/certs.d/
-
-      # create also a certificate for the private docker registry
-      mkdir -p /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000
-
-      # download file from a file path
-      curl http://pki.intershop.de:81/CertEnroll/ISH-CA01.crt -o /tmp/ISH-CA01.crt
-
-      # convert the downloaded file from DER format to PEM format using Openssl
-      openssl x509 -inform der -in /tmp/ISH-CA01.crt -out /etc/docker/certs.d/jengdocker01.rnd.j.intershop.de:5000/ca.crt
-
       # login to the docker registry with Artifactory API KEY
-      docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X jengdocker01.rnd.j.intershop.de:5000
+      docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X #{DOCKER_REGISTRY_HOST}
 
     SHELL
 

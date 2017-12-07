@@ -126,5 +126,4 @@ docker run --privileged -d \
        -p 30000-30009:30000-30009 \
        --link ${ID}_db:postgres \
        --name $ID \
-       jengdocker01.rnd.j.intershop.de:5000/iom-centos7-env:$IOM_IMAGE
-
+       rnd-docker-dev.test.intershop.de/$IOM_IMAGE
