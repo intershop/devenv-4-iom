@@ -87,13 +87,14 @@ Vagrant.configure(2) do |config|
 
     node.vm.provision "docker"
 
-    node.vm.provision "upgrade_centos", type: "shell", inline: <<-SHELL
-        yum update -y
-        yum install -y kernel-headers kernel-devel
-    SHELL
-
     node.vm.provision "init", type: "shell", run: "always", inline: <<-SHELL
+        # set default timezone
         timedatectl set-timezone Europe/Berlin
+
+        # install docker compose
+        curl -L https://github.com/docker/compose/releases/download/1.17.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+
     SHELL
 
     # The following line terminates all ssh connections. Therefore
@@ -148,13 +149,13 @@ Vagrant.configure(2) do |config|
       end
 
       # docker config
-      export_docker_registry_url = ""
+      export_docker_registry_host = ""
       export_docker_iom_image = ""
 
       if ( environment['docker_image'] =~ /\// )
-        docker_registry_url = environment['docker_image'].sub(/\/.*$/, "")
-        docker_iom_image = environment['docker_image'].sub(/^.*\//, "")
-        export_docker_registry_url = "export DOCKER_REGISTRY_URL=#{docker_registry_url}"
+        docker_registry_host = environment['docker_image'].sub(/\/.*$/, "")
+        docker_iom_image = environment['docker_image'].sub(/#{docker_registry_host}\//, "")
+        export_docker_registry_host = "export DOCKER_REGISTRY_HOST=#{docker_registry_host}"
         export_docker_iom_image = "export DOCKER_IOM_IMAGE=#{docker_iom_image}"
       else
         docker_iom_image = environment['docker_image']
@@ -191,7 +192,7 @@ Vagrant.configure(2) do |config|
 
         export OMS_SKIP_BUSINESS_CONFIG=#{oms_skip_business_config}
 
-        #{export_docker_registry_url}
+        #{export_docker_registry_host}
         #{export_docker_iom_image}
 
         cd /vagrant/scripts
