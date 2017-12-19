@@ -243,17 +243,17 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Remove the whole IOM environment
+# Remove the entire IOM environment and the data volume used by the postgres container
 # alias ${DOCKER_SETUP_REMOVE_ENV_ALIAS}="${DOCKER_SETUP_REMOVE_ENV}"
 
-${DOCKER_SETUP_REMOVE_ENV_ALIAS}
+${DOCKER_SETUP_REMOVE_ENV_ALIAS} --volumes
 
 
         </div></code></pre>
 
         <div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
-          <p>If you would like to keep the state of the database you must not remove the postgres data container (${ID}_db_data). If you restart the postgres database container (${ID}_db) it will automatically reconnects the data container (${ID}_db_data) and all data is available again.</p>
+          <p>If you would like to keep the state of the database you must not remove the data volume. You just have to remove the --volumes parameter to keep the data volume. If you restart the environment the postgres database container (${ID}_db) it will automatically reuse the data volume and all data is available again.</p>
         </div>
 
 
