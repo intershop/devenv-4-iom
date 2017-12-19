@@ -281,6 +281,8 @@ Vagrant.configure(2) do |config|
 
       container.vm.post_up_message = message
 
+      printf "\n\n\n\033[31mPLEASE NOTICE:\n\nThe vargrant variant is deprecated. It will continue to function, but we would suggest not to use it anymore. Instead, you can use the variant documented in #{html_docu}.\033[0m\n\n\n"
+
     end
   end
 
