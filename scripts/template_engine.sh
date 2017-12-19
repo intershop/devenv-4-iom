@@ -53,7 +53,10 @@ version_lt() {
 render(){
 	FILE="$1"
   # read the lines of the template
-	while read -r LINE ; do
+  # IFS='' (or IFS=) prevents leading/trailing whitespace from being trimmed.
+  # -r prevents backslash escapes from being interpreted.
+  # || [[ -n $LINE ]] prevents the last line from being ignored if it doesn't end with a \n (since read returns a non-zero exit code when it encounters EOF).
+	while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
     # find the variables by regex
 	   while [[ "$LINE" =~ (\$\{[a-zA-Z_][a-zA-Z_0-9]*\}) ]] ; do
         MATCH=${BASH_REMATCH[1]}
