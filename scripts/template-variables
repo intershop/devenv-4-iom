@@ -21,8 +21,8 @@ PORT_DB="${PORT_DB:-5432}"
 PORT_WILDFLY="${PORT_WILDFLY:-9990}"
 
 # docker
-DOCKER_REGISTRY_URL="${DOCKER_REGISTRY_URL:-rnd-docker-dev.test.intershop.de}"
-DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom-centos7-env:latest}"
+DOCKER_REGISTRY_HOST="${DOCKER_REGISTRY_HOST:-rnd-docker-dev.test.intershop.de}"
+DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom/iom-trunk:2.4.0.0-SNAPSHOT}"
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
 DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")
 
@@ -36,7 +36,7 @@ FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
 ### Alias
 
 # Setup
-DOCKER_SETUP_RUN_IOM_ALIAS=docker_${ID}_setup_run_iom
+DOCKER_SETUP_RUN_IOM_ENV_ALIAS=docker_${ID}_setup_run_iom_env
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS=docker_${ID}_setup_provide_var_directory
 DOCKER_SETUP_RECONFIGURE_ALIAS=docker_${ID}_setup_reconfigure
 DOCKER_SETUP_REMOVE_ENV_ALIAS=docker_${ID}_setup_remove_env
@@ -61,9 +61,7 @@ SET_ALIAS="source <(ID=${ID} OMS_DB_NAME=${OMS_DB_NAME} OMS_DB_USER=${OMS_DB_USE
 
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY="docker exec ${ID} bash /usr/local/bin/docker_provide_var_directory.sh"
 
-
-DOCKER_SETUP_RUN_IOM="docker pull ${DOCKER_REGISTRY_URL}/${DOCKER_IOM_IMAGE} && docker run --name ${ID} -d --link ${ID}_db:postgres -p ${FORWARD_PORT_IOM}:${PORT_IOM} -p ${FORWARD_PORT_WILDFLY}:${PORT_WILDFLY} -p ${FORWARD_PORT_DEBUG}:${PORT_DEBUG} -v ${OMS_ETC_DIR}:/etc/opt/oms.standalone -v ${OMS_VAR_DIR}:/var/opt/oms.standalone/ -v ${OMS_APP_DIR}:/opt/oms.standalone/application --privileged ${DOCKER_REGISTRY_URL}/${DOCKER_IOM_IMAGE} && ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY} && ${DOCKER_SETUP_RECONFIGURE}"
-
+DOCKER_SETUP_RUN_IOM_ENV="export COMPOSE_PROJECT_NAME=${ID} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} OMS_ETC_DIR=${OMS_ETC_DIR} OMS_VAR_DIR=${OMS_VAR_DIR} OMS_SRC_DIR=${OMS_SRC_DIR} OMS_APP_DIR=${OMS_APP_DIR} OMS_DB_NAME=${OMS_DB_NAME} OMS_DB_USER=${OMS_DB_USER} OMS_DB_PASSWORD=${OMS_DB_PASSWORD} OMS_DB_DUMP=${OMS_DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f - up -d"
 
 DOCKER_SETUP_REMOVE_ENV="docker rm -f ${ID} && docker rm -f ${ID}_db && docker rm -f ${ID}_db_data"
 

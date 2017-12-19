@@ -190,18 +190,18 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
         </table>
 
         <h2 id="setup">Setup</h2>
-        <!--h3 id="setup--run-iom-container">Run IOM container</h3>
+        <!--h3 id="setup--run-iom-environment">Run IOM envionment</h3>
 
-        <p>The following creates a new IOM container.</p>
+        <p>The following creates a new IOM environment.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Creates a new IOM container
-# alias ${DOCKER_SETUP_RUN_IOM_ALIAS}="${DOCKER_SETUP_RUN_IOM}"
+# Creates a new IOM environment
+# alias ${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}="${DOCKER_SETUP_RUN_IOM_ENV}"
 
-${DOCKER_SETUP_RUN_IOM_ALIAS}
+${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}
 
 
         </div></code></pre-->
@@ -214,6 +214,11 @@ ${DOCKER_SETUP_RUN_IOM_ALIAS}
 
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
+
+# Creates a new IOM environment
+# alias ${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}="${DOCKER_SETUP_RUN_IOM_ENV}"
+
+${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}
 
 # Initialize the postgres database container
 # alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
