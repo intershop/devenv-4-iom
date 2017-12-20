@@ -116,6 +116,11 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
 
         </div></code></pre>
 
+        <div class="alert alert-warning" role="alert">
+          <strong>Note!</strong>
+          <p>If you would like, you can change other properties (e. g. is.oms.mail.external.from, is.oms.mail.internal.from, ...) according to your needs, too.</p>
+        </div>
+
         <h3 id="configurations--database-connection-properties">Database connection properties</h3>
         <p>Your postgres container '${ID}_db' is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
         <table class="table table-striped table-condensed">
@@ -213,7 +218,6 @@ ${VAGRANT_SSH}
 # alias ${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}="${DOCKER_SETUP_RUN_IOM_ENV}"
 
 ${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}
-
 
         </div></code></pre-->
 

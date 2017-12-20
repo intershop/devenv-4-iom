@@ -425,16 +425,20 @@ EOH
 
 end
 
-
 # print docu files
-printf "\n\n\n\033[31mDocumentation:\n\nYou can find the documentation for your environments at following locations:\033[0m\n\n"
+# should be done for vagrant up/reload
+if ['up', 'reload'].include?(ARGV[0])
 
-environments.each.with_index(1) do |environment , index|
+  printf "\n\n\n\033[31mDocumentation:\n\nYou can find the documentation for your environments at following locations:\033[0m\n\n"
 
-  html_docu = File.join(environment['path'], 'index.html')
+  environments.each.with_index(1) do |environment , index|
 
-  printf "\033[31m * #{environment['id']}\t=>\t#{html_docu}\033[0m\n"
+    html_docu = File.join(environment['path'], 'index.html')
+
+    printf "\033[31m * #{environment['id']}\t=>\t#{html_docu}\033[0m\n"
+
+  end
+
+  printf "\n\n"
 
 end
-
-printf "\n\n"
