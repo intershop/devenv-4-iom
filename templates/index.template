@@ -70,6 +70,18 @@
                 </ul>
               </li>
               <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Docker <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#docker--useful">Useful docker commands</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#troubleshooting--no-space-left">No space left</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="${OMT_URL}" target="_blank">OMT</a></li>
@@ -101,7 +113,6 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
 /system-property=is.oms.db.user: "${OMS_DB_USER}"
 /system-property=is.oms.db.pass: "${OMS_DB_PASSWORD}"
 ...
-
 
         </div></code></pre>
 
@@ -232,7 +243,6 @@ ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
 
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
 
-
         </div></code></pre>
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
@@ -247,7 +257,6 @@ ${VAGRANT_SSH}
 # alias ${DOCKER_SETUP_REMOVE_ENV_ALIAS}="${DOCKER_SETUP_REMOVE_ENV}"
 
 ${DOCKER_SETUP_REMOVE_ENV_ALIAS} --volumes
-
 
         </div></code></pre>
 
@@ -271,7 +280,6 @@ ${VAGRANT_SSH}
 # alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
 
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
-
 
         </div></code></pre>
 
@@ -304,7 +312,6 @@ ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
 # Redeploy bakery.omt only
 ${DOCKER_DEVELOPMENT_REDEPLOY} --pattern=omt
 
-
         </div></code></pre>
 
         <h3 id="development--debugging">Debugging</h3>
@@ -317,7 +324,6 @@ ${DOCKER_DEVELOPMENT_REDEPLOY} --pattern=omt
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 systemctl restart jboss-as-standalone.service
-
 
           </div></code></pre>
         </div>
@@ -334,7 +340,6 @@ ${VAGRANT_SSH}
 
 ${DOCKER_DATABASE_INIT_ALIAS}
 
-
         </div></code></pre>
 
         <h3 id="database--migrate">Migrate the database</h3>
@@ -347,7 +352,6 @@ ${VAGRANT_SSH}
 # alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"
 
 ${DOCKER_DATABASE_MIGRATE_ALIAS}
-
 
         </div></code></pre>
 
@@ -364,7 +368,6 @@ ${VAGRANT_SSH}
 
 ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
 
-
         </div></code></pre>
         <!-- no docker images for this version -->
         <!-- div class="alert alert-warning" role="alert">
@@ -380,14 +383,38 @@ ${VAGRANT_SSH}
 
 ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}
 
-
           </div></code></pre>
         </div-->
 
 
+        <h2 id="docker">Docker</h2>
+        <h3 id="docker--useful">Useful docker commands</h3>
 
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
 
+# Login into the IOM container
+docker exec -it ${ID} bash
 
+# Login into the postrgres database container
+docker exec -it ${ID}_db bash
+
+        </div></code></pre>
+
+        <h2 id="troubleshooting ">Troubleshooting</h2>
+        <h3 id="troubleshooting--no-space-left">No space left</h3>
+
+        <p>If you are using docker for quite a long time, you collect many docker images over the time. So possibly a "no space left" error may occur. In order to clean up your docker images, you can run the followoing command to remove unused images.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Remove unused docker images
+docker rmi $(docker images -q)
+
+        </div></code></pre>
 
 
 

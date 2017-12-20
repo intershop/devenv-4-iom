@@ -88,13 +88,14 @@ Vagrant.configure(2) do |config|
     node.vm.provision "docker"
 
     node.vm.provision "init", type: "shell", run: "always", inline: <<-SHELL
-        # set default timezone
-        timedatectl set-timezone Europe/Berlin
+        {
+          # set default timezone
+          timedatectl set-timezone Europe/Berlin
 
-        # install docker compose
-        curl -L https://github.com/docker/compose/releases/download/1.17.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-        chmod +x /usr/local/bin/docker-compose
-
+          # install docker compose
+          curl -L https://github.com/docker/compose/releases/download/1.17.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+        } &> /dev/null
     SHELL
 
     # The following line terminates all ssh connections. Therefore
@@ -125,7 +126,7 @@ Vagrant.configure(2) do |config|
     node.vm.provision "ipv4_forwarding", type: "shell", run: "always", inline: <<-SHELL
 
       # ensure IPv4 forwarding is enabled
-      sysctl -w net.ipv4.ip_forward=1
+      sysctl -w net.ipv4.ip_forward=1 &> /dev/null
 
       # restart docker daemon
       systemctl restart docker
@@ -423,3 +424,17 @@ EOH
   end
 
 end
+
+
+# print docu files
+printf "\n\n\n\033[31mDocumentation:\n\nYou can find the documentation for your environments at following locations:\033[0m\n\n"
+
+environments.each.with_index(1) do |environment , index|
+
+  html_docu = File.join(environment['path'], 'index.html')
+
+  printf "\033[31m * #{environment['id']}\t=>\t#{html_docu}\033[0m\n"
+
+end
+
+printf "\n\n"
