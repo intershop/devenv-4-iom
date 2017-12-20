@@ -73,8 +73,8 @@ DOCKER_DEVELOPMENT_DEPLOY="docker exec ${ID} bash /usr/local/bin/docker_deploy.s
 DOCKER_DEVELOPMENT_REDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_redeploy.sh"
 
 # Database
-DOCKER_DATABASE_INIT="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${OMS_DB_USER} -d ${OMS_DB_NAME} -f ${OMS_DB_DUMP} ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
-DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${OMS_DB_USER} -p 5432 -d ${OMS_DB_NAME} -n'"
+DOCKER_DATABASE_INIT="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${OMS_DB_USER} -d ${OMS_DB_NAME} -f ${OMS_DB_DUMP} -L /tmp/pg_log ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
+DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${OMS_DB_USER} -p 5432 -d ${OMS_DB_NAME} -L /tmp/pg_log -n'"
 DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 DOCKER_DATABASE_CREATE_DUMP_V_1_1="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf -n dwh |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 
