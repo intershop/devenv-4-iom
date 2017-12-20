@@ -220,8 +220,6 @@ EOT
 
     end
 
-
-
     node.vm.hostname = "iomdev"
 
     node.vm.network :private_network, ip: "10.0.10.0"
@@ -275,6 +273,22 @@ EOT
       end
 
     end
+
+    # print docu files
+    message = ""
+    message << "\nDocumentation:\n\nYou can find the documentation for your environments at following locations:\n\n"
+
+    environments.each.with_index(1) do |environment , index|
+
+      html_docu = File.join(environment['path'], 'index.html')
+
+      message << "* #{environment['id']}\t=>\t#{html_docu}\n"
+
+    end
+
+    message << " "
+
+    node.vm.post_up_message = message
 
   end
 
@@ -422,23 +436,5 @@ EOH
     end
 
   end
-
-end
-
-# print docu files
-# should be done for vagrant up/reload
-if ['up', 'reload'].include?(ARGV[0])
-
-  printf "\n\n\n\033[31mDocumentation:\n\nYou can find the documentation for your environments at following locations:\033[0m\n\n"
-
-  environments.each.with_index(1) do |environment , index|
-
-    html_docu = File.join(environment['path'], 'index.html')
-
-    printf "\033[31m * #{environment['id']}\t=>\t#{html_docu}\033[0m\n"
-
-  end
-
-  printf "\n\n"
 
 end
