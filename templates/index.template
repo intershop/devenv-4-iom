@@ -404,6 +404,9 @@ docker exec -it ${ID} bash
 # Login into the postrgres database container
 docker exec -it ${ID}_db bash
 
+# Inspect the postgres database data volume
+docker volume inspect ${COMPOSE_PROJECT_NAME}_db_data
+
         </div></code></pre>
 
         <h2 id="troubleshooting ">Troubleshooting</h2>
