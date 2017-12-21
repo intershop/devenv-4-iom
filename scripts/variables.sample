@@ -1,4 +1,4 @@
-# required configuration
+### required configuration parameters
 
 # ID is used to create unique names for docker instances
 ID=trunk
@@ -34,3 +34,14 @@ DOCKER_IOM_IMAGE=iom/iom-trunk:2.4.0.0-SNAPSHOT
 
 # docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used)
 DOCKER_DB_IMAGE=postgres:9.5
+
+### optional configuration parameters
+
+# INDEX is used in combination with PORT_OFFSET to auto-generate a port forwarding for all used ports in order to run multiple iom environments in parallel
+# INDEX=0
+
+# PORT_OFFSET is used in combination with INDEX to auto-generate a port forwarding for all used ports in order to run multiple iom environments in parallel
+# PORT_OFFSET=10
+
+# TIMEZONE is used to set the timezone for the iom container and the dockered database (default: Europe/Berlin)
+# TIMEZONE=Europe/Berlin

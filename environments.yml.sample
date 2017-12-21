@@ -1,7 +1,7 @@
 ---
 ### description
 
-### required configuration
+### required configuration parameters
 
 # id: must be a unique identifier
 # path: path to a local folder that should hold configuration and documentation data
@@ -11,7 +11,7 @@
 # oms_src: path to your source folder
 # docker_db_image: docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used).
 
-### optional configuration
+### optional configuration parameters
 
 # timezone: used to set the timezone for the iom container and the dockered database (default: Europe/Berlin)
 # oms_etc: path to your local etc folder - if not set an 'etc' folder will be created within the path folder
