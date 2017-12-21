@@ -1,12 +1,36 @@
-# required variables
-ID=2.4.0.0
-ETC_DIR=~/oms-etc/trunk
-VAR_DIR=~/oms-var/trunk
+# required configuration
+
+# ID is used to create unique names for docker instances
+ID=trunk
+
+# ETC_DIR have to point to the path to your local etc folder (either directly to oms.deployment/etc or to a copy)
+ETC_DIR=~/oms-etc/$ID
+
+# VAR_DIR is used to point to the path where the IOM var folder should be synchronized with
+VAR_DIR=~/oms-var/$ID
+
+# SRC_DIR have to point to the path to your local IOM sources
 SRC_DIR=~/oms-src/trunk
+
+# APP_DIR have to point to the path where the IOM deployment artifacts can be found (for development purposes you can use SRC_DIR)
 APP_DIR=$SRC_DIR
+
+# name of the database (default: oms_db)
 DB_NAME=oms_db
+
+# name of the database user (default: oms_user)
 DB_USER=oms_user
+
+# password of the database user (default: OmsDB)
 DB_PASSWORD=OmsDB
+
+# name of a dump-file residing in $SRC_DIR/postgres/dumps
 DB_DUMP=OmsDB.initial.2.4.0.0.sql.gz
+
+# docker image that should be used for the iom container.
+# Please use https://rnd-docker-dev.test.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk)
+# Use the specific repository url (e.g. https://rnd-docker-dev.test.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images
 DOCKER_IOM_IMAGE=iom/iom-trunk:2.4.0.0-SNAPSHOT
+
+# docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used)
 DOCKER_DB_IMAGE=postgres:9.5

@@ -1,17 +1,17 @@
 ---
 ### description
 
-### required parameters
+### required configuration
 
 # id: must be a unique identifier
 # path: path to a local folder that should hold configuration and documentation data
-# docker_image: docker image that should be used for the container.
+# docker_image: docker image that should be used for the iom container.
 #               Please use https://rnd-docker-dev.test.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
 #               Use the specific repository url (e.g. https://rnd-docker-dev.test.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
 # oms_src: path to your source folder
-# docker_db_image: name of the docker postgres image
+# docker_db_image: docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used).
 
-### optional parameters
+### optional configuration
 
 # timezone: used to set the timezone for the iom container and the dockered database (default: Europe/Berlin)
 # oms_etc: path to your local etc folder - if not set an 'etc' folder will be created within the path folder
@@ -20,7 +20,7 @@
 # oms_db_name: name of the database (default: oms_db)
 # oms_db_user: name of the database user (default: oms_user)
 # oms_db_password: password of the database user (default: OmsDB)
-# oms_dump: name of the database dump (default: latest test data dump)
+# oms_dump: name of the database dump file residing in <oms_src>/postgres/dumps (default: latest test data dump)
 # oms_skip_business_config: indicates if the business config should be skipped (default: false)
 
 - id: trunk
