@@ -181,15 +181,15 @@ Vagrant.configure(2) do |config|
         # export PORT_DB=5432
         # export PORT_WILDFLY=9990
 
-        export OMS_ETC_DIR=#{environment['oms_etc_dir']}
-        export OMS_VAR_DIR=#{environment['oms_var_dir']}
-        export OMS_SRC_DIR=#{environment['oms_app_dir']}
-        export OMS_APP_DIR=#{environment['oms_src_dir']}
+        export ETC_DIR=#{environment['oms_etc_dir']}
+        export VAR_DIR=#{environment['oms_var_dir']}
+        export SRC_DIR=#{environment['oms_src_dir']}
+        export APP_DIR=#{environment['oms_app_dir']}
 
-        export OMS_DB_NAME=#{environment['oms_db_name']}
-        export OMS_DB_USER=#{environment['oms_db_user']}
-        export OMS_DB_PASSWORD=#{environment['oms_db_password']}
-        export OMS_DB_DUMP=#{environment['oms_db_dump']}
+        export DB_NAME=#{environment['oms_db_name']}
+        export DB_USER=#{environment['oms_db_user']}
+        export DB_PASSWORD=#{environment['oms_db_password']}
+        export DB_DUMP=#{environment['oms_db_dump']}
 
         export OMS_SKIP_BUSINESS_CONFIG=#{oms_skip_business_config}
 

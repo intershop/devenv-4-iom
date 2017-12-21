@@ -109,9 +109,9 @@
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ...
 ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
-/system-property=is.oms.db.name: "${OMS_DB_NAME}"
-/system-property=is.oms.db.user: "${OMS_DB_USER}"
-/system-property=is.oms.db.pass: "${OMS_DB_PASSWORD}"
+/system-property=is.oms.db.name: "${DB_NAME}"
+/system-property=is.oms.db.user: "${DB_USER}"
+/system-property=is.oms.db.pass: "${DB_PASSWORD}"
 ...
 
         </div></code></pre>
@@ -145,17 +145,17 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
             <tr>
               <th scope="row">3</th>
               <td>Name</td>
-              <td>${OMS_DB_NAME}</td>
+              <td>${DB_NAME}</td>
             </tr>
             <tr>
               <th scope="row">4</th>
               <td>User</td>
-              <td>${OMS_DB_USER}</td>
+              <td>${DB_USER}</td>
             </tr>
             <tr>
               <th scope="row">5</th>
               <td>Password</td>
-              <td>${OMS_DB_PASSWORD}</td>
+              <td>${DB_PASSWORD}</td>
             </tr>
           </tbody>
         </table>

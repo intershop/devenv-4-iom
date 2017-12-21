@@ -1,12 +1,12 @@
-# variables that are required
+# required variables
 ID=2.4.0.0
-OMS_ETC_DIR=~/oms-etc/trunk
-OMS_VAR_DIR=~/oms-var/trunk
-OMS_SRC_DIR=~/oms-src/trunk
-OMS_APP_DIR=$OMS_SRC_DIR
-OMS_DB_NAME=oms_db
-OMS_DB_USER=oms_user
-OMS_DB_PASSWORD=OmsDB
-OMS_DB_DUMP=OmsDB.initial.2.4.0.0.sql.gz
+ETC_DIR=~/oms-etc/trunk
+VAR_DIR=~/oms-var/trunk
+SRC_DIR=~/oms-src/trunk
+APP_DIR=$SRC_DIR
+DB_NAME=oms_db
+DB_USER=oms_user
+DB_PASSWORD=OmsDB
+DB_DUMP=OmsDB.initial.2.4.0.0.sql.gz
 DOCKER_IOM_IMAGE=iom/iom-trunk:2.4.0.0-SNAPSHOT
 DOCKER_DB_IMAGE=postgres:9.5
