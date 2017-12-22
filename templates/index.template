@@ -301,7 +301,7 @@ ${VAGRANT_SSH}
 ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
 
 # Undeploy bakery.omt only
-${DOCKER_DEVELOPMENT_UNDEPLOY} --pattern=omt
+${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS} --pattern=omt
 
 # Deploy all artifacts
 # alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"
@@ -314,7 +314,7 @@ ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}
 ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
 
 # Redeploy bakery.omt only
-${DOCKER_DEVELOPMENT_REDEPLOY} --pattern=omt
+${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
 
         </div></code></pre>
 
