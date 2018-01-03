@@ -176,10 +176,6 @@ Vagrant.configure(2) do |config|
         export TIMEZONE=#{environment['timezone']}
 
         export PORT_OFFSET=#{PORT_OFFSET}
-        # export PORT_IOM=8080
-        # export PORT_DEBUG=8787
-        # export PORT_DB=5432
-        # export PORT_WILDFLY=9990
 
         export ETC_DIR=#{environment['oms_etc_dir']}
         export VAR_DIR=#{environment['oms_var_dir']}
@@ -192,6 +188,8 @@ Vagrant.configure(2) do |config|
         export DB_DUMP=#{environment['oms_db_dump']}
 
         export OMS_SKIP_BUSINESS_CONFIG=#{oms_skip_business_config}
+
+        export DOCKER_DB_IMAGE=#{environment['docker_db_image']}
 
         #{export_docker_registry_host}
         #{export_docker_iom_image}
