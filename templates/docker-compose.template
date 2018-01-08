@@ -13,7 +13,6 @@ services:
       - ${SRC_DIR}:/tmp/src
       - db_data:/var/lib/postgresql/data
     ports:
-      # TODO dynmic port
       - ${FORWARD_PORT_DB}:5432
   iom:
     privileged: true
@@ -27,7 +26,6 @@ services:
       # TODO else case needed for later RELEASE images
       #- ${VAR_DIR}/log:/var/opt/oms.standalone/log
     ports:
-      # TODO dynmic port
       - ${FORWARD_PORT_IOM}:8080
       - ${FORWARD_PORT_WILDFLY}:9990
       - ${FORWARD_PORT_DEBUG}:8787
