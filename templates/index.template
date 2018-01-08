@@ -67,6 +67,7 @@
                   <li><a href="#database--init">(Re)Initialization of the database</a></li>
                   <li><a href="#database--migrate">Migrate the database</a></li>
                   <li><a href="#database--create-dump">Create database dump</a></li>
+                  <li><a href="#database--open-psql-terminal">Open psql terminal</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -373,6 +374,25 @@ ${VAGRANT_SSH}
 ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
 
         </div></code></pre>
+
+        <h3 id="database--open-psql-terminal">Open psql terminal</h3>
+
+        <p>Following command opens a psql terminal.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+${VAGRANT_SSH}
+
+# Connect to the IOM db container via psql
+# alias ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}="${DOCKER_DATABASE_OPEN_PSQL_TERMINAL}"
+
+${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
+
+# Enter the password for user ${DB_USER}: ${DB_PASSWORD}
+
+        </div></code></pre>
+
+
         <!-- no docker images for this version -->
         <!-- div class="alert alert-warning" role="alert">
           <strong>Note!</strong>

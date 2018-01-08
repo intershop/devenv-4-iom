@@ -26,7 +26,7 @@ DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom/iom-trunk:2.4.0.0-SNAPSHOT}"
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
 DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")
 
-COMPOSE_PROJECT_NAME=$(echo $ID | sed "s/[^A-Za-z0-9]*//g")
+COMPOSE_PROJECT_NAME=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | sed "s/./\L&/g")
 
 ### Dynamic variables
 
@@ -53,6 +53,7 @@ DOCKER_DATABASE_INIT_ALIAS=docker_${ID}_database_init
 DOCKER_DATABASE_MIGRATE_ALIAS=docker_${ID}_database_migrate
 DOCKER_DATABASE_CREATE_DUMP_ALIAS=docker_${ID}_database_create_dump
 DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS=docker_${ID}_database_create_dump_v_1_1
+DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS=docker_${ID}_database_open_psql_terminal
 
 ### Commands
 
@@ -79,6 +80,7 @@ DOCKER_DATABASE_INIT="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps &
 DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${DB_USER} -p 5432 -d ${DB_NAME} -L /tmp/pg_log -n'"
 DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 DOCKER_DATABASE_CREATE_DUMP_V_1_1="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf -n dwh |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
+DOCKER_DATABASE_OPEN_PSQL_TERMINAL="docker run --network=${COMPOSE_PROJECT_NAME}_default -it --rm --link ${ID}_db:postgres ${DOCKER_DB_IMAGE} psql -h postgres -U ${DB_USER} -d ${DB_NAME}"
 
 ### Versioning
 
