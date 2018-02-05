@@ -421,7 +421,7 @@ ${VAGRANT_SSH}
 # Login into the IOM container
 docker exec -it ${ID} bash
 
-# Login into the postrgres database container
+# Login into the Postgres database container
 docker exec -it ${ID}_db bash
 
 # Inspect the postgres database data volume
