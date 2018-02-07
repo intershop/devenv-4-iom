@@ -1,6 +1,6 @@
 version: '3'
 services:
-  db:
+  ${DOCKER_COMPOSE_DB_SERVICE_NAME}:
     image: "${DOCKER_DB_IMAGE}"
     container_name: "${ID}_db"
     command: postgres -c log_directory=/tmp/pg_log -c logging_collector=on -c log_destination=stderr,csvlog -c log_filename=pg-VM-%Y%m%d_%H%M.log -c log_rotation_age=1h -c log_min_duration_statement=200 -c max_prepared_transactions=100 -c timezone=${TIMEZONE}
@@ -14,7 +14,7 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - ${FORWARD_PORT_DB}:5432
-  iom:
+  ${DOCKER_COMPOSE_IOM_SERVICE_NAME}:
     privileged: true
     image: "${DOCKER_REGISTRY_HOST}/${DOCKER_IOM_IMAGE}"
     container_name: "${ID}"
