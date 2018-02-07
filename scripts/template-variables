@@ -1,6 +1,11 @@
-### Defaults
+################################################################################
+# Defaults
+#
+# The following section defines useful defaults for all variables that could be
+# used with the template_engine.sh script.
+################################################################################
 
-# used for calculation of automatic port forwarding in vagrant environments
+# used for calculation of automatic port forwarding
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
@@ -28,20 +33,18 @@ DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0
 
 COMPOSE_PROJECT_NAME=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | sed "s/./\L&/g")
 
-### Dynamic variables
+################################################################################
+# Aliases
+#
+# The following section defines the aliases.
+################################################################################
 
-FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_DEBUG=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_DB=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
-
-### Alias
+# docker-compose
+DOCKER_COMPOSE_BASE_COMMAND_ALIAS=docker_compose_${ID}
 
 # Setup
-DOCKER_SETUP_RUN_IOM_ENV_ALIAS=docker_${ID}_setup_run_iom_env
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS=docker_${ID}_setup_provide_var_directory
 DOCKER_SETUP_RECONFIGURE_ALIAS=docker_${ID}_setup_reconfigure
-DOCKER_SETUP_REMOVE_ENV_ALIAS=docker_${ID}_setup_remove_env
 
 # Development
 DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS=docker_${ID}_development_undeploy
@@ -52,10 +55,24 @@ DOCKER_DEVELOPMENT_REDEPLOY_ALIAS=docker_${ID}_development_redeploy
 DOCKER_DATABASE_INIT_ALIAS=docker_${ID}_database_init
 DOCKER_DATABASE_MIGRATE_ALIAS=docker_${ID}_database_migrate
 DOCKER_DATABASE_CREATE_DUMP_ALIAS=docker_${ID}_database_create_dump
-DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS=docker_${ID}_database_create_dump_v_1_1
 DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS=docker_${ID}_database_open_psql_terminal
 
-### Commands
+################################################################################
+# Non-versioned commands and variables
+#
+# The following section defines general commands and variables.
+################################################################################
+
+# docker compose
+DOCKER_COMPOSE_DB_SERVICE_NAME="db"
+DOCKER_COMPOSE_IOM_SERVICE_NAME="iom"
+DOCKER_COMPOSE_BASE_COMMAND="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f -"
+
+# port forwarding
+FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
+FORWARD_PORT_DEBUG=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
+FORWARD_PORT_DB=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
+FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
 
 VAGRANT_SSH="${VAGRANT_SSH:-}"
 SET_ALIAS="source <(ID=${ID} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/alias.template)"
@@ -63,12 +80,6 @@ SET_ALIAS="source <(ID=${ID} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=$
 # Setup
 
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY="docker exec ${ID} bash /usr/local/bin/docker_provide_var_directory.sh"
-
-DOCKER_SETUP_RUN_IOM_ENV="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f - up -d"
-
-#DOCKER_SETUP_REMOVE_ENV="docker rm -f ${ID} && docker rm -f ${ID}_db && docker rm -f ${ID}_db_data"
-
-DOCKER_SETUP_REMOVE_ENV="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f - down"
 
 # Development
 DOCKER_DEVELOPMENT_UNDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_undeploy.sh"
@@ -79,10 +90,14 @@ DOCKER_DEVELOPMENT_REDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_redepl
 DOCKER_DATABASE_INIT="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${DB_USER} -d ${DB_NAME} -f ${DB_DUMP} -L /tmp/pg_log ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
 DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${DB_USER} -p 5432 -d ${DB_NAME} -L /tmp/pg_log -n'"
 DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
-DOCKER_DATABASE_CREATE_DUMP_V_1_1="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf -n dwh |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 DOCKER_DATABASE_OPEN_PSQL_TERMINAL="docker run --network=${COMPOSE_PROJECT_NAME}_default -it --rm --link ${ID}_db:postgres ${DOCKER_DB_IMAGE} psql -h postgres -U ${DB_USER} -d ${DB_NAME}"
 
-### Versioning
+################################################################################
+# Versioned commands and variables
+#
+# The following section defines commands and variables that could only be
+# defined in a context of a specific version of a docker image.
+################################################################################
 
 # IOM-7111
 # IOM-7183
@@ -95,9 +110,7 @@ then
   DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
 
   # IOM-7183
-  DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="# Make the fully orchestrated OMS_VAR directory accessible
-# alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"
-
+  DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="# Make the fully orchestrated OMS_VAR directory accessible<span class=\"collapse setup--initialize-reconfigure-aliases\"># alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"</span>
 ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}"
 
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS_PASSAGE="alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\""
