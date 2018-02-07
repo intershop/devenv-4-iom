@@ -239,7 +239,7 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         <p>In order to remove all IOM containers you can use following script.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup----remove-environment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--remove-environment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
 # Remove the entire IOM environment and the data volume used by the postgres container<span class="collapse setup--remove-environment-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
