@@ -20,6 +20,10 @@
         margin-top: 50px;
       }
 
+      .alias-toggle {
+        padding: 2px 3px;
+      }
+
     </style>
 
   </head>
@@ -73,7 +77,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Docker <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#docker--useful">Useful docker commands</a></li>
+                  <li><a href="#docker--useful">Useful docker / docker compose commands</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -114,7 +118,6 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
 /system-property=is.oms.db.user: "${DB_USER}"
 /system-property=is.oms.db.pass: "${DB_PASSWORD}"
 ...
-
         </div></code></pre>
 
         <div class="alert alert-warning" role="alert">
@@ -207,47 +210,28 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
         </table>
 
         <h2 id="setup">Setup</h2>
-        <!--h3 id="setup--run-iom-environment">Run IOM envionment</h3>
-
-        <p>The following creates a new IOM environment.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-${VAGRANT_SSH}
-
-# Creates a new IOM environment
-# alias ${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}="${DOCKER_SETUP_RUN_IOM_ENV}"
-
-${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}
-
-        </div></code></pre-->
 
         <h3 id="setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</h3>
 
         <p>In order to use your configurations, the postgres database container have to be initialized and the IOM container have to be reconfigured. Please use following script. For further information, please see the following <a href="https://confluence.intershop.de/display/ISEXTBAKER/Concept+-+Usage+of+Docker+images" target="_blank">documentation</a>.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--initialize-reconfigure-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Creates a new IOM environment
-# alias ${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}="${DOCKER_SETUP_RUN_IOM_ENV}"
+# Refresh all docker images of the environment (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} pull
 
-${DOCKER_SETUP_RUN_IOM_ENV_ALIAS}
+# Creates a new IOM environment<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up -d
 
-# Initialize the postgres database container
-# alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
-
+# Initialize the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
 ${DOCKER_DATABASE_INIT_ALIAS}
 
 ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
 
-# Reconfigure the IOM container
-# alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
-
+# Reconfigure the IOM container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
-
         </div></code></pre>
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
@@ -255,14 +239,11 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         <p>In order to remove all IOM containers you can use following script.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup----remove-environment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Remove the entire IOM environment and the data volume used by the postgres container
-# alias ${DOCKER_SETUP_REMOVE_ENV_ALIAS}="${DOCKER_SETUP_REMOVE_ENV}"
-
-${DOCKER_SETUP_REMOVE_ENV_ALIAS} --volumes
-
+# Remove the entire IOM environment and the data volume used by the postgres container<span class="collapse setup--remove-environment-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} down --volumes
         </div></code></pre>
 
         <div class="alert alert-warning" role="alert">
@@ -278,14 +259,11 @@ ${DOCKER_SETUP_REMOVE_ENV_ALIAS} --volumes
         <p>Configuration changes (e. g. cluster.properties) can be made with following docker command.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".development--reconfiguration-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Reconfigure the IOM container
-# alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"
-
+# Reconfigure the IOM container<span class="collapse development--reconfiguration-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
-
         </div></code></pre>
 
         <h3 id="development--deployment">Deployment</h3>
@@ -293,30 +271,23 @@ ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         <p>A deployment resp. un- or redeployment of IOM artifacts can be done with following docker commands.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".development--deployment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Undeploy all artifacts
-# alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"
-
+# Undeploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"</span>
 ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
 
 # Undeploy bakery.omt only
 ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS} --pattern=omt
 
-# Deploy all artifacts
-# alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"
-
+# Deploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"</span>
 ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}
 
-# Redeploy all artifacts
-# alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"
-
+# Redeploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"</span>
 ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
 
 # Redeploy bakery.omt only
 ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
-
         </div></code></pre>
 
         <h3 id="development--debugging">Debugging</h3>
@@ -329,7 +300,6 @@ ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 systemctl restart jboss-as-standalone.service
-
           </div></code></pre>
         </div>
 
@@ -337,27 +307,21 @@ systemctl restart jboss-as-standalone.service
         <h3 id="database--init">(Re)Initialization of the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--init-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Initialize the postgres database container
-# alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"
-
+# Initialize the postgres database container<span class="collapse database--init-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
 ${DOCKER_DATABASE_INIT_ALIAS}
-
         </div></code></pre>
 
         <h3 id="database--migrate">Migrate the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--migrate-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Migrate the database in the postgres database container
-# alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"
-
+# Migrate the database in the postgres database container<span class="collapse database--migrate-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
 ${DOCKER_DATABASE_MIGRATE_ALIAS}
-
         </div></code></pre>
 
         <h3 id="database--create-dump">Create database dump</h3>
@@ -365,14 +329,11 @@ ${DOCKER_DATABASE_MIGRATE_ALIAS}
         <p>Sometimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--create-dump-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Create a timestamped datbase dump in your local postgres/dumps directory
-# alias ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP}"
-
+# Create a timestamped datbase dump in your local postgres/dumps directory<span class="collapse database--create-dump-aliases"># alias ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP}"</span>
 ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
-
         </div></code></pre>
 
         <h3 id="database--open-psql-terminal">Open psql terminal</h3>
@@ -380,42 +341,21 @@ ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
         <p>Following command opens a psql terminal.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--open-psql-terminal-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Connect to the IOM db container via psql
-# alias ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}="${DOCKER_DATABASE_OPEN_PSQL_TERMINAL}"
-
+# Connect to the IOM db container via psql<span class="collapse database--open-psql-terminal-aliases"># alias ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}="${DOCKER_DATABASE_OPEN_PSQL_TERMINAL}"</span>
 ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
 
 # Enter the password for user ${DB_USER}: ${DB_PASSWORD}
-
         </div></code></pre>
 
 
-        <!-- no docker images for this version -->
-        <!-- div class="alert alert-warning" role="alert">
-          <strong>Note!</strong>
-          <p>Up to (and including) version 1.1 the following command shoud be used!</p><br>
-
-          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-${VAGRANT_SSH}
-
-# Create a timestamped datbase dump in your local postgres/dumps directory
-# alias ${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP_V_1_1}"
-
-${DOCKER_DATABASE_CREATE_DUMP_V_1_1_ALIAS}
-
-          </div></code></pre>
-        </div-->
-
-
-        <h2 id="docker">Docker</h2>
+        <h2 id="docker">Docker / Docker Compose</h2>
         <h3 id="docker--useful">Useful docker commands</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".docker--useful-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
 # Login into the IOM container
@@ -427,6 +367,14 @@ docker exec -it ${ID}_db bash
 # Inspect the postgres database data volume
 docker volume inspect ${COMPOSE_PROJECT_NAME}_db_data
 
+# Get help on docker compose commands<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} help
+
+# List containers<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} ps
+
+# View the docker compose config<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} config
         </div></code></pre>
 
         <h2 id="troubleshooting ">Troubleshooting</h2>
@@ -440,7 +388,6 @@ ${VAGRANT_SSH}
 
 # Remove unused docker images
 docker rmi $(docker images -q)
-
         </div></code></pre>
 
 
@@ -453,6 +400,35 @@ docker rmi $(docker images -q)
       <!-- Placed at the end of the document so the pages load faster -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
       <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+
+      <script>
+
+          // toogle icon and title
+          function toggleAliasButton(e) {
+
+              var icon = $(e.target);
+              var button = icon.parent();
+
+              // if the button was clicked instead of the icon
+              if($(e.target).children('i').length) {
+                  button = $(e.target);
+                  icon = button.find('i');
+              }
+
+              icon.toggleClass('fa-plus');
+              icon.toggleClass('fa-minus');
+
+              var title = 'Show aliases';
+
+              if( icon.hasClass('fa-minus')){
+                 title = 'Hide aliases';
+              }
+
+              button.attr('title', title);
+          }
+          $('.alias-toggle').on('click', toggleAliasButton);
+
+      </script>
 
       <!-- Latest compiled and minified JavaScript -->
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
