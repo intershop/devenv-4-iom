@@ -14,6 +14,8 @@ gradlew text eol=lf
 /scripts/template-variables text eol=lf
 /scripts/variables.sample text eol=lf
 
+/templates/alias.template text eol=lf
+
 # always windows
 *.bat text eol=crlf
 *.cmd text eol=crlf
