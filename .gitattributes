@@ -20,3 +20,6 @@ gradlew text eol=lf
 *.png binary
 *.jpg binary
 *.ico binary
+
+/scripts/template-variables text eol=lf
+/scripts/variables.sample text eol=lf
