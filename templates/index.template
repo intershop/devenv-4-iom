@@ -223,7 +223,7 @@ ${VAGRANT_SSH}
 ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} pull
 
 # Creates a new IOM environment<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up -d
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up --build -d
 
 # Initialize the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
 ${DOCKER_DATABASE_INIT_ALIAS}
