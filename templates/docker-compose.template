@@ -1,14 +1,20 @@
 version: '3'
 services:
   ${DOCKER_COMPOSE_DB_SERVICE_NAME}:
-    image: "${DOCKER_DB_IMAGE}"
-    container_name: "${ID}_db"
-    command: postgres -c log_directory=/tmp/pg_log -c logging_collector=on -c log_destination=stderr,csvlog -c log_filename=pg-VM-%Y%m%d_%H%M.log -c log_rotation_age=1h -c log_min_duration_statement=200 -c max_prepared_transactions=100 -c timezone=${TIMEZONE}
-    environment:
-      POSTGRES_DB: "${DB_NAME}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-    volumes:
+  image: "${DOCKER_DB_IMAGE}${DOCKER_COMPOSE_IMAGE_SUFFIX}"
+  build:
+    context: "${UNIX_PROJECT_PATH}/docker/postgres"
+    args:
+      DOCKER_DB_IMAGE: "${DOCKER_DB_IMAGE}"
+  container_name: "${ID}_postgres"
+  command: postgres -c log_directory=/tmp/pg_log -c logging_collector=on -c log_destination=stderr,csvlog -c log_filename=pg-VM-%Y%m%d_%H%M.log -c log_rotation_age=1h -c log_min_duration_statement=200 -c max_prepared_transactions=100 -c timezone=${TIMEZONE}
+  environment:
+    PG_DATABASE: "${DB_NAME}"
+    PG_USER: "${DB_USER}"
+    PG_USER_PASSWD: "${DB_PASSWORD}"
+    PG_OPTIONS: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
+    PG_DUMP_FILE: "/tmp/src/postgres/dumps/${DB_DUMP}"
+  volumes:
       - ${VAR_DIR}/log:/tmp/pg_log
       - ${SRC_DIR}:/tmp/src
       - db_data:/var/lib/postgresql/data
