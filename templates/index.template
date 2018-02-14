@@ -228,6 +228,9 @@ ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up --build -d
 # Initialize the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
 ${DOCKER_DATABASE_INIT_ALIAS}
 
+# Initialize, migrate and configure the postgres database<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}="${DOCKER_DATABASE_INIT_MIGRATE_CONFIG}"</span>
+${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}
+
 ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
 
 # Reconfigure the IOM container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
