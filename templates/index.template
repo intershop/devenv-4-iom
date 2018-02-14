@@ -68,7 +68,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#database--init">(Re)Initialization of the database</a></li>
+                  <li><a href="#database--init">Initialization of the database</a></li>
                   <li><a href="#database--migrate">Migrate the database</a></li>
                   <li><a href="#database--create-dump">Create database dump</a></li>
                   <li><a href="#database--open-psql-terminal">Open psql terminal</a></li>
@@ -304,7 +304,7 @@ systemctl restart jboss-as-standalone.service
         </div>
 
         <h2 id="database">Database</h2>
-        <h3 id="database--init">(Re)Initialization of the database</h3>
+        <h3 id="database--init">Initialization of the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--init-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
