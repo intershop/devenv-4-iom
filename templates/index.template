@@ -220,7 +220,7 @@ cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float
 ${VAGRANT_SSH}
 
 # Refresh all docker images of the environment (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} pull
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} pull ${DOCKER_COMPOSE_IOM_SERVICE_NAME}
 
 # Creates a new IOM environment<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
 ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up --build -d
