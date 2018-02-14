@@ -52,8 +52,9 @@ DOCKER_DEVELOPMENT_DEPLOY_ALIAS=docker_${ID}_development_deploy
 DOCKER_DEVELOPMENT_REDEPLOY_ALIAS=docker_${ID}_development_redeploy
 
 # Database
-DOCKER_DATABASE_INIT_ALIAS=docker_${ID}_database_init
+DOCKER_DATABASE_INIT_ALIAS=${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}_database_init
 DOCKER_DATABASE_MIGRATE_ALIAS=docker_${ID}_database_migrate
+DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS=docker_${ID}_database_init_migrate_config
 DOCKER_DATABASE_CREATE_DUMP_ALIAS=docker_${ID}_database_create_dump
 DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS=docker_${ID}_database_open_psql_terminal
 
@@ -89,7 +90,8 @@ DOCKER_DEVELOPMENT_DEPLOY="docker exec ${ID} bash /usr/local/bin/docker_deploy.s
 DOCKER_DEVELOPMENT_REDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_redeploy.sh"
 
 # Database
-DOCKER_DATABASE_INIT="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${DB_USER} -d ${DB_NAME} -f ${DB_DUMP} -L /tmp/pg_log ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
+DOCKER_DATABASE_INIT="${DOCKER_COMPOSE_BASE_COMMAND} exec -T ${DOCKER_COMPOSE_DB_SERVICE_NAME} bash /usr/local/bin/dbinit.sh"
+DOCKER_DATABASE_INIT_MIGRATE_CONFIG="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${DB_USER} -d ${DB_NAME} -f ${DB_DUMP} -L /tmp/pg_log ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
 DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${DB_USER} -p 5432 -d ${DB_NAME} -L /tmp/pg_log -n'"
 DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 DOCKER_DATABASE_OPEN_PSQL_TERMINAL="docker run --network=${COMPOSE_PROJECT_NAME}_default -it --rm --link ${ID}_db:postgres ${DOCKER_DB_IMAGE} psql -h postgres -U ${DB_USER} -d ${DB_NAME}"
