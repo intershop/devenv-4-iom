@@ -62,6 +62,7 @@ environments.each.with_index(1) do |environment , index|
   environment['oms_var_dir'] = "/tmp/#{environment['id']}/var"
   environment['oms_app_dir'] = "/tmp/#{environment['id']}/app"
   environment['oms_src_dir'] = "/tmp/#{environment['id']}/src"
+  environment['oms_log_dir'] = "/tmp/#{environment['id']}/log"
 
   docker_image_version = environment['docker_image'][/\d+\.\d+\.\d+\.\d+/x]
   environment['docker_image_version'] = docker_image_version
@@ -249,11 +250,11 @@ EOT
     environments.each.with_index(1) do |environment , index|
 
       # configure the project path
-      node.vm.synced_folder "#{environment['path']}", "/tmp/#{environment['id']}"
+      node.vm.synced_folder "#{environment['path']}", "/tmp/#{environment['id']}", create: true
 
       # configure the etc path
       if environment['oms_etc']
-        node.vm.synced_folder "#{environment['oms_etc']}", "#{environment['oms_etc_dir']}"
+        node.vm.synced_folder "#{environment['oms_etc']}", "#{environment['oms_etc_dir']}", create: true
       else
         node.vm.synced_folder File.join("#{environment['path']}", "etc"), "#{environment['oms_etc_dir']}", create: true
       end
@@ -269,6 +270,13 @@ EOT
       # configure the src path
       if environment['oms_src']
         node.vm.synced_folder "#{environment['oms_src']}", "#{environment['oms_src_dir']}"
+      end
+
+      # configure the log path
+      if environment['oms_log']
+        node.vm.synced_folder "#{environment['oms_log']}", "#{environment['oms_log_dir']}", create: true
+      else
+        node.vm.synced_folder File.join("#{environment['path']}", "log"), "#{environment['oms_log_dir']}", create: true
       end
 
     end
