@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
     volumes:
-      - ${VAR_DIR}/log:/tmp/pg_log
       - ${SRC_DIR}:/tmp/src
+      - ${LOG_DIR}:/tmp/pg_log
       - db_data:/var/lib/postgresql/data
     ports:
       - ${FORWARD_PORT_DB}:5432
@@ -21,6 +21,7 @@ services:
     volumes:
       - ${ETC_DIR}:/etc/opt/oms.standalone
       - ${APP_DIR}:/opt/oms.standalone/application
+      - ${LOG_DIR}:/var/opt/iom_standalone_log
       # >= 2.1.11.0, 2.2.3.0, 2.3.0.0
       - ${VAR_DIR}:/var/opt/oms.standalone
       # TODO else case needed for later RELEASE images
