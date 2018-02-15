@@ -181,6 +181,7 @@ Vagrant.configure(2) do |config|
         export VAR_DIR=#{environment['oms_var_dir']}
         export SRC_DIR=#{environment['oms_src_dir']}
         export APP_DIR=#{environment['oms_app_dir']}
+        export LOG_DIR=#{environment['oms_log_dir']}
 
         export DB_NAME=#{environment['oms_db_name']}
         export DB_USER=#{environment['oms_db_user']}
