@@ -15,6 +15,9 @@ SRC_DIR=~/oms-src/trunk
 # APP_DIR have to point to the path where the IOM deployment artifacts can be found (for development purposes you can use SRC_DIR)
 APP_DIR=$SRC_DIR
 
+# LOG_DIR have to point to the path where the log files should be stored
+LOG_DIR=~/oms-log/$ID
+
 # name of the database (default: oms_db)
 DB_NAME=oms_db
 
