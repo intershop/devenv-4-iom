@@ -11,9 +11,15 @@
 # always linux
 gradlew text eol=lf
 *.sh text eol=lf
+
+# docker
+Dockerfile text eol=lf
+
+# scripts
 /scripts/template-variables text eol=lf
 /scripts/variables.sample text eol=lf
 
+# templates
 /templates/alias.template text eol=lf
 
 # always windows
