@@ -15,9 +15,9 @@ services:
       PG_OPTIONS: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
       PG_DUMP_FILE: "/tmp/src/postgres/dumps/${DB_DUMP}"
     volumes:
-        - ${VAR_DIR}/log:/tmp/pg_log
-        - ${SRC_DIR}:/tmp/src
-        - db_data:/var/lib/postgresql/data
+      - ${SRC_DIR}:/tmp/src
+      - ${LOG_DIR}:/tmp/pg_log
+      - db_data:/var/lib/postgresql/data
     ports:
       - ${FORWARD_PORT_DB}:5432
   ${DOCKER_COMPOSE_IOM_SERVICE_NAME}:
@@ -27,6 +27,7 @@ services:
     volumes:
       - ${ETC_DIR}:/etc/opt/oms.standalone
       - ${APP_DIR}:/opt/oms.standalone/application
+      - ${LOG_DIR}:/var/opt/iom_standalone_log
       # >= 2.1.11.0, 2.2.3.0, 2.3.0.0
       - ${VAR_DIR}:/var/opt/oms.standalone
       # TODO else case needed for later RELEASE images
