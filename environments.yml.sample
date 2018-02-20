@@ -6,17 +6,25 @@
 # id: must be a unique identifier
 # path: path to a local folder that should hold configuration and documentation data
 # docker_image: docker image that should be used for the iom container.
-#               Please use https://rnd-docker-dev.test.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
-#               Use the specific repository url (e.g. https://rnd-docker-dev.test.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
-# oms_src: path to your source folder
+#     Please use https://rnd-docker-dev.test.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
+#     Use the specific repository url (e.g. https://rnd-docker-dev.test.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
+# oms_src: have to point to the path to the IOM sources
+#     For IOM product development purposes the checked out source folder should be used.
+#     For IOM partner development purposes the extracted IOM release package folder should be used.
 # docker_db_image: docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used).
 
 ### optional configuration parameters
 
 # timezone: used to set the timezone for the iom container and the dockered database (default: Europe/Berlin)
-# oms_etc: path to your local etc folder - if not set an 'etc' folder will be created within the path folder
-# oms_log: path to your local log folder - if not set a 'log' folder will be created within the path folder
-# oms_app: path to your local application
+# oms_etc: have to point to the path to an etc folder
+#     For IOM product development purposes the oms.deployment/etc folder or to a copy should be used.
+#     For IOM partner development purposes the "etc" folder in the extracted IOM release package should be used.
+#     If not set an 'etc' folder will be created within the path folder
+# oms_log: have to point to the path where the log files should be stored.
+#     If not set a 'log' folder will be created within the path folder
+# oms_app: have to point to the path where the IOM deployment artifacts can be found.
+#     For IOM product development purposes the same path like oms_src should be used.
+#     For IOM partner development purposes the "application" folder in the extracted IOM release package should be used.
 # oms_db_name: name of the database (default: oms_db)
 # oms_db_user: name of the database user (default: oms_user)
 # oms_db_password: password of the database user (default: OmsDB)

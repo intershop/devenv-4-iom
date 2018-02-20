@@ -3,16 +3,22 @@
 # ID is used to create unique names for docker instances
 ID=trunk
 
-# ETC_DIR have to point to the path to your local etc folder (either directly to oms.deployment/etc or to a copy)
+# ETC_DIR have to point to the path to an etc folder
+# For IOM product development purposes the oms.deployment/etc folder or to a copy should be used.
+# For IOM partner development purposes the "etc" folder in the extracted IOM release package should be used.
 ETC_DIR=~/oms-etc/$ID
 
 # VAR_DIR is used to point to the path where the IOM var folder should be synchronized with
 VAR_DIR=~/oms-var/$ID
 
-# SRC_DIR have to point to the path to your local IOM sources
+# SRC_DIR have to point to the path to the IOM sources
+# For IOM product development purposes the checked out source folder should be used.
+# For IOM partner development purposes the extracted IOM release package folder should be used.
 SRC_DIR=~/oms-src/trunk
 
-# APP_DIR have to point to the path where the IOM deployment artifacts can be found (for development purposes you can use SRC_DIR)
+# APP_DIR have to point to the path where the IOM deployment artifacts can be found.
+# For IOM product development purposes the same path like SRC_DIR should be used.
+# For IOM partner development purposes the "application" folder in the extracted IOM release package should be used.
 APP_DIR=$SRC_DIR
 
 # LOG_DIR have to point to the path where the log files should be stored
