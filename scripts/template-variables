@@ -9,8 +9,10 @@
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
+# paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+DATABASE_MIGRATE_PATH=$(echo $(find ${SRC_DIR} -name "dbmigrate.sh") | sed "s|${SRC_DIR}|/tmp/src|g")
 
 OMS_SKIP_BUSINESS_CONFIG="${OMS_SKIP_BUSINESS_CONFIG:--sb}"
 
