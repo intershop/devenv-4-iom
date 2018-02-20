@@ -229,6 +229,9 @@ ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up --build -d
 # Initialize the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
 ${DOCKER_DATABASE_INIT_ALIAS}
 
+# Migrate the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
+${DOCKER_DATABASE_MIGRATE_ALIAS}
+
 # Initialize, migrate and configure the postgres database<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}="${DOCKER_DATABASE_INIT_MIGRATE_CONFIG}"</span>
 ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}
 
@@ -339,7 +342,7 @@ ${DOCKER_DATABASE_INIT_ALIAS}
 cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--migrate-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
-# Migrate the database in the postgres database container<span class="collapse database--migrate-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
+# Migrate the postgres database container<span class="collapse database--migrate-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
 ${DOCKER_DATABASE_MIGRATE_ALIAS}
         </div></code></pre>
 
