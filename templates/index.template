@@ -69,9 +69,9 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#database--init">Initialization of the database</a></li>
+                  <li><a href="#database--init">Initialize the database</a></li>
                   <li><a href="#database--migrate">Migrate the database</a></li>
-                  <li><a href="#database--create-dump">Create database dump</a></li>
+                  <li><a href="#database--create-dump">Create a database dump</a></li>
                   <li><a href="#database--open-psql-terminal">Open psql terminal</a></li>
                 </ul>
               </li>
@@ -323,7 +323,7 @@ systemctl restart jboss-as-standalone.service
         </div>
 
         <h2 id="database">Database</h2>
-        <h3 id="database--init">Initialization of the database</h3>
+        <h3 id="database--init">Initialize the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--init-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
@@ -343,7 +343,7 @@ ${VAGRANT_SSH}
 ${DOCKER_DATABASE_MIGRATE_ALIAS}
         </div></code></pre>
 
-        <h3 id="database--create-dump">Create database dump</h3>
+        <h3 id="database--create-dump">Create a database dump</h3>
 
         <p>Sometimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
 
