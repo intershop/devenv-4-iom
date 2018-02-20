@@ -55,6 +55,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="#setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</a></li>
                   <li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
+                  <li><a href="#setup--remove-database">Remove the postgres database container</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -253,6 +254,21 @@ ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} down --volumes
           <strong>Note!</strong>
           <p>If you would like to keep the state of the database you must not remove the data volume. You just have to remove the --volumes parameter to keep the data volume. If you restart the environment the postgres database container (${ID}_db) it will automatically reuse the data volume and all data is available again.</p>
         </div>
+
+        <h3 id="setup--remove-database">Remove the postgres database container</h3>
+
+        <p>In order to only remove the postgres database containers you can use following script.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--remove-database-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
+${VAGRANT_SSH}
+
+# Stop and remove the postgres database container<span class="collapse setup--remove-database-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
+${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} rm -fs ${DOCKER_COMPOSE_DB_SERVICE_NAME}
+
+# Remove the data volume used by the postgres container
+docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
+        </div></code></pre>
 
 
         <h2 id="development">Development process</h2>
