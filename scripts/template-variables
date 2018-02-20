@@ -9,8 +9,10 @@
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
+# paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+DATABASE_MIGRATE_PATH=$(echo $(find ${SRC_DIR} -name "dbmigrate.sh") | sed "s|${SRC_DIR}|/tmp/src|g")
 
 OMS_SKIP_BUSINESS_CONFIG="${OMS_SKIP_BUSINESS_CONFIG:--sb}"
 
@@ -92,7 +94,7 @@ DOCKER_DEVELOPMENT_REDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_redepl
 # Database
 DOCKER_DATABASE_INIT="${DOCKER_COMPOSE_BASE_COMMAND} exec -T ${DOCKER_COMPOSE_DB_SERVICE_NAME} bash /usr/local/bin/dbinit.sh"
 DOCKER_DATABASE_INIT_MIGRATE_CONFIG="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${DB_USER} -d ${DB_NAME} -f ${DB_DUMP} -L /tmp/pg_log ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
-DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/migrations && bash dbmigrate.sh -h localhost -U ${DB_USER} -p 5432 -d ${DB_NAME} -L /tmp/pg_log -n'"
+DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash -c 'bash ${DATABASE_MIGRATE_PATH} -h localhost -U ${DB_USER} -p 5432 -d ${DB_NAME} -L /tmp/pg_log -n'"
 DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
 DOCKER_DATABASE_OPEN_PSQL_TERMINAL="docker run --network=${COMPOSE_PROJECT_NAME}_default -it --rm --link ${ID}_db:postgres ${DOCKER_DB_IMAGE} psql -h postgres -U ${DB_USER} -d ${DB_NAME}"
 
