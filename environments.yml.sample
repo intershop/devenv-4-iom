@@ -6,8 +6,8 @@
 # id: must be a unique identifier
 # path: path to a local folder that should hold configuration and documentation data
 # docker_image: docker image that should be used for the iom container.
-#     Please use https://rnd-docker-dev.test.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
-#     Use the specific repository url (e.g. https://rnd-docker-dev.test.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
+#     Please use https://rnd-docker.intershop.de/v2/_catalog to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
+#     Use the specific repository url (e.g. https://rnd-docker.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
 # oms_src: have to point to the path to the IOM sources
 #     For IOM product development purposes the checked out source folder should be used.
 #     For IOM partner development purposes the extracted IOM release package folder should be used.
@@ -34,7 +34,7 @@
 - id: trunk
   timezone: Europe/Berlin
   path: F:\docker\trunk
-  docker_image: rnd-docker-dev.test.intershop.de/iom/iom-trunk:2.4.0.0-SNAPSHOT
+  docker_image: rnd-docker.intershop.de/iom/iom-trunk:2.4.0.0-SNAPSHOT
   oms_app: F:\svn\oms\trunk
   oms_src: F:\svn\oms\trunk
   docker_db_image: postgres:9.5
@@ -45,7 +45,7 @@
   oms_skip_business_config: false
 - id: SB_2.1.X.0
   path: F:\docker\SB_2.1.X.0
-  docker_image: rnd-docker-dev.test.intershop.de/iom/iom-2-1-x-0:2.1.11.0-SNAPSHOT
+  docker_image: rnd-docker.intershop.de/iom/iom-2-1-x-0:2.1.11.0-SNAPSHOT
   oms_etc: F:\svn\oms\SB_2.1.X.0\oms.deployment\etc
   oms_log: F:\docker\SB_2.1.X.0\log
   oms_src: F:\svn\oms\SB_2.1.X.0
