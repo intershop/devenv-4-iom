@@ -10,7 +10,7 @@ VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 
 PORT_OFFSET = 10
 
-DOCKER_REGISTRY_HOST = 'rnd-docker.intershop.de'
+DOCKER_REGISTRY_HOST = 'rnd-docker-build.intershop.de'
 
 
 # Read environment details from either yml or json file
