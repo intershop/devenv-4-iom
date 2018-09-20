@@ -172,17 +172,17 @@ echo '' > $CONFIG_LOGFILE || {
 
 # check that a postgres connection could be established
 
-SUPERUSER_PSQL="psql -v ON_ERROR_STOP=1 -h $CONFIG_HOST -p $CONFIG_PORT -U $CONFIG_SUPERUSER -d postgres"
-USER_PSQL="psql -v ON_ERROR_STOP=1 -h $CONFIG_HOST -p $CONFIG_PORT -U $CONFIG_USER -d $CONFIG_DATABASE"
+SUPERUSER_PSQL="psql -X -v ON_ERROR_STOP=1 -h $CONFIG_HOST -p $CONFIG_PORT -U $CONFIG_SUPERUSER -d postgres"
+USER_PSQL="psql -X -v ON_ERROR_STOP=1 -h $CONFIG_HOST -p $CONFIG_PORT -U $CONFIG_USER -d $CONFIG_DATABASE"
 
-CHECK_CONNECTION=`PGPASSWORD=$CONFIG_SUPERUSER_PASSWD $SUPERUSER_PSQL -P format=u -tqX -c "SELECT 'ok';"` || {
+CHECK_CONNECTION=`PGPASSWORD=$CONFIG_SUPERUSER_PASSWD $SUPERUSER_PSQL -P format=u -tq -c "SELECT 'ok';"` || {
   echo "Cannot establish a connection to $CONFIG_HOST:$CONFIG_PORT $CONFIG_DATABASE as user $CONFIG_SUPERUSER" 1>&2
   exit 1;
 }
 
 # check that the datbase does not already exist
 
-CHECK_USER_EXISTS=`PGPASSWORD=$CONFIG_SUPERUSER_PASSWD $SUPERUSER_PSQL -P format=u -tqX -c "SELECT COUNT(*) FROM pg_database WHERE datname = '$CONFIG_DATABASE';"`
+CHECK_USER_EXISTS=`PGPASSWORD=$CONFIG_SUPERUSER_PASSWD $SUPERUSER_PSQL -P format=u -tq -c "SELECT COUNT(*) FROM pg_database WHERE datname = '$CONFIG_DATABASE';"`
 
 if  [ _$CHECK_USER_EXISTS = _1 ]; then
   echo "Database '$CONFIG_DATABASE' already exists." 1>&2
@@ -191,7 +191,7 @@ fi
 
 # check that the user does not already exist
 
-CHECK_USER_EXISTS=`PGPASSWORD=$CONFIG_SUPERUSER_PASSWD $SUPERUSER_PSQL -P format=u -tqX -c "SELECT COUNT(*) FROM pg_roles WHERE rolname = '$CONFIG_USER';"`
+CHECK_USER_EXISTS=`PGPASSWORD=$CONFIG_SUPERUSER_PASSWD $SUPERUSER_PSQL -P format=u -tq -c "SELECT COUNT(*) FROM pg_roles WHERE rolname = '$CONFIG_USER';"`
 
 if  [ _$CHECK_USER_EXISTS = _1 ]; then
   echo "User '$CONFIG_USER' already exists." 1>&2
