@@ -28,7 +28,7 @@ PORT_DB="${PORT_DB:-5432}"
 PORT_WILDFLY="${PORT_WILDFLY:-9990}"
 
 # docker
-DOCKER_REGISTRY_HOST="${DOCKER_REGISTRY_HOST:-rnd-docker-build.intershop.de}"
+DOCKER_REGISTRY_HOST="${DOCKER_REGISTRY_HOST:-docker-build.rnd.intershop.de}"
 DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom/iom-trunk:2.4.0.0-SNAPSHOT}"
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
 DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")

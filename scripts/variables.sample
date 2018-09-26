@@ -37,12 +37,12 @@ DB_PASSWORD=OmsDB
 DB_DUMP=OmsDB.initial.2.4.0.0.sql.gz
 
 # docker image that should be used for the iom container.
-# For IOM product development purposes use https://rnd-docker-build.intershop.de/v2/_catalog
+# For IOM product development purposes use https://docker-build.rnd.intershop.de/v2/_catalog
 # to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
-# Use the specific repository url (e.g. https://rnd-docker-build.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
-# For IOM partner development purposes use https://rnd-docker-internal.intershop.de/v2/_catalog
+# Use the specific repository url (e.g. https://docker-build.rnd.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
+# For IOM partner development purposes use https://docker-internal.rnd.intershop.de/v2/_catalog
 # to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
-# Use the specific repository url (e.g. https://rnd-docker-internal.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
+# Use the specific repository url (e.g. https://docker-internal.rnd.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
 DOCKER_IOM_IMAGE=iom/iom-trunk:2.4.0.0-SNAPSHOT
 
 # docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used)
