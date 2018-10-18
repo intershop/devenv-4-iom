@@ -1,0 +1,10 @@
+---
+### description
+
+### parameters for the configuration of dockerhost virtual machine
+
+# memory_per_env: memory that should be allocated per environment for the dockerhost virtual machine (default: 5120)
+# cpus: total cpus of the dockerhost virtual machine (default: 2)
+
+memory_per_env: 5120
+cpus: 2
