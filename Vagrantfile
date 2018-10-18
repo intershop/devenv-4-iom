@@ -12,6 +12,22 @@ PORT_OFFSET = 10
 
 DOCKER_REGISTRY_HOST = 'docker-build.rnd.intershop.de'
 
+# Read system details from system.yml
+
+sys_config_sample_file = File.join(VAGRANT_ROOT, 'system.yml.sample')
+sys_config_file = File.join(VAGRANT_ROOT, 'system.yml')
+
+if File.file?(sys_config_file)
+  sys_config = YAML.load_file(sys_config_file)
+  # print "'" + sys_config_file + "' configuration will be used."
+else
+  sys_config = YAML.load_file(sys_config_sample_file)
+  # print "'" + sys_config_sample_file + "' configuration will be used."
+
+  # make a copy of the sample file
+  File.open(sys_config_file, 'w') { |f| f.write(File.read(sys_config_sample_file)) }
+end
+
 # Read environment details from environments.yml
 
 env_config_file = File.join(VAGRANT_ROOT, 'environments.yml')
@@ -240,8 +256,8 @@ EOT
 
     node.vm.provider "virtualbox" do |vb|
       vb.name = "iomdev"
-      vb.memory = "#{environments.length * 3 * 1024}"
-      vb.cpus = 2
+      vb.memory = "#{environments.length * sys_config['memory_per_env']}"
+      vb.cpus = "#{sys_config['cpus']}"
     end
 
     ### file synchronization
