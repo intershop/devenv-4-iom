@@ -12,18 +12,17 @@ PORT_OFFSET = 10
 
 DOCKER_REGISTRY_HOST = 'docker-build.rnd.intershop.de'
 
+# Read environment details from environments.yml
 
-# Read environment details from either yml or json file
+env_config_file = File.join(VAGRANT_ROOT, 'environments.yml')
 
-configuration_file = File.join(VAGRANT_ROOT, 'environments.yml')
-
-if File.file?(configuration_file)
-  environments = YAML.load_file(configuration_file)
-  # print "'" + configuration_file + "' configuration will be used."
+if File.file?(env_config_file)
+  environments = YAML.load_file(env_config_file)
+  # print "'" + env_config_file + "' configuration will be used."
 else
-  configuration_file = File.join(VAGRANT_ROOT, 'environments.json')
-  environments = JSON.parse(File.read(configuration_file))
-  # print "'" + configuration_file + "' configuration will be used."
+  puts "The required configuration file '" + env_config_file + "' is missing!"
+  puts "Please create it run and 'vagrant up' again.\n\n"
+  exit
 end
 
 # check required plugins
@@ -48,7 +47,7 @@ required_vars.each do |var|
   environments.each.with_index(1) do |environment , index|
 
     unless environment[var]
-      puts "required variable '#{var}' is missing for environment #{environment['id']} in environment.yml. Please set it and restart. For details please see environment.yml.sample"
+      puts "The required variable '#{var}' is missing for environment #{environment['id']} in environment.yml. Please set it and restart. For details please see environment.yml.sample"
       exit
     end
   end
