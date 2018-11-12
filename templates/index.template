@@ -402,14 +402,14 @@ ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} config
         <h2 id="troubleshooting ">Troubleshooting</h2>
         <h3 id="troubleshooting--no-space-left">No space left</h3>
 
-        <p>If you are using docker for quite a long time, you collect many docker images over the time. So possibly a "no space left" error may occur. In order to clean up your docker images, you can run the followoing command to remove unused images.</p>
+        <p>If you are using docker for quite a long time, you collect many docker objects (e.g. images) over the time. So possibly a "no space left" error may occur. In order to clean up unused docker objects, you can use the <a href="https://docs.docker.com/config/pruning" title="Prune unused Docker objects" target="_blank">docker prune command</a>.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 ${VAGRANT_SSH}
 
-# Remove unused docker images
-docker rmi $(docker images -q)
+# Prune everything
+docker system prune
         </div></code></pre>
 
 
