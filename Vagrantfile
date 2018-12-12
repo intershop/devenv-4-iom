@@ -41,6 +41,16 @@ else
   exit
 end
 
+unless sys_config['docker_username']
+  puts "The required variable 'docker_username' is missing in system.yml. Please set it and restart. For details please see system.yml.sample"
+  exit
+end
+
+unless sys_config['docker_password']
+  puts "The required variable 'docker_password' is missing in system.yml. Please set it and restart. For details please see system.yml.sample"
+  exit
+end
+
 # check required plugins
 required_plugins = ['vagrant-vbguest']#'vagrant-docker-compose']
 
@@ -121,19 +131,23 @@ Vagrant.configure(2) do |config|
         ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
     SHELL
 
-    # provide a private docker registry
-    node.vm.network :forwarded_port, guest: 5000, host: 5000
+    ## provide a private docker registry
+    # node.vm.network :forwarded_port, guest: 5000, host: 5000
 
-    node.vm.provision "connect_docker_registry", type: "shell", inline: <<-SHELL
+    #node.vm.provision "connect_docker_registry", type: "shell", inline: <<-SHELL
 
-      # configure docker daemon
-      echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
+    # # configure docker daemon
+    #  echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
 
-      # restart docker daemon
-      systemctl restart docker
+    # # restart docker daemon
+    # systemctl restart docker
 
-      # login to the docker registry with Artifactory API KEY
-      docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X #{DOCKER_REGISTRY_HOST}
+    #SHELL
+
+    node.vm.provision "docker_login", type: "shell", run: "always", inline: <<-SHELL
+
+      # login to the docker registry with password resp. Artifactory API KEY
+      echo '#{sys_config['docker_password']}' | docker login -u #{sys_config['docker_username']} --password-stdin #{DOCKER_REGISTRY_HOST}
 
     SHELL
 
