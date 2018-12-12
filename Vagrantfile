@@ -131,13 +131,18 @@ Vagrant.configure(2) do |config|
         ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
     SHELL
 
-    # provide a private docker registry
-    node.vm.network :forwarded_port, guest: 5000, host: 5000
+    ## provide a private docker registry
+    # node.vm.network :forwarded_port, guest: 5000, host: 5000
 
-    node.vm.provision "connect_docker_registry", type: "shell", inline: <<-SHELL
+    #node.vm.provision "connect_docker_registry", type: "shell", inline: <<-SHELL
 
-      # configure docker daemon
-      echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
+    # # configure docker daemon
+    #  echo '{"insecure-registries":["10.0.10.0:5000"], "debug":true}' > /etc/docker/daemon.json
+
+    # # restart docker daemon
+    # systemctl restart docker
+
+    #SHELL
 
       # restart docker daemon
       systemctl restart docker
