@@ -41,6 +41,16 @@ else
   exit
 end
 
+unless sys_config['docker_username']
+  puts "The required variable 'docker_username' is missing in system.yml. Please set it and restart. For details please see system.yml.sample"
+  exit
+end
+
+unless sys_config['docker_password']
+  puts "The required variable 'docker_password' is missing in system.yml. Please set it and restart. For details please see system.yml.sample"
+  exit
+end
+
 # check required plugins
 required_plugins = ['vagrant-vbguest']#'vagrant-docker-compose']
 
