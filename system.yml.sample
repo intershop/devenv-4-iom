@@ -1,10 +1,18 @@
 ---
-### description
+### Description
 
-### parameters for the configuration of dockerhost virtual machine
+### Parameters for the configuration of dockerhost virtual machine
 
-# memory_per_env: memory that should be allocated per environment for the dockerhost virtual machine (default: 5120)
-# cpus: total cpus of the dockerhost virtual machine (default: 2)
-
+# Memory that should be allocated per environment for the dockerhost virtual machine (default: 5120)
 memory_per_env: 5120
+
+# Total cpus of the dockerhost virtual machine (default: 2)
 cpus: 2
+
+# Username for the docker login to download docker images
+docker_username:
+
+# Password resp. API Key for the docker login to download docker images
+# Because your docker login password will be stored unencrypted in docker config.json,
+# you should use a generated API Key (https://repository.intershop.de/webapp/#/profile) instead, that could be revoked anytime.
+docker_password:
