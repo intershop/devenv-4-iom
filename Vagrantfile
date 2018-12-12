@@ -144,11 +144,10 @@ Vagrant.configure(2) do |config|
 
     #SHELL
 
-      # restart docker daemon
-      systemctl restart docker
+    node.vm.provision "docker_login", type: "shell", run: "always", inline: <<-SHELL
 
-      # login to the docker registry with Artifactory API KEY
-      docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X #{DOCKER_REGISTRY_HOST}
+      # login to the docker registry with password resp. Artifactory API KEY
+      echo '#{sys_config['docker_password']}' | docker login -u #{sys_config['docker_username']} --password-stdin #{DOCKER_REGISTRY_HOST}
 
     SHELL
 
