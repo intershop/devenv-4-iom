@@ -102,8 +102,7 @@ end
 
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "bento/centos-7.3"
-  # config.vm.box_version = "=2.2.9"
+  config.vm.box = "bento/centos-7.6"
 
   # create a docker host
 
