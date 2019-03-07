@@ -160,6 +160,6 @@ if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
 then
   COMPOSE_ETC_DIR=/etc/opt/oms.cluster
   COMPOSE_APP_DIR=/opt/oms.cluster/application
-  COMPOSE_LOG_DIR=/var/opt/var/opt/oms.log
+  COMPOSE_LOG_DIR=/var/opt/oms.log
   COMPOSE_VAR_DIR=/var/opt/oms.cluster
 fi
