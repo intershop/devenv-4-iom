@@ -25,13 +25,10 @@ services:
     image: "${DOCKER_REGISTRY_HOST}/${DOCKER_IOM_IMAGE}"
     container_name: "${ID}"
     volumes:
-      - ${ETC_DIR}:/etc/opt/oms.standalone
-      - ${APP_DIR}:/opt/oms.standalone/application
-      - ${LOG_DIR}:/var/opt/iom_standalone_log
-      # >= 2.1.11.0, 2.2.3.0, 2.3.0.0
-      - ${VAR_DIR}:/var/opt/oms.standalone
-      # TODO else case needed for later RELEASE images
-      #- ${VAR_DIR}/log:/var/opt/oms.standalone/log
+      - ${ETC_DIR}:${COMPOSE_ETC_DIR}
+      - ${APP_DIR}:${COMPOSE_APP_DIR}
+      - ${LOG_DIR}:${COMPOSE_LOG_DIR}
+      - ${VAR_DIR}:${COMPOSE_VAR_DIR}
     ports:
       - ${FORWARD_PORT_IOM}:8080
       - ${FORWARD_PORT_WILDFLY}:9990
