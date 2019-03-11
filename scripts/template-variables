@@ -34,6 +34,11 @@ DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
 DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")
 
 COMPOSE_PROJECT_NAME=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
+COMPOSE_ETC_DIR=/etc/opt/oms.standalone
+COMPOSE_APP_DIR=/opt/oms.standalone/application
+COMPOSE_LOG_DIR=/var/opt/iom_standalone_log
+COMPOSE_VAR_DIR=/var/opt/oms.standalone
+COMPOSE_SHARE_DIR=
 
 ################################################################################
 # Aliases
@@ -72,6 +77,13 @@ DOCKER_COMPOSE_IMAGE_SUFFIX="-iom"
 DOCKER_COMPOSE_DB_SERVICE_NAME="db"
 DOCKER_COMPOSE_IOM_SERVICE_NAME="iom"
 DOCKER_COMPOSE_BASE_COMMAND="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} LOG_DIR=${LOG_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f -"
+
+# IOM-8813
+# >= 2.12.0.0
+if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
+then
+  DOCKER_COMPOSE_BASE_COMMAND="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SHARE_DIR=${SHARE_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} LOG_DIR=${LOG_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f -"
+fi
 
 # port forwarding
 FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
@@ -116,8 +128,14 @@ then
   DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
 
   # IOM-7183
-  DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="# Make the fully orchestrated OMS_VAR directory accessible<span class=\"collapse setup--initialize-reconfigure-aliases\"># alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"</span>
-${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}"
+  # IOM-8813
+  if ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
+  then
+    DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="
+# Make the fully orchestrated OMS_VAR directory accessible<span class=\"collapse setup--initialize-reconfigure-aliases\"># alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"</span>
+${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}
+ "
+  fi
 
 DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS_PASSAGE="alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\""
 
@@ -148,4 +166,15 @@ else
 /system-property=is.oms.db.port: \"${PORT_DB}\""
 
   OMT_URL="http://${HOST_IOM}:${FORWARD_PORT_IOM}/bakery.omt"
+fi
+
+# IOM-8813
+# >= 2.12.0.0
+if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
+then
+  COMPOSE_ETC_DIR=/etc/opt/oms.cluster
+  COMPOSE_APP_DIR=/opt/oms.cluster/application
+  COMPOSE_LOG_DIR=/var/opt/oms.log
+  COMPOSE_VAR_DIR=/var/opt/oms.cluster
+  COMPOSE_SHARE_DIR="- $SHARE_DIR:/var/opt/oms.share"
 fi

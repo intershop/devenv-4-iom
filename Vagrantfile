@@ -85,6 +85,7 @@ environments.each.with_index(1) do |environment , index|
 
   environment['oms_etc_dir'] = "/tmp/#{environment['id']}/etc"
   environment['oms_var_dir'] = "/tmp/#{environment['id']}/var"
+  environment['oms_share_dir'] = "/tmp/#{environment['id']}/share"
   environment['oms_app_dir'] = "/tmp/#{environment['id']}/app"
   environment['oms_src_dir'] = "/tmp/#{environment['id']}/src"
   environment['oms_log_dir'] = "/tmp/#{environment['id']}/log"
@@ -208,6 +209,7 @@ Vagrant.configure(2) do |config|
 
         export ETC_DIR=#{environment['oms_etc_dir']}
         export VAR_DIR=#{environment['oms_var_dir']}
+        export SHARE_DIR=#{environment['oms_share_dir']}
         export SRC_DIR=#{environment['oms_src_dir']}
         export APP_DIR=#{environment['oms_app_dir']}
         export LOG_DIR=#{environment['oms_log_dir']}
@@ -294,6 +296,9 @@ EOT
 
       # configure the var path
       node.vm.synced_folder File.join("#{environment['path']}", "var"), "#{environment['oms_var_dir']}", create: true
+
+      # configure the share path
+      node.vm.synced_folder File.join("#{environment['path']}", "share"), "#{environment['oms_share_dir']}", create: true
 
       # configure the src path
       if environment['oms_src']
