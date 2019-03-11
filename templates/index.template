@@ -236,9 +236,7 @@ ${DOCKER_DATABASE_MIGRATE_ALIAS}
 
 # Initialize, migrate and configure the postgres database (for IOM product development only)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}="${DOCKER_DATABASE_INIT_MIGRATE_CONFIG}"</span>
 # ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}
-
 ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
-
 # Reconfigure the IOM container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
         </div></code></pre>
