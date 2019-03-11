@@ -16,6 +16,11 @@ VAR_DIR=~/oms-var/$ID
 # For IOM partner development purposes the extracted IOM release package folder should be used.
 SRC_DIR=~/oms-src/trunk
 
+# >= 2.12.0.0
+# 
+# SHARE_DIR have to point to the path where the IOM share folder should be synchronized with
+SHARE_DIR=~/oms-share/trunk
+
 # APP_DIR have to point to the path where the IOM deployment artifacts can be found.
 # For IOM product development purposes the same path like SRC_DIR should be used.
 # For IOM partner development purposes the "application" folder in the extracted IOM release package should be used.
