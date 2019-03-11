@@ -29,6 +29,7 @@ services:
       - ${APP_DIR}:${COMPOSE_APP_DIR}
       - ${LOG_DIR}:${COMPOSE_LOG_DIR}
       - ${VAR_DIR}:${COMPOSE_VAR_DIR}
+      ${COMPOSE_SHARE_DIR}
     ports:
       - ${FORWARD_PORT_IOM}:8080
       - ${FORWARD_PORT_WILDFLY}:9990
