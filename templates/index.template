@@ -237,8 +237,14 @@ ${DOCKER_DATABASE_MIGRATE_ALIAS}
 # Initialize, migrate and configure the postgres database (for IOM product development only)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}="${DOCKER_DATABASE_INIT_MIGRATE_CONFIG}"</span>
 # ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}
 ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
+# Undeploy accelerates the following reconfiguration (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"</span>
+${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
+
 # Reconfigure the IOM container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
 ${DOCKER_SETUP_RECONFIGURE_ALIAS}
+
+# Redeploy all artifacts <span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"</span>
+${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
         </div></code></pre>
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
