@@ -59,14 +59,16 @@ Dashboard also provides information on the state of Kubernetes resources in your
 
 ### Access to Docker Build Repositories
 ```sh
-docker login -u omsdeploy -p AKCp2WXCQMJb6cGKso9FJfWerMe1V248PVx8DM19BNsTKrRFQ3f3LTRfsAEHZPmX6ZAnd8a4X docker-build.rnd.intershop.de
+docker login -u omsdeploy -p password docker-build.rnd.intershop.de
 ```
 
-
-# get images from intershop repos
-
+### Get images from Intershop Repositories
+```sh
 docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
-
-kubectl apply -f postgres.yml
+```
+```sh
+DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | kubectl apply -f -
+DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/iom.yml | kubectl apply -f -
+```

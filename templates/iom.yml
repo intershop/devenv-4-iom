@@ -1,0 +1,186 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: iom
+  labels:
+    app: iom
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iom
+  template:
+    metadata:
+      labels:
+        app: iom
+    spec:
+      containers:
+      - name: iom
+        image: docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
+        imagePullPolicy: Never
+        readinessProbe:
+          httpGet:
+            path: /monitoring/services/health/status
+            port: 8080
+          failureThreshold: 1
+          periodSeconds: 10
+          initialDelaySeconds: 150
+          timeoutSeconds: 8
+          successThreshold: 1
+        env:
+          - name: TENANT
+            value: Intershop
+          - name: ENVIRONMENT
+            value: 'iom local minikube'
+          - name: OMS_DB_HOSTLIST
+            value: postgres-service:5432
+          - name: OMS_DB_PASS
+            value: oms_pw
+          - name: OMS_DB_USER
+            value: oms_user
+          - name: OMS_DB_NAME
+            value: oms_db
+          - name: OMS_SHAREDFS_HEALTHCHECK
+            value: disabled
+          - name: OMS_LOGLEVEL_SCRIPTS
+            value: 'INFO'
+          - name: CAAS_ENV_NAME
+            value: 'ci'
+          - name: OMS_WILDFLY_READY_TIMEOUT
+            value: '500'
+          - name: OMS_PUBLIC_URL
+            value: 'http://localhost'
+          - name: OMS_EXEC_BACKEND_APPS
+            value: 'true'
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/opt/oms/bin/iom_start_handler.sh"]
+        # volumeMounts:
+        # - mountPath: "/var/opt/share-test"
+        #   name: volume
+      initContainers:
+        - name: dbaccount
+          imagePullPolicy: Never
+          image: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+          env:
+            - name: TENANT
+              value: Intershop
+            - name: ENVIRONMENT
+              value: 'iom local minikube'
+            - name: PGHOST
+              value: postgres-service
+            - name: PGPASSWORD
+              value: postgres
+            - name: OMS_DB_PASS
+              value: oms_pw
+            - name: OMS_DB_OPTIONS
+              value: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
+            - name: OMS_LOGLEVEL_SCRIPTS
+              value: 'INFO'
+        - name: dbinit
+          imagePullPolicy: Never
+          image: docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
+          env:
+            - name: TENANT
+              value: Intershop
+            - name: ENVIRONMENT
+              value: 'iom local minikube'
+            - name: OMS_DB_HOST
+              value: postgres-service
+            - name: OMS_DB_PASS
+              value: oms_pw
+            - name: OMS_LOGLEVEL_SCRIPTS
+              value: 'INFO'
+      # required for Azure Container Registry
+      # https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-aks
+      # required for share file system
+      # https://docs.microsoft.com/de-de/azure/aks/azure-files-dynamic-pv
+      # volumes:
+      #   - name: volume
+      #     persistentVolumeClaim:
+      #       claimName: share
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: iom-service
+spec:
+  selector:
+    app: iom
+  ports:
+    - name: http
+      port: 8080
+    - name: admin
+      port: 9990
+  type: NodePort
+
+---
+# kind: Ingress
+# # apiVersion: networking.k8s.io/v1beta1
+# apiVersion: extensions/v1beta1
+# metadata:
+#   name: iom
+#   #annotations-prefix: ingress.kubernetes.io
+#   annotations:
+#     # TODO use INGRESS_ID from jenkins pipeline to use the pipeline specific ingress
+#     kubernetes.io/ingress.class: "nginx"
+#     # https://github.com/kubernetes/ingress-nginx/issues/3989
+#     # it's necessary to have a matching host-rule in order to get session-affinity working
+#     nginx.ingress.kubernetes.io/affinity: cookie
+#     nginx.ingress.kubernetes.io/session-cookie-path: "/omt"
+#     nginx.ingress.kubernetes.io/session-cookie-name: "route"
+#     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+# spec:
+#   rules:
+#     # this rule should be used for UI testing to ensure session affinity
+#   - host: iom.local
+#     http:
+#       paths:
+#       - path: /
+#         backend:
+#           serviceName: iom-service
+#           servicePort: 8080
+#   - http:
+#       paths:
+#       - path: /metrics
+#         backend:
+#           serviceName: iom-service
+#           servicePort: 9990
+#   # this rule ist used to check if iom pod is available
+#   - http:
+#       paths:
+#       - path: /
+#         backend:
+#           serviceName: iom-service
+#           servicePort: 8080
+
+# kind: Ingress
+# apiVersion: extensions/v1beta1
+# metadata:
+#   name: iom
+# spec:
+#   rules:
+#     - host: iom.kubernetes.local
+#       http:
+#         paths:
+#         - path: /
+#           backend:
+#             serviceName: iom-service
+#             servicePort: 8080
+
+# ---
+# # StoreageClass for shared file system
+# kind: StorageClass
+# apiVersion: storage.k8s.io/v1
+# metadata:
+#   name: share
+# provisioner: kubernetes.io/azure-file
+# mountOptions:
+#   - dir_mode=0777
+#   - file_mode=0777
+#   - uid=1000
+#   - gid=1000
+# parameters:
+#   skuName: Standard_LRS
