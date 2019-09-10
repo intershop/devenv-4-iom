@@ -22,7 +22,7 @@
         echo "alias jq=\"/c/Program\ Files/jq/jq-win64.exe\"" >> ~/.profile
         ```
     * Support alias in VS Code
-    * Open settings in C:\Users\myuser\AppData\Roaming\Code\User\seetings.json
+    * Open settings in C:\Users\myuser\AppData\Roaming\Code\User\setings.json
         ```json
         ...
         // Git Bash
@@ -36,9 +36,24 @@
 Dashboard is a web-based Kubernetes user interface. You can use Dashboard to deploy containerized applications to a Kubernetes cluster, troubleshoot your containerized application, and manage the cluster resources. You can use Dashboard to get an overview of applications running on your cluster, as well as for creating or modifying individual Kubernetes resources (such as Deployments, Jobs, DaemonSets, etc). For example, you can scale a Deployment, initiate a rolling update, restart a pod or deploy new applications using a deploy wizard.
 
 Dashboard also provides information on the state of Kubernetes resources in your cluster and on any errors that may have occurred.
-```sh
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
-```
+
+* Setup
+    ```sh
+    # Install
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+    
+    # Determine token
+    TOKEN=$(kubectl -n kube-system describe secret default | grep "token:" | sed -E 's/.*token: *//g')
+    
+    # Configure token for current context
+    kubectl config set-credentials "$(kubectl config current-context)" --token="$TOKEN"
+    
+    # Proxy to make dashboard accessable
+    kubectl proxy
+    ```
+
+* Open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser
+* Choose kubeconfig file (C:\Users\myuser\.kube\config resp. U:\.kube\config)
 
 ## Intershop
 
