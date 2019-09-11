@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: postgres
-    image: postgres:11
+    image: ${DOCKER_DB_IMAGE}
     args: ["-N", "500", "-c", "max_prepared_transactions=100"]
     imagePullPolicy: IfNotPresent
 ---

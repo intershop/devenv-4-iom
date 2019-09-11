@@ -69,6 +69,10 @@ docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
 ```
 ```sh
+./scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl apply -f -
+./scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl apply -f -
+
 DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | kubectl apply -f -
 DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/iom.yml | kubectl apply -f -
+
 ```
