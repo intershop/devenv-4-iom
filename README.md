@@ -13,6 +13,9 @@
             ...
             ```
 * Install Docker Desktop (https://www.docker.com/products/docker-desktop)
+    * Setting > Advanced
+        * CPUs: 3
+        * Memory: 8192
     * Setting > Kubernetes > Enable Kubernetes
 * Install jq (https://stedolan.github.io/jq/download)
     * Download to C:\Program Files\jq
@@ -47,27 +50,30 @@ Dashboard also provides information on the state of Kubernetes resources in your
     
     # Configure token for current context
     kubectl config set-credentials "$(kubectl config current-context)" --token="$TOKEN"
-    
+    ```
+* Make dashboard accessable
+    ```sh
     # Proxy to make dashboard accessable
     kubectl proxy
     ```
-
 * Open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser
 * Choose kubeconfig file (C:\Users\myuser\.kube\config resp. U:\.kube\config)
 
 ## Intershop
 
-### Access to Docker Build Repositories
+### (Optional) Access to Docker Build Repositories
 ```sh
-docker login -u omsdeploy -p password docker-build.rnd.intershop.de
+docker login -u user -p password docker-build.rnd.intershop.de
 ```
 
-### Get images from Intershop Repositories
+### (Optional) Get images from Intershop Repositories 
 ```sh
 docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
 ```
+
+
 ```sh
 ./scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl apply -f -
 ./scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl apply -f -
@@ -76,3 +82,5 @@ DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | 
 DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/iom.yml | kubectl apply -f -
 
 ```
+
+* Open http://localhost:8080/omt in your browser
