@@ -50,8 +50,18 @@ spec:
             value: oms_db
           - name: OMS_SHAREDFS_HEALTHCHECK
             value: disabled
+          - name: OMS_LOGLEVEL_CONSOLE
+            value: '${OMS_LOGLEVEL_CONSOLE}'
+          - name: OMS_LOGLEVEL_IOM
+            value: '${OMS_LOGLEVEL_IOM}'
+          - name: OMS_LOGLEVEL_HIBERNATE
+            value: '${OMS_LOGLEVEL_HIBERNATE}'
+          - name: OMS_LOGLEVEL_QUARTZ
+            value: '${OMS_LOGLEVEL_QUARTZ}'
+          - name: OMS_LOGLEVEL_CUSTOMIZATION
+            value: '${OMS_LOGLEVEL_CUSTOMIZATION}'
           - name: OMS_LOGLEVEL_SCRIPTS
-            value: 'INFO'
+            value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
             value: 'ci'
           - name: OMS_WILDFLY_READY_TIMEOUT
@@ -86,7 +96,7 @@ spec:
             - name: OMS_DB_OPTIONS
               value: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
             - name: OMS_LOGLEVEL_SCRIPTS
-              value: 'INFO'
+              value: '${OMS_LOGLEVEL_SCRIPTS}'
         - name: dbinit
           imagePullPolicy: Always
           image: ${DBINIT_DOCKER_IMAGE}
@@ -101,7 +111,7 @@ spec:
             - name: OMS_DB_PASS
               value: oms_pw
             - name: OMS_LOGLEVEL_SCRIPTS
-              value: 'INFO'
+              value: '${OMS_LOGLEVEL_SCRIPTS}'
 ---
 kind: Service
 apiVersion: v1
