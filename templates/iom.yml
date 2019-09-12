@@ -18,7 +18,7 @@ spec:
       - name: iom
         image: ${IOM_DOCKER_IMAGE}
         # image: docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         readinessProbe:
           httpGet:
             path: /monitoring/services/health/status
@@ -62,7 +62,7 @@ spec:
         #   name: volume
       initContainers:
         - name: dbaccount
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           image: ${DBACCOUNT_DOCKER_IMAGE}
           # image: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
           env:
@@ -81,7 +81,7 @@ spec:
             - name: OMS_LOGLEVEL_SCRIPTS
               value: 'INFO'
         - name: dbinit
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           image: ${DBINIT_DOCKER_IMAGE}
           # image: docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
           env:
