@@ -73,14 +73,20 @@ docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
 ```
 
+# Create IOM cluster
 
 ```sh
 ./scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl apply -f -
 ./scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl apply -f -
 
-DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | kubectl apply -f -
-DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/iom.yml | kubectl apply -f -
-
+# DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | kubectl apply -f -
 ```
 
 * Open http://localhost:8080/omt in your browser
+
+# Remove IOM cluster
+
+```sh
+./scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl delete -f -
+./scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl delete -f -
+```
