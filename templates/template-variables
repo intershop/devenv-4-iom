@@ -1,0 +1,18 @@
+################################################################################
+# Defaults
+#
+# The following section defines useful defaults for all variables that could be
+# used with the template_engine.sh script.
+################################################################################
+
+# postgres  image (name:tag)
+DOCKER_DB_IMAGE=postgres:11
+
+# dbaccount image (name:tag)
+DBACCOUNT_DOCKER_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+
+# dbinit image (name:tag)
+DBINIT_DOCKER_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
+
+# iom app image (name:tag)
+IOM_DOCKER_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
