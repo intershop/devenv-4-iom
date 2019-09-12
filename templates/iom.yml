@@ -14,6 +14,10 @@ spec:
       labels:
         app: iom
     spec:
+      volumes:
+      - name: application-dev
+        hostPath:
+          path: ${CUSTOM_APPS_DIR}
       containers:
       - name: iom
         image: ${IOM_DOCKER_IMAGE}
@@ -28,6 +32,9 @@ spec:
           initialDelaySeconds: 150
           timeoutSeconds: 8
           successThreshold: 1
+        volumeMounts:
+        - name: application-dev
+          mountPath: /opt/oms/application-dev
         env:
           - name: TENANT
             value: Intershop
