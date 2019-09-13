@@ -119,7 +119,7 @@ CONF_DIR=$(dirname "$CONFIG_FILE")
 cd "$DEVENV4IOM_DIR"
  
 # generate the environment specific html documentation
-# scripts/template_engine.sh templates/index.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-docu.html"
+scripts/template_engine.sh templates/index.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-docu.html"
  
 # generate the environment specific alias script
 # scripts/template_engine.sh templates/alias.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-alias.sh"
