@@ -1,57 +1,41 @@
 ### required configuration parameters
 
-# ID is used to create unique names for docker instances
-ID=trunk
+################################################################################
+# Defaults
+#
+# The following section defines useful defaults for all variables that could be
+# used with the template_engine.sh script.
+################################################################################
 
-# ETC_DIR have to point to the path to an etc folder
-# For IOM product development purposes the oms.deployment/etc folder or to a copy should be used.
-# For IOM partner development purposes the "etc" folder in the extracted IOM release package should be used.
-ETC_DIR=~/oms-etc/$ID
+# postgres  image (name:tag)
+DOCKER_DB_IMAGE=postgres:11
 
-# VAR_DIR is used to point to the path where the IOM var folder should be synchronized with
-VAR_DIR=~/oms-var/$ID
+# iom dbaccount image (name:tag)
+IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 
-# SRC_DIR have to point to the path to the IOM sources
-# For IOM product development purposes the checked out source folder should be used.
-# For IOM partner development purposes the extracted IOM release package folder should be used.
-SRC_DIR=~/oms-src/trunk
+# iom dbinit image (name:tag)
+IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
 
-# >= 2.12.0.0
-# 
-# SHARE_DIR have to point to the path where the IOM share folder should be synchronized with
-SHARE_DIR=~/oms-share/trunk
+# iom app image (name:tag)
+IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
 
-# APP_DIR have to point to the path where the IOM deployment artifacts can be found.
-# For IOM product development purposes the same path like SRC_DIR should be used.
-# For IOM partner development purposes the "application" folder in the extracted IOM release package should be used.
-APP_DIR=$SRC_DIR
+# log-level for different scopes of iom-application. Supported levels are:
+#   FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
+OMS_LOGLEVEL_CONSOLE=ERROR
+OMS_LOGLEVEL_IOM=ERROR
+OMS_LOGLEVEL_HIBERNATE=ERROR
+OMS_LOGLEVEL_QUARTZ=ERROR
+OMS_LOGLEVEL_CUSTOMIZATION=ERROR
 
-# LOG_DIR have to point to the path where the log files should be stored
-LOG_DIR=~/oms-log/$ID
+# log-level of helper scripts (dbmigrate, etc.). Supported levels are:
+#   ERROR, WARN, INFO, DEBUG
+OMS_LOGLEVEL_SCRIPTS=INFO
 
-# name of the database (default: oms_db)
-DB_NAME=oms_db
-
-# name of the database user (default: oms_user)
-DB_USER=oms_user
-
-# password of the database user (default: OmsDB)
-DB_PASSWORD=OmsDB
-
-# name of a dump-file residing in $SRC_DIR/postgres/dumps
-DB_DUMP=OmsDB.initial.2.4.0.0.sql.gz
-
-# docker image that should be used for the iom container.
-# For IOM product development purposes use https://docker-build.rnd.intershop.de/v2/_catalog
-# to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
-# Use the specific repository url (e.g. https://docker-build.rnd.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
-# For IOM partner development purposes use https://docker-internal.rnd.intershop.de/v2/_catalog
-# to see all repositories and search for the 'iom/iom-*' repositories (e.g. iom/iom-trunk).
-# Use the specific repository url (e.g. https://docker-internal.rnd.intershop.de/v2/iom/iom-trunk/tags/list) to get the available images.
-DOCKER_IOM_IMAGE=iom/iom-trunk:2.4.0.0-SNAPSHOT
-
-# docker image that should be used for the postgres database container (postgres:9.5 and postgres:9.6 can be used)
-DOCKER_DB_IMAGE=postgres:9.5
+# Docker Desktop:
+#   directory on you local disk, containg custom built artifacts
+# Minikube:
+#   Use it as it is, no changes required
+CUSTOM_APPS_DIR=/opt/oms/application-dev
 
 ### optional configuration parameters
 
