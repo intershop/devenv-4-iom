@@ -24,6 +24,9 @@ spec:
       - name: xslt-dev
         hostPath:
           path: ${CUSTOM_XSLT_DIR}
+      ${CommentShareDir}- name: share-dev
+      ${CommentShareDir}  hostPath:
+      ${CommentShareDir}    path: ${CUSTOM_SHARE_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -45,6 +48,8 @@ spec:
           mountPath: /opt/oms/templates-dev
         - name: xslt-dev
           mountPath: /opt/oms/xslt-dev
+        $(CommentShareDir)- name: share-dev
+        ${CommentShareDir}  mountPath: /var/opt/share
         env:
           - name: TENANT
             value: Intershop

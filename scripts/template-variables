@@ -9,22 +9,38 @@
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
-# directory containg custom built artifacts
+# directory containing custom built artifacts
+# default value is valid for Minikube only
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR:-/opt/oms/application-dev}"
 if [ $(OS) == "Msys" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
 
-# directory containg custom mail templates
+# directory containing custom mail templates
+# default value is valid for Minikube only
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR:-/opt/oms/templates-dev}"
 if [ $(OS) == "Msys" ]; then
   CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
 fi
 
-# directory containg custom xsl templates
+# directory containing custom xsl templates
+# default value is valid for Minikube only
 CUSTOM_XSL_DIR="${CUSTOM_XSL_DIR:-/opt/oms/xsl-dev}"
 if [ $(OS) == "Msys" ]; then
   CUSTOM_XSL_DIR=$(cygpath -u "$CUSTOM_XSL_DIR")
+fi
+
+# directory to be used as share
+# default value must be empty to set dependend internal helper variable
+# CommentShareDir correctly
+CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR:-}"
+if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
+    CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
+fi
+if [ -z "$CUSTOM_SHARE_DIR" ]; then
+    CommentShareDir='#'
+else
+    CommentShareDir=
 fi
 
 ENV_ID=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")

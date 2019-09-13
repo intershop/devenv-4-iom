@@ -45,6 +45,12 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 #   Does not have to be set, default-value is already matching.
 # CUSTOM_XSLT_DIR="D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt"
 
+# Docker Desktop:
+#   directory on you local disk, to hold IOM share
+# Minikube:
+#   has to be set to /var/opt/share
+# CUSTOM_SHARE_DIR="D:\svn\oms\trunk\share"
+
 ### optional configuration parameters
 
 # INDEX is used in combination with PORT_OFFSET to auto-generate a port forwarding for all used ports in order to run multiple iom environments in parallel
