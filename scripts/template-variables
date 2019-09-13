@@ -27,6 +27,29 @@ if [ $(OS) == "Msys" ]; then
   CUSTOM_XSL_DIR=$(cygpath -u "$CUSTOM_XSL_DIR")
 fi
 
+ENV_ID=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
+
+# development host
+HOST_IOM="${HOST_IOM:-$(hostname)}"
+
+# paths
+PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+
+# ports
+PORT_IOM="${PORT_IOM:-8080}"
+PORT_DEBUG="${PORT_DEBUG:-8787}"
+PORT_DB="${PORT_DB:-5432}"
+PORT_WILDFLY="${PORT_WILDFLY:-9990}"
+
+# database
+DB_NAME="${DB_NAME:-oms_db}"
+DB_USER="${DB_USER:-oms_user}"
+DB_PASSWORD="${DB_PASSWORD:-oms_pw}"
+
+
+
+>>>>>>> a49995bbded86a1ee81c3f64352f45cb56574902
+
 # TODO check following variables
 
 # paths
@@ -38,14 +61,9 @@ OMS_SKIP_BUSINESS_CONFIG="${OMS_SKIP_BUSINESS_CONFIG:--sb}"
 
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
-# development host
-HOST_IOM="${HOST_IOM:-localhost}"
 
-# ports
-PORT_IOM="${PORT_IOM:-8080}"
-PORT_DEBUG="${PORT_DEBUG:-8787}"
-PORT_DB="${PORT_DB:-5432}"
-PORT_WILDFLY="${PORT_WILDFLY:-9990}"
+
+
 
 # docker
 DOCKER_REGISTRY_HOST="${DOCKER_REGISTRY_HOST:-docker-build.rnd.intershop.de}"

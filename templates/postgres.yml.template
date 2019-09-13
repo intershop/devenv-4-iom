@@ -20,7 +20,7 @@ spec:
     app: postgres
   ports:
     - port: ${FORWARD_PORT_DB}
-      targetPort: 5432
+      targetPort: ${PORT_DB}
       name: postgres
   type: LoadBalancer
   
