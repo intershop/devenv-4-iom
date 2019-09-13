@@ -69,7 +69,7 @@ Dashboard also provides information on the state of Kubernetes resources in your
 * Open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser
 * Choose kubeconfig file (C:\Users\myuser\.kube\config resp. U:\.kube\config)
 
-## Intershop
+## Intershop Order Management
 
 ### (Optional) Access to Docker Build Repositories
 ```sh
@@ -83,11 +83,65 @@ docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
 ```
 
+### Provide configuration for your dockerized IOM instance
+
+For every dockerized IOM installation you need to have a configuration file with some required entries. You can find a variables.sample file within the devenv-4-iom project. Create a copy of this file (e.g. at your home directory) and adapt configuration settings matching the directories you have choosen before and some other settings.
+
+#### Provide configuration
+```sh
+ID=2.15.0.0-SNAPSHOT
+DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
+CONFIG_FILE="/u/${ID}/config.properties"
+
+CONF_DIR=$(dirname "$CONFIG_FILE")
+  
+cd "$DEVENV4IOM_DIR"
+ 
+# make a copy of the sample configuration
+mkdir -p "$CONF_DIR"
+cp scripts/variables.sample "$CONFIG_FILE" && \
+    echo "adapt '$CONFIG_FILE' to your needs"
+ 
+# adapt the configuration to your needs
+vi "$CONFIG_FILE"
+```
+
+### Generate documentation, aliases and kubernetes resource configurations
+
+Once the configuration file is created and adapted, according kubernetes resource configurations, aliases and documentation can be created. The devenv-4-iom project comes with some scripts/templates to generate these files. The example below shows an example, assuming your config file is named ~/2.15.0.0-SNAPSHOT.config.
+```sh
+ID=2.15.0.0-SNAPSHOT
+DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
+CONFIG_FILE="/u/${ID}/config.properties"
+ 
+CONF_DIR=$(dirname "$CONFIG_FILE")
+ 
+cd "$DEVENV4IOM_DIR"
+ 
+# generate the environment specific html documentation
+# scripts/template_engine.sh templates/index.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-docu.html"
+ 
+# generate the environment specific alias script
+# scripts/template_engine.sh templates/alias.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-alias.sh"
+ 
+# generate the environment specific kubernetes resource configurations
+scripts/template_engine.sh templates/iom.yml.template "$CONFIG_FILE" > "$CONF_DIR/iom.yml"
+scripts/template_engine.sh templates/postgres.yml.template "$CONFIG_FILE" > "$CONF_DIR/postgres.yml"
+```
+
 # Create IOM cluster
 
 ```sh
-./scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl apply -f -
-./scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl apply -f -
+ID=2.15.0.0-SNAPSHOT
+DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
+CONFIG_FILE="/u/${ID}/config.properties"
+ 
+CONF_DIR=$(dirname "$CONFIG_FILE")
+
+cd "$DEVENV4IOM_DIR"
+
+scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl apply -f -
+scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl apply -f -
 
 # DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | kubectl apply -f -
 ```
