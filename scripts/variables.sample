@@ -33,9 +33,21 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 
 # Docker Desktop:
 #   directory on you local disk, containg custom built artifacts (e.g. D:\svn\oms\trunk)
-# CUSTOM_APPS_DIR="D:\svn\oms\trunk"
 # Minikube:
-#   Nothing to set
+#   Does not have to be set, default-value is already matching.
+# CUSTOM_APPS_DIR="D:\svn\oms\trunk"
+
+# Docker Desktop:
+#   directory on you local disk, containg custom mail templates (e.g. D:\svn\oms\trunk\oms.deployment\var\templates)
+# Minikube:
+#   Does not have to be set, default-value is already matching.
+# CUSTOM_TEMPLATES_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
+
+# Docker Desktop:
+#   directory on you local disk, containg custom built artifacts (e.g. D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt)
+# Minikube:
+#   Does not have to be set, default-value is already matching.
+# CUSTOM_XSLT_DIR="D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt"
 
 ### optional configuration parameters
 

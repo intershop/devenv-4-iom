@@ -15,10 +15,17 @@ if [ $(OS) == "Msys" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
 
+# directory containg custom mail templates
+CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR:-/opt/oms/templates-dev}"
+if [ $(OS) == "Msys" ]; then
+  CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
+fi
 
-
-
-
+# directory containg custom xsl templates
+CUSTOM_XSL_DIR="${CUSTOM_XSL_DIR:-/opt/oms/xsl-dev}"
+if [ $(OS) == "Msys" ]; then
+  CUSTOM_XSL_DIR=$(cygpath -u "$CUSTOM_XSL_DIR")
+fi
 
 # TODO check following variables
 
