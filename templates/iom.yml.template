@@ -18,6 +18,12 @@ spec:
       - name: application-dev
         hostPath:
           path: ${CUSTOM_APPS_DIR}
+      - name: templates-dev
+        hostPath:
+          path: ${CUSTOM_TEMPLATES_DIR}
+      - name: xslt-dev
+        hostPath:
+          path: ${CUSTOM_XSLT_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -35,6 +41,10 @@ spec:
         volumeMounts:
         - name: application-dev
           mountPath: /opt/oms/application-dev
+        - name: templates-dev
+          mountPath: /opt/oms/templates-dev
+        - name: xslt-dev
+          mountPath: /opt/oms/xslt-dev
         env:
           - name: TENANT
             value: Intershop
