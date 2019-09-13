@@ -26,7 +26,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /monitoring/services/health/status
-            port: 8080
+            port: ${PORT_IOM}
           failureThreshold: 1
           periodSeconds: 10
           initialDelaySeconds: 150
@@ -41,13 +41,13 @@ spec:
           - name: ENVIRONMENT
             value: 'iom local minikube'
           - name: OMS_DB_HOSTLIST
-            value: postgres-service:5432
+            value: postgres-service:${PORT_DB}
           - name: OMS_DB_PASS
-            value: oms_pw
+            value: '${DB_PASSWORD}'
           - name: OMS_DB_USER
-            value: oms_user
+            value: '${DB_USER}'
           - name: OMS_DB_NAME
-            value: oms_db
+            value: '${DB_NAME}'
           - name: OMS_SHAREDFS_HEALTHCHECK
             value: disabled
           - name: OMS_LOGLEVEL_CONSOLE
@@ -92,7 +92,7 @@ spec:
             - name: PGPASSWORD
               value: postgres
             - name: OMS_DB_PASS
-              value: oms_pw
+              value: '${DB_PASSWORD}'
             - name: OMS_DB_OPTIONS
               value: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
             - name: OMS_LOGLEVEL_SCRIPTS
@@ -109,7 +109,7 @@ spec:
             - name: OMS_DB_HOST
               value: postgres-service
             - name: OMS_DB_PASS
-              value: oms_pw
+              value: '${DB_PASSWORD}'
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
 ---
@@ -123,8 +123,8 @@ spec:
   ports:
     - name: http
       port: ${FORWARD_PORT_IOM}
-      targetPort: 8080
+      targetPort: ${PORT_IOM}
     - name: admin
       port: ${FORWARD_PORT_WILDFLY}
-      targetPort: 9990
+      targetPort: ${PORT_WILDFLY}
   type: LoadBalancer
