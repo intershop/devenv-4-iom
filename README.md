@@ -17,6 +17,16 @@
         * CPUs: 3
         * Memory: 8192
     * Setting > Kubernetes > Enable Kubernetes
+    * (Optional) Move your DockerDesktopVM to desired device
+        * Stop Docker Desktop
+        * Start 'Hyper-V Manager'
+        * Select your PC in the left hand pane
+        * Right click on the correct virtual machine (e.g. DockerDesktopVM)
+        * Select 'Turn off' if it is running
+        * Right click on it again and select 'Move'
+        * Follow the prompts and move (e.g. D:\virtualization\Hyper-V)
+        * Restart Docker Desktop
+        * Setting > Advanced > Change 'Disk image location' (e.g. D:\virtualization\Hyper-V\Virtual Hard Disks)
 * Install jq (https://stedolan.github.io/jq/download)
     * Download to C:\Program Files\jq
     * Open GIT BASH console
