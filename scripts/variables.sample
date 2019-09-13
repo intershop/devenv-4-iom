@@ -1,11 +1,7 @@
 ### required configuration parameters
 
-################################################################################
-# Defaults
-#
-# The following section defines useful defaults for all variables that could be
-# used with the template_engine.sh script.
-################################################################################
+# ID is used to create unique names for docker instances
+ID=2.15.0.0-SNAPSHOT
 
 # postgres  image (name:tag)
 DOCKER_DB_IMAGE=postgres:11
