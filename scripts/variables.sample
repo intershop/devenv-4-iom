@@ -32,10 +32,10 @@ OMS_LOGLEVEL_CUSTOMIZATION=ERROR
 OMS_LOGLEVEL_SCRIPTS=INFO
 
 # Docker Desktop:
-#   directory on you local disk, containg custom built artifacts
+#   directory on you local disk, containg custom built artifacts (e.g. D:\svn\oms\trunk)
+# CUSTOM_APPS_DIR="D:\svn\oms\trunk"
 # Minikube:
-#   Use it as it is, no changes required
-CUSTOM_APPS_DIR=/opt/oms/application-dev
+#   Nothing to set
 
 ### optional configuration parameters
 
