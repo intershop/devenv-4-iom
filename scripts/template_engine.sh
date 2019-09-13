@@ -49,6 +49,19 @@ version_lt() {
   test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
 }
 
+# returns operation system
+# unfortunately uname implementations are not compatible on all platforms
+# function is available for other IOM scripts too. E.g. configure_jms_load_balancing.sh
+# is using it. Please be carefull when changing the method.
+OS() {
+    if ! uname -o > /dev/null 2>&1; then
+        uname -s
+    else
+        uname -o
+    fi
+}
+
+
 # renders the template and replace the variables
 render(){
 	FILE="$1"
