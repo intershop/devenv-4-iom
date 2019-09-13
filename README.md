@@ -123,7 +123,7 @@ cd "$DEVENV4IOM_DIR"
  
 # generate the environment specific alias script
 # scripts/template_engine.sh templates/alias.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-alias.sh"
- 
+
 # generate the environment specific kubernetes resource configurations
 scripts/template_engine.sh templates/iom.yml.template "$CONFIG_FILE" > "$CONF_DIR/iom.yml"
 scripts/template_engine.sh templates/postgres.yml.template "$CONFIG_FILE" > "$CONF_DIR/postgres.yml"
@@ -140,8 +140,9 @@ CONF_DIR=$(dirname "$CONFIG_FILE")
 
 cd "$DEVENV4IOM_DIR"
 
-scripts/template_engine.sh  templates/postgres.yml templates/template-variables | kubectl apply -f -
-scripts/template_engine.sh  templates/iom.yml templates/template-variables | kubectl apply -f -
+
+scripts/template_engine.sh templates/postgres.yml.template "$CONFIG_FILE" | kubectl apply -f -
+scripts/template_engine.sh templates/iom.yml.template "$CONFIG_FILE" | kubectl apply -f -
 
 # DOCKER_DB_IMAGE=postgres:11 scripts/template_engine.sh templates/postgres.yml | kubectl apply -f -
 ```
