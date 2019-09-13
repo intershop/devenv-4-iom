@@ -48,8 +48,6 @@ DB_PASSWORD="${DB_PASSWORD:-oms_pw}"
 
 
 
->>>>>>> a49995bbded86a1ee81c3f64352f45cb56574902
-
 # TODO check following variables
 
 # paths
