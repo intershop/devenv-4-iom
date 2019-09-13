@@ -122,7 +122,9 @@ spec:
     app: iom
   ports:
     - name: http
-      port: 8080
+      port: ${FORWARD_PORT_IOM}
+      targetPort: 8080
     - name: admin
-      port: 9990
+      port: ${FORWARD_PORT_WILDFLY}
+      targetPort: 9990
   type: LoadBalancer
