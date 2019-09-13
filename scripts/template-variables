@@ -9,6 +9,19 @@
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
+# directory containg custom built artifacts
+CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR:-/opt/oms/application-dev}"
+if [ $(OS) == "Msys" ]; then
+  CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
+fi
+
+
+
+
+
+
+# TODO check following variables
+
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
