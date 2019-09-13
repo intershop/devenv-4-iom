@@ -45,7 +45,6 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#configurations--cluster-properties">Database configuration in cluster.properties</a></li>
                   <li><a href="#configurations--database-connection-properties">Database connection properties</a></li>
                   <li><a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a></li>
                 </ul>
@@ -53,7 +52,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Setup <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</a></li>
+                  <li><a href="#setup--setup">Setup the IOM environment</a></li>
                   <li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
                   <li><a href="#setup--remove-database">Remove the postgres database container</a></li>
                 </ul>
@@ -111,25 +110,8 @@
         <h1>${ID} IOM development environment</h1>
         <h2 id="configurations">Configurations</h2>
 
-        <h3 id="configurations--cluster-properties">Database configuration in cluster.properties</h3>
-        <p>In order to use the postgres container '${ID}_db' for your IOM container '${ID}' please set following connection data in your cluster.properties.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-...
-${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
-/system-property=is.oms.db.name: "${DB_NAME}"
-/system-property=is.oms.db.user: "${DB_USER}"
-/system-property=is.oms.db.pass: "${DB_PASSWORD}"
-...
-        </div></code></pre>
-
-        <div class="alert alert-warning" role="alert">
-          <strong>Note!</strong>
-          <p>If you would like, you can change other properties (e. g. is.oms.mail.external.from, is.oms.mail.internal.from, ...) according to your needs, too.</p>
-        </div>
-
         <h3 id="configurations--database-connection-properties">Database connection properties</h3>
-        <p>Your postgres container '${ID}_db' is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
+        <p>Your postgres container is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
@@ -168,14 +150,14 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
         </table>
 
         <h3 id="configurations--automatic-port-forwarding">Automatic port forwarding</h3>
-        <p>Behind the scenes 'vagrant up' resp. 'vagrant reload' do the port forwarding automatically.</p>
+        <p>Behind the scenes port forwarding is handled automatically.</p>
 
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
               <th>#</th>
               <th>Developer host</th>
-              <th>Docker host</th>
+              <th>Kubernetes Service</th>
               <th>IOM container</th>
               <th>Usage</th>
             </tr>
@@ -214,37 +196,18 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
 
         <h2 id="setup">Setup</h2>
 
-        <h3 id="setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</h3>
+        <h3 id="setup--setup">Setup the IOM environment</h3>
 
-        <p>In order to use your configurations, the postgres database container have to be initialized and the IOM container have to be reconfigured. Please use following script. For further information, please see the following <a href="https://confluence.intershop.de/display/ISEXTBAKER/Concept+-+Usage+of+Docker+images" target="_blank">documentation</a>.</p>
+        <p>In order to setup your IOM environment please use following script.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--initialize-reconfigure-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
+cd ${PROJECT_PATH}
 
-# Refresh all docker images of the environment (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} pull ${DOCKER_COMPOSE_IOM_SERVICE_NAME}
+# Setup postgres
+scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl apply -f -
 
-# Creates a new IOM environment<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up --build -d
-
-# Initialize the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
-${DOCKER_DATABASE_INIT_ALIAS}
-
-# Migrate the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
-${DOCKER_DATABASE_MIGRATE_ALIAS}
-
-# Initialize, migrate and configure the postgres database (for IOM product development only)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}="${DOCKER_DATABASE_INIT_MIGRATE_CONFIG}"</span>
-# ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}
-${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
-# Undeploy accelerates the following reconfiguration (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
-
-# Reconfigure the IOM container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
-${DOCKER_SETUP_RECONFIGURE_ALIAS}
-
-# Redeploy all artifacts <span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
+# Setup IOM
+scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl apply -f -
         </div></code></pre>
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
