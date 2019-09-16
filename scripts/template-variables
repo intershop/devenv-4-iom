@@ -38,9 +38,9 @@ if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
 if [ -z "$CUSTOM_SHARE_DIR" ]; then
-    CommentShareDir='#'
+    OmsShareDir='/var/opt/share'
 else
-    CommentShareDir=
+    OmsShareDir='/opt/oms/share-dev'
 fi
 
 ENV_ID=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")

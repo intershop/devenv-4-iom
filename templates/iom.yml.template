@@ -24,9 +24,9 @@ spec:
       - name: xslt-dev
         hostPath:
           path: ${CUSTOM_XSLT_DIR}
-      ${CommentShareDir}- name: share-dev
-      ${CommentShareDir}  hostPath:
-      ${CommentShareDir}    path: ${CUSTOM_SHARE_DIR}
+      - name: share-dev
+        hostPath:
+          path: ${CUSTOM_SHARE_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -85,6 +85,8 @@ spec:
             value: 'http://localhost'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
+	  - name: OMS_SHARE
+	    value: '${OmsShareDir}'
         lifecycle:
           postStart:
             exec:
