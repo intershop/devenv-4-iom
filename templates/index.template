@@ -63,6 +63,7 @@
                   <li><a href="#development--reconfiguration">Reconfiguration</a></li>
                   <li><a href="#development--deployment">Deployment</a></li>
                   <li><a href="#development--debugging">Debugging</a></li>
+                  <li><a href="#development--testing">Testing</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -288,6 +289,28 @@ ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
         </div></code></pre>
 
         <h3 id="development--debugging">Debugging</h3>
+
+        <p>Port ${FORWARD_PORT_DEBUG} for Remote Java Debugging is available out of the box. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
+
+        <div class="alert alert-warning" role="alert">
+          <strong>Note!</strong>
+          <p>Please note that the listening debug port will not get restored when restarting the WildFly application server on service level via</p><br>
+
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+systemctl restart jboss-as-standalone.service
+          </div></code></pre>
+        </div>
+        
+        <h3 id="development--testing">Testing</h3>
+
+        <h4 id="development--testing">Provide geb properties</h4>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+
+scripts/template_engine.sh templates/geb.properties.template ${CONFIG_FILE} > "${ConfigDir}/geb.properties"
+
+</div></code></pre>
 
         <p>Port ${FORWARD_PORT_DEBUG} for Remote Java Debugging is available out of the box. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
 
