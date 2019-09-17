@@ -12,7 +12,7 @@ PORT_OFFSET="${PORT_OFFSET:-10}"
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
-if [ $(OS) == "Msys" ]; then
+if [ ! -z "$CUSTOM_APPS_DIR" -a $(OS) == "Msys" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
