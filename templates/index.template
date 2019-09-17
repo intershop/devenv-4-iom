@@ -99,6 +99,7 @@
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/dbdoc/" target="_blank">DB Documentation</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt-help/" target="_blank">Online Help</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
+                  <li><a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=${EnvId}" target="_blank">Kubernetes Dashboard</a></li>
                 </ul>
               </li>
             </ul>
@@ -209,11 +210,14 @@
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 
+# Create Kubernetes namespace
+kubectl create namespace ${EnvId} 
+
 # Setup postgres (apply/create Postgres-Pod)
-scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl apply -f -
+scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
 
 # Setup IOM (apply/create IOM-Deployments)
-scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl apply -f -
+scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
         </div></code></pre>
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
@@ -224,11 +228,14 @@ scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl a
 cd ${PROJECT_PATH}
 
 # Remove postgres Pod (Container)
-scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl delete -f -
+scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl delete --namespace=${EnvId} -f -
 
 # Remove IOM Deployment (Pods & Containers)
-scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl delete -f -
-        </div></code></pre>
+scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl delete --namespace=${EnvId} -f -
+
+# Remove Kubernetes namespace
+kubectl delete namespace ${EnvId}
+</div></code></pre>
 
         <div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
@@ -381,8 +388,6 @@ ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} config
         <h3 id="kubernetes--useful">Useful kubernetes commands</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-
 # List all Deployments, Pods, replicasets, services, namespaces
 kubectl get deployments
 kubectl get pods
@@ -390,17 +395,21 @@ kubectl get replicasets
 kubectl get services
 kubectl get namespaces
 
-# Logs for initContainer: kubectl logs <pod name> -c <container name>
-kubectl logs <pod name> -c dbaccount
-kubectl logs <pod name> -c dbinit
+# Query pod name
+# POD_NAME=$(kubectl get pod -l app=iom -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods -l app=iom -o custom-columns=:metadata.name)
+
+# Logs for initContainer
+kubectl logs "$POD_NAME" -c dbaccount
+kubectl logs "$POD_NAME" -c dbinit
 
 # Login into the IOM Pod
-kubectl exec <pod name> -it bash
+kubectl exec "$POD_NAME" -it bash
 
 # Show important information of the pods, deployments, services
-kubectl describe pod <pod name>
-kubectl describe deployment <deployment name>
-kubectl describe service <service name>
+kubectl describe pod "$POD_NAME"
+kubectl describe deployment iom
+kubectl describe service iom-service
         </div></code></pre>
 
         <h2 id="troubleshooting ">Troubleshooting</h2>
