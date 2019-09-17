@@ -36,7 +36,7 @@ ${VolumeMountAppDev}
           - name: TENANT
             value: Intershop
           - name: ENVIRONMENT
-            value: 'iom local minikube'
+            value: '${ID}'
           - name: OMS_DB_HOSTLIST
             value: postgres-service:${FORWARD_PORT_DB}
           - name: OMS_DB_PASS
@@ -85,7 +85,7 @@ ${VolumeMountAppDev}
             - name: TENANT
               value: Intershop
             - name: ENVIRONMENT
-              value: 'iom local minikube'
+              value: '${ID}'
             - name: PGHOST
               value: postgres-service
             - name: PGPORT
@@ -106,7 +106,7 @@ ${VolumeMountAppDev}
             - name: TENANT
               value: Intershop
             - name: ENVIRONMENT
-              value: 'iom local minikube'
+              value: '${ID}'
             - name: OMS_DB_HOST
               value: postgres-service
             - name: OMS_DB_PORT
