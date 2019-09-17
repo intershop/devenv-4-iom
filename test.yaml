@@ -1,0 +1,223 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2019-09-13T10:58:45Z"
+  generateName: iom-745cf47b6f-
+  labels:
+    app: iom
+    pod-template-hash: 745cf47b6f
+  name: iom-745cf47b6f-jlk6f
+  namespace: default
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: iom-745cf47b6f
+    uid: 74c35067-d615-11e9-9da6-00155d431104
+  resourceVersion: "14318"
+  selfLink: /api/v1/namespaces/default/pods/iom-745cf47b6f-jlk6f
+  uid: 74c5dd61-d615-11e9-9da6-00155d431104
+spec:
+  containers:
+  - env:
+    - name: TENANT
+      value: Intershop
+    - name: ENVIRONMENT
+      value: iom local minikube
+    - name: OMS_DB_HOSTLIST
+      value: postgres-service:5432
+    - name: OMS_DB_PASS
+      value: oms_pw
+    - name: OMS_DB_USER
+      value: oms_user
+    - name: OMS_DB_NAME
+      value: oms_db
+    - name: OMS_SHAREDFS_HEALTHCHECK
+      value: disabled
+    - name: OMS_LOGLEVEL_CONSOLE
+      value: ERROR
+    - name: OMS_LOGLEVEL_IOM
+      value: ERROR
+    - name: OMS_LOGLEVEL_HIBERNATE
+      value: ERROR
+    - name: OMS_LOGLEVEL_QUARTZ
+      value: ERROR
+    - name: OMS_LOGLEVEL_CUSTOMIZATION
+      value: ERROR
+    - name: OMS_LOGLEVEL_SCRIPTS
+      value: INFO
+    - name: CAAS_ENV_NAME
+      value: ci
+    - name: OMS_WILDFLY_READY_TIMEOUT
+      value: "500"
+    - name: OMS_PUBLIC_URL
+      value: http://localhost
+    - name: OMS_EXEC_BACKEND_APPS
+      value: "true"
+    image: docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
+    imagePullPolicy: Always
+    lifecycle:
+      postStart:
+        exec:
+          command:
+          - /opt/oms/bin/iom_start_handler.sh
+    name: iom
+    readinessProbe:
+      failureThreshold: 1
+      httpGet:
+        path: /monitoring/services/health/status
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 150
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 8
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /opt/oms/application-dev
+      name: application-dev
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-f6ntp
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  initContainers:
+  - env:
+    - name: TENANT
+      value: Intershop
+    - name: ENVIRONMENT
+      value: iom local minikube
+    - name: PGHOST
+      value: postgres-service
+    - name: PGPASSWORD
+      value: postgres
+    - name: OMS_DB_PASS
+      value: oms_pw
+    - name: OMS_DB_OPTIONS
+      value: ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION
+        LIMIT=-1
+    - name: OMS_LOGLEVEL_SCRIPTS
+      value: INFO
+    image: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+    imagePullPolicy: Always
+    name: dbaccount
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-f6ntp
+      readOnly: true
+  - env:
+    - name: TENANT
+      value: Intershop
+    - name: ENVIRONMENT
+      value: iom local minikube
+    - name: OMS_DB_HOST
+      value: postgres-service
+    - name: OMS_DB_PASS
+      value: oms_pw
+    - name: OMS_LOGLEVEL_SCRIPTS
+      value: INFO
+    image: docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
+    imagePullPolicy: Always
+    name: dbinit
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-f6ntp
+      readOnly: true
+  nodeName: docker-desktop
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - hostPath:
+      path: /d/svn/oms/trunk
+      type: ""
+    name: application-dev
+  - name: default-token-f6ntp
+    secret:
+      defaultMode: 420
+      secretName: default-token-f6ntp
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2019-09-13T11:00:01Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2019-09-13T11:03:10Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2019-09-13T11:03:10Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2019-09-13T10:58:45Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://7a02f68e5362c38ddb91d1a34addcef0f3a80d2df4929465a6913cde23999dc1
+    image: docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
+    imageID: docker-pullable://docker-build.rnd.intershop.de/intershop/iom-app@sha256:46f1ff05012dcd6f11c8dbd880a2a6feb4c8a7450a2cfb8076702585fbd95854
+    lastState: {}
+    name: iom
+    ready: true
+    restartCount: 0
+    state:
+      running:
+        startedAt: "2019-09-13T11:00:34Z"
+  hostIP: 192.168.65.3
+  initContainerStatuses:
+  - containerID: docker://fe3f5998b7c356846429c4fa80bc8edf480ae27a97383bf7a385167f9228a4a9
+    image: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+    imageID: docker-pullable://docker-build.rnd.intershop.de/intershop/iom-dbaccount@sha256:c7130836a6f6b5def58afe1f3296e5ea19210a02c2bcee475efafe90fa002c44
+    lastState: {}
+    name: dbaccount
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: docker://fe3f5998b7c356846429c4fa80bc8edf480ae27a97383bf7a385167f9228a4a9
+        exitCode: 0
+        finishedAt: "2019-09-13T10:58:56Z"
+        reason: Completed
+        startedAt: "2019-09-13T10:58:56Z"
+  - containerID: docker://c0ad722a5d1fefcc338ecc46faa0f16d8d23fc03484e28dfa818042ac7b77369
+    image: docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
+    imageID: docker-pullable://docker-build.rnd.intershop.de/intershop/iom-dbinit@sha256:aeb39e3bcb9f40d88412728433926f81f1d54bf6494ff1c65bd733d83cf9aff8
+    lastState: {}
+    name: dbinit
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: docker://c0ad722a5d1fefcc338ecc46faa0f16d8d23fc03484e28dfa818042ac7b77369
+        exitCode: 0
+        finishedAt: "2019-09-13T11:00:00Z"
+        reason: Completed
+        startedAt: "2019-09-13T10:59:00Z"
+  phase: Running
+  podIP: 10.1.0.10
+  qosClass: BestEffort
+  startTime: "2019-09-13T10:58:45Z"
