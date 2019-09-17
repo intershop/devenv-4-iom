@@ -55,7 +55,7 @@ else
     OmsShareDir='/opt/oms/share-dev'
 fi
 
-ENV_ID=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
+EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
 # development host
 HOST_IOM="${HOST_IOM:-$(hostname)}"
