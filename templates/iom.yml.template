@@ -106,6 +106,8 @@ spec:
               value: 'iom local minikube'
             - name: PGHOST
               value: postgres-service
+            - name: PGPORT
+              value: '${FORWARD_PORT_DB}'
             - name: PGPASSWORD
               value: postgres
             - name: OMS_DB_PASS
@@ -125,6 +127,8 @@ spec:
               value: 'iom local minikube'
             - name: OMS_DB_HOST
               value: postgres-service
+            - name: OMS_DB_PORT
+              value: '${FORWARD_PORT_DB}'
             - name: OMS_DB_PASS
               value: '${DB_PASSWORD}'
             - name: OMS_LOGLEVEL_SCRIPTS
