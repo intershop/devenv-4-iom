@@ -3,6 +3,10 @@
 # ID is used to create unique names for docker instances
 ID=2.15.0.0-SNAPSHOT
 
+# OMS_SRC is needed for running geb tests and ws tests
+OMS_SRC=D:/IS_IOM/oms
+OMS_TESTS_SRC=$(cygpath -u "${OMS_SRC}/trunk/oms.tests")
+
 # postgres  image (name:tag)
 DOCKER_DB_IMAGE=postgres:11
 
