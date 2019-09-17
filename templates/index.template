@@ -81,6 +81,12 @@
                 </ul>
               </li>
               <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Kubernetes <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#kubernetes--useful">Useful Kubernetes commands</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="#troubleshooting--no-space-left">No space left</a></li>
@@ -203,23 +209,25 @@
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 
-# Setup postgres
+# Setup postgres (apply/create Postgres-Pod)
 scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl apply -f -
 
-# Setup IOM
+# Setup IOM (apply/create IOM-Deployments)
 scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl apply -f -
         </div></code></pre>
 
         <h3 id="setup--remove-environment">Remove the IOM environment</h3>
 
-        <p>In order to remove all IOM containers you can use following script.</p>
+        <p>In order to remove all IOM containers (PODs) you can use following script.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--remove-environment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
+cd ${PROJECT_PATH}
 
-# Remove the entire IOM environment and the data volume used by the postgres container<span class="collapse setup--remove-environment-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} down --volumes
+# Remove postgres Pod (Container)
+scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl delete -f -
+
+# Remove IOM Deployment (Pods & Containers)
+scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl delete -f -
         </div></code></pre>
 
         <div class="alert alert-warning" role="alert">
@@ -366,6 +374,33 @@ ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} ps
 
 # View the docker compose config<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
 ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} config
+        </div></code></pre>
+
+
+        <h2 id="kubernetes">Kubernetes</h2>
+        <h3 id="kubernetes--useful">Useful kubernetes commands</h3>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+cd ${PROJECT_PATH}
+
+# List all Deployments, Pods, replicasets, services, namespaces
+kubectl get deployments
+kubectl get pods
+kubectl get replicasets
+kubectl get services
+kubectl get namespaces
+
+# Logs for initContainer: kubectl logs <pod name> -c <container name>
+kubectl logs <pod name> -c dbaccount
+kubectl logs <pod name> -c dbinit
+
+# Login into the IOM Pod
+kubectl exec <pod name> -it bash
+
+# Show important information of the pods, deployments, services
+kubectl describe pod <pod name>
+kubectl describe deployment <deployment name>
+kubectl describe service <service name>
         </div></code></pre>
 
         <h2 id="troubleshooting ">Troubleshooting</h2>
