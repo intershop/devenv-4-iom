@@ -73,14 +73,26 @@ fi
 # directory to be used as share
 # default value must be empty to set dependend internal helper variable
 # CommentShareDir correctly
-CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR:-}"
 if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
+# set OmsShareDir depending on CUSTOM_SHARE_DIR
 if [ -z "$CUSTOM_SHARE_DIR" ]; then
     OmsShareDir='/var/opt/share'
 else
     OmsShareDir='/opt/oms/share-dev'
+fi
+# create yaml code depending on CUSTOM_SHARE_DIR
+if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
+    # as these variables are directly expanded within yaml-file,
+    # the leading spaces have to match correctly!
+    VolumeSpecShareDev="
+      - name: share-dev
+        hostPath:
+          path: ${CUSTOM_SHARE_DIR}"
+    VolumeMountShareDev="
+        - name: share-dev
+          mountPath: /opt/oms/share-dev"
 fi
 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")

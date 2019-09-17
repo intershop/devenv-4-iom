@@ -79,7 +79,7 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # If you don't want to test custom xsl templates, the according variable can be left commented out.
 #
 # Docker Desktop:
-#   Set CUSTOM_XSLT_DIR to directory on you local disk, containg the custom xsl templates
+#   Set CUSTOM_XSLT_DIR to directory on your local disk, containg the custom xsl templates
 #   artifacts (e.g. D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt).
 #   Additionally the directory containing the custom xsl templates has to be defined as share
 #   in Docker Desktop.
@@ -90,10 +90,21 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Development+of+mail-templates
 # CUSTOM_TEMPLATES_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
 
+# Access to shared FS
+# -------------------
+# If you want to access the shared file-system of IOM from outside the developer VM, you have to share the
+# directory with the developer VM, which should be used as shared FS by IOM.
+# If you don't want to access the shared file-system of IOM from outside the developer VM, the according
+# variable can be left commented out.
+#
 # Docker Desktop:
-#   directory on you local disk, to hold IOM share
+#   Set CUSTOM_SHARE_DIR to directory on your local disk, which should be used by IOM as shared FS.
+#   (e.g. D:\svn\oms\share). Additionally this directory has to be defined as share in Docker Desktop.
 # Minikube:
-#   has to be set to /var/opt/share
+#   Set CUSTOM_SHARE_DIR to /opt/oms/share-dev. Additionally the directory to be used as shared-FS
+#   has to be mounted.
+# TODO fix confluence link
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+access+to+shared+file-system
 # CUSTOM_SHARE_DIR="D:\svn\oms\trunk\share"
 
 ### optional configuration parameters
