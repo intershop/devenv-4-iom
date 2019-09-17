@@ -75,12 +75,6 @@
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Docker <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#docker--useful">Useful docker / docker compose commands</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Kubernetes <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="#kubernetes--useful">Useful Kubernetes commands</a></li>
@@ -88,9 +82,6 @@
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#troubleshooting--no-space-left">No space left</a></li>
-                </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
@@ -356,34 +347,6 @@ ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
 # Enter the password for user ${DB_USER}: ${DB_PASSWORD}
         </div></code></pre>
 
-
-        <h2 id="docker">Docker / Docker Compose</h2>
-        <h3 id="docker--useful">Useful docker commands</h3>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".docker--useful-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Login into the IOM container
-docker exec -it ${ID} bash
-
-# Login into the Postgres database container
-docker exec -it ${ID}_db bash
-
-# Inspect the postgres database data volume
-docker volume inspect ${COMPOSE_PROJECT_NAME}_db_data
-
-# Get help on docker compose commands<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} help
-
-# List containers<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} ps
-
-# View the docker compose config<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} config
-        </div></code></pre>
-
-
         <h2 id="kubernetes">Kubernetes</h2>
         <h3 id="kubernetes--useful">Useful kubernetes commands</h3>
 
@@ -396,36 +359,22 @@ kubectl get services
 kubectl get namespaces
 
 # Query pod name
-# POD_NAME=$(kubectl get pod -l app=iom -o jsonpath="{.items[0].metadata.name}")
-POD_NAME=$(kubectl get pods -l app=iom -o custom-columns=:metadata.name)
+POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 
 # Logs for initContainer
-kubectl logs "$POD_NAME" -c dbaccount
-kubectl logs "$POD_NAME" -c dbinit
+kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbaccount
+kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbinit
 
 # Login into the IOM Pod
-kubectl exec "$POD_NAME" -it bash
+kubectl exec --namespace=${EnvId} "$POD_NAME" -it bash
 
 # Show important information of the pods, deployments, services
-kubectl describe pod "$POD_NAME"
-kubectl describe deployment iom
-kubectl describe service iom-service
+kubectl describe --namespace=${EnvId} pod "$POD_NAME"
+kubectl describe --namespace=${EnvId} deployment iom
+kubectl describe --namespace=${EnvId} service iom-service
         </div></code></pre>
 
         <h2 id="troubleshooting ">Troubleshooting</h2>
-        <h3 id="troubleshooting--no-space-left">No space left</h3>
-
-        <p>If you are using docker for quite a long time, you collect many docker objects (e.g. images) over the time. So possibly a "no space left" error may occur. In order to clean up unused docker objects, you can use the <a href="https://docs.docker.com/config/pruning" title="Prune unused Docker objects" target="_blank">docker prune command</a>.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-${VAGRANT_SSH}
-
-# Prune everything
-docker system prune
-        </div></code></pre>
-
-
 
       </div> <!-- /container -->
 
