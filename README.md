@@ -83,9 +83,8 @@ docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
 For every IOM instance in your local Kubernetes cluster, you need to have a configuration file with some required entries. You can find a variables.sample file within the devenv-4-iom project. Create a copy of this file (e.g. at your home directory) and adapt configuration settings matching the directories you have chosen before and some other settings.
 
 ```sh
-ID=2.15.0.0-SNAPSHOT
 DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
-CONFIG_FILE=~/${ID}/config.properties
+CONFIG_FILE=~/2.15.0.0-SNAPSHOT/config.properties
 
 CONF_DIR=$(dirname "$CONFIG_FILE")
   
@@ -105,9 +104,8 @@ vi "$CONFIG_FILE"
 Once the configuration file is created and adapted, according Kubernetes resource configurations, aliases and documentation can be created. The devenv-4-iom project comes with some scripts/templates to generate these files. The example below shows an example, assuming your config file is named ~/2.15.0.0-SNAPSHOT/config.properties.
 
 ```sh
-ID=2.15.0.0-SNAPSHOT
 DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
-CONFIG_FILE=~/${ID}/config.properties
+CONFIG_FILE=~/2.15.0.0-SNAPSHOT/config.properties
  
 CONF_DIR=$(dirname "$CONFIG_FILE")
  
