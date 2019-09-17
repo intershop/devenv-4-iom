@@ -16,6 +16,8 @@ spec:
     spec:
       volumes:
 ${VolumeSpecAppDev}
+${VolumeSpecTemplatesDev}
+${VolumeSpecXsltDev}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -32,6 +34,8 @@ ${VolumeSpecAppDev}
           successThreshold: 1
         volumeMounts:
 ${VolumeMountAppDev}
+${VolumeMountTemplatesDev}
+${VolumeMountXsltDev}
         env:
           - name: TENANT
             value: Intershop

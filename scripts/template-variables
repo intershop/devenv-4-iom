@@ -24,26 +24,50 @@ if [ ! -z "$CUSTOM_APPS_DIR" ]; then
     # as these variables are directly expanded within yaml-file,
     # the leading spaces have to match correctly!
     VolumeSpecAppDev="
-     - name: application-dev
-       hostPath:
-         path: ${CUSTOM_APPS_DIR}"
-     VolumeMountAppDev="
+      - name: application-dev
+        hostPath:
+          path: ${CUSTOM_APPS_DIR}"
+    VolumeMountAppDev="
         - name: application-dev
           mountPath: /opt/oms/application-dev"
-fi	  
+fi        
 
 # directory containing custom mail templates
-# default value is valid for Minikube only
-CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR:-/opt/oms/templates-dev}"
-if [ $(OS) == "Msys" ]; then
-  CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to test custom templates or not.
+if [ $(OS) == "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+    CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
+fi
+# create yaml code depending on CUSTOM_TEMPLATES_DIR
+if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+    # as these variables are directly expanded within yaml-file,
+    # the leading spaces have to match correctly!
+    VolumeSpecTemplatesDev="
+      - name: templates-dev
+        hostPath:
+          path: ${CUSTOM_TEMPLATES_DIR}"
+    VolumeMountTemplatesDev="
+        - name: templates-dev
+          mountPath: /opt/oms/templates-dev"
 fi
 
 # directory containing custom xsl templates
-# default value is valid for Minikube only
-CUSTOM_XSL_DIR="${CUSTOM_XSL_DIR:-/opt/oms/xsl-dev}"
-if [ $(OS) == "Msys" ]; then
-  CUSTOM_XSL_DIR=$(cygpath -u "$CUSTOM_XSL_DIR")
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to test custom xsl templates or not.
+if [ $(OS) == "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
+    CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
+fi
+# create yaml code depending on CUSTOM_XSLT_DIR
+if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
+    # as these variables are directly expanded within yaml-file,
+    # the leading spaces have to match correctly!
+    VolumeSpecXsltDev="
+      - name: xslt-dev
+        hostPath:
+          path: ${CUSTOM_XSLT_DIR}"
+    VolumeMountXsltDev="
+        - name: xslt-dev
+          mountPath: /opt/oms/xslt-dev"
 fi
 
 # directory to be used as share

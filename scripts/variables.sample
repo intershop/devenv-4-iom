@@ -46,28 +46,49 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 #
 # Docker Desktop:
 #   Set CUSTOM_APPS_DIR to directory on you local disk, containg custom built
-#   artifacts (e.g. D:\svn\oms\trunk). Additionally the directory containing the custom
+#   artifacts (e.g. D:\svn\oms\trunk\applications). Additionally the directory containing the custom
 #   built artifacts has to be defined as share in Docker Desktop.
-#   TODO fix confluence link
-#   See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Deployment+of+custom+built+artifacts
 # Minikube:
 #   Set CUSTOM_APPS_DIR to /opt/oms/application-dev. Additionally the directory containing
 #   the custom built artifacts has to be mounted.
-#   TODO fix confluence link
-#   See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Deployment+of+custom+built+artifacts
-# CUSTOM_APPS_DIR="D:\svn\oms\trunk"
+# TODO fix confluence link
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Deployment+of+custom+built+artifacts
+# CUSTOM_APPS_DIR="D:\svn\oms\trunk\applications"
 
+# Development of custom mail templates
+# ------------------------------------
+# If you want to test custom mail templates within the developer VM, you have to share the directory
+# containing these templates with the developer VM.
+# If you don't want to test custom mail templates, the according variable can be left commented out.
+#
 # Docker Desktop:
-#   directory on you local disk, containg custom mail templates (e.g. D:\svn\oms\trunk\oms.deployment\var\templates)
+#   Set CUSTOM_TEMPLATES_DIR to directory on you local disk, containg the custom mail templates
+#   artifacts (e.g. D:\svn\oms\trunk\oms.deployment\var\templates). Additionally the directory containing
+#   the custom mail templates has to be defined as share in Docker Desktop.
 # Minikube:
-#   Does not have to be set, default-value is already matching.
+#   Set CUSTOM_TEMPLATES_DIR to /opt/oms/templates-dev. Additionally the directory containing
+#   the custom mail templates has to be mounted.
+# TODO fix confluence link
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Development+of+mail-templates
 # CUSTOM_TEMPLATES_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
 
+# Development of custom xsl templates
+# -----------------------------------
+# If you want to test custom xsl templates within the developer VM, you have to share the directory
+# containing these templates with the developer VM.
+# If you don't want to test custom xsl templates, the according variable can be left commented out.
+#
 # Docker Desktop:
-#   directory on you local disk, containg custom built artifacts (e.g. D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt)
+#   Set CUSTOM_XSLT_DIR to directory on you local disk, containg the custom xsl templates
+#   artifacts (e.g. D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt).
+#   Additionally the directory containing the custom xsl templates has to be defined as share
+#   in Docker Desktop.
 # Minikube:
-#   Does not have to be set, default-value is already matching.
-# CUSTOM_XSLT_DIR="D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt"
+#   Set CUSTOM_TEMPLATES_DIR to /opt/oms/xslt-dev. Additionally the directory containing
+#   the custom xsl templates has to be mounted.
+# TODO fix confluence link
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Development+of+mail-templates
+# CUSTOM_TEMPLATES_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
 
 # Docker Desktop:
 #   directory on you local disk, to hold IOM share
