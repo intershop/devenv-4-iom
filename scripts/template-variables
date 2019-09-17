@@ -10,11 +10,23 @@ INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
 # directory containing custom built artifacts
-# default value is valid for Minikube only
-CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR:-/opt/oms/application-dev}"
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to deploy custom built artifacts or not.
 if [ $(OS) == "Msys" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
+# create yaml code depending on CUSTOM_APPS_DIR
+if [ ! -z "$CUSTOM_APPS_DIR" ]; then
+    # as these variables are directly expanded within yaml-file,
+    # the leading spaces have to match correctly!
+    VolumeSpecAppDev="
+     - name: application-dev
+       hostPath:
+         path: ${CUSTOM_APPS_DIR}"
+     VolumeMountAppDev="
+        - name: application-dev
+          mountPath: /opt/oms/application-dev"
+fi	  
 
 # directory containing custom mail templates
 # default value is valid for Minikube only

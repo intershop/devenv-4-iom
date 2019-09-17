@@ -10,11 +10,13 @@ DOCKER_DB_IMAGE=postgres:11
 IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 
 # iom dbinit image (name:tag)
-IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
+IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT
 
 # iom app image (name:tag)
-IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
+IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT
 
+# Log Messages
+# ------------
 # log-level for different scopes of iom-application. Supported levels are:
 #   FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
 OMS_LOGLEVEL_CONSOLE=ERROR
@@ -27,10 +29,23 @@ OMS_LOGLEVEL_CUSTOMIZATION=ERROR
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_SCRIPTS=INFO
 
+# Deployment of custom artifacts
+# ------------------------------
+# If you want to deploy custom built artifacts within the developer VM, you have to provide
+# these artifacts within a directory, which has to be shared with the developer VM.
+# If you don't want to deploy custom artifacts, the according variable can be left commented out.
+#
 # Docker Desktop:
-#   directory on you local disk, containg custom built artifacts (e.g. D:\svn\oms\trunk)
+#   Set CUSTOM_APPS_DIR to directory on you local disk, containg custom built
+#   artifacts (e.g. D:\svn\oms\trunk). Additionally the directory containing the custom
+#   built artifacts has to be defined as share in Docker Desktop.
+#   TODO fix confluence link
+#   See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Deployment+of+custom+built+artifacts
 # Minikube:
-#   Does not have to be set, default-value is already matching.
+#   Set CUSTOM_APPS_DIR to /opt/oms/application-dev. Additionally the directory containing
+#   the custom built artifacts has to be mounted.
+#   TODO fix confluence link
+#   See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Deployment+of+custom+built+artifacts
 # CUSTOM_APPS_DIR="D:\svn\oms\trunk"
 
 # Docker Desktop:

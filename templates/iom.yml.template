@@ -15,9 +15,7 @@ spec:
         app: iom
     spec:
       volumes:
-      - name: application-dev
-        hostPath:
-          path: ${CUSTOM_APPS_DIR}
+${VolumeSpecAppDev}
       - name: templates-dev
         hostPath:
           path: ${CUSTOM_TEMPLATES_DIR}
@@ -42,8 +40,7 @@ spec:
           timeoutSeconds: 8
           successThreshold: 1
         volumeMounts:
-        - name: application-dev
-          mountPath: /opt/oms/application-dev
+${VolumeMountAppDev}
         - name: templates-dev
           mountPath: /opt/oms/templates-dev
         - name: xslt-dev
