@@ -6,6 +6,15 @@ ID=2.15.0.0-SNAPSHOT
 # postgres  image (name:tag)
 DOCKER_DB_IMAGE=postgres:11
 
+# Docker Image settings
+# ---------------------
+
+# image pull policy defines when to pull docker images
+# if left empty, it defaults to "Always", which makes development easy, as always the newest
+# version of requested docker image will be used. Can be set to any value allowed by
+# ImagePullPolicy (see https://kubernetes.io/docs/concepts/configuration/overview/#container-images)
+# IMAGE_PULL_POLICY=Always
+
 # iom dbaccount image (name:tag)
 IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 
