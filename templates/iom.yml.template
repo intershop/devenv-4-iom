@@ -16,15 +16,6 @@ spec:
     spec:
       volumes:
 ${VolumeSpecAppDev}
-      - name: templates-dev
-        hostPath:
-          path: ${CUSTOM_TEMPLATES_DIR}
-      - name: xslt-dev
-        hostPath:
-          path: ${CUSTOM_XSLT_DIR}
-      - name: share-dev
-        hostPath:
-          path: ${CUSTOM_SHARE_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -41,12 +32,6 @@ ${VolumeSpecAppDev}
           successThreshold: 1
         volumeMounts:
 ${VolumeMountAppDev}
-        - name: templates-dev
-          mountPath: /opt/oms/templates-dev
-        - name: xslt-dev
-          mountPath: /opt/oms/xslt-dev
-        $(CommentShareDir)- name: share-dev
-        ${CommentShareDir}  mountPath: /var/opt/share
         env:
           - name: TENANT
             value: Intershop
@@ -82,8 +67,8 @@ ${VolumeMountAppDev}
             value: 'http://localhost'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
-	  - name: OMS_SHARE
-	    value: '${OmsShareDir}'
+          - name: OMS_SHARE
+            value: '${OmsShareDir}'
         lifecycle:
           postStart:
             exec:
