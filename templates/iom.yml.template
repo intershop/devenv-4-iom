@@ -20,7 +20,7 @@ ${VolumeSpecAppDev}
       - name: iom
         image: ${IOM_APP_IMAGE}
         # image: docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
-        imagePullPolicy: Always
+        imagePullPolicy: ${IMAGE_PULL_POLICY}
         readinessProbe:
           httpGet:
             path: /monitoring/services/health/status
@@ -78,7 +78,7 @@ ${VolumeMountAppDev}
         #   name: volume
       initContainers:
         - name: dbaccount
-          imagePullPolicy: Always
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBACCOUNT_IMAGE}
           # image: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
           env:
@@ -99,7 +99,7 @@ ${VolumeMountAppDev}
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
         - name: dbinit
-          imagePullPolicy: Always
+          imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBINIT_IMAGE}
           # image: docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
           env:
