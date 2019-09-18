@@ -282,7 +282,7 @@ ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
 
         <p>Preconditions:
 	  <ul>
-	    <li>Variable CUSTOM_TEMPLATES_DIR has to be set according the instructions given in <a>TODO</a></li>
+	    <li>Variable CUSTOM_TEMPLATES_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/oy7KC">TODO</a>.</li>
 	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be <a>restarted TODO</a></li>
 	  </ul>
 	</p>
@@ -296,7 +296,7 @@ kubectl exec $POD_NAME -- bash -c apply-templates
 
         <p>Preconditions:
 	  <ul>
-	    <li>Variable CUSTOM_XSLT_DIR has to be set according the instructions given in <a>TODO</a></li>
+	    <li>Variable CUSTOM_XSLT_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/di7KC">TODO</a>.</li>
 	    <li>After changing CUSTOM_XSLT_DIR, the IOM application server has to be <a>restarted TODO</a></li>
 	  </ul>
 	</p>
