@@ -259,7 +259,7 @@ docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
         <p>Preconditions
 	  <ul>
 	    <li>Variable CUSTOM_APPS_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/whXKC">TODO</a>.</li>
-	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be restarted TODO add link.</li>
+	    <li>After changing CUSTOM_APPS_DIR, the IOM application server has to be restarted TODO add link.</li>
 	  </ul
 	</p>
 	<p>There are two possibilities to deploy custom built artifacts.
