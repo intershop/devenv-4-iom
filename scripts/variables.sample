@@ -89,14 +89,8 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # If you don't want to access the shared file-system of IOM from outside the developer VM, the according
 # variable can be left commented out.
 #
-# Docker Desktop:
-#   Set CUSTOM_SHARE_DIR to directory on your local disk, which should be used by IOM as shared FS.
-#   (e.g. D:\svn\oms\share). Additionally this directory has to be defined as share in Docker Desktop.
-# Minikube:
-#   Set CUSTOM_SHARE_DIR to /opt/oms/share-dev. Additionally the directory to be used as shared-FS
-#   has to be mounted.
 # TODO fix confluence link
-# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+access+to+shared+file-system
+# See: https://confluence.intershop.de/x/VS-KC
 # CUSTOM_SHARE_DIR="D:\svn\oms\trunk\share"
 
 ### optional configuration parameters
