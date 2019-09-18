@@ -76,12 +76,6 @@ fi
 if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
-# set OmsShareDir depending on CUSTOM_SHARE_DIR
-if [ -z "$CUSTOM_SHARE_DIR" ]; then
-    OmsShareDir='/var/opt/share'
-else
-    OmsShareDir='/opt/oms/share-dev'
-fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
     # as these variables are directly expanded within yaml-file,
@@ -92,7 +86,7 @@ if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
           path: ${CUSTOM_SHARE_DIR}"
     VolumeMountShareDev="
         - name: share-dev
-          mountPath: /opt/oms/share-dev"
+          mountPath: /var/opt/share"
 fi
 
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 

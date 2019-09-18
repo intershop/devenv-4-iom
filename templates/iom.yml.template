@@ -73,8 +73,6 @@ ${VolumeMountShareDev}
             value: 'http://localhost'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
-          - name: OMS_SHARE
-            value: '${OmsShareDir}'
         lifecycle:
           postStart:
             exec:
