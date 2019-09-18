@@ -65,15 +65,8 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # containing these templates with the developer VM.
 # If you don't want to test custom mail templates, the according variable can be left commented out.
 #
-# Docker Desktop:
-#   Set CUSTOM_TEMPLATES_DIR to directory on yout local disk, containing the custom mail templates
-#   artifacts (e.g. D:\svn\oms\trunk\oms.deployment\var\templates). Additionally the directory containing
-#   the custom mail templates has to be defined as share in Docker Desktop.
-# Minikube:
-#   Set CUSTOM_TEMPLATES_DIR to /opt/oms/templates-dev. Additionally the directory containing
-#   the custom mail templates has to be mounted.
 # TODO fix confluence link
-# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Development+of+mail-templates
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Roll+out+of+custom+mail-templates
 # CUSTOM_TEMPLATES_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
 
 # Development of custom xsl templates
@@ -82,17 +75,9 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # containing these templates with the developer VM.
 # If you don't want to test custom xsl templates, the according variable can be left commented out.
 #
-# Docker Desktop:
-#   Set CUSTOM_XSLT_DIR to directory on your local disk, containing the custom xsl templates
-#   artifacts (e.g. D:\svn\oms\trunk\bakery.transform\transform-core\src\main\resources\document\xslt).
-#   Additionally the directory containing the custom xsl templates has to be defined as share
-#   in Docker Desktop.
-# Minikube:
-#   Set CUSTOM_TEMPLATES_DIR to /opt/oms/xslt-dev. Additionally the directory containing
-#   the custom xsl templates has to be mounted.
 # TODO fix confluence link
-# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Development+of+mail-templates
-# CUSTOM_TEMPLATES_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Roll+out+of+custom+xsl-templates
+# CUSTOM_XSLT_DIR="D:\svn\oms\trunk\oms.deployment\var\templates"
 
 # Access to shared FS
 # -------------------
