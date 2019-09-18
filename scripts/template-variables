@@ -71,8 +71,8 @@ if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
 fi
 
 # directory to be used as share
-# default value must be empty to set dependend internal helper variable
-# CommentShareDir correctly
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use a custom share or not.
 if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
