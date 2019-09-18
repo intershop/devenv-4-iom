@@ -254,30 +254,29 @@ docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
 
         <h2 id="development">Development process</h2>
 
-        <h3 id="development--deployment">Deployment</h3>
+        <h3 id="development--deployment">Deployment of custom built artifacts</h3>
 
-        <p>A deployment resp. un- or redeployment of IOM artifacts can be done with following docker commands.</p>
+        <p>Preconditions
+	  <ul>
+	    <li>Variable CUSTOM_APPS_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/whXKC">TODO</a>.</li>
+	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be restarted TODO add link.</li>
+	  </ul
+	</p>
+	<p>There are two possibilities to deploy custom built artifacts.
+	  <ol>
+	    <li>The IOM Pod could be restarted to redeploy all custom built artifacts TODO: add link</li>
+	    <li>Within the running pod, a selective redeployment can be executed</li>
+	  </ol>
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# redeploy omt selectively 
+POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME -- bash -ic redeploy omt
 
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".development--deployment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Undeploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
-
-# Undeploy bakery.omt only
-${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS} --pattern=omt
-
-# Deploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"</span>
-${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}
-
-# Redeploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
-
-# Redeploy bakery.omt only
-${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
-        </div></code></pre>
-
+# redeploy all
+POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME -- bash -ic redeploy
+          </div></code></pre>
+	  
         <h3 id="development--roll-out-mail-templates">Roll out custom mail templates</h3>
 
         <p>Preconditions:
@@ -289,7 +288,7 @@ ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- bash -c apply-templates
+kubectl exec $POD_NAME -- bash -ic apply-templates
         </div></code></pre>
 
         <h3 id="development--roll-out-xsl-templates">Roll out custom xsl templates</h3>
@@ -303,7 +302,7 @@ kubectl exec $POD_NAME -- bash -c apply-templates
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- bash -c apply-xslt
+kubectl exec $POD_NAME -- bash -ic apply-xslt
         </div></code></pre>
 
         <h3 id="development--debugging">Debugging</h3>
