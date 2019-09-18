@@ -341,10 +341,6 @@ scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${C
 <h4 id="provide-ws-properties">Provide stored procedures</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Go to the oms.tests/tc_stored_procedures directory in your oms source directory
-cd ${IomTestsSrcDir}/tc_stored_procedures
-
-docker ./psql_execute_dir.sh -U ${DB_USER} -h ${HOST_IOM} -p ${FORWARD_PORT_DB} -d ${DB_NAME} -n
 
 STORED_PROCEDURE_CONFIG=mktemp
 
@@ -359,11 +355,11 @@ spec:
     spec:
       containers:
       - name: provide-stored-procedures
-        image: docker-build.rnd.intershop.de/intershop/iom-psql:3.10
+        image: ${IOM_PSQL_IMAGE}
         args:
         - /bin/sh
         - -c
-        - cd /tmp/tc_stored_procedures && ./psql_execute_dir.sh -U oms_user -h postgres-service -p 5442 -d oms_db -n
+        - cd /tmp/tc_stored_procedures && ./psql_execute_dir.sh -U ${DB_USER} -h postgres-service -p ${FORWARD_PORT_DB} -d ${DB_NAME} -n
         volumeMounts:
         - name: stored-procedure-volume
           mountPath: /tmp/tc_stored_procedures
@@ -371,7 +367,7 @@ spec:
       volumes:
       - name: stored-procedure-volume
         hostPath:
-          path: /d/svn/oms/trunk/oms.tests/tc_stored_procedures
+          path: ${IomTestsSrcDir}/tc_stored_procedures
 EOF
 
 cat "$STORED_PROCEDURE_CONFIG" | kubectl apply --namespace=${EnvId} -f -
