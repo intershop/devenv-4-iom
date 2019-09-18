@@ -252,18 +252,6 @@ docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
 
         <h2 id="development">Development process</h2>
 
-        <h3 id="development--reconfiguration">Reconfiguration</h3>
-
-        <p>Configuration changes (e. g. cluster.properties) can be made with following docker command.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".development--reconfiguration-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Reconfigure the IOM container<span class="collapse development--reconfiguration-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
-${DOCKER_SETUP_RECONFIGURE_ALIAS}
-        </div></code></pre>
-
         <h3 id="development--deployment">Deployment</h3>
 
         <p>A deployment resp. un- or redeployment of IOM artifacts can be done with following docker commands.</p>
@@ -286,6 +274,34 @@ ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
 
 # Redeploy bakery.omt only
 ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
+        </div></code></pre>
+
+        <h3 id="development--deployment">Roll out custom mail templates</h3>
+
+        <p>Preconditions:
+	  <ul>
+	    <li>Variable CUSTOM_TEMPLATES_DIR has to be set according the instructions given in <a>TODO</a></li>
+	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be <a>restarted TODO</a></li>
+	  </ul>
+	</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME -- bash -c apply-templates
+        </div></code></pre>
+
+        <h3 id="development--deployment">Roll out custom mail templates</h3>
+
+        <p>Preconditions:
+	  <ul>
+	    <li>Variable CUSTOM_TEMPLATES_DIR has to be set according the instructions given in <a>TODO</a></li>
+	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be <a>restarted TODO</a></li>
+	  </ul>
+	</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME -- bash -c apply-templates
         </div></code></pre>
 
         <h3 id="development--debugging">Debugging</h3>
