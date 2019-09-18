@@ -367,7 +367,7 @@ spec:
       volumes:
       - name: stored-procedure-volume
         hostPath:
-          path: ${IomSrcDir}/oms.tests/tc_stored_procedures
+          path: ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
 EOF
 
 cat "$STORED_PROCEDURE_CONFIG" | kubectl apply --namespace=${EnvId} -f -
@@ -382,7 +382,7 @@ rm "$STORED_PROCEDURE_CONFIG"
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-cd ${IomSrcDir}/oms.tests
+cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run a single geb test
 ./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
@@ -394,7 +394,7 @@ cd ${IomSrcDir}/oms.tests
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-cd ${IomSrcDir}/oms.tests
+cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run a single ws test
 ./gradlew wsTest -Pws.propFile=${ConfigDir}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
@@ -409,7 +409,7 @@ cd ${IomSrcDir}/oms.tests
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-cd ${IomSrcDir}/oms.tests
+cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run all tests of a geb test specification
 ./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
@@ -424,7 +424,7 @@ cd ${IomSrcDir}/oms.tests
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-cd ${IomSrcDir}/oms.tests
+cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run all tests of a specification group
 ./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
@@ -436,7 +436,7 @@ cd ${IomSrcDir}/oms.tests
 
   <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.soap.tests directory in your oms source directory
-cd ${IomSrcDir}/oms.soap.tests
+cd ${IOM_APP_SRC_DIR}/oms.soap.tests
 
 # Run all soap tests
 mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test

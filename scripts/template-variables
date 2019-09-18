@@ -95,10 +95,10 @@ EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 # set ConfigDir depending on CONFIG_FILE
 ConfigDir=$(dirname "$CONFIG_FILE")
 
-# set IomSrcDir depending on IOM_APP_SRC_DIR
+# set IOM_APP_SRC_DIR depending on OS
 # directory to be used to run the soap, geb and ws tests
 if [ $(OS) == "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
-    IomSrcDir=$(cygpath -u "${IOM_APP_SRC_DIR}")
+    IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
 fi
 
 # development host
