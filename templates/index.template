@@ -319,7 +319,7 @@ systemctl restart jboss-as-standalone.service
         
         <h3 id="development--testing">Testing</h3>
 
-        <h4 id="provide--geb--properties">Provide geb properties</h4>
+        <h4 id="provide-geb-properties">Provide geb properties</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
@@ -328,7 +328,7 @@ scripts/template_engine.sh templates/geb.properties.template ${CONFIG_FILE} > ${
 
 </div></code></pre>
 
-        <h4 id="provide--ws--properties">Provide ws properties</h4>
+        <h4 id="provide-ws-properties">Provide ws properties</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
@@ -337,7 +337,50 @@ scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${C
 
 </div></code></pre>
 
-          <h4 id="run--tests">Useful patterns to run single tests or a group of tests</h4>
+<h4 id="provide-ws-properties">Provide stored procedures</h4>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Go to the oms.tests/tc_stored_procedures directory in your oms source directory
+cd ${IomTestsSrcDir}/tc_stored_procedures
+
+docker ./psql_execute_dir.sh -U ${DB_USER} -h ${HOST_IOM} -p ${FORWARD_PORT_DB} -d ${DB_NAME} -n
+
+STORED_PROCEDURE_CONFIG=mktemp
+
+cat &lt;&lt;EOF &gt; "$STORED_PROCEDURE_CONFIG"
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: provide-stored-procedures-job
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    spec:
+      containers:
+      - name: provide-stored-procedures
+        image: docker-build.rnd.intershop.de/intershop/iom-psql:3.10
+        args:
+        - /bin/sh
+        - -c
+        - cd /tmp/tc_stored_procedures && ./psql_execute_dir.sh -U oms_user -h postgres-service -p 5442 -d oms_db -n
+        volumeMounts:
+        - name: stored-procedure-volume
+          mountPath: /tmp/tc_stored_procedures
+      restartPolicy: OnFailure
+      volumes:
+      - name: stored-procedure-volume
+        hostPath:
+          path: /d/svn/oms/trunk/oms.tests/tc_stored_procedures
+EOF
+
+cat "$STORED_PROCEDURE_CONFIG" | kubectl apply --namespace=${EnvId} -f -
+# cat "$STORED_PROCEDURE_CONFIG"| kubectl delete --namespace=${EnvId} -f -
+
+rm "$STORED_PROCEDURE_CONFIG"
+
+</div></code></pre>
+
+          <h4 id="run-tests">Useful patterns to run single tests or a group of tests</h4>
           <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
@@ -364,7 +407,7 @@ cd ${IomTestsSrcDir}
 
 </div></code></pre>
 
-        <h4 id="run--all--tests">All tests of a specification</h4>
+        <h4 id="run-all-tests">All tests of a specification</h4>
         <p> To run all tests of a specification, just use the the name of the specification. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
@@ -379,7 +422,7 @@ cd ${IomTestsSrcDir}
 
 </div></code></pre>
 
-        <h4 id="run--test--group">All tests of a group of specifications (e.g. user management, role management)</h4>
+        <h4 id="run-test-group">All tests of a group of specifications (e.g. user management, role management)</h4>
         <p> To run all tests of a group of specifications, just use the name of the uses package. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
