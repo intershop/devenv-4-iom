@@ -95,9 +95,17 @@ if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
           mountPath: /opt/oms/share-dev"
 fi
 
+# used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
+# set ConfigDir depending on CONFIG_FILE
 ConfigDir=$(dirname "$CONFIG_FILE")
+
+# set IomTestsSrcDir depending on IOM_APP_SRC_DIR
+# directory to be used to run th geb and ws tests
+if [ $(OS) == "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
+    IomTestsSrcDir=$(cygpath -u "${IOM_APP_SRC_DIR}/oms.tests")
+fi
 
 # development host
 HOST_IOM="${HOST_IOM:-$(hostname)}"
