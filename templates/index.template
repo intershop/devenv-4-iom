@@ -50,17 +50,23 @@
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Setup <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Operations <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#setup--setup">Setup the IOM environment</a></li>
-                  <li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
-                  <li><a href="#setup--remove-database">Remove the postgres database container</a></li>
+                  <li><a href="#operations--setup-environment">Setup the whole IOM environment</a></li>
+                  <li><a href="#operations--remove-environment">Remove the whole IOM environment</a></li>
+		  <li><a href="#operations--create-namespace">Create namespace</a></li>
+		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+		  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
+		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+		  <li><a href="#operations--start-database">Start database</a></li>
+		  <li><a href="#operations--remove-database">Stop/remove database</a></li>
+		  <li><a href="#operations--start-iom">Start IOM</a></li>
+		  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
                 </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development process <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#development--reconfiguration">Reconfiguration</a></li>
                   <li><a href="#development--deployment">Deployment</a></li>
                   <li><a href="#development--roll-out-mail-templates">Roll out mail templates</a></li>
                   <li><a href="#development--roll-out-xsl-templates">Roll out xsl templates</a></li>
@@ -204,65 +210,101 @@
           </tbody>
         </table>
 
-        <h2 id="setup">Setup</h2>
+        <h2 id="setup">Operations</h2>
 
-        <h3 id="setup--setup">Setup the IOM environment</h3>
+        <h3 id="operations--setup-environment">Setup the whole IOM environment</h3>
 
-        <p>In order to setup your IOM environment please use following script.</p>
+        <p>Setup of the whole IOM development environment consists of several steps. These are:</p>
+	<ol>
+	  <li><a href="#operations--create-namespace">Create namespace</a></li>
+	  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
+	  <li><a href="#operations--start-database">Start database</a></li>
+	  <li><a href="#operations--start-iom">Start IOM</a></li>
+	</ol>
+
+        <h3 id="operations--remove-environment">Remove the whole IOM environment</h3>
+
+        <p>Removing the whole IOM development environment consists of several steps. There are:</p>
+	<ol>
+	  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+	  <li><a href="#operations--remove-database">Stop/remove database</a></li>
+	  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+	  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+	</ol>
+
+        <h3 id="operations--create-namespace">Create namespace</h3>
+
+        <p>Namespace is required, if you want to run different installations in parallel. The following command creates a namespace, based on the ID you have specified in your properties.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-
 # Create Kubernetes namespace
 kubectl create namespace ${EnvId} 
+	</div></code></pre>
 
-# Setup mailhog
-scripts/template_engine.sh templates/mailhog.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
+        <h3 id="operations--remove-namespace">Remove namespace</h3>
 
-# Setup postgres (apply/create Postgres-Pod)
-scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
-
-# Setup IOM (apply/create IOM-Deployments)
-scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
-        </div></code></pre>
-
-        <h3 id="setup--remove-environment">Remove the IOM environment</h3>
-
-        <p>In order to remove all IOM containers (PODs) you can use following script.</p>
+        <p>The following command removes the namespace.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-
-# Remove postgres Pod (Container)
-scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl delete --namespace=${EnvId} -f -
-
-# Remove IOM Deployment (Pods & Containers)
-scripts/template_engine.sh templates/iom.yml.template ${CONFIG_FILE} | kubectl delete --namespace=${EnvId} -f -
-
 # Remove Kubernetes namespace
 kubectl delete namespace ${EnvId}
-</div></code></pre>
+	</div></code></pre>
 
-        <div class="alert alert-warning" role="alert">
-          <strong>Note!</strong>
-          <p>If you would like to keep the state of the database you must not remove the data volume. You just have to remove the --volumes parameter to keep the data volume. If you restart the environment the postgres database container (${ID}_db) it will automatically reuse the data volume and all data is available again.</p>
-        </div>
+        <h3 id="operations--start-mailserver">Start mailserver</h3>
 
-        <h3 id="setup--remove-database">Remove the postgres database container</h3>
-
-        <p>In order to only remove the postgres database containers you can use following script.</p>
+        <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--remove-database-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
+# Start/Setup mailhog
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace=${EnvId} -f -
+	</div></code></pre>
 
-# Stop and remove the postgres database container<span class="collapse setup--remove-database-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} rm -fs ${DOCKER_COMPOSE_DB_SERVICE_NAME}
+        <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
 
-# Remove the data volume used by the postgres container
-docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
-        </div></code></pre>
+        <p>The following command stops and removes the mailserver.</p>
 
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove mailhog
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace=${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--start-database">Start database</h3>
+
+        <p>The following command starts the database.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start/Setup postgres (apply/create Postgres-Pod)
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace=${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-database">Stop/remove database</h3>
+
+        <p>The following command stops and removes the database.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove postgres-pod
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace=${EnvId} -f -
+	</div></code></pre>
+
+
+        <h3 id="operations--start-iom">Start IOM</h3>
+
+        <p>The following command starts the IOM application server.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start/Setup IOM
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace=${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-iom">Stop/remove IOM</h3>
+
+        <p>The following command stops and removes the IOM application server.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove IOM
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace=${EnvId} -f -
+	</div></code></pre>
+	
 
         <h2 id="development">Development process</h2>
 
@@ -271,12 +313,20 @@ docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
         <p>Preconditions
 	  <ul>
 	    <li>Variable CUSTOM_APPS_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/whXKC">TODO</a>.</li>
-	    <li>After changing CUSTOM_APPS_DIR, the IOM application server has to be restarted TODO add link.</li>
+	    <li>After changing CUSTOM_APPS_DIR, the IOM application server has to be restarted:</li>
+	    <ol>
+	      <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+	      <li><a href="#operations--start-iom">Start IOM</a></li>
+	    </ol>
 	  </ul
 	</p>
 	<p>There are two possibilities to deploy custom built artifacts.
 	  <ol>
-	    <li>The IOM Pod could be restarted to redeploy all custom built artifacts TODO: add link</li>
+	    <li>The IOM Pod could be restarted to redeploy all custom built artifacts:</li>
+	    <ol>
+	      <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+	      <li><a href="#operations--start-iom">Start IOM</a></li>
+	    </ol>
 	    <li>Within the running pod, a selective redeployment can be executed</li>
 	  </ol>
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
