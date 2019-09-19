@@ -256,7 +256,7 @@ kubectl delete namespace ${EnvId}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start/Setup mailhog
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace=${EnvId} -f -
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
@@ -265,7 +265,7 @@ kubectl delete namespace ${EnvId}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove mailhog
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace=${EnvId} -f -
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--start-database">Start database</h3>
@@ -274,7 +274,7 @@ kubectl delete namespace ${EnvId}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start/Setup postgres (apply/create Postgres-Pod)
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace=${EnvId} -f -
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-database">Stop/remove database</h3>
@@ -283,7 +283,7 @@ kubectl delete namespace ${EnvId}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove postgres-pod
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace=${EnvId} -f -
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 
 
@@ -293,7 +293,7 @@ kubectl delete namespace ${EnvId}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start/Setup IOM
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace=${EnvId} -f -
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-iom">Stop/remove IOM</h3>
@@ -302,7 +302,7 @@ kubectl delete namespace ${EnvId}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove IOM
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace=${EnvId} -f -
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 	
 
@@ -331,11 +331,11 @@ kubectl delete namespace ${EnvId}
 	  </ol>
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # redeploy omt selectively 
-POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME -- bash -ic redeploy omt
 
 # redeploy all
-POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME -- bash -ic redeploy
           </div></code></pre>
 	  
@@ -349,7 +349,7 @@ kubectl exec $POD_NAME -- bash -ic redeploy
 	</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME -- bash -ic apply-templates
         </div></code></pre>
 
@@ -363,7 +363,7 @@ kubectl exec $POD_NAME -- bash -ic apply-templates
 	</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME -- bash -ic apply-xslt
         </div></code></pre>
 
@@ -432,8 +432,8 @@ spec:
           path: ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
 EOF
 
-cat "$STORED_PROCEDURE_CONFIG" | kubectl apply --namespace=${EnvId} -f -
-# cat "$STORED_PROCEDURE_CONFIG"| kubectl delete --namespace=${EnvId} -f -
+cat "$STORED_PROCEDURE_CONFIG" | kubectl apply --namespace ${EnvId} -f -
+# cat "$STORED_PROCEDURE_CONFIG"| kubectl delete --namespace ${EnvId} -f -
 
 rm "$STORED_PROCEDURE_CONFIG"
 
@@ -557,27 +557,27 @@ ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # List all Deployments, Pods, replicasets, services, namespaces
-kubectl get deployments
-kubectl get pods
-kubectl get replicasets
-kubectl get services
+kubectl get deployments --namespace ${EnvId}
+kubectl get pods --namespace ${EnvId}
+kubectl get replicasets --namespace ${EnvId}
+kubectl get services --namespace ${EnvId}
 kubectl get namespaces
 
 # Query pod name
-POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 
 # Logs for initContainer
-kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbaccount
-kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbinit
-kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == "INFO") and (.processName == "load_dbmigrate.sh"))'
+kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbaccount
+kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit
+kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == "INFO") and (.processName == "load_dbmigrate.sh"))'
 
 # Login into the IOM Pod
-kubectl exec --namespace=${EnvId} "$POD_NAME" -it bash
+kubectl exec --namespace ${EnvId} "$POD_NAME" -it bash
 
 # Show important information of the pods, deployments, services
-kubectl describe --namespace=${EnvId} pod "$POD_NAME"
-kubectl describe --namespace=${EnvId} deployment iom
-kubectl describe --namespace=${EnvId} service iom-service
+kubectl describe --namespace ${EnvId} pod "$POD_NAME"
+kubectl describe --namespace ${EnvId} deployment iom
+kubectl describe --namespace ${EnvId} service iom-service
         </div></code></pre>
 
         <h2 id="troubleshooting ">Troubleshooting</h2>
