@@ -3,7 +3,7 @@
 # ID is used to create unique names for docker instances
 ID=2.15.0.0-SNAPSHOT
 
-# Set IOM_APP_SRC_DIR to directory on yout local disk, containing the IOM sources.
+# Set IOM_APP_SRC_DIR to directory on your local disk, containing the IOM sources.
 # It is needed for running geb tests and ws tests
 IOM_APP_SRC_DIR="D:\svn\oms\trunk"
 
