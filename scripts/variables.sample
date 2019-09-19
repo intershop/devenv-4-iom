@@ -7,8 +7,11 @@ ID=2.15.0.0-SNAPSHOT
 # It is needed for running geb tests and ws tests
 IOM_APP_SRC_DIR="D:\svn\oms\trunk"
 
-# postgres  image (name:tag)
+# postgres image (name:tag)
 DOCKER_DB_IMAGE=postgres:11
+
+# mailhog image (name:tag)
+MAILHOG_IMAGE=mailhog/mailhog
 
 # Docker Image settings
 # ---------------------
