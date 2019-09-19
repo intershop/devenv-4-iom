@@ -94,6 +94,8 @@
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt-help/" target="_blank">Online Help</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
                   <li><a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=${EnvId}" target="_blank">Kubernetes Dashboard</a></li>
+                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a></li>
+                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}/api/v2/messages" target="_blank">Mails (REST)</a></li>
                 </ul>
               </li>
             </ul>
@@ -206,6 +208,9 @@ cd ${PROJECT_PATH}
 
 # Create Kubernetes namespace
 kubectl create namespace ${EnvId} 
+
+# Setup mailhog
+scripts/template_engine.sh templates/mailhog.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
 
 # Setup postgres (apply/create Postgres-Pod)
 scripts/template_engine.sh templates/postgres.yml.template ${CONFIG_FILE} | kubectl apply --namespace=${EnvId} -f -
@@ -507,6 +512,7 @@ POD_NAME=$(kubectl get pods --namespace=${EnvId} -l app=iom -o jsonpath="{.items
 # Logs for initContainer
 kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbaccount
 kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbinit
+kubectl logs --namespace=${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == "INFO") and (.processName == "load_dbmigrate.sh"))'
 
 # Login into the IOM Pod
 kubectl exec --namespace=${EnvId} "$POD_NAME" -it bash
