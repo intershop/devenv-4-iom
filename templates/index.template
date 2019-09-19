@@ -161,7 +161,7 @@
               <th>#</th>
               <th>Developer host</th>
               <th>Kubernetes Service</th>
-              <th>IOM container</th>
+              <th>Container</th>
               <th>Usage</th>
             </tr>
           </thead>
@@ -193,6 +193,13 @@
               <td>${FORWARD_PORT_DB}</td>
               <td>${PORT_DB}</td>
               <td>PostgreSQL Database</td>
+            </tr>
+            <tr>
+              <th scope="row">5</th>
+              <td>${FORWARD_PORT_MAILHOG_SMTP}</td>
+              <td>${FORWARD_PORT_MAILHOG_SMTP}</td>
+              <td>${PORT_MAILHOG_SMTP}</td>
+              <td>Send emails over SMTP protocol</td>
             </tr>
           </tbody>
         </table>
@@ -346,7 +353,7 @@ scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${C
 <h4 id="provide-ws-properties">Provide stored procedures</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-
+# Use a psql container to provided the stored procedures for testing purposes.
 STORED_PROCEDURE_CONFIG=$(mktemp)
 
 cat &lt;&lt;EOF &gt; "$STORED_PROCEDURE_CONFIG"
