@@ -22,7 +22,14 @@ ${VolumeSpecShareDev}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
-        # image: docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
+        #
+        # For testing purposes, e.g. installing additional packages using yum,
+        # it is necessary to run the container as user root. If you need this to do,
+        # just uncomment the following statement.
+        # 
+        # securityContext:
+        #   runAsUser: 0
+        #
         imagePullPolicy: ${IMAGE_PULL_POLICY}
         readinessProbe:
           httpGet:
@@ -67,6 +74,8 @@ ${VolumeMountShareDev}
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
             value: 'ci'
+          - name: JBOSS_OPTS
+            value: "--debug *:8787"
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '500'
           - name: OMS_PUBLIC_URL
@@ -135,4 +144,7 @@ spec:
     - name: admin
       port: ${FORWARD_PORT_WILDFLY}
       targetPort: ${PORT_WILDFLY}
+    - name: debug
+      port: ${FORWARD_PORT_DEBUG}
+      targetPort: ${PORT_DEBUG}
   type: LoadBalancer
