@@ -76,6 +76,8 @@ ${VolumeMountShareDev}
             value: 'ci'
           - name: JBOSS_OPTS
             value: "--debug *:8787"
+          - name: JBOSS_JAVA_OPTS
+            value: "-Xms1024M -Xmx2048M"
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '500'
           - name: OMS_PUBLIC_URL
