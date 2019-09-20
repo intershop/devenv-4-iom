@@ -83,14 +83,10 @@ ${VolumeMountShareDev}
           postStart:
             exec:
               command: ["/opt/oms/bin/iom_start_handler.sh"]
-        # volumeMounts:
-        # - mountPath: "/var/opt/share-test"
-        #   name: volume
       initContainers:
         - name: dbaccount
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBACCOUNT_IMAGE}
-          # image: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
           env:
             - name: TENANT
               value: Intershop
@@ -111,7 +107,6 @@ ${VolumeMountShareDev}
         - name: dbinit
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBINIT_IMAGE}
-          # image: docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
           env:
             - name: TENANT
               value: Intershop

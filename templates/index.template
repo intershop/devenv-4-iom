@@ -55,13 +55,13 @@
                   <li><a href="#operations--setup-environment">Setup the whole IOM environment</a></li>
                   <li><a href="#operations--remove-environment">Remove the whole IOM environment</a></li>
 		  <li><a href="#operations--create-namespace">Create namespace</a></li>
-		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
 		  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
-		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
 		  <li><a href="#operations--start-database">Start database</a></li>
-		  <li><a href="#operations--remove-database">Stop/remove database</a></li>
 		  <li><a href="#operations--start-iom">Start IOM</a></li>
 		  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+		  <li><a href="#operations--remove-database">Stop/remove database</a></li>
+		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -221,6 +221,19 @@
 	  <li><a href="#operations--start-database">Start database</a></li>
 	  <li><a href="#operations--start-iom">Start IOM</a></li>
 	</ol>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Create Kubernetes namespace
+kubectl create namespace ${EnvId} 
+
+# Start/Setup mailserver
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+
+# Start/Setup postgres (apply/create Postgres-Pod)
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+
+# Start/Setup IOM
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
 
         <h3 id="operations--remove-environment">Remove the whole IOM environment</h3>
 
@@ -231,6 +244,19 @@
 	  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
 	  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
 	</ol>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove IOM
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+
+# Stop/Remove postgres-pod
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+
+# Stop/Remove mailhog
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+	      
+# Remove Kubernetes namespace
+kubectl delete namespace ${EnvId}
+	</div></code></pre>
 
         <h3 id="operations--create-namespace">Create namespace</h3>
 
@@ -241,31 +267,13 @@
 kubectl create namespace ${EnvId} 
 	</div></code></pre>
 
-        <h3 id="operations--remove-namespace">Remove namespace</h3>
-
-        <p>The following command removes the namespace.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Remove Kubernetes namespace
-kubectl delete namespace ${EnvId}
-	</div></code></pre>
-
         <h3 id="operations--start-mailserver">Start mailserver</h3>
 
         <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Start/Setup mailhog
+# Start/Setup mailserver
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
-
-        <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
-
-        <p>The following command stops and removes the mailserver.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Stop/Remove mailhog
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--start-database">Start database</h3>
@@ -276,16 +284,6 @@ kubectl delete namespace ${EnvId}
 # Start/Setup postgres (apply/create Postgres-Pod)
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
-
-        <h3 id="operations--remove-database">Stop/remove database</h3>
-
-        <p>The following command stops and removes the database.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Stop/Remove postgres-pod
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
-	</div></code></pre>
-
 
         <h3 id="operations--start-iom">Start IOM</h3>
 
@@ -305,6 +303,33 @@ kubectl delete namespace ${EnvId}
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 	
+        <h3 id="operations--remove-database">Stop/remove database</h3>
+
+        <p>The following command stops and removes the database.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove postgres-pod
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
+
+        <p>The following command stops and removes the mailserver.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove mailhog
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-namespace">Remove namespace</h3>
+
+        <p>The following command removes the namespace.</p>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove Kubernetes namespace
+kubectl delete namespace ${EnvId}
+	</div></code></pre>
+
 
         <h2 id="development">Development process</h2>
 
