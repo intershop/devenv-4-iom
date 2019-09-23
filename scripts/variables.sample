@@ -29,10 +29,12 @@ IOM_PSQL_IMAGE=docker-build.rnd.intershop.de/intershop/iom-psql:3.10
 IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 
 # iom dbinit image (name:tag)
-IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT
+# IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT
+IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-config-com.intershop.oms.ci-project:2.16.0.0-SNAPSHOT-1.0.0.0-SNAPSHOT
 
 # iom app image (name:tag)
-IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT
+# IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT
+IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-customization-com.intershop.oms.ci-project:1.0.0.0-SNAPSHOT
 
 # Log Messages
 # ------------
