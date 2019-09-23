@@ -428,39 +428,8 @@ scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${C
 <h4 id="provide-ws-properties">Provide stored procedures</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Use a psql container to provided the stored procedures for testing purposes.
-STORED_PROCEDURE_CONFIG=$(mktemp)
-
-cat &lt;&lt;EOF &gt; "$STORED_PROCEDURE_CONFIG"
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: provide-stored-procedures-job
-spec:
-  ttlSecondsAfterFinished: 0
-  template:
-    spec:
-      containers:
-      - name: provide-stored-procedures
-        image: ${IOM_PSQL_IMAGE}
-        args:
-        - /bin/sh
-        - -c
-        - cd /tmp/tc_stored_procedures && ./psql_execute_dir.sh -U ${DB_USER} -h postgres-service -p ${FORWARD_PORT_DB} -d ${DB_NAME} -n
-        volumeMounts:
-        - name: stored-procedure-volume
-          mountPath: /tmp/tc_stored_procedures
-      restartPolicy: OnFailure
-      volumes:
-      - name: stored-procedure-volume
-        hostPath:
-          path: ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
-EOF
-
-cat "$STORED_PROCEDURE_CONFIG" | kubectl apply --namespace ${EnvId} -f -
-# cat "$STORED_PROCEDURE_CONFIG"| kubectl delete --namespace ${EnvId} -f -
-
-rm "$STORED_PROCEDURE_CONFIG"
+# Use a psql container to provide the stored procedures for testing purposes.
+(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/testing.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 
 </div></code></pre>
 
