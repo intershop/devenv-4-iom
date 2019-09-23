@@ -91,6 +91,9 @@
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#troubleshooting--shared-drives">Shared Drives</a></li>
+                </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
@@ -574,7 +577,13 @@ kubectl describe --namespace ${EnvId} deployment iom
 kubectl describe --namespace ${EnvId} service iom-service
         </div></code></pre>
 
-        <h2 id="troubleshooting ">Troubleshooting</h2>
+        <h2 id="troubleshooting">Troubleshooting</h2>
+
+        <h3 id="troubleshooting--shared-drives">Shared Drives</h3>
+
+        After resetting your password you can have some problems with your shared drives. In those cases use the Settings > Shared Drives > Reset credentials
+
+      <br><br>
 
       </div> <!-- /container -->
 
