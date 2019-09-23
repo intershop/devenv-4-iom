@@ -360,11 +360,11 @@ kubectl delete namespace ${EnvId}
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # redeploy omt selectively 
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- bash -ic redeploy omt
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy omt
 
 # redeploy all
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- bash -ic redeploy
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy
           </div></code></pre>
 	  
         <h3 id="development--roll-out-mail-templates">Roll out custom mail templates</h3>
@@ -378,7 +378,7 @@ kubectl exec $POD_NAME -- bash -ic redeploy
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- bash -ic apply-templates
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-templates
         </div></code></pre>
 
         <h3 id="development--roll-out-xsl-templates">Roll out custom xsl templates</h3>
@@ -392,7 +392,7 @@ kubectl exec $POD_NAME -- bash -ic apply-templates
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME -- bash -ic apply-xslt
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         </div></code></pre>
 
         <h3 id="development--debugging">Debugging</h3>
