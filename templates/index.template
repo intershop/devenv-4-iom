@@ -70,6 +70,7 @@
                   <li><a href="#development--deployment">Deployment</a></li>
                   <li><a href="#development--roll-out-mail-templates">Roll out mail templates</a></li>
                   <li><a href="#development--roll-out-xsl-templates">Roll out xsl templates</a></li>
+                  <li><a href="#development--access-emails">Access E-Mails</a></li>
                   <li><a href="#development--debugging">Debugging</a></li>
                   <li><a href="#development--testing">Testing</a></li>
                 </ul>
@@ -395,19 +396,14 @@ POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items
 kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         </div></code></pre>
 
+        <h3 id="development--access-emails">Access E-Mails</h3>
+
+        <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
+
         <h3 id="development--debugging">Debugging</h3>
 
-        <p>Port ${FORWARD_PORT_DEBUG} for Remote Java Debugging is available out of the box. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
+        <p>In order to debug the application port ${FORWARD_PORT_DEBUG} is available out of the box for Remote Java Debugging. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
 
-        <div class="alert alert-warning" role="alert">
-          <strong>Note!</strong>
-          <p>Please note that the listening debug port will not get restored when restarting the WildFly application server on service level via</p><br>
-
-          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-systemctl restart jboss-as-standalone.service
-          </div></code></pre>
-        </div>
-        
         <h3 id="development--testing">Testing</h3>
 
         <h4 id="provide-geb-properties">Provide geb properties</h4>
