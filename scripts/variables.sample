@@ -58,14 +58,14 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 #
 # Docker Desktop:
 #   Set CUSTOM_APPS_DIR to directory on yout local disk, containing custom built
-#   artifacts (e.g. D:\svn\oms\trunk\applications). Additionally the directory containing the custom
+#   artifacts (e.g. D:\svn\oms\trunk\oms.deployment\applications). Additionally the directory containing the custom
 #   built artifacts has to be defined as share in Docker Desktop.
 # Minikube:
 #   Set CUSTOM_APPS_DIR to /opt/oms/application-dev. Additionally the directory containing
 #   the custom built artifacts has to be mounted.
 # TODO fix confluence link
 # See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Deployment+of+custom+built+artifacts
-# CUSTOM_APPS_DIR="D:\svn\oms\trunk\applications"
+# CUSTOM_APPS_DIR="D:\svn\oms\trunk\oms.deployment\applications"
 
 # Development of custom mail templates
 # ------------------------------------
