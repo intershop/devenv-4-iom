@@ -79,7 +79,7 @@ ${VolumeMountShareDev}
           - name: JBOSS_JAVA_OPTS
             value: "-Xms1024M -Xmx2048M"
           - name: OMS_WILDFLY_READY_TIMEOUT
-            value: '500'
+            value: '180'
           - name: OMS_PUBLIC_URL
             value: 'http://${HOST_IOM}:${FORWARD_PORT_IOM}'
           - name: OMS_EXEC_BACKEND_APPS

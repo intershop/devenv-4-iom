@@ -498,6 +498,8 @@ mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
 
 </div></code></pre>
 
+<!--
+
         <h2 id="database">Database</h2>
         <h3 id="database--init">Initialize the database</h3>
 
@@ -544,6 +546,8 @@ ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
 
 # Enter the password for user ${DB_USER}: ${DB_PASSWORD}
         </div></code></pre>
+
+-->
 
         <h2 id="kubernetes">Kubernetes</h2>
         <h3 id="kubernetes--useful">Useful kubernetes commands</h3>

@@ -3,8 +3,16 @@
 # ID is used to create unique names for docker instances
 ID=2.15.0.0-SNAPSHOT
 
-# Set IOM_APP_SRC_DIR to directory on your local disk, containing the IOM sources.
-# It is needed for running geb tests and ws tests
+# Share the IOM source directory
+# ------------------------------
+# For serveral purposes (e.g geb running tests and ws tests), the IOM source directory has to be shared with the developer VM.
+#
+# Docker Desktop:
+#   Set IOM_APP_SRC_DIR to directory on your local disk, containing IOM sources.
+#   Additionally the drive containing the IOM sources has to be defined as share in Docker Desktop.
+# Minikube:
+#   Set IOM_APP_SRC_DIR to /opt/oms/application-dev. Additionally the directory containing
+#   the custom built artifacts has to be mounted.
 IOM_APP_SRC_DIR="D:\svn\oms\trunk"
 
 # postgres image (name:tag)
