@@ -10,7 +10,7 @@ is.oms.db.user = ${DB_USER}
 is.oms.db.pass = ${DB_PASSWORD}
 
 # ws user
-is.oms.ws.user = test_ws_user
+is.oms.ws.user = test_ws_user_neu
 is.oms.ws.pass = !InterShop00!
 
 # standalone application or not
@@ -22,5 +22,5 @@ is.oms.app.standalone = true
 # key of the same size as the hash output or larger must be used with the JWS
 # HMAC SHA-2 algorithms (i.e, 256 bits for "HS256")
 is.oms.jwt.secret = length_must_be_at_least_32_chars
-is.oms.customisation.supported = OLD_NON_BASIC
-# , RMA_APPROVAL, AGGREGATED_INVOICE, B2B, CUSTOM_MENU
+
+is.oms.customisation.excludes = 
