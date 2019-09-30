@@ -5,11 +5,15 @@ metadata:
   labels:
     app: postgres
 spec:
+  volumes:
+${VolumeSpecDbData}
   containers:
   - name: postgres
     image: ${DOCKER_DB_IMAGE}
     args: ["-N", "500", "-c", "max_prepared_transactions=100"]
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: Always
+    volumeMounts:
+${VolumeMountDbData}
 ---
 kind: Service
 apiVersion: v1
