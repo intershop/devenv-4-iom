@@ -142,13 +142,51 @@ FORWARD_PORT_MAILHOG_UI=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_MAILHOG_SMTP=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
 
 
+################################################################################
+# Non-versioned commands and variables
+#
+# The following section defines general commands and variables.
+################################################################################
 
-# TODO check following variables
+if [ "$KEEP_DATABASE_DATA" = true ] ; then
+  MOUNTPOINT_CMD='$(docker volume inspect --format='"'"'{{.Mountpoint}}'"'"' ${EnvId}-pgdata)'
 
-# paths
-PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
-UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
-# DATABASE_MIGRATE_PATH=$(echo $(find ${SRC_DIR} -name "dbmigrate.sh") | sed "s|${SRC_DIR}|/tmp/src|g")
+  KEEP_DATABASE_DATA_CREATION_DOKU_PASSAGE="
+# Create local Docker/Kubernetes volume to keep the database data
+docker volume create --name=${EnvId}-pgdata -d local && MOUNTPOINT="\"${MOUNTPOINT_CMD}\"" && (cd "${PROJECT_PATH}" && MOUNTPOINT=\""'$MOUNTPOINT'"\" scripts/template_engine.sh templates/postgres-storage.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+ "
+
+KEEP_DATABASE_DATA_REMOVAL_DOKU_PASSAGE="
+# Remove Kubernetes volume
+MOUNTPOINT="\"${MOUNTPOINT_CMD}\"" && (cd "${PROJECT_PATH}" && MOUNTPOINT=\""'$MOUNTPOINT'"\" scripts/template_engine.sh templates/postgres-storage.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+ "
+
+KEEP_DATABASE_DATA_VOLUME_REMOVAL_DOKU_PASSAGE="
+
+<div class=\"alert alert-warning\" role=\"alert\">
+          <strong>Note!</strong>
+          <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
+
+          <pre class=\"prettyprint lang-bash\"><code><div class=\"col-xs-12\">
+# Remove local volume
+docker volume rm ${EnvId}-pgdata
+          </div></code></pre>
+        </div>"
+
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 OMS_SKIP_BUSINESS_CONFIG="${OMS_SKIP_BUSINESS_CONFIG:--sb}"
 
