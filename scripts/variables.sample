@@ -110,7 +110,7 @@ KEEP_DATABASE_DATA=true
 #
 # TODO fix confluence link
 # See: https://confluence.intershop.de/x/VS-KC
-# CUSTOM_SHARE_DIR="D:\svn\oms\trunk\share"
+# CUSTOM_SHARE_DIR="${CustomShareDirDefault}"
 
 ### optional configuration parameters
 
