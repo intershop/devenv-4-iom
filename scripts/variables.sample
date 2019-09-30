@@ -65,7 +65,7 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # If you don't want to deploy custom artifacts, the according variable can be left commented out.
 #
 # Docker Desktop:
-#   Set CUSTOM_APPS_DIR to directory on yout local disk, containing custom built
+#   Set CUSTOM_APPS_DIR to directory on your local disk, containing custom built
 #   artifacts (e.g. D:\svn\oms\trunk\oms.deployment\applications). Additionally the directory containing the custom
 #   built artifacts has to be defined as share in Docker Desktop.
 # Minikube:
