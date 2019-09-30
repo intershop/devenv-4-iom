@@ -12,6 +12,7 @@ is.oms.db.pass = ${DB_PASSWORD}
 # ws user
 is.oms.ws.user = test_ws_user_neu
 is.oms.ws.pass = !InterShop00!
+is.oms.ws.role = TC_ShopServiceClient
 
 # standalone application or not
 is.oms.app.standalone = true
