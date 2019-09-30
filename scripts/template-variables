@@ -13,6 +13,19 @@ PORT_OFFSET="${PORT_OFFSET:-10}"
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
+# Add volumes / mounts if the user wants to keep databse data or not.
+if [ "$KEEP_DATABASE_DATA" = true ] ; then
+    # as these variables are directly expanded within yaml-file,
+    # the leading spaces have to match correctly!
+    VolumeSpecDbData="
+  - name: db-data
+    persistentVolumeClaim:
+      claimName: postgres-pvc"
+    VolumeMountDbData="
+    - name: db-data
+      mountPath: /var/lib/postgresql/data"
+fi
+
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
