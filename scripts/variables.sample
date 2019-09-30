@@ -58,6 +58,12 @@ OMS_LOGLEVEL_CUSTOMIZATION=ERROR
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_SCRIPTS=INFO
 
+# Keep database data
+# ------------------------------
+# If you want to keep database data even after a kubernetes restart, you have to set
+# KEEP_DATABASE_DATA to true, otherwise false.
+KEEP_DATABASE_DATA=true
+
 # Deployment of custom artifacts
 # ------------------------------
 # If you want to deploy custom built artifacts within the developer VM, you have to provide
