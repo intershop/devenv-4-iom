@@ -105,8 +105,18 @@ fi
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
-# set ConfigDir depending on CONFIG_FILE
-ConfigDir=$(dirname "$CONFIG_FILE")
+# set ENV_DIR depending on CONFIG_FILE
+if [ ! -z "$CONFIG_FILE" ]; then
+  ENV_DIR=$(dirname "$CONFIG_FILE")
+fi
+
+CustomShareDirDefault="$ENV_DIR/share"
+
+# set directory defaults depending on OS
+# directory of the environment
+if [ $(OS) == "Msys" ]; then
+    CustomShareDirDefault=$(cygpath -w "${CustomShareDirDefault}")
+fi
 
 # set IOM_APP_SRC_DIR depending on OS
 # directory to be used to run the soap, geb and ws tests
@@ -141,6 +151,20 @@ FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_MAILHOG_UI=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_MAILHOG_SMTP=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
 
+# paths
+PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
+
+TIMEZONE="${TIMEZONE:-Europe/Berlin}"
+
+# images
+DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
+MAILHOG_IMAGE="${MAILHOG_IMAGE:-mailhog/mailhog}"
+IOM_PSQL_IMAGE="${IOM_PSQL_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-psql:3.10}"
+IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT}"
+IOM_DBINIT_IMAGE="${IOM_DBINIT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT}"
+IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT}"
+
 
 ################################################################################
 # Non-versioned commands and variables
@@ -173,171 +197,4 @@ docker volume rm ${EnvId}-pgdata
           </div></code></pre>
         </div>"
 
-fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-OMS_SKIP_BUSINESS_CONFIG="${OMS_SKIP_BUSINESS_CONFIG:--sb}"
-
-TIMEZONE="${TIMEZONE:-Europe/Berlin}"
-
-
-
-
-
-# docker
-DOCKER_REGISTRY_HOST="${DOCKER_REGISTRY_HOST:-docker-build.rnd.intershop.de}"
-DOCKER_IOM_IMAGE="${DOCKER_IOM_IMAGE:-iom/iom-trunk:2.4.0.0-SNAPSHOT}"
-DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
-DOCKER_IOM_IMAGE_VERSION=$(echo $DOCKER_IOM_IMAGE | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\|latest\).*$/\1/")
-
-COMPOSE_PROJECT_NAME=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
-COMPOSE_ETC_DIR=/etc/opt/oms.standalone
-COMPOSE_APP_DIR=/opt/oms.standalone/application
-COMPOSE_LOG_DIR=/var/opt/iom_standalone_log
-COMPOSE_VAR_DIR=/var/opt/oms.standalone
-COMPOSE_SHARE_DIR=
-
-################################################################################
-# Aliases
-#
-# The following section defines the aliases.
-################################################################################
-
-# docker-compose
-DOCKER_COMPOSE_BASE_COMMAND_ALIAS=docker_compose_${ID}
-
-# Setup
-DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS=docker_${ID}_setup_provide_var_directory
-DOCKER_SETUP_RECONFIGURE_ALIAS=docker_${ID}_setup_reconfigure
-
-# Development
-DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS=docker_${ID}_development_undeploy
-DOCKER_DEVELOPMENT_DEPLOY_ALIAS=docker_${ID}_development_deploy
-DOCKER_DEVELOPMENT_REDEPLOY_ALIAS=docker_${ID}_development_redeploy
-
-# Database
-DOCKER_DATABASE_INIT_ALIAS=${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}_database_init
-DOCKER_DATABASE_MIGRATE_ALIAS=docker_${ID}_database_migrate
-DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS=docker_${ID}_database_init_migrate_config
-DOCKER_DATABASE_CREATE_DUMP_ALIAS=docker_${ID}_database_create_dump
-DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS=docker_${ID}_database_open_psql_terminal
-
-################################################################################
-# Non-versioned commands and variables
-#
-# The following section defines general commands and variables.
-################################################################################
-
-# docker compose
-
-DOCKER_COMPOSE_IMAGE_SUFFIX="-iom"
-DOCKER_COMPOSE_DB_SERVICE_NAME="db"
-DOCKER_COMPOSE_IOM_SERVICE_NAME="iom"
-DOCKER_COMPOSE_BASE_COMMAND="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} LOG_DIR=${LOG_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f -"
-
-# IOM-8813
-# >= 2.12.0.0
-if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
-then
-  DOCKER_COMPOSE_BASE_COMMAND="export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} && INDEX=${INDEX} PORT_OFFSET=${PORT_OFFSET} TIMEZONE=${TIMEZONE} ID=${ID} ETC_DIR=${ETC_DIR} VAR_DIR=${VAR_DIR} SHARE_DIR=${SHARE_DIR} SRC_DIR=${SRC_DIR} APP_DIR=${APP_DIR} LOG_DIR=${LOG_DIR} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} DOCKER_IOM_IMAGE=${DOCKER_IOM_IMAGE} DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/docker-compose.template | docker-compose -f -"
-fi
-
-VAGRANT_SSH="${VAGRANT_SSH:-}"
-SET_ALIAS="source <(ID=${ID} DB_NAME=${DB_NAME} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_DUMP=${DB_DUMP} ${UNIX_PROJECT_PATH}/scripts/template_engine.sh ${UNIX_PROJECT_PATH}/templates/alias.template)"
-
-# Setup
-
-DOCKER_SETUP_PROVIDE_VAR_DIRECTORY="docker exec ${ID} bash /usr/local/bin/docker_provide_var_directory.sh"
-
-# Development
-DOCKER_DEVELOPMENT_UNDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_undeploy.sh"
-DOCKER_DEVELOPMENT_DEPLOY="docker exec ${ID} bash /usr/local/bin/docker_deploy.sh"
-DOCKER_DEVELOPMENT_REDEPLOY="docker exec ${ID} bash /usr/local/bin/docker_redeploy.sh"
-
-# Database
-DOCKER_DATABASE_INIT="${DOCKER_COMPOSE_BASE_COMMAND} exec -T ${DOCKER_COMPOSE_DB_SERVICE_NAME} bash /usr/local/bin/dbinit.sh"
-DOCKER_DATABASE_INIT_MIGRATE_CONFIG="docker exec ${ID}_db bash -c 'cd /tmp/src/postgres/dumps && bash reset_test_data.sh -U ${DB_USER} -d ${DB_NAME} -f ${DB_DUMP} -L /tmp/pg_log ${OMS_SKIP_BUSINESS_CONFIG} -c en_US.utf8 -n'"
-DOCKER_DATABASE_MIGRATE="docker exec ${ID}_db bash ${DATABASE_MIGRATE_PATH} -h localhost -U ${DB_USER} -p 5432 -d ${DB_NAME} -L /tmp/pg_log -n"
-DOCKER_DATABASE_CREATE_DUMP="docker exec ${ID}_db bash -c \\\"cd /tmp/src/postgres/dumps && pg_dump -O -b -U oms_user -h localhost -p 5432 -d oms_db -n admin -n oms -n customer -n omt -n product -n system -n testcases -n bizconf |sed 's/^REVOKE ALL ON SCHEMA/--REVOKE ALL ON SCHEMA/g' |sed 's/^GRANT ALL ON SCHEMA/--GRANT ALL ON SCHEMA/g' |sed 's/^SET idle_in_transaction_session_timeout/-- SET idle_in_transaction_session_timeout/g' |gzip > ${ID}-\"'"'$(date "'+%Y-%m-%d-%H-%M-%S'")'"'\".dmp.gz\\\""
-DOCKER_DATABASE_OPEN_PSQL_TERMINAL="docker run --network=${COMPOSE_PROJECT_NAME}_default -it --rm --link ${ID}_db:postgres ${DOCKER_DB_IMAGE} psql -h postgres -U ${DB_USER} -d ${DB_NAME}"
-
-################################################################################
-# Versioned commands and variables
-#
-# The following section defines commands and variables that could only be
-# defined in a context of a specific version of a docker image.
-################################################################################
-
-# IOM-7111
-# IOM-7183
-# available for images >= 2.1.11.0, 2.2.3.0, 2.3.0.0
-if (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.1.11.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )) ||
-   (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.3.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )) ||
-   ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )
-then
-  # IOM-7111
-  DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM}"
-
-  # IOM-7183
-  # IOM-8813
-  if ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
-  then
-    DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE="
-# Make the fully orchestrated OMS_VAR directory accessible<span class=\"collapse setup--initialize-reconfigure-aliases\"># alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\"</span>
-${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}
- "
-  fi
-
-DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS_PASSAGE="alias ${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_ALIAS}=\"${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY}\""
-
-else
-  # IOM-7111
-  DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh"
-fi
-
-# IOM-7205
-# available for images >= 2.1.11.0, 2.2.4.0, 2.3.0.0
-if (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.1.11.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )) ||
-   (( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.4.0 ) && ( version_lt $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )) ||
-   ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.3.0.0 )
-then
-  # IOM-7205
-  DOCKER_SETUP_RECONFIGURE="docker exec ${ID} bash /usr/local/bin/docker_reconfigure.sh --wsdl-host=${HOST_IOM} --wsdl-port=${FORWARD_PORT_IOM} --timezone=${TIMEZONE}"
-fi
-
-
-# >= 2.2.0.0
-if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.2.0.0 )
-then
-  CLUSTER_PROPERTIES_DB_HOST_CONFIG="/system-property=is.oms.db.hostlist: \"postgres:${PORT_DB}\""
-
-  OMT_URL="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt"
-else
-  CLUSTER_PROPERTIES_DB_HOST_CONFIG="/system-property=is.oms.db.host: \"postgres\"
-/system-property=is.oms.db.port: \"${PORT_DB}\""
-
-  OMT_URL="http://${HOST_IOM}:${FORWARD_PORT_IOM}/bakery.omt"
-fi
-
-# IOM-8813
-# >= 2.12.0.0
-if ( version_ge $DOCKER_IOM_IMAGE_VERSION 2.12.0.0 )
-then
-  COMPOSE_ETC_DIR=/etc/opt/oms.cluster
-  COMPOSE_APP_DIR=/opt/oms.cluster/application
-  COMPOSE_LOG_DIR=/var/opt/oms.log
-  COMPOSE_VAR_DIR=/var/opt/oms.cluster
-  COMPOSE_SHARE_DIR="- $SHARE_DIR:/var/opt/oms.share"
 fi
