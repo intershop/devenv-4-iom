@@ -231,7 +231,7 @@ kubectl create namespace ${EnvId}
 
 # Start/Setup mailserver
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
-
+${KEEP_DATABASE_DATA_CREATION_DOKU_PASSAGE}
 # Start/Setup postgres (apply/create Postgres-Pod)
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 
@@ -254,13 +254,15 @@ kubectl create namespace ${EnvId}
 
 # Stop/Remove postgres-pod
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
-
+${KEEP_DATABASE_DATA_REMOVAL_DOKU_PASSAGE}
 # Stop/Remove mailhog
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
 	      
 # Remove Kubernetes namespace
 kubectl delete namespace ${EnvId}
 	</div></code></pre>
+
+${KEEP_DATABASE_DATA_VOLUME_REMOVAL_DOKU_PASSAGE}
 
         <h3 id="operations--create-namespace">Create namespace</h3>
 
@@ -285,7 +287,7 @@ kubectl create namespace ${EnvId}
         <p>The following command starts the database.</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Start/Setup postgres (apply/create Postgres-Pod)
+${KEEP_DATABASE_DATA_CREATION_DOKU_PASSAGE}# Start/Setup postgres (apply/create Postgres-Pod)
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
@@ -314,7 +316,10 @@ kubectl create namespace ${EnvId}
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove postgres-pod
 (cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+${KEEP_DATABASE_DATA_REMOVAL_DOKU_PASSAGE}
 	</div></code></pre>
+
+${KEEP_DATABASE_DATA_VOLUME_REMOVAL_DOKU_PASSAGE}
 
         <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
 
@@ -411,7 +416,7 @@ kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 
-scripts/template_engine.sh templates/geb.properties.template ${CONFIG_FILE} > ${ConfigDir}/geb.properties
+scripts/template_engine.sh templates/geb.properties.template ${CONFIG_FILE} > ${ENV_DIR}/geb.properties
 
 </div></code></pre>
 
@@ -420,7 +425,7 @@ scripts/template_engine.sh templates/geb.properties.template ${CONFIG_FILE} > ${
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}
 
-scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${ConfigDir}/ws.properties
+scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${ENV_DIR}/ws.properties
 
 </div></code></pre>
 
@@ -440,10 +445,10 @@ scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${C
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run a single geb test
-./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
 
 # Run a group of geb tests
-./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
 
 </div></code></pre>
 
@@ -452,10 +457,10 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run a single ws test
-./gradlew wsTest -Pws.propFile=${ConfigDir}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
+./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
 
 # Run a group of ws tests
-./gradlew wsTest -Pws.propFile=${ConfigDir}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
+./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
 
 </div></code></pre>
 
@@ -467,10 +472,10 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run all tests of a geb test specification
-./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
 
 # Run all tests of a ws test specification
-./gradlew wsTest -Pws.propFile=${ConfigDir}/ws.properties --tests="*ReverseServiceSpec*"
+./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*ReverseServiceSpec*"
 
 </div></code></pre>
 
@@ -482,7 +487,7 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run all tests of a specification group
-./gradlew gebTest -Pgeb.propFile=${ConfigDir}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
 
 </div></code></pre>
 
