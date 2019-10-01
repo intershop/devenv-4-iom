@@ -19,6 +19,7 @@ ${VolumeSpecAppDev}
 ${VolumeSpecTemplatesDev}
 ${VolumeSpecXsltDev}
 ${VolumeSpecShareDev}
+${VolumeSpecLogDev}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -45,6 +46,7 @@ ${VolumeMountAppDev}
 ${VolumeMountTemplatesDev}
 ${VolumeMountXsltDev}
 ${VolumeMountShareDev}
+${VolumeMountLogDevContainer}
         env:
           - name: TENANT
             value: Intershop
@@ -90,6 +92,7 @@ ${VolumeMountShareDev}
             value: 'mailhog-service'
           - name: OMS_SMTP_PORT
             value: '${FORWARD_PORT_MAILHOG_SMTP}'
+${EnvLogDevContainer}
         lifecycle:
           postStart:
             exec:
@@ -98,6 +101,8 @@ ${VolumeMountShareDev}
         - name: dbaccount
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBACCOUNT_IMAGE}
+          volumeMounts:
+${VolumeMountLogDevInitContainer}
           env:
             - name: TENANT
               value: Intershop
@@ -115,9 +120,12 @@ ${VolumeMountShareDev}
               value: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
+${EnvLogDevInitContainer}
         - name: dbinit
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBINIT_IMAGE}
+          volumeMounts:
+${VolumeMountLogDevInitContainer}
           env:
             - name: TENANT
               value: Intershop
@@ -131,6 +139,7 @@ ${VolumeMountShareDev}
               value: '${DB_PASSWORD}'
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
+${EnvLogDevInitContainer}
 ---
 kind: Service
 apiVersion: v1

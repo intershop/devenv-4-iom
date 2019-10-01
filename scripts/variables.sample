@@ -112,6 +112,15 @@ KEEP_DATABASE_DATA=true
 # See: https://confluence.intershop.de/x/VS-KC
 # CUSTOM_SHARE_DIR="${CustomShareDirDefault}"
 
+# Access to logs
+# --------------
+# If you want to access the log files of all containers outside the developer VM, you have to share the
+# directory with the developer VM, which should be used as log directory.
+# If you don't want to access the log files of all containers from outside the developer VM, the according
+# variable can be left commented out.
+#
+# CUSTOM_LOG_DIR="${CustomLogDirDefault}"
+
 ### optional configuration parameters
 
 # INDEX is used in combination with PORT_OFFSET to auto-generate a port forwarding for all used ports in order to run multiple iom environments in parallel
