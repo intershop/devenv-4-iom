@@ -102,6 +102,34 @@ if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
           mountPath: /var/opt/share"
 fi
 
+# directory to be used as log directory
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use a custom log directory or not.
+if [ $(OS) == "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
+    CUSTOM_LOG_DIR=$(cygpath -u "$CUSTOM_LOG_DIR")
+fi
+# create yaml code depending on CUSTOM_LOG_DIR
+if [ ! -z "$CUSTOM_LOG_DIR" ]; then
+    # as these variables are directly expanded within yaml-file,
+    # the leading spaces have to match correctly!
+    VolumeSpecLogDev="
+      - name: log-dev
+        hostPath:
+          path: ${CUSTOM_LOG_DIR}"
+    VolumeMountLogDevContainer="
+        - name: log-dev
+          mountPath: /var/log/log-share"
+    VolumeMountLogDevInitContainer="
+          - name: log-dev
+            mountPath: /var/log/log-share"
+    EnvLogDevContainer="
+          - name: LOG_SHARE
+            value: '/var/log/log-share'"
+    EnvLogDevInitContainer="
+            - name: LOG_SHARE
+              value: '/var/log/log-share'"
+fi
+
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
@@ -111,11 +139,13 @@ if [ ! -z "$CONFIG_FILE" ]; then
 fi
 
 CustomShareDirDefault="$ENV_DIR/share"
+CustomLogDirDefault="$ENV_DIR/logs"
 
 # set directory defaults depending on OS
 # directory of the environment
 if [ $(OS) == "Msys" ]; then
     CustomShareDirDefault=$(cygpath -w "${CustomShareDirDefault}")
+    CustomLogDirDefault=$(cygpath -w "${CustomLogDirDefault}")
 fi
 
 # set IOM_APP_SRC_DIR depending on OS
