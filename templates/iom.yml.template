@@ -83,7 +83,7 @@ ${VolumeMountLogDevContainer}
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL
-            value: 'http://${HOST_IOM}:${FORWARD_PORT_IOM}'
+            value: 'http://localhost:${FORWARD_PORT_IOM}'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
           - name: OMS_SHARE
