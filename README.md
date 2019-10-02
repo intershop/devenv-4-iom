@@ -84,17 +84,20 @@ For every IOM instance in your local Kubernetes cluster, you need to have a conf
 
 ```sh
 DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
-CONFIG_FILE=~/2.15.0.0-SNAPSHOT/config.properties
-
-CONF_DIR=$(dirname "$CONFIG_FILE")
-  
+# Windows users should not use a home directory because the used drive (e.g. U:\)
+# possibly is not available to be shared in the docker desktop settings.
+# CONFIG_FILE=~/environments/2.15.0.0-SNAPSHOT/config.properties
+CONFIG_FILE=/d/environments/2.15.0.0-SNAPSHOT/config.properties
+ 
+ENV_DIR=$(dirname "$CONFIG_FILE")
+   
 cd "$DEVENV4IOM_DIR"
- 
+  
 # make a copy of the sample configuration
-mkdir -p "$CONF_DIR"
-cp scripts/variables.sample "$CONFIG_FILE" && \
+mkdir -p "$ENV_DIR"
+ENV_DIR="$ENV_DIR" scripts/template_engine.sh scripts/variables.sample > "$CONFIG_FILE" && \
     echo "adapt '$CONFIG_FILE' to your needs"
- 
+  
 # adapt the configuration to your needs
 vi "$CONFIG_FILE"
 ```
@@ -105,17 +108,18 @@ Once the configuration file is created and adapted, according Kubernetes resourc
 
 ```sh
 DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
-CONFIG_FILE=~/2.15.0.0-SNAPSHOT/config.properties
- 
-CONF_DIR=$(dirname "$CONFIG_FILE")
- 
+# Windows users should not use a home directory because the used drive (e.g. U:\)
+# possibly is not available to be shared in the docker desktop settings.
+# CONFIG_FILE=~/environments/2.15.0.0-SNAPSHOT/config.properties
+CONFIG_FILE=/d/environments/2.15.0.0-SNAPSHOT/config.properties
+  
+ENV_DIR=$(dirname "$CONFIG_FILE")
+  
 cd "$DEVENV4IOM_DIR"
- 
+  
 # generate the environment specific html documentation
-scripts/template_engine.sh templates/index.template "$CONFIG_FILE" > "$CONF_DIR/index.html"
- 
-# generate the environment specific alias script
-# scripts/template_engine.sh templates/alias.template "$CONFIG_FILE" > "$CONF_DIR/$CONF_BASE-alias.sh"
+scripts/template_engine.sh templates/index.template "$CONFIG_FILE" > "$ENV_DIR/index.html" && \
+    echo "Open '$ENV_DIR/index.html' in your browser"
 ```
 
 ## Finalize the setup
