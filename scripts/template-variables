@@ -203,28 +203,9 @@ IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:
 ################################################################################
 
 if [ "$KEEP_DATABASE_DATA" = true ] ; then
-  MOUNTPOINT_CMD='$(docker volume inspect --format='"'"'{{.Mountpoint}}'"'"' ${EnvId}-pgdata)'
-
-  KEEP_DATABASE_DATA_CREATION_DOKU_PASSAGE="
-# Create local Docker/Kubernetes volume to keep the database data
-docker volume create --name=${EnvId}-pgdata -d local && MOUNTPOINT="\"${MOUNTPOINT_CMD}\"" && (cd "${PROJECT_PATH}" && MOUNTPOINT=\""'$MOUNTPOINT'"\" scripts/template_engine.sh templates/postgres-storage.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
- "
-
-KEEP_DATABASE_DATA_REMOVAL_DOKU_PASSAGE="
-# Remove Kubernetes volume
-MOUNTPOINT="\"${MOUNTPOINT_CMD}\"" && (cd "${PROJECT_PATH}" && MOUNTPOINT=\""'$MOUNTPOINT'"\" scripts/template_engine.sh templates/postgres-storage.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
- "
-
-KEEP_DATABASE_DATA_VOLUME_REMOVAL_DOKU_PASSAGE="
-
-<div class=\"alert alert-warning\" role=\"alert\">
-          <strong>Note!</strong>
-          <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
-
-          <pre class=\"prettyprint lang-bash\"><code><div class=\"col-xs-12\">
-# Remove local volume
-docker volume rm ${EnvId}-pgdata
-          </div></code></pre>
-        </div>"
-
+    KeepDatabaseDocuStart=''
+    KeepDatabaseDocuEnd=''
+else
+    KeepDatabaseDocuStart='<!--'
+    KeepDatabaseDocuEnd='-->'
 fi

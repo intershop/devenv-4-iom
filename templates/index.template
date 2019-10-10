@@ -55,13 +55,19 @@
                   <li><a href="#operations--setup-environment">Setup the whole IOM environment</a></li>
                   <li><a href="#operations--remove-environment">Remove the whole IOM environment</a></li>
 		  <li><a href="#operations--create-namespace">Create namespace</a></li>
+		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
 		  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
-		  <li><a href="#operations--start-database">Start database</a></li>
+		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+		  ${KeepDatabaseDocuStart}
+		  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+		  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+		  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+		  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+		  ${KeepDatabaseDocuEnd}
+		  <li><a href="#operations--start-database">Start postgres database</a></li>
+		  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
 		  <li><a href="#operations--start-iom">Start IOM</a></li>
 		  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-		  <li><a href="#operations--remove-database">Stop/remove database</a></li>
-		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
-		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -222,124 +228,171 @@
 	<ol>
 	  <li><a href="#operations--create-namespace">Create namespace</a></li>
 	  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
-	  <li><a href="#operations--start-database">Start database</a></li>
+	  ${KeepDatabaseDocuStart}
+	  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+	  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+	  ${KeepDatabaseDocuEnd}
+	  <li><a href="#operations--start-database">Start postgres database</a></li>
 	  <li><a href="#operations--start-iom">Start IOM</a></li>
 	</ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Create Kubernetes namespace
+# Create namespace
 kubectl create namespace ${EnvId} 
 
-# Start/Setup mailserver
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
-${KEEP_DATABASE_DATA_CREATION_DOKU_PASSAGE}
-# Start/Setup postgres (apply/create Postgres-Pod)
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+# Start mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+${KeepDatabaseDocuStart}
+# Create local Docker volume
+docker volume create --name=${EnvId}-pgdata -d local
 
-# Start/Setup IOM
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+# Link Docker volume to database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+${KeepDatabaseDocuEnd}
+# Start postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+
+# Start IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-environment">Remove the whole IOM environment</h3>
 
-        <p>Removing the whole IOM development environment consists of several steps. There are:</p>
+        <p>Removing the whole IOM development environment consists of several steps. These are:</p>
 	<ol>
 	  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-	  <li><a href="#operations--remove-database">Stop/remove database</a></li>
+	  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+	  ${KeepDatabaseDocuStart}
+	  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+	  ${KeepDatabaseDocuEnd}
 	  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
 	  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+	  ${KeepDatabaseDocuStart}
+	  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+	  ${KeepDatabaseDocuEnd}
 	</ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove IOM
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 
-# Stop/Remove postgres-pod
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
-${KEEP_DATABASE_DATA_REMOVAL_DOKU_PASSAGE}
-# Stop/Remove mailhog
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
+# Stop/Remove postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${KeepDatabaseDocuStart}
+# Unlink Docker volume from database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${KeepDatabaseDocuEnd}
+# Stop/Remove mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 	      
-# Remove Kubernetes namespace
+# Remove namespace
 kubectl delete namespace ${EnvId}
 	</div></code></pre>
+	${KeepDatabaseDocuStart}
+	<div class="alert alert-warning" role="alert">
+          <strong>Note!</strong>
+          <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
+	  
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove local Docker volume
+docker volume rm ${EnvId}-pgdata
+          </div></code></pre>
+        </div>
+	${KeepDatabaseDocuEnd}
 
-${KEEP_DATABASE_DATA_VOLUME_REMOVAL_DOKU_PASSAGE}
-
+	<!--
+	    ############# Operational commands ###############
+	  -->
         <h3 id="operations--create-namespace">Create namespace</h3>
-
         <p>Namespace is required, if you want to run different installations in parallel. The following command creates a namespace, based on the ID you have specified in your properties.</p>
-
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Create Kubernetes namespace
+# Create namespace
 kubectl create namespace ${EnvId} 
 	</div></code></pre>
 
-        <h3 id="operations--start-mailserver">Start mailserver</h3>
-
-        <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Start/Setup mailserver
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
-
-        <h3 id="operations--start-database">Start database</h3>
-
-        <p>The following command starts the database.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${KEEP_DATABASE_DATA_CREATION_DOKU_PASSAGE}# Start/Setup postgres (apply/create Postgres-Pod)
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
-
-        <h3 id="operations--start-iom">Start IOM</h3>
-
-        <p>The following command starts the IOM application server.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Start/Setup IOM
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
-
-        <h3 id="operations--remove-iom">Stop/remove IOM</h3>
-
-        <p>The following command stops and removes the IOM application server.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Stop/Remove IOM
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/iom.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
-	</div></code></pre>
-	
-        <h3 id="operations--remove-database">Stop/remove database</h3>
-
-        <p>The following command stops and removes the database.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Stop/Remove postgres-pod
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/postgres.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
-${KEEP_DATABASE_DATA_REMOVAL_DOKU_PASSAGE}
-	</div></code></pre>
-
-${KEEP_DATABASE_DATA_VOLUME_REMOVAL_DOKU_PASSAGE}
-
-        <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
-
-        <p>The following command stops and removes the mailserver.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Stop/Remove mailhog
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/mailhog.yml.template "${CONFIG_FILE}" ) | kubectl delete --namespace ${EnvId} -f -
-	</div></code></pre>
-
         <h3 id="operations--remove-namespace">Remove namespace</h3>
-
         <p>The following command removes the namespace.</p>
-
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Remove Kubernetes namespace
+# Remove namespace
 kubectl delete namespace ${EnvId}
 	</div></code></pre>
 
+        <h3 id="operations--start-mailserver">Start mailserver</h3>
+        <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
 
+        <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
+        <p>The following command stops and removes the mailserver.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+	${KeepDatabaseDocuStart}
+        <h3 id="operations--create-docker-volume">Create local Docker volume</h3>
+        <p>The following command creates a local Docker volume to be used to keep database data.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Create local Docker volume
+docker volume create --name=${EnvId}-pgdata -d local
+	</div></code></pre>
+
+        <h3 id="operations--remove-docker-volume">Remove local Docker volume</h3>
+	<div class="alert alert-warning" role="alert">
+          <strong>Note!</strong>
+          <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove Docker volume
+docker volume rm ${EnvId}-pgdata
+          </div></code></pre>
+        </div>
+
+        <h3 id="operations--link-volume-to-db">Link Docker volume to database storage</h3>
+        <p>The following command links the local Docker volume to Kubernetes to keep database data.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Link Docker volume to database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
+
+	<h3 id="operations--unlink-volume-from-db">Unlink Docker volume from database storage</h3>
+	<p>The following command unlinks the local Docker volume from database storage</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Unlink Docker volume from database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -	      
+	</div></code></pre>
+	${KeepDatabaseDocuEnd}
+
+	<h3 id="operations--start-database">Start postgres database</h3>
+        <p>The following command starts the database.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-database">Stop/remove postgres database</h3>
+        <p>The following command stops and removes the database.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--start-iom">Start IOM</h3>
+        <p>The following command starts the IOM application server.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-iom">Stop/remove IOM</h3>
+        <p>The following command stops and removes the IOM application server.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+	<!--
+	    ############# development process ###############
+	  -->
         <h2 id="development">Development process</h2>
 
         <h3 id="development--deployment">Deployment of custom built artifacts</h3>

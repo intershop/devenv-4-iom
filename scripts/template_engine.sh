@@ -114,8 +114,13 @@ if [ -z "$TEMPLATE_FILE" -o ! -f "$TEMPLATE_FILE" ]; then
     exit 1
 fi
 
-# config-file given and exists
-if [ ! -z "$CONFIG_FILE" -a -f "$CONFIG_FILE" ]; then
+# check and read config-file
+if [ ! -z "$CONFIG_FILE" -a ! -f "$CONFIG_FILE" ]; then
+    echo "passed config-file '$CONFIG_FILE' does not exist!" 1>&2
+    echo 1>&2
+    usage 1>&2
+    exit 1
+elif [ ! -z "$CONFIG_FILE" ]; then
 
   # check syntax of $CONFIG_FILE
   if ! ( set -e; . $CONFIG_FILE ); then
