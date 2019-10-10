@@ -1,7 +1,7 @@
 ### required configuration parameters
 
 # ID is used to create unique names for docker instances
-ID=2.15.0.0-SNAPSHOT
+ID=${ID}
 
 # Share the IOM source directory
 # ------------------------------
