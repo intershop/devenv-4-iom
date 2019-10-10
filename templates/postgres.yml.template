@@ -10,7 +10,7 @@ ${VolumeSpecDbData}
   containers:
   - name: postgres
     image: ${DOCKER_DB_IMAGE}
-    args: ["-N", "500", "-c", "max_prepared_transactions=100"]
+    args: ${POSTGRES_ARGS}
     imagePullPolicy: Always
     volumeMounts:
 ${VolumeMountDbData}

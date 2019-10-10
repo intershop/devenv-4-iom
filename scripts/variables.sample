@@ -18,6 +18,9 @@ IOM_APP_SRC_DIR="D:\svn\oms\trunk"
 # postgres image (name:tag)
 DOCKER_DB_IMAGE=postgres:11
 
+# postgres arguments
+POSTGRES_ARGS="[ \"-N\", \"500\", \"-c\", \"max_prepared_transactions=100\", \"-c\", \"log_line_prefix='%a %m %u %i [%p] '\", \"-c\", \"log_min_duration_statement=500\" ]"
+
 # mailhog image (name:tag)
 MAILHOG_IMAGE=mailhog/mailhog
 
