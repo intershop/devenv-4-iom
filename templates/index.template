@@ -240,19 +240,19 @@
 kubectl create namespace ${EnvId} 
 
 # Start mailserver
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 ${KeepDatabaseDocuStart}
 # Create local Docker volume
 docker volume create --name=${EnvId}-pgdata -d local
 
 # Link Docker volume to database storage
-MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 ${KeepDatabaseDocuEnd}
 # Start postgres database
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 
 # Start IOM
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-environment">Remove the whole IOM environment</h3>
@@ -272,16 +272,16 @@ ${KeepDatabaseDocuEnd}
 	</ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove IOM
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 
 # Stop/Remove postgres database
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 ${KeepDatabaseDocuStart}
 # Unlink Docker volume from database storage
-MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 ${KeepDatabaseDocuEnd}
 # Stop/Remove mailserver
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 	      
 # Remove namespace
 kubectl delete namespace ${EnvId}
@@ -319,14 +319,14 @@ kubectl delete namespace ${EnvId}
         <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start mailserver
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
         <p>The following command stops and removes the mailserver.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove mailserver
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 
 	${KeepDatabaseDocuStart}
@@ -351,14 +351,14 @@ docker volume rm ${EnvId}-pgdata
         <p>The following command links the local Docker volume to Kubernetes to keep database data.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Link Docker volume to database storage
-MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
 	<h3 id="operations--unlink-volume-from-db">Unlink Docker volume from database storage</h3>
 	<p>The following command unlinks the local Docker volume from database storage</p>
 	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Unlink Docker volume from database storage
-MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -	      
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -	      
 	</div></code></pre>
 	${KeepDatabaseDocuEnd}
 
@@ -366,28 +366,28 @@ MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata
         <p>The following command starts the database.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start postgres database
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-database">Stop/remove postgres database</h3>
         <p>The following command stops and removes the database.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove postgres database
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--start-iom">Start IOM</h3>
         <p>The following command starts the IOM application server.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start IOM
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 	</div></code></pre>
 
         <h3 id="operations--remove-iom">Stop/remove IOM</h3>
         <p>The following command stops and removes the IOM application server.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove IOM
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 	</div></code></pre>
 
 	<!--
@@ -467,18 +467,14 @@ kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         <h4 id="provide-geb-properties">Provide geb properties</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-
-scripts/template_engine.sh templates/geb.properties.template ${CONFIG_FILE} > ${ENV_DIR}/geb.properties
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/geb.properties.template" "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties"
 
 </div></code></pre>
 
         <h4 id="provide-ws-properties">Provide ws properties</h4>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-
-scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${ENV_DIR}/ws.properties
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/ws.properties.template" "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties"
 
 </div></code></pre>
 
@@ -486,7 +482,7 @@ scripts/template_engine.sh templates/ws.properties.template ${CONFIG_FILE} > ${E
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Use a psql container to provide the stored procedures for testing purposes.
-(cd "${PROJECT_PATH}" && scripts/template_engine.sh templates/testing.yml.template "${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/testing.yml.template" "${ENV_DIR}/${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
 
 </div></code></pre>
 

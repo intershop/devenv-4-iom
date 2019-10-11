@@ -133,11 +133,6 @@ fi
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
-# set ENV_DIR depending on CONFIG_FILE
-if [ ! -z "$CONFIG_FILE" ]; then
-  ENV_DIR=$(dirname "$CONFIG_FILE")
-fi
-
 CustomShareDirDefault="$ENV_DIR/share"
 CustomLogDirDefault="$ENV_DIR/logs"
 
