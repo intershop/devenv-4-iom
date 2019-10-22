@@ -482,7 +482,7 @@ kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Use a psql container to provide the stored procedures for testing purposes.
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/testing.yml.template" "${ENV_DIR}/${CONFIG_FILE}" ) | kubectl apply --namespace ${EnvId} -f -
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/testing.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 
 </div></code></pre>
 
