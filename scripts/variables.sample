@@ -45,7 +45,7 @@ IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-config-com.int
 
 # iom app image (name:tag)
 # IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT
-IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-customization-com.intershop.oms.ci-project:1.0.0.0-SNAPSHOT
+IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-customization-com.intershop.oms.ci-project:2.16.0.0-SNAPSHOT-1.0.0.0-SNAPSHOT
 
 # Log Messages
 # ------------
