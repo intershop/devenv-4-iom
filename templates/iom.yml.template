@@ -75,7 +75,7 @@ ${VolumeMountLogDevContainer}
           - name: OMS_LOGLEVEL_SCRIPTS
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
-            value: 'ci'
+            value: '${CAAS_ENV_NAME}'
           - name: JBOSS_OPTS
             value: "--debug *:8787"
           - name: JBOSS_JAVA_OPTS
@@ -139,6 +139,8 @@ ${VolumeMountLogDevInitContainer}
               value: '${DB_PASSWORD}'
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
+            - name: CAAS_ENV_NAME
+              value: '${CAAS_ENV_NAME}'
 ${EnvLogDevInitContainer}
 ---
 kind: Service

@@ -9,6 +9,10 @@
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
+# environment specific configuration defaults to '', which just applies base
+# configuration
+CAAS_ENV_NAME="${CAAS_ENV_NAME:-}"
+
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
