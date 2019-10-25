@@ -47,6 +47,11 @@ IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-config-com.int
 # IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT
 IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-customization-com.intershop.oms.ci-project:2.16.0.0-SNAPSHOT-1.0.0.0-SNAPSHOT
 
+# CaaS projects may have environment specific configurations, test data, etc. CAAS_ENV_NAME assigns the environment type to an installation.
+# TODO fix confluence link
+# See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Kubernetes+CaaS+hooks+-+public+variables
+CAAS_ENV_NAME=ci
+
 # Log Messages
 # ------------
 # log-level for different scopes of iom-application. Supported levels are:
