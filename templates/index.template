@@ -628,9 +628,9 @@ kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == 
 mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR") | .timestamp, .message, .stackTrace'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/errors.txt"
 
 # Access
-mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access") | .dateTime, .responseCode, .requestLine' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > ${ENV_DIR}/logs/web-access-1.txt"
+mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access") | .dateTime, .responseCode, .requestLine' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/web-access-1.txt"
 
-mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access" and .requestLine != "GET /monitoring/services/health/status HTTP/1.1") | .dateTime, .responseCode, .requestLine'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g'' > ${ENV_DIR}/logs/web-access-2.txt"
+mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access" and .requestLine != "GET /monitoring/services/health/status HTTP/1.1") | .dateTime, .responseCode, .requestLine'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g'' > "${ENV_DIR}/logs/web-access-2.txt"
 
 # Warnings
 mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR" or .level == "WARN") | .timestamp, .level, .message, .stackTrace' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/warnings.txt"
