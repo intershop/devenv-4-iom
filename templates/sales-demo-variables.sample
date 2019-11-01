@@ -50,7 +50,7 @@ OMS_LOGLEVEL_CUSTOMIZATION=ERROR
 
 # log-level of helper scripts (dbmigrate, etc.). Supported levels are:
 #   ERROR, WARN, INFO, DEBUG
-OMS_LOGLEVEL_SCRIPTS=ERROR
+OMS_LOGLEVEL_SCRIPTS=INFO
 
 # Keep database data
 # ------------------------------

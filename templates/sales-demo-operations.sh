@@ -29,6 +29,35 @@ start_iom() {
 
     echo "start IOM"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
+
+    echo "######################################################################"
+    echo "# use the following command to get status of IOM:"
+    echo "# kubectl get pods --namespace ${EnvId}"
+    echo "# IOM can be accessed, if all pods are in status Running"
+    echo "#"
+    echo "# access to IOM:"
+    echo "# http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt"
+    echo "# http://${HOST_IOM}:${FORWARD_PORT_IOM}/dbdoc"
+    echo "# http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt-help/"
+    echo "# http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}"
+    echo "######################################################################"
+}
+
+stop_iom() {
+    echo "stop/remove IOM"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
+
+    echo "stop/remove postgres database"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
+
+    echo "unlink Docker volume from database storage"
+    MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
+
+    echo "stop/remove mailserver"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
+              
+    echo "remove namespace"
+    kubectl delete namespace ${EnvId} || exit 1
 }
     
 case $1 in
