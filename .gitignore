@@ -38,3 +38,4 @@ gradle-app.setting
 /system.yml
 /environments.yml
 /environments.json
+/credentials.properties

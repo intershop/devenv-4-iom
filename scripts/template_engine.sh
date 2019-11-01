@@ -49,6 +49,19 @@ version_lt() {
   test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
 }
 
+# returns operation system
+# unfortunately uname implementations are not compatible on all platforms
+# function is available for other IOM scripts too. E.g. configure_jms_load_balancing.sh
+# is using it. Please be carefull when changing the method.
+OS() {
+    if ! uname -o > /dev/null 2>&1; then
+        uname -s
+    else
+        uname -o
+    fi
+}
+
+
 # renders the template and replace the variables
 render(){
 	FILE="$1"
@@ -101,8 +114,13 @@ if [ -z "$TEMPLATE_FILE" -o ! -f "$TEMPLATE_FILE" ]; then
     exit 1
 fi
 
-# config-file given and exists
-if [ ! -z "$CONFIG_FILE" -a -f "$CONFIG_FILE" ]; then
+# check and read config-file
+if [ ! -z "$CONFIG_FILE" -a ! -f "$CONFIG_FILE" ]; then
+    echo "passed config-file '$CONFIG_FILE' does not exist!" 1>&2
+    echo 1>&2
+    usage 1>&2
+    exit 1
+elif [ ! -z "$CONFIG_FILE" ]; then
 
   # check syntax of $CONFIG_FILE
   if ! ( set -e; . $CONFIG_FILE ); then
@@ -113,6 +131,20 @@ if [ ! -z "$CONFIG_FILE" -a -f "$CONFIG_FILE" ]; then
   # read $CONFIG_FILE
   . $CONFIG_FILE
 
+fi
+
+# starting at this point, CONFIG_FILE becomes a new meaning as template variable
+# this template variable contains the name of the file only, without directory part.
+# The directory is provided by template variable ENV_DIR, which contains the absolute
+# path of CONFIG_FILE.
+
+if [ ! -z "$CONFIG_FILE" ]; then
+    if echo "$CONFIG_FILE" | grep -q '^/'; then
+	ENV_DIR="$(dirname "$CONFIG_FILE")"
+    else
+	ENV_DIR="$(dirname "$(pwd)/$CONFIG_FILE")"
+    fi
+    CONFIG_FILE="$(basename "$CONFIG_FILE")"
 fi
 
 # check template-variables file

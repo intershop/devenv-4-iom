@@ -1,0 +1,27 @@
+# web app
+is.oms.app.host       = ${HOST_IOM}
+is.oms.app.http.port  = ${FORWARD_PORT_IOM}
+is.oms.app.https.port = 443
+
+# db
+is.oms.db.hostlist = ${HOST_IOM}:${FORWARD_PORT_DB}
+is.oms.db.name = ${DB_NAME}
+is.oms.db.user = ${DB_USER}
+is.oms.db.pass = ${DB_PASSWORD}
+
+# ws user
+is.oms.ws.user = test_ws_user_neu
+is.oms.ws.pass = !InterShop00!
+is.oms.ws.role = TC_ShopServiceClient
+
+# standalone application or not
+is.oms.app.standalone = true
+
+# Shared secret for JWT creation / validation
+# JWTs will be generated with HMAC algorithm (HS256)
+# To secure the JWT https://tools.ietf.org/html/rfc7518#section-3.2 says that a
+# key of the same size as the hash output or larger must be used with the JWS
+# HMAC SHA-2 algorithms (i.e, 256 bits for "HS256")
+is.oms.jwt.secret = length_must_be_at_least_32_chars
+
+is.oms.customisation.excludes = 

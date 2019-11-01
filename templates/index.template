@@ -45,25 +45,40 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#configurations--cluster-properties">Database configuration in cluster.properties</a></li>
                   <li><a href="#configurations--database-connection-properties">Database connection properties</a></li>
                   <li><a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a></li>
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Setup <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Operations <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</a></li>
-                  <li><a href="#setup--remove-environment">Remove the IOM environment</a></li>
-                  <li><a href="#setup--remove-database">Remove the postgres database container</a></li>
+                  <li><a href="#operations--setup-environment">Setup the whole IOM environment</a></li>
+                  <li><a href="#operations--remove-environment">Remove the whole IOM environment</a></li>
+		  <li><a href="#operations--create-namespace">Create namespace</a></li>
+		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+		  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
+		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+		  ${KeepDatabaseDocuStart}
+		  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+		  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+		  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+		  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+		  ${KeepDatabaseDocuEnd}
+		  <li><a href="#operations--start-database">Start postgres database</a></li>
+		  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+		  <li><a href="#operations--start-iom">Start IOM</a></li>
+		  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
                 </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development process <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#development--reconfiguration">Reconfiguration</a></li>
                   <li><a href="#development--deployment">Deployment</a></li>
+                  <li><a href="#development--roll-out-mail-templates">Roll out mail templates</a></li>
+                  <li><a href="#development--roll-out-xsl-templates">Roll out xsl templates</a></li>
+                  <li><a href="#development--access-emails">Access E-Mails</a></li>
                   <li><a href="#development--debugging">Debugging</a></li>
+                  <li><a href="#development--testing">Testing</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -76,24 +91,27 @@
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Docker <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Kubernetes <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#docker--useful">Useful docker / docker compose commands</a></li>
+                  <li><a href="#kubernetes--useful">Useful Kubernetes commands</a></li>
                 </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#troubleshooting--no-space-left">No space left</a></li>
+                  <li><a href="#troubleshooting--shared-drives">Shared Drives</a></li>
                 </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="${OMT_URL}" target="_blank">OMT</a></li>
+                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt" target="_blank">OMT</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/dbdoc/" target="_blank">DB Documentation</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt-help/" target="_blank">Online Help</a></li>
                   <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
+                  <li><a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=${EnvId}" target="_blank">Kubernetes Dashboard</a></li>
+                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a></li>
+                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}/api/v2/messages" target="_blank">Mails (REST)</a></li>
                 </ul>
               </li>
             </ul>
@@ -111,25 +129,8 @@
         <h1>${ID} IOM development environment</h1>
         <h2 id="configurations">Configurations</h2>
 
-        <h3 id="configurations--cluster-properties">Database configuration in cluster.properties</h3>
-        <p>In order to use the postgres container '${ID}_db' for your IOM container '${ID}' please set following connection data in your cluster.properties.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-...
-${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
-/system-property=is.oms.db.name: "${DB_NAME}"
-/system-property=is.oms.db.user: "${DB_USER}"
-/system-property=is.oms.db.pass: "${DB_PASSWORD}"
-...
-        </div></code></pre>
-
-        <div class="alert alert-warning" role="alert">
-          <strong>Note!</strong>
-          <p>If you would like, you can change other properties (e. g. is.oms.mail.external.from, is.oms.mail.internal.from, ...) according to your needs, too.</p>
-        </div>
-
         <h3 id="configurations--database-connection-properties">Database connection properties</h3>
-        <p>Your postgres container '${ID}_db' is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
+        <p>Your postgres container is accessible from your host system (e.g. with pgAdmin) with following connection properties:</p>
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
@@ -168,15 +169,15 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
         </table>
 
         <h3 id="configurations--automatic-port-forwarding">Automatic port forwarding</h3>
-        <p>Behind the scenes 'vagrant up' resp. 'vagrant reload' do the port forwarding automatically.</p>
+        <p>Behind the scenes port forwarding is handled automatically.</p>
 
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
               <th>#</th>
               <th>Developer host</th>
-              <th>Docker host</th>
-              <th>IOM container</th>
+              <th>Kubernetes Service</th>
+              <th>Container</th>
               <th>Usage</th>
             </tr>
           </thead>
@@ -209,127 +210,349 @@ ${CLUSTER_PROPERTIES_DB_HOST_CONFIG}
               <td>${PORT_DB}</td>
               <td>PostgreSQL Database</td>
             </tr>
+            <tr>
+              <th scope="row">5</th>
+              <td>${FORWARD_PORT_MAILHOG_SMTP}</td>
+              <td>${FORWARD_PORT_MAILHOG_SMTP}</td>
+              <td>${PORT_MAILHOG_SMTP}</td>
+              <td>Send emails over SMTP protocol</td>
+            </tr>
           </tbody>
         </table>
 
-        <h2 id="setup">Setup</h2>
+        <h2 id="setup">Operations</h2>
 
-        <h3 id="setup--initialize-reconfigure">Initialize/Reconfigure the IOM environment</h3>
+        <h3 id="operations--setup-environment">Setup the whole IOM environment</h3>
 
-        <p>In order to use your configurations, the postgres database container have to be initialized and the IOM container have to be reconfigured. Please use following script. For further information, please see the following <a href="https://confluence.intershop.de/display/ISEXTBAKER/Concept+-+Usage+of+Docker+images" target="_blank">documentation</a>.</p>
-
+        <p>Setup of the whole IOM development environment consists of several steps. These are:</p>
+	<ol>
+	  <li><a href="#operations--create-namespace">Create namespace</a></li>
+	  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
+	  ${KeepDatabaseDocuStart}
+	  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+	  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+	  ${KeepDatabaseDocuEnd}
+	  <li><a href="#operations--start-database">Start postgres database</a></li>
+	  <li><a href="#operations--start-iom">Start IOM</a></li>
+	</ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--initialize-reconfigure-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
+# Create namespace
+kubectl create namespace ${EnvId} 
 
-# Refresh all docker images of the environment (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} pull ${DOCKER_COMPOSE_IOM_SERVICE_NAME}
+# Start mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+${KeepDatabaseDocuStart}
+# Create local Docker volume
+docker volume create --name=${EnvId}-pgdata -d local
 
-# Creates a new IOM environment<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} up --build -d
+# Link Docker volume to database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+${KeepDatabaseDocuEnd}
+# Start postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
 
-# Initialize the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
-${DOCKER_DATABASE_INIT_ALIAS}
+# Start IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
 
-# Migrate the postgres database container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
-${DOCKER_DATABASE_MIGRATE_ALIAS}
+        <h3 id="operations--remove-environment">Remove the whole IOM environment</h3>
 
-# Initialize, migrate and configure the postgres database (for IOM product development only)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}="${DOCKER_DATABASE_INIT_MIGRATE_CONFIG}"</span>
-# ${DOCKER_DATABASE_INIT_MIGRATE_CONFIG_ALIAS}
-${DOCKER_SETUP_PROVIDE_VAR_DIRECTORY_DOKU_PASSAGE}
-# Undeploy accelerates the following reconfiguration (optional)<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
-
-# Reconfigure the IOM container<span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
-${DOCKER_SETUP_RECONFIGURE_ALIAS}
-
-# Redeploy all artifacts <span class="collapse setup--initialize-reconfigure-aliases"># alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
-        </div></code></pre>
-
-        <h3 id="setup--remove-environment">Remove the IOM environment</h3>
-
-        <p>In order to remove all IOM containers you can use following script.</p>
-
+        <p>Removing the whole IOM development environment consists of several steps. These are:</p>
+	<ol>
+	  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+	  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+	  ${KeepDatabaseDocuStart}
+	  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+	  ${KeepDatabaseDocuEnd}
+	  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+	  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+	  ${KeepDatabaseDocuStart}
+	  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+	  ${KeepDatabaseDocuEnd}
+	</ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--remove-environment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
+# Stop/Remove IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
 
-# Remove the entire IOM environment and the data volume used by the postgres container<span class="collapse setup--remove-environment-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} down --volumes
-        </div></code></pre>
-
-        <div class="alert alert-warning" role="alert">
+# Stop/Remove postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${KeepDatabaseDocuStart}
+# Unlink Docker volume from database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${KeepDatabaseDocuEnd}
+# Stop/Remove mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	      
+# Remove namespace
+kubectl delete namespace ${EnvId}
+	</div></code></pre>
+	${KeepDatabaseDocuStart}
+	<div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
-          <p>If you would like to keep the state of the database you must not remove the data volume. You just have to remove the --volumes parameter to keep the data volume. If you restart the environment the postgres database container (${ID}_db) it will automatically reuse the data volume and all data is available again.</p>
+          <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
+	  
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove local Docker volume
+docker volume rm ${EnvId}-pgdata
+          </div></code></pre>
+        </div>
+	${KeepDatabaseDocuEnd}
+
+	<!--
+	    ############# Operational commands ###############
+	  -->
+        <h3 id="operations--create-namespace">Create namespace</h3>
+        <p>Namespace is required, if you want to run different installations in parallel. The following command creates a namespace, based on the ID you have specified in your properties.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Create namespace
+kubectl create namespace ${EnvId} 
+	</div></code></pre>
+
+        <h3 id="operations--remove-namespace">Remove namespace</h3>
+        <p>The following command removes the namespace.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove namespace
+kubectl delete namespace ${EnvId}
+	</div></code></pre>
+
+        <h3 id="operations--start-mailserver">Start mailserver</h3>
+        <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
+        <p>The following command stops and removes the mailserver.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove mailserver
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+	${KeepDatabaseDocuStart}
+        <h3 id="operations--create-docker-volume">Create local Docker volume</h3>
+        <p>The following command creates a local Docker volume to be used to keep database data.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Create local Docker volume
+docker volume create --name=${EnvId}-pgdata -d local
+	</div></code></pre>
+
+        <h3 id="operations--remove-docker-volume">Remove local Docker volume</h3>
+	<div class="alert alert-warning" role="alert">
+          <strong>Note!</strong>
+          <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Remove Docker volume
+docker volume rm ${EnvId}-pgdata
+          </div></code></pre>
         </div>
 
-        <h3 id="setup--remove-database">Remove the postgres database container</h3>
-
-        <p>In order to only remove the postgres database containers you can use following script.</p>
-
+        <h3 id="operations--link-volume-to-db">Link Docker volume to database storage</h3>
+        <p>The following command links the local Docker volume to Kubernetes to keep database data.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".setup--remove-database-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
+# Link Docker volume to database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
 
-# Stop and remove the postgres database container<span class="collapse setup--remove-database-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} rm -fs ${DOCKER_COMPOSE_DB_SERVICE_NAME}
+	<h3 id="operations--unlink-volume-from-db">Unlink Docker volume from database storage</h3>
+	<p>The following command unlinks the local Docker volume from database storage</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Unlink Docker volume from database storage
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -	      
+	</div></code></pre>
+	${KeepDatabaseDocuEnd}
 
-# Remove the data volume used by the postgres container
-docker volume rm ${COMPOSE_PROJECT_NAME}_db_data
-        </div></code></pre>
+	<h3 id="operations--start-database">Start postgres database</h3>
+        <p>The following command starts the database.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
 
+        <h3 id="operations--remove-database">Stop/remove postgres database</h3>
+        <p>The following command stops and removes the database.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove postgres database
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
 
+        <h3 id="operations--start-iom">Start IOM</h3>
+        <p>The following command starts the IOM application server.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Start IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+	</div></code></pre>
+
+        <h3 id="operations--remove-iom">Stop/remove IOM</h3>
+        <p>The following command stops and removes the IOM application server.</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Stop/Remove IOM
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+	</div></code></pre>
+
+	<!--
+	    ############# development process ###############
+	  -->
         <h2 id="development">Development process</h2>
 
-        <h3 id="development--reconfiguration">Reconfiguration</h3>
+        <h3 id="development--deployment">Deployment of custom built artifacts</h3>
 
-        <p>Configuration changes (e. g. cluster.properties) can be made with following docker command.</p>
+        <p>Preconditions
+	  <ul>
+	    <li>Variable CUSTOM_APPS_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/whXKC">TODO</a>.</li>
+	    <li>After changing CUSTOM_APPS_DIR, the IOM application server has to be restarted:</li>
+	    <ol>
+	      <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+	      <li><a href="#operations--start-iom">Start IOM</a></li>
+	    </ol>
+	  </ul
+	</p>
+	<p>There are two possibilities to deploy custom built artifacts.
+	  <ol>
+	    <li>The IOM Pod could be restarted to redeploy all custom built artifacts:</li>
+	    <ol>
+	      <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+	      <li><a href="#operations--start-iom">Start IOM</a></li>
+	    </ol>
+	    <li>Within the running pod, a selective redeployment can be executed</li>
+	  </ol>
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# redeploy omt selectively 
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy omt
+
+# redeploy all
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy
+          </div></code></pre>
+	  
+        <h3 id="development--roll-out-mail-templates">Roll out custom mail templates</h3>
+
+        <p>Preconditions:
+	  <ul>
+	    <li>Variable CUSTOM_TEMPLATES_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/oy7KC">TODO</a>.</li>
+	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be <a>restarted TODO</a></li>
+	  </ul>
+	</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".development--reconfiguration-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Reconfigure the IOM container<span class="collapse development--reconfiguration-aliases"># alias ${DOCKER_SETUP_RECONFIGURE_ALIAS}="${DOCKER_SETUP_RECONFIGURE}"</span>
-${DOCKER_SETUP_RECONFIGURE_ALIAS}
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-templates
         </div></code></pre>
 
-        <h3 id="development--deployment">Deployment</h3>
+        <h3 id="development--roll-out-xsl-templates">Roll out custom xsl templates</h3>
 
-        <p>A deployment resp. un- or redeployment of IOM artifacts can be done with following docker commands.</p>
+        <p>Preconditions:
+	  <ul>
+	    <li>Variable CUSTOM_XSLT_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/di7KC">TODO</a>.</li>
+	    <li>After changing CUSTOM_XSLT_DIR, the IOM application server has to be <a>restarted TODO</a></li>
+	  </ul>
+	</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".development--deployment-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Undeploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_UNDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS}
-
-# Undeploy bakery.omt only
-${DOCKER_DEVELOPMENT_UNDEPLOY_ALIAS} --pattern=omt
-
-# Deploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_DEPLOY}"</span>
-${DOCKER_DEVELOPMENT_DEPLOY_ALIAS}
-
-# Redeploy all artifacts<span class="collapse development--deployment-aliases"># alias ${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}="${DOCKER_DEVELOPMENT_REDEPLOY}"</span>
-${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS}
-
-# Redeploy bakery.omt only
-${DOCKER_DEVELOPMENT_REDEPLOY_ALIAS} --pattern=omt
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         </div></code></pre>
+
+        <h3 id="development--access-emails">Access E-Mails</h3>
+
+        <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
 
         <h3 id="development--debugging">Debugging</h3>
 
-        <p>Port ${FORWARD_PORT_DEBUG} for Remote Java Debugging is available out of the box. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
+        <p>In order to debug the application port ${FORWARD_PORT_DEBUG} is available out of the box for Remote Java Debugging. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
 
-        <div class="alert alert-warning" role="alert">
-          <strong>Note!</strong>
-          <p>Please note that the listening debug port will not get restored when restarting the WildFly application server on service level via</p><br>
+        <h3 id="development--testing">Testing</h3>
+
+        <h4 id="provide-geb-properties">Provide geb properties</h4>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/geb.properties.template" "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties"
+
+</div></code></pre>
+
+        <h4 id="provide-ws-properties">Provide ws properties</h4>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/ws.properties.template" "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties"
+
+</div></code></pre>
+
+<h4 id="provide-ws-properties">Provide stored procedures</h4>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Use a psql container to provide the stored procedures for testing purposes.
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/testing.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+
+</div></code></pre>
+
+          <h4 id="run-tests">Useful patterns to run single tests or a group of tests</h4>
+          <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-systemctl restart jboss-as-standalone.service
-          </div></code></pre>
-        </div>
+# Go to the oms.tests directory in your oms source directory
+cd ${IOM_APP_SRC_DIR}/oms.tests
+
+# Run a single geb test
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
+
+# Run a group of geb tests
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
+
+</div></code></pre>
+
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Go to the oms.tests directory in your oms source directory
+cd ${IOM_APP_SRC_DIR}/oms.tests
+
+# Run a single ws test
+./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
+
+# Run a group of ws tests
+./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
+
+</div></code></pre>
+
+        <h4 id="run-all-tests">All tests of a specification</h4>
+        <p> To run all tests of a specification, just use the the name of the specification. E.g:</p>
+
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Go to the oms.tests directory in your oms source directory
+cd ${IOM_APP_SRC_DIR}/oms.tests
+
+# Run all tests of a geb test specification
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
+
+# Run all tests of a ws test specification
+./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*ReverseServiceSpec*"
+
+</div></code></pre>
+
+        <h4 id="run-test-group">All tests of a group of specifications (e.g. user management, role management)</h4>
+        <p> To run all tests of a group of specifications, just use the name of the uses package. E.g:</p>
+
+          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Go to the oms.tests directory in your oms source directory
+cd ${IOM_APP_SRC_DIR}/oms.tests
+
+# Run all tests of a specification group
+./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
+
+</div></code></pre>
+
+        <h4 id="run-test-group">Run soap tests</h4>
+        <p> To run all soap tests just use the following code:</p>
+
+  <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Go to the oms.soap.tests directory in your oms source directory
+cd ${IOM_APP_SRC_DIR}/oms.soap.tests
+
+# Run all soap tests
+mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
+
+</div></code></pre>
+
+<!--
 
         <h2 id="database">Database</h2>
         <h3 id="database--init">Initialize the database</h3>
@@ -378,47 +601,56 @@ ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
 # Enter the password for user ${DB_USER}: ${DB_PASSWORD}
         </div></code></pre>
 
+-->
 
-        <h2 id="docker">Docker / Docker Compose</h2>
-        <h3 id="docker--useful">Useful docker commands</h3>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".docker--useful-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Login into the IOM container
-docker exec -it ${ID} bash
-
-# Login into the Postgres database container
-docker exec -it ${ID}_db bash
-
-# Inspect the postgres database data volume
-docker volume inspect ${COMPOSE_PROJECT_NAME}_db_data
-
-# Get help on docker compose commands<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} help
-
-# List containers<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} ps
-
-# View the docker compose config<span class="collapse docker--useful-aliases"># alias ${DOCKER_COMPOSE_BASE_COMMAND_ALIAS}="${DOCKER_COMPOSE_BASE_COMMAND}"</span>
-${DOCKER_COMPOSE_BASE_COMMAND_ALIAS} config
-        </div></code></pre>
-
-        <h2 id="troubleshooting ">Troubleshooting</h2>
-        <h3 id="troubleshooting--no-space-left">No space left</h3>
-
-        <p>If you are using docker for quite a long time, you collect many docker objects (e.g. images) over the time. So possibly a "no space left" error may occur. In order to clean up unused docker objects, you can use the <a href="https://docs.docker.com/config/pruning" title="Prune unused Docker objects" target="_blank">docker prune command</a>.</p>
+        <h2 id="kubernetes">Kubernetes</h2>
+        <h3 id="kubernetes--useful">Useful kubernetes commands</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}
-${VAGRANT_SSH}
+# List all Deployments, Pods, replicasets, services, namespaces
+kubectl get deployments --namespace ${EnvId}
+kubectl get pods --namespace ${EnvId}
+kubectl get replicasets --namespace ${EnvId}
+kubectl get services --namespace ${EnvId}
+kubectl get namespaces
 
-# Prune everything
-docker system prune
+# Query pod name
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+
+# Logs for initContainer
+kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbaccount
+kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit
+kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == "INFO") and (.processName == "load_dbmigrate.sh"))'
+
+# Logs for container
+
+# Error
+mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR") | .timestamp, .message, .stackTrace'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/errors.txt"
+
+# Access
+mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access") | .dateTime, .responseCode, .requestLine' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/web-access-1.txt"
+
+mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access" and .requestLine != "GET /monitoring/services/health/status HTTP/1.1") | .dateTime, .responseCode, .requestLine'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/web-access-2.txt"
+
+# Warnings
+mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR" or .level == "WARN") | .timestamp, .level, .message, .stackTrace' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/warnings.txt"
+
+# Login into the IOM Pod
+kubectl exec --namespace ${EnvId} "$POD_NAME" -it bash
+
+# Show important information of the pods, deployments, services
+kubectl describe --namespace ${EnvId} pod "$POD_NAME"
+kubectl describe --namespace ${EnvId} deployment iom
+kubectl describe --namespace ${EnvId} service iom-service
         </div></code></pre>
 
+        <h2 id="troubleshooting">Troubleshooting</h2>
 
+        <h3 id="troubleshooting--shared-drives">Shared Drives</h3>
+
+        After resetting your password you can have some problems with your shared drives. In those cases use the Settings > Shared Drives > Reset credentials
+
+      <br><br>
 
       </div> <!-- /container -->
 

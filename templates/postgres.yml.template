@@ -1,0 +1,30 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  volumes:
+${VolumeSpecDbData}
+  containers:
+  - name: postgres
+    image: ${DOCKER_DB_IMAGE}
+    args: ${POSTGRES_ARGS}
+    imagePullPolicy: Always
+    volumeMounts:
+${VolumeMountDbData}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: ${FORWARD_PORT_DB}
+      targetPort: ${PORT_DB}
+      name: postgres
+  type: LoadBalancer
+  
