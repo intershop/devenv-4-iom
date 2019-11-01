@@ -11,22 +11,6 @@ SYNOPSIS
 EOF
 }
 
-case $1 in
-    start)
-        start_iom
-        ;;
-    stop)
-        stop_iom
-        ;;
-    free-storage)
-        free_storage
-        ;;
-    *)
-        usage 1>&2
-        exit 1
-    ;;
-esac
-
 start_iom() {
     echo "create namespace"
     kubectl create namespace ${EnvId} || exit 1
@@ -47,3 +31,19 @@ start_iom() {
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
 }
     
+case $1 in
+    start)
+        start_iom
+        ;;
+    stop)
+        stop_iom
+        ;;
+    free-storage)
+        free_storage
+        ;;
+    *)
+        usage 1>&2
+        exit 1
+    ;;
+esac
+
