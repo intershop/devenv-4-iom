@@ -59,6 +59,11 @@ stop_iom() {
     echo "remove namespace"
     kubectl delete namespace ${EnvId} || exit 1
 }
+
+free_storage() {
+    echo "remove local Docker volume"
+    docker volume rm ${EnvId}-pgdata || exit 1
+}
     
 case $1 in
     start)
