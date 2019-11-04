@@ -20,9 +20,11 @@ spec:
   ports:
     - port: ${FORWARD_PORT_MAILHOG_UI}
       targetPort: ${PORT_MAILHOG_UI}
+      nodePort: ${PUBLIC_NODEPORT_MAILHOG_UI}
       name: ui
     - port: ${FORWARD_PORT_MAILHOG_SMTP}
       targetPort: ${PORT_MAILHOG_SMTP}
+      nodeport: ${PUBLIC_NODEPORT_MAILHOG_SMTP}
       name: soap
   type: LoadBalancer
   
