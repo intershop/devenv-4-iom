@@ -28,7 +28,7 @@ start_iom() {
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
 
     echo "start IOM"
-    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/sales-demo-iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
 
     echo "######################################################################"
     echo "# use the following command to get status of IOM:"
@@ -45,7 +45,7 @@ start_iom() {
 
 stop_iom() {
     echo "stop/remove IOM"
-    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/sales-demo-iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
 
     echo "stop/remove postgres database"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - || exit 1
