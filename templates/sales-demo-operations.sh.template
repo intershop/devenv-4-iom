@@ -89,7 +89,8 @@ case $1 in
     info)
         info
         echo
-       *)
+        ;;
+    *)
         usage 1>&2
         exit 1
         ;;
