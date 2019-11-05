@@ -5,7 +5,7 @@ ID=${ID}
 
 # hostname to use for the OMS_PUBLIC_URL
 # on windows you might need to set it to your public IP instead of "localhost"
-HOST_IOM=localhost
+#HOST_IOM=${HOST_IOM}
 
 
 # Share the IOM source directory
