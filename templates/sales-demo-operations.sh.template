@@ -107,7 +107,7 @@ import() {
         echo "'$1' is not a directory"
         exit 1
     fi
-    ( cd "$2" && tar -cf - * ) |
+    ( cd "$1" && tar -cf - * ) |
         kubectl exec -i $POD_NAME --namespace ${EnvId} -- bash -c "mkdir -p /tmp/testdata && cd /tmp/testdata && cat > testdata.tar && tar -xvf testdata.tar && OMS_LOGLEVEL_SCRIPTS=INFO \$OMS_HOME/bin/load_test_data.sh --data-dir=. --share-dir=/var/opt/share"
     }
     
