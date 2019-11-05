@@ -58,11 +58,3 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # KEEP_DATABASE_DATA to true, otherwise false.
 KEEP_DATABASE_DATA=true
 
-# Access to shared FS
-# -------------------
-# If you want to access the shared file-system of IOM from outside, you have to share the directory with the VM.
-# If you don't want to access the shared file-system, the according
-# variable can be left commented out.
-#
-#CUSTOM_SHARE_DIR="/var/opt/share"
-
