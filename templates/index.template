@@ -552,8 +552,8 @@ mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
 
 </div></code></pre>
 
-<!--
 
+<!--
         <h2 id="database">Database</h2>
         <h3 id="database--init">Initialize the database</h3>
 
@@ -568,6 +568,11 @@ ${DOCKER_DATABASE_INIT_ALIAS}
         <h3 id="database--migrate">Migrate the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+#go to your local dbmigrate scripts folder
+cd ${IOM_APP_SRC_DIR}/postgres/migrations
+./dbmigrate.sh -h ${HOST_IOM} -p ${FORWARD_PORT_DB} -U ${DB_USER} -d ${DB_NAME}
+</div></code></pre>
+
 cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--migrate-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
