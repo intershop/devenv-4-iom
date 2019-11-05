@@ -7,7 +7,7 @@ $ME
     controls IOM installation with ID ${ID}.
 
 SYNOPSIS
-    $ME info|start|delete|free-storage|import-current-dir
+    $ME info|start|delete|free-storage|import <dir>
 
 DESCRIPTION
     info
@@ -25,8 +25,8 @@ DESCRIPTION
     free-storage
       Destroys the local Docker volume, containing the database data.
  
-    import-current-dir
-      Reads csv-files from current directory and imports them into IOM.
+    import <dir>
+      Reads csv-files from passed directory and imports them into IOM.
 EOF
 }
 
@@ -101,9 +101,13 @@ free_storage() {
     fi
 }
 
-import_current_dir() {
+import() {
     POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-    tar -cf - |
+    if [ ! -d "$2" ]; then
+        echo "'$2' is not a directory"
+        exit 1
+    fi
+    ( cd "$2" && tar -cf - ) |
         kubectl exec -i $POD_NAME --namespace ${EnvId} -- bash -c "mkdir -p /tmp/testdata && cd /tmp/testdata && cat > testdata.tar && tar -xvf testdata.tar && OMS_LOGLEVEL_SCRIPTS=INFO \$OMS_HOME/bin/load_test_data.sh --data-dir=. --share-dir=/var/opt/share"
     }
     
@@ -118,8 +122,8 @@ case $1 in
     free-storage)
         free_storage
         ;;
-    import-current-dir)
-        import_current_dir
+    import)
+        import
         ;;
     info)
         info
