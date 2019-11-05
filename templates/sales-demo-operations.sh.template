@@ -22,13 +22,13 @@ start_iom() {
     echo "create local Docker volume"
     docker volume create --name=${EnvId}-pgdata -d local ||
         echo "WARNING: error creating local Docker volume ${EnvId}-pgdata"
-
+    
     echo "link Docker volume to database storage"
     MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
 
     echo "start postgres database"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
-
+    
     echo "start IOM"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
 }
@@ -45,29 +45,29 @@ info() {
     echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/omt-help/"
     echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_MAILHOG_UI}"
     echo "######################################################################"
-    kubectl get pods --namespace ${EnvId}"
+    kubectl get pods --namespace ${EnvId}
 }
 
 stop_iom() {
     echo "stop/remove IOM"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
         echo "WARNING: error deleting IOM"
-
+    
     echo "stop/remove postgres database"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
         echo "WARNING: error deleting postgres"
-
+    
     echo "unlink Docker volume from database storage"
     MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
         echo "WARNING: error unlinking Docker volume from database storage"
-
+    
     echo "stop/remove mailserver"
     "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
         echo "WARNING: error deleting mailserver"
-              
+    
     echo "remove namespace"
-    kubectl delete namespace ${EnvId} ||
-        echo "WARNING: error deleting namespace ${EnvId}"
+    kubectl delete namespace ${EnvId} || 
+echo "WARNING: error deleting namespace ${EnvId}"
 }
 
 free_storage() {
@@ -89,9 +89,10 @@ case $1 in
     info)
         info
         echo
+        ;;
     *)
         usage 1>&2
         exit 1
-    ;;
+        ;;
 esac
 
