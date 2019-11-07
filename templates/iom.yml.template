@@ -83,7 +83,7 @@ ${VolumeMountLogDevContainer}
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL
-            value: 'http://localhost:${FORWARD_PORT_IOM}'
+            value: 'http://${HOST_IOM}:${FORWARD_PORT_IOM}'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
           - name: OMS_SHARE
@@ -154,10 +154,13 @@ spec:
     - name: http
       port: ${FORWARD_PORT_IOM}
       targetPort: ${PORT_IOM}
+      nodePort: ${PUBLIC_NODEPORT_IOM}
     - name: admin
       port: ${FORWARD_PORT_WILDFLY}
       targetPort: ${PORT_WILDFLY}
+      nodePort: ${PUBLIC_NODEPORT_WILDFLY}
     - name: debug
       port: ${FORWARD_PORT_DEBUG}
       targetPort: ${PORT_DEBUG}
+      nodePort: ${PUBLIC_NODEPORT_DEBUG}
   type: LoadBalancer

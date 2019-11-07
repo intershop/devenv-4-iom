@@ -172,13 +172,29 @@ DB_NAME="${DB_NAME:-oms_db}"
 DB_USER="${DB_USER:-oms_user}"
 DB_PASSWORD="${DB_PASSWORD:-oms_pw}"
 
-# port forwarding
+# port forwarding (port number of according service)
+# normally these ports are available inside the kubernetes cluster only,
+# but except for Docker-Desktop.
 FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_DEBUG=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_DB=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_MAILHOG_UI=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
 FORWARD_PORT_MAILHOG_SMTP=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
+
+PUBLIC_NODEPORT_BASE=32000
+
+# public node port
+# when not running on Docker-Desktop, the exposed node ports have to
+# be used to access the services from outside the cluster. Access via Ingress is
+# not an alternative, as ports of Ingress-controller (80,443) cannot be changed.
+# When running with ICM on a single machine, this can easily lead to conflicts.
+PUBLIC_NODEPORT_IOM=$(($PUBLIC_NODEPORT_BASE + 0 + ($INDEX * $PORT_OFFSET)))
+PUBLIC_NODEPORT_DEBUG=$(($PUBLIC_NODEPORT_BASE + 1 + ($INDEX * $PORT_OFFSET)))
+PUBLIC_NODEPORT_DB=$(($PUBLIC_NODEPORT_BASE + 2 + ($INDEX * $PORT_OFFSET)))
+PUBLIC_NODEPORT_WILDFLY=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
+PUBLIC_NODEPORT_MAILHOG_UI=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
+PUBLIC_NODEPORT_MAILHOG_SMTP=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
 
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"

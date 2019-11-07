@@ -3,6 +3,10 @@
 # ID is used to create unique names for docker instances
 ID=${ID}
 
+# hostname to use for the OMS_PUBLIC_URL
+#HOST_IOM=${HOST_IOM}
+
+
 # Share the IOM source directory
 # ------------------------------
 # For serveral purposes (e.g geb running tests and ws tests), the IOM source directory has to be shared with the developer VM.

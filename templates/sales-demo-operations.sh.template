@@ -1,0 +1,136 @@
+#!/bin/bash
+
+usage() {
+    ME=$(basename $0)
+    cat <<EOF
+$ME
+    controls IOM installation with ID ${ID}.
+
+SYNOPSIS
+    $ME info|start|delete|free-storage|import <dir>
+
+DESCRIPTION
+    info
+      provides information about state of pods and URLs to access IOM
+
+    start
+      Creates all Docker- and Kubernetes resources required by IOM and starts
+      the system.
+
+    delete
+      Destroys all Kubernetes resources used by IOM and stops the system.
+      Only the local Docker volume used to store database data will persist.
+      The next time, IOM is started again, it will reuse the database data.
+
+    free-storage
+      Destroys the local Docker volume, containing the database data.
+ 
+    import <dir>
+      Reads csv-files from passed directory and imports them into IOM.
+EOF
+}
+
+start_iom() {
+    echo "create namespace"
+    kubectl create namespace ${EnvId} ||
+        echo "WARNING: error creating namespace ${EnvId}"
+
+    echo "start mail server"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
+
+    if [ "${KEEP_DATABASE_DATA}" = 'true' ]; then
+        echo "create local Docker volume"
+        docker volume create --name=${EnvId}-pgdata -d local ||
+            echo "WARNING: error creating local Docker volume ${EnvId}-pgdata"
+    
+        echo "link Docker volume to database storage"
+        MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
+    fi
+
+    echo "start postgres database"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
+    sleep 5
+    
+    echo "start IOM"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f - || exit 1
+}
+
+info() {
+    echo "######################################################################"
+    echo "# use the following command to get status of IOM:"
+    echo "# kubectl get pods --namespace ${EnvId}"
+    echo "# IOM can be accessed, if all pods are in status Running"
+    echo "#"
+    echo "# access to IOM:"
+    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/omt"
+    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/dbdoc"
+    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/omt-help/"
+    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_MAILHOG_UI}"
+    echo "######################################################################"
+    kubectl get pods --namespace ${EnvId}
+}
+
+delete_iom() {
+    echo "stop/remove IOM"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
+        echo "WARNING: error deleting IOM"
+    
+    echo "stop/remove postgres database"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
+        echo "WARNING: error deleting postgres"
+
+    if [ "${KEEP_DATABASE_DATA}" = 'true' ]; then
+        echo "unlink Docker volume from database storage"
+        MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
+            echo "WARNING: error unlinking Docker volume from database storage"
+    fi
+    
+    echo "stop/remove mailserver"
+    "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f - ||
+        echo "WARNING: error deleting mailserver"
+    
+    echo "remove namespace"
+    kubectl delete namespace ${EnvId} || 
+echo "WARNING: error deleting namespace ${EnvId}"
+}
+
+free_storage() {
+    if [ "${KEEP_DATABASE_DATA}" = 'true' ]; then
+        echo "remove local Docker volume"
+        docker volume rm ${EnvId}-pgdata || exit 1
+    fi
+}
+
+import() {
+    POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+    if [ ! -d "$1" ]; then
+        echo "'$1' is not a directory"
+        exit 1
+    fi
+    ( cd "$1" && tar -cf - * ) |
+        kubectl exec -i $POD_NAME --namespace ${EnvId} -- bash -c "rm -fr /tmp/testdata && mkdir -p /tmp/testdata && cd /tmp/testdata && cat > testdata.tar && tar -xvf testdata.tar && OMS_LOGLEVEL_SCRIPTS=INFO \$OMS_HOME/bin/load_test_data.sh --data-dir=. --share-dir=/var/opt/share"
+    }
+    
+case $1 in
+    start)
+        start_iom
+        info
+        ;;
+    delete)
+        delete_iom
+        ;;
+    free-storage)
+        free_storage
+        ;;
+    import)
+        import "$2"
+        ;;
+    info)
+        info
+        echo
+        ;;
+    *)
+        usage 1>&2
+        exit 1
+        ;;
+esac

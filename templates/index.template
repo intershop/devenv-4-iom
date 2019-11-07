@@ -552,9 +552,21 @@ mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
 
 </div></code></pre>
 
-<!--
-
         <h2 id="database">Database</h2>
+
+        <h3 id="database--migrate">Migrate the database</h3>
+
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+#copy your local "postgres"  dir to the postgres pod
+kubectl cp --namespace trunk ${IOM_APP_SRC_DIR}/postgres/ postgres:/tmp/
+#call dbmigrate from within the postgres pod
+kubectl exec --namespace trunk postgres -it bash
+cd /tmp/postgres/migrations/ && chmod +x *.sh && ./dbmigrate.sh -U ${DB_USER} -d ${DB_NAME} -n
+exit
+</div></code></pre>
+
+
+<!--
         <h3 id="database--init">Initialize the database</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
@@ -565,9 +577,7 @@ ${VAGRANT_SSH}
 ${DOCKER_DATABASE_INIT_ALIAS}
         </div></code></pre>
 
-        <h3 id="database--migrate">Migrate the database</h3>
 
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--migrate-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
 ${VAGRANT_SSH}
 
