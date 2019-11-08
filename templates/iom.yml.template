@@ -96,7 +96,7 @@ ${EnvLogDevContainer}
         lifecycle:
           postStart:
             exec:
-              command: ["/opt/oms/bin/iom_start_handler.sh"]
+              command: ["/bin/bash", "-c", "/opt/oms/bin/iom_start_handler.sh; /opt/jboss/wildfly/bin/add-user.sh -u admin -p admin"]
       initContainers:
         - name: dbaccount
           imagePullPolicy: ${IMAGE_PULL_POLICY}
