@@ -201,7 +201,7 @@
               <td>${FORWARD_PORT_WILDFLY}</td>
               <td>${FORWARD_PORT_WILDFLY}</td>
               <td>${PORT_WILDFLY}</td>
-              <td>WildFly Console</td>
+              <td>WildFly Console (admin:admin)</td>
             </tr>
             <tr>
               <th scope="row">4</th>
