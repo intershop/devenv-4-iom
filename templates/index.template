@@ -54,26 +54,27 @@
                 <ul class="dropdown-menu">
                   <li><a href="#operations--setup-environment">Setup the whole IOM environment</a></li>
                   <li><a href="#operations--remove-environment">Remove the whole IOM environment</a></li>
-		  <li><a href="#operations--create-namespace">Create namespace</a></li>
-		  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
-		  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
-		  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
-		  ${KeepDatabaseDocuStart}
-		  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
-		  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
-		  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
-		  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
-		  ${KeepDatabaseDocuEnd}
-		  <li><a href="#operations--start-database">Start postgres database</a></li>
-		  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
-		  <li><a href="#operations--start-iom">Start IOM</a></li>
-		  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+                  <li><a href="#operations--create-namespace">Create namespace</a></li>
+                  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+                  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
+                  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+                  ${KeepDatabaseDocuStart}
+                  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+                  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+                  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+                  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+                  ${KeepDatabaseDocuEnd}
+                  <li><a href="#operations--start-database">Start postgres database</a></li>
+                  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+                  <li><a href="#operations--start-iom">Start IOM</a></li>
+                  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
                 </ul>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Development process <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#development--deployment">Deployment</a></li>
+                  <li><a href="#development--deployment-gui">Deployment using the Wildfly Admin Console</a></li>
+                  <li><a href="#development--deployment-cli">Deployment using Scripts</a></li>
                   <li><a href="#development--roll-out-mail-templates">Roll out mail templates</a></li>
                   <li><a href="#development--roll-out-xsl-templates">Roll out xsl templates</a></li>
                   <li><a href="#development--access-emails">Access E-Mails</a></li>
@@ -225,16 +226,16 @@
         <h3 id="operations--setup-environment">Setup the whole IOM environment</h3>
 
         <p>Setup of the whole IOM development environment consists of several steps. These are:</p>
-	<ol>
-	  <li><a href="#operations--create-namespace">Create namespace</a></li>
-	  <li><a href="#operations--start-mailserver">Start mailserver</a></li>
-	  ${KeepDatabaseDocuStart}
-	  <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
-	  <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
-	  ${KeepDatabaseDocuEnd}
-	  <li><a href="#operations--start-database">Start postgres database</a></li>
-	  <li><a href="#operations--start-iom">Start IOM</a></li>
-	</ol>
+        <ol>
+          <li><a href="#operations--create-namespace">Create namespace</a></li>
+          <li><a href="#operations--start-mailserver">Start mailserver</a></li>
+          ${KeepDatabaseDocuStart}
+          <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+          <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+          ${KeepDatabaseDocuEnd}
+          <li><a href="#operations--start-database">Start postgres database</a></li>
+          <li><a href="#operations--start-iom">Start IOM</a></li>
+        </ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Create namespace
 kubectl create namespace ${EnvId} 
@@ -253,23 +254,23 @@ ${KeepDatabaseDocuEnd}
 
 # Start IOM
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--remove-environment">Remove the whole IOM environment</h3>
 
         <p>Removing the whole IOM development environment consists of several steps. These are:</p>
-	<ol>
-	  <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-	  <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
-	  ${KeepDatabaseDocuStart}
-	  <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
-	  ${KeepDatabaseDocuEnd}
-	  <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
-	  <li><a href="#operations--remove-namespace">Remove namespace</a></li>
-	  ${KeepDatabaseDocuStart}
-	  <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
-	  ${KeepDatabaseDocuEnd}
-	</ol>
+        <ol>
+          <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+          <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+          ${KeepDatabaseDocuStart}
+          <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+          ${KeepDatabaseDocuEnd}
+          <li><a href="#operations--remove-mailserver">Stop/remove mailserver</a></li>
+          <li><a href="#operations--remove-namespace">Remove namespace</a></li>
+          ${KeepDatabaseDocuStart}
+          <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+          ${KeepDatabaseDocuEnd}
+        </ol>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove IOM
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
@@ -282,63 +283,63 @@ MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata
 ${KeepDatabaseDocuEnd}
 # Stop/Remove mailserver
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
-	      
+              
 # Remove namespace
 kubectl delete namespace ${EnvId}
-	</div></code></pre>
-	${KeepDatabaseDocuStart}
-	<div class="alert alert-warning" role="alert">
+        </div></code></pre>
+        ${KeepDatabaseDocuStart}
+        <div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
           <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
-	  
+          
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Remove local Docker volume
 docker volume rm ${EnvId}-pgdata
           </div></code></pre>
         </div>
-	${KeepDatabaseDocuEnd}
+        ${KeepDatabaseDocuEnd}
 
-	<!--
-	    ############# Operational commands ###############
-	  -->
+        <!--
+            ############# Operational commands ###############
+          -->
         <h3 id="operations--create-namespace">Create namespace</h3>
         <p>Namespace is required, if you want to run different installations in parallel. The following command creates a namespace, based on the ID you have specified in your properties.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Create namespace
 kubectl create namespace ${EnvId} 
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--remove-namespace">Remove namespace</h3>
         <p>The following command removes the namespace.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Remove namespace
 kubectl delete namespace ${EnvId}
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--start-mailserver">Start mailserver</h3>
         <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start mailserver
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--remove-mailserver">Stop/remove mailserver</h3>
         <p>The following command stops and removes the mailserver.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove mailserver
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/mailhog.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
-	${KeepDatabaseDocuStart}
+        ${KeepDatabaseDocuStart}
         <h3 id="operations--create-docker-volume">Create local Docker volume</h3>
         <p>The following command creates a local Docker volume to be used to keep database data.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Create local Docker volume
 docker volume create --name=${EnvId}-pgdata -d local
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--remove-docker-volume">Remove local Docker volume</h3>
-	<div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
           <p>If you would like to remove the database data, you just have to remove the database data volume with the following command.</p><br>
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
@@ -352,71 +353,71 @@ docker volume rm ${EnvId}-pgdata
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Link Docker volume to database storage
 MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
-	<h3 id="operations--unlink-volume-from-db">Unlink Docker volume from database storage</h3>
-	<p>The following command unlinks the local Docker volume from database storage</p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <h3 id="operations--unlink-volume-from-db">Unlink Docker volume from database storage</h3>
+        <p>The following command unlinks the local Docker volume from database storage</p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Unlink Docker volume from database storage
-MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -	      
-	</div></code></pre>
-	${KeepDatabaseDocuEnd}
+MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' ${EnvId}-pgdata)\"" "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres-storage.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -            
+        </div></code></pre>
+        ${KeepDatabaseDocuEnd}
 
-	<h3 id="operations--start-database">Start postgres database</h3>
+        <h3 id="operations--start-database">Start postgres database</h3>
         <p>The following command starts the database.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start postgres database
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--remove-database">Stop/remove postgres database</h3>
         <p>The following command stops and removes the database.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove postgres database
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/postgres.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--start-iom">Start IOM</h3>
         <p>The following command starts the IOM application server.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Start IOM
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--remove-iom">Stop/remove IOM</h3>
         <p>The following command stops and removes the IOM application server.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Stop/Remove IOM
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
-	</div></code></pre>
+        </div></code></pre>
 
-	<!--
-	    ############# development process ###############
-	  -->
+        <!--
+            ############# development process ###############
+          -->
         <h2 id="development">Development process</h2>
 
-        <h3 id="development--deployment">Deployment of custom built artifacts</h3>
-
-        <p>Preconditions
-	  <ul>
-	    <li>Variable CUSTOM_APPS_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/whXKC">TODO</a>.</li>
-	    <li>After changing CUSTOM_APPS_DIR, the IOM application server has to be restarted:</li>
-	    <ol>
-	      <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-	      <li><a href="#operations--start-iom">Start IOM</a></li>
-	    </ol>
-	  </ul
-	</p>
-	<p>There are two possibilities to deploy custom built artifacts.
-	  <ol>
-	    <li>The IOM Pod could be restarted to redeploy all custom built artifacts:</li>
-	    <ol>
-	      <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-	      <li><a href="#operations--start-iom">Start IOM</a></li>
-	    </ol>
-	    <li>Within the running pod, a selective redeployment can be executed</li>
-	  </ol>
-          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <h3 id="development--deployment-gui">Deployment of custom built artifacts using the Wildfly Admin Console</h3>
+        <p>
+          Using the <a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> is the easiest way to add or update deployments. The deployment process is simply triggered by Drag & Drop.
+        </p><p>
+          In difference to <a href="#development--deployment-cli">Deployment of custom built artifacts using scripts</a>, deployments added/updated this way, will not survive a restart of the IOM pod.
+        </p>
+        <h3 id="development--deployment-cli">Deployment of custom built artifacts using scripts</h3>
+        <p>
+          The Developer VM has an extended search-path for deployments. The scripts doing the deployment are looking first at directory <samp>/opt/oms/application-dev</samp>, instead of the standard directory <samp>/opt/oms/application</samp>, which contains all the standard deployment artifacts delivered by the Docker image. Hence, if an artifact was found in <samp>/opt/oms/application-dev</samp>, the according standard artifact will be ignored. 
+        </p><p>
+          All you have to do, is to mount a directory containing your custom built artifacts at <samp>/opt/oms/application-dev</samp>. To do so, you have to:
+          <ul>
+            <li>set variable <samp>CUSTOM_APPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
+            <li>After changing <samp>CUSTOM_APPS_DIR</samp>, the IOM application server needs to be restarted:</li>
+            <ol>
+              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+              <li><a href="#operations--start-iom">Start IOM</a></li>
+            </ol>
+          </ul>
+          Once you have configured your developer VM this way, your custom built artifacts are deployed right at the start of IOM. To update/add deployments in a running developer VM, you have the following possibilities:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # redeploy omt selectively 
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy omt
@@ -424,38 +425,54 @@ kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy omt
 # redeploy all
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy
-          </div></code></pre>
-	  
+        </div></code></pre>
+        <p>
+          Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> to update/add deployments during runtime.
+        </p>
+          
         <h3 id="development--roll-out-mail-templates">Roll out custom mail templates</h3>
-
-        <p>Preconditions:
-	  <ul>
-	    <li>Variable CUSTOM_TEMPLATES_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/oy7KC">TODO</a>.</li>
-	    <li>After changing CUSTOM_TEMPLATES_DIR, the IOM application server has to be <a>restarted TODO</a></li>
-	  </ul>
-	</p>
-
+        <p>
+          The developer VM contains an additional directory <samp>/opt/oms/templates-dev</samp>, which will be used as mount point for custom mail templates. Part of the developer VM is also the script <samp>apply-templates</samp>, which copies the templates from <samp>/opt/oms/templates-dev</samp> to the standard directory <samp>/opt/oms/var/templates</samp>. If you want to roll out custom mail templates in a running developer VM, you have to:
+          <ul>
+            <li>set variable <samp>CUSTOM_TEMPLATES_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
+            <li>After changing <samp>CUSTOM_TEMPLATES_DIR</samp>, the IOM application server needs to be restarted:</li>
+            <ol>
+              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+              <li><a href="#operations--start-iom">Start IOM</a></li>
+            </ol>
+          </ul>
+          Once you have configured your developer VM this way, you can apply custom mail templates by the following command:
+        </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-templates
         </div></code></pre>
+        <p>
+          If <samp>CUSTOM_TEMPLATES_DIR</samp> is configured, the templates are also copied when starting IOM.
+        </p>
 
         <h3 id="development--roll-out-xsl-templates">Roll out custom xsl templates</h3>
-
-        <p>Preconditions:
-	  <ul>
-	    <li>Variable CUSTOM_XSLT_DIR has to be set according the instructions given in <a href="https://confluence.intershop.de/x/di7KC">TODO</a>.</li>
-	    <li>After changing CUSTOM_XSLT_DIR, the IOM application server has to be <a>restarted TODO</a></li>
-	  </ul>
-	</p>
-
+        <p>
+          The developer VM contains a directory <samp>/opt/oms/xslt-dev</samp>, which will be used as mount point for custom xsl templates. Part of the developer VM is also the script <samp>apply-xslt</samp>, which copies the templates from <samp>/opt/oms/xslt-dev</samp> to the standard directory <samp>/opt/oms/var/xslt</samp>. If you want to roll out custom xsl templates in a running developer VM, you have to:
+          <ul>
+            <li>set variable <samp>CUSTOM_XSLT_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
+            <li>After changing <samp>CUSTOM_XSLT_DIR</samp>, the IOM application server has to be restarted:</li>
+             <ol>
+              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+              <li><a href="#operations--start-iom">Start IOM</a></li>
+             </ol>
+          </ul>
+          Once you have configured your developer VM this way, you can apply custom xsl templates by the following command:
+        </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         </div></code></pre>
-
+        <p>
+          if <samp>CUSTOM_XSLT_DIR</samp> is configured, the templates are also copied when starting IOM.
+        </p>
+        
         <h3 id="development--access-emails">Access E-Mails</h3>
-
         <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
 
         <h3 id="development--debugging">Debugging</h3>
