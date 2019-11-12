@@ -25,7 +25,7 @@ spec:
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
             value: '${CAAS_ENV_NAME}'
-        command: [ '/opt/apply_sql_dir.sh', '--dir=/tmp/sql-dir-volume' ]
+        command: [ '/opt/apply_sql.sh', '--src=/tmp/sql-dir-volume/${sqlFile}' ]
         volumeMounts:
         - name: sql-dir-volume
           mountPath: /tmp/sql-dir-volume
@@ -33,5 +33,5 @@ spec:
       volumes:
       - name: sql-dir-volume
         hostPath:
-          path: ${SQL_DIR}
+          path: "${sqlDir}"
   backoffLimit: 0

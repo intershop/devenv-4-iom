@@ -210,6 +210,16 @@ IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker-build.rnd.intershop.de/inters
 IOM_DBINIT_IMAGE="${IOM_DBINIT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT}"
 IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT}"
 
+# this variable is used to pass information to the apply-sql-job.
+# A file or directory can be passed. It's necessary to split SQL_SRC into directory-
+# and file-part, as these variables are required inside the job-template.
+SQL_SRC="${SQL_SRC}"
+if [ -d "$SQL_SRC" ]; then
+    sqlDir="$SQL_SRC"
+else
+    sqlFile=$(basename "$SQL_SRC")
+    sqlDir=$(dirname "$SQL_SRC")
+fi
 
 ################################################################################
 # Non-versioned commands and variables
