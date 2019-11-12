@@ -471,6 +471,37 @@ kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
         <p>
           if <samp>CUSTOM_XSLT_DIR</samp> is configured, the templates are also copied when starting IOM.
         </p>
+
+	<h3 id="development--apply-sql">Apply sql scripts</h3>
+	<p>
+	  The docker-image defined by <samp>IOM_DBINIT_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv4iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database.
+	</p><p>
+	  There are two different modes, that can be used.
+	  <ul>
+	    <li>If a directory is passed to the job, all sql-files found in this directory are processed in numerical order, starting with the smallest one. Sub-directories are not scanned for sql-files.</li>
+	    <li>If a file is passed to the job, only this file will be executed.</li>
+	  </ul>
+	  The results are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
+	</p><p>
+	  The information about the sql-file or -directory is passed by the variable <samp>SQL_SRC</samp>. This variable is not part of the config-file. Instead of it, it has to be set on the fly, when running the job. You have to make sure, that the passed <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory/file is shared in Docker Desktop</a>. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp>. Just use another value for <samp>SQL_SRC</samp> to execute the sql-scripts you want.
+	</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# adapt SQL_SRC to point to the directory/file you want to execute
+SQL_SRC=/Users/andreas/oms-src/trunk/oms.tests/tc_stored_procedures
+
+# start apply-sql-job
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+
+# get logs of job
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=apply-sql -o jsonpath="{.items[0].metadata.name}")
+kubectl logs $POD_NAME --namespace ${EnvId}
+
+# delete apply-sql-job
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/iom.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+        </div></code></pre>
+	
+	<h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
+	<h3 id="development--apply-dbconfig">Apply db configuration scripts</h3>
         
         <h3 id="development--access-emails">Access E-Mails</h3>
         <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
