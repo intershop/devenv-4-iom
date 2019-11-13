@@ -89,7 +89,6 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="#database--init">Initialize the database</a></li>
-                  <li><a href="#database--migrate">Migrate the database</a></li>
                   <li><a href="#database--create-dump">Create a database dump</a></li>
                   <li><a href="#database--open-psql-terminal">Open psql terminal</a></li>
                 </ul>
@@ -505,7 +504,7 @@ kubectl logs $POD_NAME --namespace ${EnvId}
         
         <h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
         <p>
-          To develop and test single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories of <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
+          To develop and test single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories within <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
         </p><p>
           The <samp>IOM_DBINIT_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use this dbmigrate script along with the migration scripts located in your sources (defined by <samp>IOM_APP_SRC_DIR</samp>).
         </p><p>
@@ -624,18 +623,6 @@ mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
 </div></code></pre>
 
         <h2 id="database">Database</h2>
-
-        <h3 id="database--migrate">Migrate the database</h3>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-#copy your local "postgres"  dir to the postgres pod
-kubectl cp --namespace trunk ${IOM_APP_SRC_DIR}/postgres/ postgres:/tmp/
-#call dbmigrate from within the postgres pod
-kubectl exec --namespace trunk postgres -it bash
-cd /tmp/postgres/migrations/ && chmod +x *.sh && ./dbmigrate.sh -U ${DB_USER} -d ${DB_NAME} -n
-exit
-</div></code></pre>
-
 
 <!--
         <h3 id="database--init">Initialize the database</h3>
