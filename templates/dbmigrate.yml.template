@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dbmigrate-job
+spec:
+  # do not know, how to enable this alpha feature
+  #ttlSecondsAfterFinished: 0
+  template:
+    spec:
+      containers:
+      - name: dbmigrate
+        image: ${IOM_DBINIT_IMAGE}
+        env:
+          - name: TENANT
+            value: Intershop
+          - name: ENVIRONMENT
+            value: '${ID}'
+          - name: OMS_DB_HOST
+            value: postgres-service
+          - name: OMS_DB_PORT
+            value: '${FORWARD_PORT_DB}'
+          - name: OMS_DB_PASS
+            value: '${DB_PASSWORD}'
+          - name: OMS_LOGLEVEL_SCRIPTS
+            value: '${OMS_LOGLEVEL_SCRIPTS}'
+          - name: CAAS_ENV_NAME
+            value: '${CAAS_ENV_NAME}'
+        command: [ '/opt/dbmigrate-kubernetes.sh', '--dir=/tmp/dbmigrate-volume' ]
+        volumeMounts:
+        - name: dbmigrate-volume
+          mountPath: /tmp/dbmigrate-volume
+      restartPolicy: Never
+      volumes:
+      - name: dbmigrate-volume
+        hostPath:
+          path: "${IOM_APP_SRC_DIR}/postgres"
+  backoffLimit: 0

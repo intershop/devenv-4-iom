@@ -484,7 +484,7 @@ kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
             <li>If a directory is passed to the job, all sql-files found in this directory are processed in numerical order, starting with the smallest one. Sub-directories are not scanned for sql-files.</li>
             <li>If a file is passed to the job, only this file will be executed.</li>
           </ul>
-          The information about the sql-file or -directory is passed by the variable <samp>SQL_SRC</samp> (absolute name has to be set). This variable is normally not part of the config-file. Instead of it, you should set it on the fly, when running the job. (If you really want, you can it add to the config-file too.) You have to make sure, that the passed <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory/file is shared in Docker Desktop</a>. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp>. Just use another value for <samp>SQL_SRC</samp> to execute the sql-scripts you want.
+          The information about the sql-file or -directory is passed by the variable <samp>SQL_SRC</samp> (absolute name has to be set). This variable is normally not part of the config-file. Instead of it, you should set it on the fly, when running the job. (If you really want, you can add it to the config-file too.) You have to make sure, that the passed <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory/file is shared in Docker Desktop</a>. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp>. Just use another value for <samp>SQL_SRC</samp> to execute the sql-scripts you want.
         </p><p>
           The logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
@@ -504,6 +504,25 @@ kubectl logs $POD_NAME --namespace ${EnvId}
         </div></code></pre>
         
         <h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
+        <p>
+          To develop and test single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories of <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
+        </p><p>
+          The <samp>IOM_DBINIT_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use the dbmigrate script along with the migrations scripts located in your sources (defined by <samp>IOM_APP_SRC_DIR</samp>).
+        </p><p>
+          You can and should have an eye on the logs created by the migration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# start dbmigrate-job
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dbmigrate.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+
+# get logs of job
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=dbmigrate-job -o jsonpath="{.items[0].metadata.name}")
+kubectl logs $POD_NAME --namespace ${EnvId}
+
+# delete dbmigrate-job
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dbmigrate.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+        </div></code></pre>
+        
         <h3 id="development--apply-dbconfig">Apply db configuration scripts</h3>
         
         <h3 id="development--access-emails">Access E-Mails</h3>
