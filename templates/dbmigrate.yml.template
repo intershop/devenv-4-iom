@@ -27,11 +27,11 @@ spec:
             value: '${CAAS_ENV_NAME}'
         command: [ '/opt/dbmigrate-kubernetes.sh', '--dir=/tmp/dbmigrate-volume' ]
         volumeMounts:
-        - name: dbmigrate-volume
-          mountPath: /tmp/dbmigrate-volume
+${DbmigrateDirYml}        - name: dbmigrate-volume
+${DbmigrateDirYml}          mountPath: /tmp/dbmigrate-volume
       restartPolicy: Never
       volumes:
-      - name: dbmigrate-volume
-        hostPath:
-          path: "${IOM_APP_SRC_DIR}/postgres"
+${DbmigrateDirYml}      - name: dbmigrate-volume
+${DbmigrateDirYml}        hostPath:
+${DbmigrateDirYml}          path: "${CUSTOM_DBMIGRATE_DIR}"
   backoffLimit: 0

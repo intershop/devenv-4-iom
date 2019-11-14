@@ -27,7 +27,7 @@ fi
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
@@ -40,7 +40,7 @@ fi
 # directory containing custom mail templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom templates or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
     CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
@@ -53,7 +53,7 @@ fi
 # directory containing custom xsl templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
     CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
@@ -63,10 +63,23 @@ else
     XsltDirYml_____='#'
 fi
 
+# directory containing custom dbmigrate scripts
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use custom dbmigrate scripts or not.
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+    CUSTOM_DBMIGRATE_DIR=$(cygpath -u "$CUSTOM_DBMIGRATE_DIR")
+fi
+# create yaml code depending on CUSTOM_DBMIGRATE_DIR
+if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+    DbmigrateDirYml=''
+else
+    DbmigrateDirYml='#'
+fi
+
 # directory to be used as share
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom share or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
@@ -79,7 +92,7 @@ fi
 # directory to be used as log directory
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom log directory or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
     CUSTOM_LOG_DIR=$(cygpath -u "$CUSTOM_LOG_DIR")
 fi
 # create yaml code depending on CUSTOM_LOG_DIR
@@ -97,14 +110,14 @@ CustomLogDirDefault="$ENV_DIR/logs"
 
 # set directory defaults depending on OS
 # directory of the environment
-if [ $(OS) == "Msys" ]; then
+if [ $(OS) = "Msys" ]; then
     CustomShareDirDefault=$(cygpath -w "${CustomShareDirDefault}")
     CustomLogDirDefault=$(cygpath -w "${CustomLogDirDefault}")
 fi
 
 # set IOM_APP_SRC_DIR depending on OS
 # directory to be used to run the soap, geb and ws tests
-if [ $(OS) == "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
+if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
     IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
 fi
 

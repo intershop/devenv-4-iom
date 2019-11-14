@@ -30,6 +30,12 @@ ${ShareDirYml____}          path: ${CUSTOM_SHARE_DIR}
 ${LogDirYml______}      - name: log-dev
 ${LogDirYml______}        hostPath:
 ${LogDirYml______}          path: ${CUSTOM_LOG_DIR}
+${DbmigrateDirYml}      - name: dbmigrate-sps
+${DbmigrateDirYml}        hostPath:
+${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/stored_procedures
+${DbmigrateDirYml}      - name: dbmigrate-scripts
+${DbmigrateDirYml}        hostPath:
+${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/migrations
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -145,6 +151,10 @@ ${LogDirYml______}              value: '/var/log/log-share'
           volumeMounts:
 ${LogDirYml______}          - name: log-dev
 ${LogDirYml______}            mountPath: /var/log/log-share
+${DbmigrateDirYml}          - name: dbmigrate-sps
+${DbmigrateDirYml}            mountPath: /opt/stored_procedures
+${DbmigrateDirYml}          - name: dbmigrate-scripts
+${DbmigrateDirYml}            mountPath: /opt/migrations
           env:
             - name: TENANT
               value: Intershop

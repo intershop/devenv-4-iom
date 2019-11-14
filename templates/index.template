@@ -504,9 +504,12 @@ kubectl logs $POD_NAME --namespace ${EnvId}
         
         <h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
         <p>
-          To develop and test single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories within <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
+          To develop and test a single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories within <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
         </p><p>
-          The <samp>IOM_DBINIT_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use this dbmigrate script along with the migration scripts located in your sources (defined by <samp>IOM_APP_SRC_DIR</samp>).
+          The <samp>IOM_DBINIT_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use this dbmigrate script along with the migration scripts located at <samp>CUSTOM_DBMIGRATE_DIR</samp>. Hence, if you want to roll out custom dbmigrate scripts, you have to:
+	  <ul>
+	    <li>set variable <samp>CUSTOM_DBMIGRATE_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
+	  </ul>
         </p><p>
           You can and should have an eye on the logs created by the migration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
@@ -521,6 +524,9 @@ kubectl logs $POD_NAME --namespace ${EnvId}
 # delete dbmigrate-job
 "${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dbmigrate.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
         </div></code></pre>
+	<p>
+	  If <samp>CUSTOM_DBMIGRATE_DIR</samp> is configured, the custom dbmigrate scripts are also applied when starting IOM.
+	</p>
         
         <h3 id="development--apply-dbconfig">Apply db configuration scripts</h3>
         
