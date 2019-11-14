@@ -19,15 +19,9 @@ IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
 # Add volumes / mounts if the user wants to keep databse data or not.
 if [ "$KEEP_DATABASE_DATA" = true ] ; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecDbData="
-  - name: db-data
-    persistentVolumeClaim:
-      claimName: postgres-pvc"
-    VolumeMountDbData="
-    - name: db-data
-      mountPath: /var/lib/postgresql/data"
+    KeepDatabaseYml=''
+else
+    KeepDatabaseYml='#'
 fi
 
 # directory containing custom built artifacts
@@ -38,15 +32,9 @@ if [ $(OS) == "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecAppDev="
-      - name: application-dev
-        hostPath:
-          path: ${CUSTOM_APPS_DIR}"
-    VolumeMountAppDev="
-        - name: application-dev
-          mountPath: /opt/oms/application-dev"
+    AppsDirYml_____=''
+else
+    AppsDirYml_____='#'
 fi        
 
 # directory containing custom mail templates
@@ -57,15 +45,9 @@ if [ $(OS) == "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecTemplatesDev="
-      - name: templates-dev
-        hostPath:
-          path: ${CUSTOM_TEMPLATES_DIR}"
-    VolumeMountTemplatesDev="
-        - name: templates-dev
-          mountPath: /opt/oms/templates-dev"
+    TemplatesDirYml=''
+else
+    TemplatesDirYml='#'
 fi
 
 # directory containing custom xsl templates
@@ -76,15 +58,9 @@ if [ $(OS) == "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecXsltDev="
-      - name: xslt-dev
-        hostPath:
-          path: ${CUSTOM_XSLT_DIR}"
-    VolumeMountXsltDev="
-        - name: xslt-dev
-          mountPath: /opt/oms/xslt-dev"
+    XsltDirYml_____=''
+else
+    XsltDirYml_____='#'
 fi
 
 # directory to be used as share
@@ -95,15 +71,9 @@ if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecShareDev="
-      - name: share-dev
-        hostPath:
-          path: ${CUSTOM_SHARE_DIR}"
-    VolumeMountShareDev="
-        - name: share-dev
-          mountPath: /var/opt/share"
+    ShareDirYml____=''
+else
+    ShareDirYml____='#'
 fi
 
 # directory to be used as log directory
@@ -114,24 +84,9 @@ if [ $(OS) == "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
 fi
 # create yaml code depending on CUSTOM_LOG_DIR
 if [ ! -z "$CUSTOM_LOG_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecLogDev="
-      - name: log-dev
-        hostPath:
-          path: ${CUSTOM_LOG_DIR}"
-    VolumeMountLogDevContainer="
-        - name: log-dev
-          mountPath: /var/log/log-share"
-    VolumeMountLogDevInitContainer="
-          - name: log-dev
-            mountPath: /var/log/log-share"
-    EnvLogDevContainer="
-          - name: LOG_SHARE
-            value: '/var/log/log-share'"
-    EnvLogDevInitContainer="
-            - name: LOG_SHARE
-              value: '/var/log/log-share'"
+    LogDirYml______=''
+else
+    LogDirYml______='#'
 fi
 
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 

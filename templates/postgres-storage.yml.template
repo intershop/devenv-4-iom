@@ -17,7 +17,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ${EnvId}-postgres-storage
   local:
-    path: ${MOUNTPOINT}
+    path: ${MOUNTPOINT} # MOUNTPOINT is not a configuration variable. It will be determined and set on the fly.
   # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#node-affinity
   nodeAffinity:
     required:

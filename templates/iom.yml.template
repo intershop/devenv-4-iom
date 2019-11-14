@@ -15,11 +15,21 @@ spec:
         app: iom
     spec:
       volumes:
-${VolumeSpecAppDev}
-${VolumeSpecTemplatesDev}
-${VolumeSpecXsltDev}
-${VolumeSpecShareDev}
-${VolumeSpecLogDev}
+${AppsDirYml_____}      - name: application-dev
+${AppsDirYml_____}        hostPath:
+${AppsDirYml_____}          path: ${CUSTOM_APPS_DIR}
+${TemplatesDirYml}      - name: templates-dev
+${TemplatesDirYml}        hostPath:
+${TemplatesDirYml}          path: ${CUSTOM_TEMPLATES_DIR}
+${XsltDirYml_____}      - name: xslt-dev
+${XsltDirYml_____}        hostPath:
+${XsltDirYml_____}          path: ${CUSTOM_XSLT_DIR}
+${ShareDirYml____}      - name: share-dev
+${ShareDirYml____}        hostPath:
+${ShareDirYml____}          path: ${CUSTOM_SHARE_DIR}
+${LogDirYml______}      - name: log-dev
+${LogDirYml______}        hostPath:
+${LogDirYml______}          path: ${CUSTOM_LOG_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -42,11 +52,16 @@ ${VolumeSpecLogDev}
           timeoutSeconds: 8
           successThreshold: 1
         volumeMounts:
-${VolumeMountAppDev}
-${VolumeMountTemplatesDev}
-${VolumeMountXsltDev}
-${VolumeMountShareDev}
-${VolumeMountLogDevContainer}
+${AppsDirYml_____}        - name: application-dev
+${AppsDirYml_____}          mountPath: /opt/oms/application-dev
+${TemplatesDirYml}        - name: templates-dev
+${TemplatesDirYml}          mountPath: /opt/oms/templates-dev
+${XsltDirYml_____}        - name: xslt-dev
+${XsltDirYml_____}          mountPath: /opt/oms/xslt-dev
+${ShareDirYml____}        - name: share-dev
+${ShareDirYml____}          mountPath: /var/opt/share
+${LogDirYml______}        - name: log-dev
+${LogDirYml______}          mountPath: /var/log/log-share
         env:
           - name: TENANT
             value: Intershop
@@ -92,7 +107,8 @@ ${VolumeMountLogDevContainer}
             value: 'mailhog-service'
           - name: OMS_SMTP_PORT
             value: '${FORWARD_PORT_MAILHOG_SMTP}'
-${EnvLogDevContainer}
+${LogDirYml______}          - name: LOG_SHARE
+${LogDirYml______}            value: '/var/log/log-share'
         lifecycle:
           postStart:
             exec:
@@ -102,7 +118,8 @@ ${EnvLogDevContainer}
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBACCOUNT_IMAGE}
           volumeMounts:
-${VolumeMountLogDevInitContainer}
+${LogDirYml______}          - name: log-dev
+${LogDirYml______}            mountPath: /var/log/log-share
           env:
             - name: TENANT
               value: Intershop
@@ -120,12 +137,14 @@ ${VolumeMountLogDevInitContainer}
               value: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
-${EnvLogDevInitContainer}
+${LogDirYml______}            - name: LOG_SHARE
+${LogDirYml______}              value: '/var/log/log-share'
         - name: dbinit
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBINIT_IMAGE}
           volumeMounts:
-${VolumeMountLogDevInitContainer}
+${LogDirYml______}          - name: log-dev
+${LogDirYml______}            mountPath: /var/log/log-share
           env:
             - name: TENANT
               value: Intershop
@@ -141,7 +160,8 @@ ${VolumeMountLogDevInitContainer}
               value: '${OMS_LOGLEVEL_SCRIPTS}'
             - name: CAAS_ENV_NAME
               value: '${CAAS_ENV_NAME}'
-${EnvLogDevInitContainer}
+${LogDirYml______}            - name: LOG_SHARE
+${LogDirYml______}              value: '/var/log/log-share'
 ---
 kind: Service
 apiVersion: v1

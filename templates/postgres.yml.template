@@ -6,14 +6,17 @@ metadata:
     app: postgres
 spec:
   volumes:
-${VolumeSpecDbData}
+${KeepDatabaseYml}  - name: db-data
+${KeepDatabaseYml}    persistentVolumeClaim:
+${KeepDatabaseYml}      claimName: postgres-pvc
   containers:
   - name: postgres
     image: ${DOCKER_DB_IMAGE}
     args: ${POSTGRES_ARGS}
     imagePullPolicy: Always
     volumeMounts:
-${VolumeMountDbData}
+${KeepDatabaseYml}    - name: db-data
+${KeepDatabaseYml}      mountPath: /var/lib/postgresql/data
 ---
 kind: Service
 apiVersion: v1
