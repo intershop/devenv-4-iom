@@ -36,6 +36,12 @@ ${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/stored_procedures
 ${DbmigrateDirYml}      - name: dbmigrate-scripts
 ${DbmigrateDirYml}        hostPath:
 ${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/migrations
+${SqlconfDirYml__}      - name: sqlconf
+${SqlconfDirYml__}        hostPath:
+${SqlconfDirYml__}          path: ${CUSTOM_SQLCONF_DIR}
+${JsonconfDirYml_}      - name: jsonconf
+${JsonconfDirYml_}        hostPath:
+${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -155,6 +161,10 @@ ${DbmigrateDirYml}          - name: dbmigrate-sps
 ${DbmigrateDirYml}            mountPath: /opt/stored_procedures
 ${DbmigrateDirYml}          - name: dbmigrate-scripts
 ${DbmigrateDirYml}            mountPath: /opt/migrations
+${SqlconfDirYml__}          - name: sqlconf
+${SqlconfDirYml__}            mountPath: /opt/caas-config/sql-config
+${JsonconfDirYml_}          - name: jsonconf
+${JsonconfDirYml_}            mountPath: /opt/caas-config/json-config
           env:
             - name: TENANT
               value: Intershop

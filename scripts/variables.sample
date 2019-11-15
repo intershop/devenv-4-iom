@@ -89,6 +89,9 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # in Docker Desktop.
 IOM_APP_SRC_DIR="D:\svn\oms\trunk"
 
+# Share the CAAS project directory
+CAAS_SRC_DIR="D:\svn\caas\trunk"
+
 # The following config variables are all using the same pattern:
 # If you want to use a certain aspect of development, you have to define the
 # location of custom files, that should be used by the developer VM.
@@ -107,6 +110,12 @@ IOM_APP_SRC_DIR="D:\svn\oms\trunk"
 
 # Development of migration scripts
 #CUSTOM_DBMIGRATE_DIR="$IOM_APP_SRC_DIR/postgres"
+
+# Development of custom sql-config
+#CUSTOM_SQLCONF_DIR="$CAAS_SRC_DIR/configuration/src/sql-config"
+
+# Development of custom json-config
+#CUSTOM_JSONCONF_DIR="$CAAS_SRC_DIR/configuration/src/json-config"
 
 ################################################################################
 # access to developer VM

@@ -76,6 +76,32 @@ else
     DbmigrateDirYml='#'
 fi
 
+# directory containing custom sql-config
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use custom sql-config or not.
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+    CUSTOM_SQLCONF_DIR=$(cygpath -u "$CUSTOM_SQLCONF_DIR")
+fi
+# create yaml code depending on CUSTOM_SQLCONF_DIR
+if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+    SqlconfDirYml__=''
+else
+    SqlconfDirYml__='#'
+fi
+
+# directory containing custom json-config
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use custom json-config or not.
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+    CUSTOM_JSONCONF_DIR=$(cygpath -u "$CUSTOM_JSONCONF_DIR")
+fi
+# create yaml code depending on CUSTOM_JSONCONF_DIR
+if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+    JsonconfDirYml_=''
+else
+    JsonconfDirYml_='#'
+fi
+
 # directory to be used as share
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom share or not.
@@ -119,6 +145,11 @@ fi
 # directory to be used to run the soap, geb and ws tests
 if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
     IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
+fi
+
+# set CAAS_SRC_DIR depending on OS
+if [ $(OS) = "Msys" -a ! -z "$CAAS_SRC_DIR" ]; then
+    CAAS_SRC_DIR=$(cygpath -u "${CAAS_SRC_DIR}")
 fi
 
 # development host
