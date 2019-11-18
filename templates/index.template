@@ -82,6 +82,7 @@
                   <li><a href="#development--apply-sqlconfig">Apply sql configuration scripts</a></li>
                   <li><a href="#development--apply-jsonconfig">Apply json configuration scripts</a></li>
                   <li><a href="#development--load-dump">Load custom dump</a></li>
+                  <li><a href="#development--create-dump">Create dump</a></li>
                   <li><a href="#development--access-emails">Access E-Mails</a></li>
                   <li><a href="#development--access-pdf">Access PDF documents</a></li>
                   <li><a href="#development--debugging">Debugging</a></li>
@@ -586,19 +587,22 @@ kubectl logs $POD_NAME --namespace ${EnvId}
 
         <h3 id="development--load-dump">Load custom dump</h3>
         <p>
-          When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv4iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exacly similar as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
+          When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv4iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exactly as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
           <ul>
-            <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest.</li>
-            <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-            <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
-            ${KeepDatabaseDocuStart}
-            <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
-            <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
-            <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
-            <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
-            ${KeepDatabaseDocuEnd}
-            <li><a href="#operations--start-database">Start postgres database</a></li>
-            <li><a href="#operations--start-iom">Start IOM</a></li>
+            <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest. You can check this with following command: <samp>ls *.sql.gz | sort -nr | head -n 1</samp></li>
+            <li>The custom dump can be loaded only, if the database is empty. The following steps are necessary to (re)start IOM with an empty database:</li>
+            <ul>
+              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+              <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+              ${KeepDatabaseDocuStart}
+              <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+              <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+              <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+              <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+              ${KeepDatabaseDocuEnd}
+              <li><a href="#operations--start-database">Start postgres database</a></li>
+              <li><a href="#operations--start-iom">Start IOM</a></li>
+            </ul>
           </ul>
         </p><p>
           You should inspect the logs created when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
@@ -608,6 +612,30 @@ kubectl logs $POD_NAME --namespace ${EnvId}
 POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
 kubectl logs $POD_NAME -c dbinit --namespace ${EnvId}
         </div></code></pre>
+
+        <h3 id="development--create-dump">Create dump</h3>
+        <p>
+          Devenv4iom provides a job to create a dump of the IOM database. This job uses variable <samp>CUSTOM_DUMPS_DIR</samp> too. It writes the dumps to this directory. The created dumps will use the following naming pattern: <samp>OmsDump.<em>year-month-day.hour.minute.second-hostname</em>.sql.gz</samp>. To create dumps, you have to:
+          <ul>
+            <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.
+          </ul>
+        </p><p>
+          You should check the output of the dump-job. The logs of the job a printed in json format. Verbosity can be controlled by the configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# start dump-job
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dump.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
+
+# get logs of job
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=dump-job -o jsonpath="{.items[0].metadata.name}")
+kubectl logs $POD_NAME --namespace ${EnvId}
+
+# delete dump-job
+"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dump.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+        </div></code></pre>
+        <p>
+          If <samp>CUSTOM_DUMP_DIR</samp> is configured, the newest custom dump will be loaded, when starting IOM with an empty database (according to the <a href="#development--load-dump">load-rules</a>).
+        </p>
         
         <h3 id="development--access-emails">Access E-Mails</h3>
         <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
