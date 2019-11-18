@@ -50,6 +50,20 @@ else
     TemplatesDirYml='#'
 fi
 
+# directory containing custom dump(s)
+# variable has to be empty on default, in order to become able to make the
+# distinction whether the user wants to use custom dumps or not.
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DUMPS_DIR" ]; then
+    CUSTOM_DUMPS_DIR=$(cygpath -u "$CUSTOM_DUMPS_DIR")
+fi
+# create yaml code depending on CUSTOM_DUMPS_DIR
+if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
+    DumpsDirYml____=''
+else
+    DumpsDirYml____='#'
+fi
+
+
 # directory containing custom xsl templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.

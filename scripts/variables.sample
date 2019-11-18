@@ -111,6 +111,9 @@ CAAS_SRC_DIR="D:\svn\caas\trunk"
 # Development of migration scripts
 #CUSTOM_DBMIGRATE_DIR="$IOM_APP_SRC_DIR/postgres"
 
+# load/create custom dumps
+#CUSTOM_DUMPS_DIR="$IOM_APP_SRC_DIR/postgres/dumps"
+
 # Development of custom sql-config
 #CUSTOM_SQLCONF_DIR="$CAAS_SRC_DIR/configuration/src/sql-config"
 

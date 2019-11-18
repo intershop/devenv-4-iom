@@ -42,6 +42,9 @@ ${SqlconfDirYml__}          path: ${CUSTOM_SQLCONF_DIR}
 ${JsonconfDirYml_}      - name: jsonconf
 ${JsonconfDirYml_}        hostPath:
 ${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
+${DumpsDirYml____}      - name: dumps
+${DumpsDirYml____}        hostPath:
+${DumpsDirYml____}          path: ${CUSTOM_DUMPS_DIR}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}
@@ -165,6 +168,8 @@ ${SqlconfDirYml__}          - name: sqlconf
 ${SqlconfDirYml__}            mountPath: /opt/caas-config/sql-config
 ${JsonconfDirYml_}          - name: jsonconf
 ${JsonconfDirYml_}            mountPath: /opt/caas-config/json-config
+${DumpsDirYml____}          - name: dumps
+${DumpsDirYml____}            mountPath: /opt/dumps
           env:
             - name: TENANT
               value: Intershop

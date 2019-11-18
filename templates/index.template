@@ -81,7 +81,9 @@
                   <li><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></li>
                   <li><a href="#development--apply-sqlconfig">Apply sql configuration scripts</a></li>
                   <li><a href="#development--apply-jsonconfig">Apply json configuration scripts</a></li>
+                  <li><a href="#development--load-dump">Load custom dump</a></li>
                   <li><a href="#development--access-emails">Access E-Mails</a></li>
+                  <li><a href="#development--access-pdf">Access PDF documents</a></li>
                   <li><a href="#development--debugging">Debugging</a></li>
                   <li><a href="#development--testing">Testing</a></li>
                 </ul>
@@ -581,6 +583,31 @@ kubectl logs $POD_NAME --namespace ${EnvId}
         <p>
           If <samp>CUSTOM_JSONCONFIG_DIR</samp> is configured, the custom json configuration is also applied when starting IOM.
         </p>
+
+        <h3 id="development--load-dump">Load custom dump</h3>
+        <p>
+          When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv4iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exacly similar as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
+          <ul>
+            <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest.</li>
+            <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
+            <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+            ${KeepDatabaseDocuStart}
+            <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
+            <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
+            <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
+            <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+            ${KeepDatabaseDocuEnd}
+            <li><a href="#operations--start-database">Start postgres database</a></li>
+            <li><a href="#operations--start-iom">Start IOM</a></li>
+          </ul>
+        </p><p>
+          You should inspect the logs created when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# get logs of dbinit container
+POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
+kubectl logs $POD_NAME -c dbinit --namespace ${EnvId}
+        </div></code></pre>
         
         <h3 id="development--access-emails">Access E-Mails</h3>
         <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
