@@ -12,27 +12,52 @@ ID=${ID}
 # always the newest version of requested docker image will be used. Can be set
 # to any value allowed by ImagePullPolicy.
 # see https://kubernetes.io/docs/concepts/configuration/overview/#container-images
-# IMAGE_PULL_POLICY=Always
+IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 
 # postgres image (name:tag)
-DOCKER_DB_IMAGE=postgres:11
+DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE}
 
 # mailhog image (name:tag)
-MAILHOG_IMAGE=mailhog/mailhog
+MAILHOG_IMAGE=${MAILHOG_IMAGE}
 
 # iom psql image (name:tag)
-IOM_PSQL_IMAGE=docker-build.rnd.intershop.de/intershop/iom-psql:3.10
+IOM_PSQL_IMAGE=${IOM_PSQL_IMAGE}
 
 # iom dbaccount image (name:tag)
-IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom dbinit image (name:tag)
-# IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT
-IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-config-com.intershop.oms.ci-project:2.16.0.0-SNAPSHOT-1.0.0.0-SNAPSHOT
+IOM_DBINIT_IMAGE=${IOM_DBINIT_IMAGE}
 
 # iom app image (name:tag)
-# IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT
-IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-customization-com.intershop.oms.ci-project:2.16.0.0-SNAPSHOT-1.0.0.0-SNAPSHOT
+IOM_APP_IMAGE=${IOM_APP_IMAGE}
+
+################################################################################
+# database configuration
+################################################################################
+
+# if you want to use an external database, you have to change the settings
+# in this section. If you want to reset settings, you can simply remove all
+# variables from this section. Default values for usage with local postgres
+# pod are used in this case.
+
+# database connection
+PGHOST=${PGHOST}
+PGPORT=${PGPORT}
+
+# administrative access to database
+# will be used by dbaccount-image, when creating the oms database
+PGUSER="${PGUSER}"
+PGPASSWORD="${PGPASSWORD}"
+PGDATABASE="${PGDATABASE}"
+OMS_DB_OPTIONS="${OMS_DB_OPTIONS}"
+OMS_DB_SEARCHPATH="${OMS_DB_SEARCHPATH}"
+
+# iom database
+# values will be used when creating and accessing the account
+OMS_DB_USER="${OMS_DB_USER}"
+OMS_DB_PASS="${OMS_DB_PASS}"
+OMS_DB_NAME="${OMS_DB_NAME}"
 
 ################################################################################
 # IOM runtime configuration
@@ -40,24 +65,24 @@ IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/iom-caas-customization-com
 
 # CaaS projects may have environment specific configurations, test data, etc.
 # CAAS_ENV_NAME assigns the environment name to the installation.
-CAAS_ENV_NAME=ci
+CAAS_ENV_NAME=${CAAS_ENV_NAME}
 
 # hostname to be used for the OMS_PUBLIC_URL
-# if commented out, HOST_IOM defaults to ${HOST_IOM}
-# HOST_IOM=${HOST_IOM}
+# if left empty, HOST_IOM defaults to ${HOST_IOM}
+HOST_IOM=${HOST_IOM}
 
 ################################################################################
-# database settings
+# database settings (not applied to external database)
 ################################################################################
 
 # postgres arguments
-POSTGRES_ARGS="[ \"-N\", \"500\", \"-c\", \"max_prepared_transactions=100\", \"-c\", \"log_line_prefix='%a %m %u %i [%p] '\", \"-c\", \"log_min_duration_statement=500\" ]"
+POSTGRES_ARGS=( ${PostgresArgsShell} )
 
 # Keep database data
 # ------------------------------
 # If you want to keep database data even after a kubernetes restart, you have to set
 # KEEP_DATABASE_DATA to true, otherwise false.
-KEEP_DATABASE_DATA=true
+KEEP_DATABASE_DATA=${KEEP_DATABASE_DATA}
 
 ################################################################################
 # log seetings
@@ -65,15 +90,15 @@ KEEP_DATABASE_DATA=true
 
 # log-level for different scopes of iom-application. Supported levels are:
 #   FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
-OMS_LOGLEVEL_CONSOLE=ERROR
-OMS_LOGLEVEL_IOM=ERROR
-OMS_LOGLEVEL_HIBERNATE=ERROR
-OMS_LOGLEVEL_QUARTZ=ERROR
-OMS_LOGLEVEL_CUSTOMIZATION=ERROR
+OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE}
+OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM}
+OMS_LOGLEVEL_HIBERNATE=${OMS_LOGLEVEL_HIBERNATE}
+OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ}
+OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION}
 
 # log-level of helper scripts (dbmigrate, etc.). Supported levels are:
 #   ERROR, WARN, INFO, DEBUG
-OMS_LOGLEVEL_SCRIPTS=INFO
+OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 
 ################################################################################
 # development settings
@@ -87,38 +112,45 @@ OMS_LOGLEVEL_SCRIPTS=INFO
 # Set IOM_APP_SRC_DIR to directory on your local disk, containing IOM sources.
 # Additionally the drive containing the IOM sources has to be defined as share
 # in Docker Desktop.
-IOM_APP_SRC_DIR="D:\svn\oms\trunk"
+IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR}"
 
 # Share the CAAS project directory
-CAAS_SRC_DIR="D:\svn\caas\trunk"
+CAAS_SRC_DIR="${CAAS_SRC_DIR}"
 
 # The following config variables are all using the same pattern:
 # If you want to use a certain aspect of development, you have to define the
 # location of custom files, that should be used by the developer VM.
 # You have to make sure, that the referenced directories are shared with the
-# developer VM. As the preconfigured values are all being located withing
+# Docker Desktop. As the preconfigured values are all being located withing
 # IOM_APP_SRC_DIR, it's suffient if this directory is shared.
 
 # Deployment of custom artifacts
 #CUSTOM_APPS_DIR="$IOM_APP_SRC_DIR/oms.deployment/applications"
+CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
 #CUSTOM_TEMPLATES_DIR="$IOM_APP_SRC_DIR/oms.deployment/var/templates"
+CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
 # Development of custom xsl templates
 #CUSTOM_XSLT_DIR="$IOM_APP_SRC_DIR/bakery.transform/transform-core/src/main/resources/document/xslt"
+CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 
 # Development of migration scripts
 #CUSTOM_DBMIGRATE_DIR="$IOM_APP_SRC_DIR/postgres"
+CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 
 # load/create custom dumps
 #CUSTOM_DUMPS_DIR="$IOM_APP_SRC_DIR/postgres/dumps"
+CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 
 # Development of custom sql-config
 #CUSTOM_SQLCONF_DIR="$CAAS_SRC_DIR/configuration/src/sql-config"
+CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 
 # Development of custom json-config
 #CUSTOM_JSONCONF_DIR="$CAAS_SRC_DIR/configuration/src/json-config"
+CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 
 ################################################################################
 # access to developer VM
@@ -126,21 +158,22 @@ CAAS_SRC_DIR="D:\svn\caas\trunk"
 
 # Access to shared FS
 # -------------------
-# If you want to access the shared file-system of IOM from outside the developer
-# VM, you have to share the directory with the developer VM, which should be
-# used as shared FS by IOM.
-# If you don't want to access the shared file-system of IOM from outside the
-# developer VM, the according variable can be left commented out.
+# If you want to access the shared file-system of IOM, you have to define a
+# directory, which should be used for this purpose. If you want to use this
+# feature, you have to make sure, this directory is shared with Docker Desktop.
+# It's recommended to use a directory within the config directory structure.
 # CUSTOM_SHARE_DIR="${CustomShareDirDefault}"
+CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 
 # Access to logs
 # --------------
-# If you want to access the log files of all containers outside the developer
-# VM, you have to share the directory with the developer VM, which should be
-# used as log directory.
-# If you don't want to access the log files of all containers from outside the
-# developer VM, the according variable can be left commented out.
+# If you want to access the logs of IOM (the very few that are written to file),
+# you have to define a directory, which should be used for this purpose. If you
+# want to use this featuem you have to make sure, this directory is shared with
+# Docker Desktop.
+# It's recommended to use a directory within the config directory structure.
 # CUSTOM_LOG_DIR="${CustomLogDirDefault}"
+CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
 
 ################################################################################
 # multi instance settings
@@ -149,9 +182,9 @@ CAAS_SRC_DIR="D:\svn\caas\trunk"
 # INDEX is used in combination with PORT_OFFSET to auto-generate a port
 # forwarding for all used ports in order to run multiple iom environments in
 # parallel
-# INDEX=0
+INDEX=${INDEX}
 
 # PORT_OFFSET is used in combination with INDEX to auto-generate a port
 # forwarding for all used ports in order to run multiple iom environments in
 # parallel
-# PORT_OFFSET=10
+PORT_OFFSET=${PORT_OFFSET}

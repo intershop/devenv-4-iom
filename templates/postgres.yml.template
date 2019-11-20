@@ -12,7 +12,7 @@ ${KeepDatabaseYml}      claimName: postgres-pvc
   containers:
   - name: postgres
     image: ${DOCKER_DB_IMAGE}
-    args: ${POSTGRES_ARGS}
+    args: [ ${PostgresArgsYml} ]
     imagePullPolicy: Always
     volumeMounts:
 ${KeepDatabaseYml}    - name: db-data

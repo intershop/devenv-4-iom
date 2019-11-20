@@ -4,10 +4,10 @@ is.oms.app.http.port  = ${FORWARD_PORT_IOM}
 is.oms.app.https.port = 443
 
 # db
-is.oms.db.hostlist = ${HOST_IOM}:${FORWARD_PORT_DB}
-is.oms.db.name = ${DB_NAME}
-is.oms.db.user = ${DB_USER}
-is.oms.db.pass = ${DB_PASSWORD}
+is.oms.db.hostlist = ${PGHOST}:${PGPORT}
+is.oms.db.name = ${OMS_DB_NAME}
+is.oms.db.user = ${OMS_DB_USER}
+is.oms.db.pass = ${OMS_DB_PASS}
 
 # ws user
 is.oms.ws.user = test_ws_user_neu

@@ -83,13 +83,13 @@ ${LogDirYml______}          mountPath: /var/log/log-share
           - name: ENVIRONMENT
             value: '${ID}'
           - name: OMS_DB_HOSTLIST
-            value: postgres-service:${FORWARD_PORT_DB}
-          - name: OMS_DB_PASS
-            value: '${DB_PASSWORD}'
-          - name: OMS_DB_USER
-            value: '${DB_USER}'
+            value: ${PGHOST}:${PGPORT}
           - name: OMS_DB_NAME
-            value: '${DB_NAME}'
+            value: '${OMS_DB_NAME}'
+          - name: OMS_DB_USER
+            value: '${OMS_DB_USER}'
+          - name: OMS_DB_PASS
+            value: '${OMS_DB_PASS}'
           - name: OMS_SHAREDFS_HEALTHCHECK
             value: disabled
           - name: OMS_LOGLEVEL_CONSOLE
@@ -141,15 +141,25 @@ ${LogDirYml______}            mountPath: /var/log/log-share
             - name: ENVIRONMENT
               value: '${ID}'
             - name: PGHOST
-              value: postgres-service
+              value: ${PGHOST}
             - name: PGPORT
-              value: '${FORWARD_PORT_DB}'
+              value: '${PGPORT}'
+            - name: PGDATABASE
+              value: '${PGDATABASE}'
+            - name: PGUSER
+              value: '${PGUSER}'
             - name: PGPASSWORD
-              value: postgres
+              value: '${PGPASSWORD}'
+            - name: OMS_DB_USER
+              value: '${OMS_DB_USER}'
             - name: OMS_DB_PASS
-              value: '${DB_PASSWORD}'
+              value: '${OMS_DB_PASS}'
+            - name: OMS_DB_NAME
+              value: '${OMS_DB_NAME}'
             - name: OMS_DB_OPTIONS
-              value: "ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
+              value: "${OMS_DB_OPTIONS}"
+            - name: OMS_DB_SEARCHPATH
+              value: "${OMS_DB_SEARCHPATH}"
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
 ${LogDirYml______}            - name: LOG_SHARE
@@ -176,11 +186,15 @@ ${DumpsDirYml____}            mountPath: /opt/dumps
             - name: ENVIRONMENT
               value: '${ID}'
             - name: OMS_DB_HOST
-              value: postgres-service
+              value: ${PGHOST}
             - name: OMS_DB_PORT
-              value: '${FORWARD_PORT_DB}'
+              value: '${PGPORT}'
+            - name: OMS_DB_NAME
+              value: '${OMS_DB_NAME}'
+            - name: OMS_DB_USER
+              value: '${OMS_DB_USER}'
             - name: OMS_DB_PASS
-              value: '${DB_PASSWORD}'
+              value: '${OMS_DB_PASS}'
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
             - name: CAAS_ENV_NAME

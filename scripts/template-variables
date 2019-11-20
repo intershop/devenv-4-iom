@@ -11,13 +11,34 @@ PORT_OFFSET="${PORT_OFFSET:-10}"
 
 # environment specific configuration defaults to '', which just applies base
 # configuration
-CAAS_ENV_NAME="${CAAS_ENV_NAME:-}"
+CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
 
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
+# initialize POSTGRES_ARGS
+if [ ${#POSTGRES_ARGS[@]} -eq 0 ]; then
+   POSTGRES_ARGS=( "-N" "500" "-c" "max_prepared_transactions=100" "-c" "log_line_prefix='%a %m %u %i [%p] '" "-c" "log_min_duration_statement=500" )
+fi
+# build a string from POSTGRES_ARGS, that can be used as yaml array
+PostgresArgsYml=$(COUNTER=0; \
+                  while [ $COUNTER -lt ${#POSTGRES_ARGS[@]} ]; do \
+                      echo -n "\"${POSTGRES_ARGS[$COUNTER]}\""; \
+                      COUNTER=$(expr $COUNTER + 1); \
+                      if [ $COUNTER -lt ${#POSTGRES_ARGS[@]} ]; then \
+                          echo -n ','; \
+                      fi \
+                  done)
+# build a string from POSTGRES_ARGS, that can be used as shell array
+PostgresArgsShell=$(COUNTER=0; \
+                    while [ $COUNTER -lt ${#POSTGRES_ARGS[@]} ]; do \
+                        echo -n "\"${POSTGRES_ARGS[$COUNTER]}\" "; \
+                        COUNTER=$(expr $COUNTER + 1); \
+                    done)
+
 # Add volumes / mounts if the user wants to keep databse data or not.
+KEEP_DATABASE_DATA="${KEEP_DATABASE_DATA:-true}"
 if [ "$KEEP_DATABASE_DATA" = true ] ; then
     KeepDatabaseYml=''
 else
@@ -27,6 +48,7 @@ fi
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
+CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
@@ -40,6 +62,7 @@ fi
 # directory containing custom mail templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom templates or not.
+CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
     CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
 fi
@@ -53,6 +76,7 @@ fi
 # directory containing custom dump(s)
 # variable has to be empty on default, in order to become able to make the
 # distinction whether the user wants to use custom dumps or not.
+CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DUMPS_DIR" ]; then
     CUSTOM_DUMPS_DIR=$(cygpath -u "$CUSTOM_DUMPS_DIR")
 fi
@@ -63,10 +87,10 @@ else
     DumpsDirYml____='#'
 fi
 
-
 # directory containing custom xsl templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.
+CUSTOM_XSLT_DIR="${CUSTOM_XSL_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
     CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
 fi
@@ -80,6 +104,7 @@ fi
 # directory containing custom dbmigrate scripts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom dbmigrate scripts or not.
+CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
     CUSTOM_DBMIGRATE_DIR=$(cygpath -u "$CUSTOM_DBMIGRATE_DIR")
 fi
@@ -93,6 +118,7 @@ fi
 # directory containing custom sql-config
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom sql-config or not.
+CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SQLCONF_DIR" ]; then
     CUSTOM_SQLCONF_DIR=$(cygpath -u "$CUSTOM_SQLCONF_DIR")
 fi
@@ -106,6 +132,7 @@ fi
 # directory containing custom json-config
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom json-config or not.
+CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_JSONCONF_DIR" ]; then
     CUSTOM_JSONCONF_DIR=$(cygpath -u "$CUSTOM_JSONCONF_DIR")
 fi
@@ -119,6 +146,7 @@ fi
 # directory to be used as share
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom share or not.
+CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
@@ -132,6 +160,7 @@ fi
 # directory to be used as log directory
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom log directory or not.
+CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
     CUSTOM_LOG_DIR=$(cygpath -u "$CUSTOM_LOG_DIR")
 fi
@@ -156,12 +185,14 @@ if [ $(OS) = "Msys" ]; then
 fi
 
 # set IOM_APP_SRC_DIR depending on OS
+IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR:-D:\\svn\\oms\\trunk}"
 # directory to be used to run the soap, geb and ws tests
 if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
     IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
 fi
 
 # set CAAS_SRC_DIR depending on OS
+CAAS_SRC_DIR="${CAAS_SRC_DIR:-D:\\svn\\caas\\trunk}"
 if [ $(OS) = "Msys" -a ! -z "$CAAS_SRC_DIR" ]; then
     CAAS_SRC_DIR=$(cygpath -u "${CAAS_SRC_DIR}")
 fi
@@ -179,11 +210,6 @@ PORT_DB="${PORT_DB:-5432}"
 PORT_WILDFLY="${PORT_WILDFLY:-9990}"
 PORT_MAILHOG_UI="${PORT_MAILHOG_UI:-8025}"
 PORT_MAILHOG_SMTP="${PORT_MAILHOG_SMTP:-1025}"
-
-# database
-DB_NAME="${DB_NAME:-oms_db}"
-DB_USER="${DB_USER:-oms_user}"
-DB_PASSWORD="${DB_PASSWORD:-oms_pw}"
 
 # port forwarding (port number of according service)
 # normally these ports are available inside the kubernetes cluster only,
@@ -208,6 +234,27 @@ PUBLIC_NODEPORT_DB=$(($PUBLIC_NODEPORT_BASE + 2 + ($INDEX * $PORT_OFFSET)))
 PUBLIC_NODEPORT_WILDFLY=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
 PUBLIC_NODEPORT_MAILHOG_UI=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
 PUBLIC_NODEPORT_MAILHOG_SMTP=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
+
+# database connection
+PGHOST=${PGHOST:-postgres-service}
+PGPORT=${PGPORT:-$FORWARD_PORT_DB}
+
+# administrative access to database
+# will be used by dbaccount-image, when creating the oms database
+PGUSER="${PGUSER:-postgres}"
+PGPASSWORD="${PGPASSWORD:-postgres}"
+PGDATABASE="${PGDATABASE:-postgres}"
+# default values could be copied directly from Dockerfile!
+# had to change UTF-8 to utf8, otherwise following message was written:
+#  ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_US.utf8)
+#  HINT:  Use the same collation as in the template database, or use template0 as template.
+OMS_DB_OPTIONS="ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
+OMS_DB_SEARCHPATH="bizconf, testcases"
+
+# iom database
+OMS_DB_USER="${OMS_DB_USER:-oms_user}"
+OMS_DB_PASS="${OMS_DB_PASS:-oms_pw}"
+OMS_DB_NAME="${OMS_DB_NAME:-oms_db}"
 
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
@@ -234,6 +281,13 @@ else
     sqlDir=$(dirname "$SQL_SRC")
 fi
 
+OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE:-ERROR}
+OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM:-ERROR}
+OMS_LOGLEVEL_HIBERNATE=${OMS_LOGLEVEL_HIBERNATE:-ERROR}
+OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ:-ERROR}
+OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION:-ERROR}
+OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS:-INFO}
+
 ################################################################################
 # Non-versioned commands and variables
 #
@@ -244,6 +298,23 @@ if [ "$KEEP_DATABASE_DATA" = true ] ; then
     KeepDatabaseDocuStart=''
     KeepDatabaseDocuEnd=''
 else
+    KeepDatabaseDocuStart='<!--'
+    KeepDatabaseDocuEnd='-->'
+fi
+
+# if PGHOST is not postgres-service, an external database will be used
+# if an external database is used, the KEEP_DATABASE_DATA config variable
+# becomes invalid.
+if [ "$PGHOST" = 'postgres-service' ]; then
+    InternalDatabaseDocuStart=''
+    InternalDatabaseDocuEnd=''
+    ExternalDatabaseDocuStart='<!--'
+    ExternalDatabaseDocuEnd='-->'
+else
+    InternalDatabaseDocuStart='<!--'
+    InternalDatabaseDocuEnd='-->'
+    ExternalDatabaseDocuStart=''
+    ExternalDatabaseDocuEnd=''
     KeepDatabaseDocuStart='<!--'
     KeepDatabaseDocuEnd='-->'
 fi

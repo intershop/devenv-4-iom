@@ -156,7 +156,7 @@ if [ -z "$TEMPLATE_VAR_FILE" -o ! -f "$TEMPLATE_VAR_FILE" ]; then
 fi
 
 # check syntax of $TEMPLATE_VAR_FILE
-if ! ( set -e; . $TEMPLATE_VAR_FILE ); then
+if ! ( set -e; . "$TEMPLATE_VAR_FILE" ); then
     echo "error reading '$TEMPLATE_VAR_FILE'" 1>&2
     exit 1
 fi
