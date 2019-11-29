@@ -3,8 +3,7 @@ kind: Job
 metadata:
   name: apply-sql-job
 spec:
-  # do not know, how to enable this alpha feature
-  #ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 100
   template:
     spec:
       containers:

@@ -1,3 +1,5 @@
+DEVENV4IOM_VERSION=1.0.0.0-SNAPSHOT
+
 ################################################################################
 # Defaults
 #
@@ -41,8 +43,10 @@ PostgresArgsShell=$(COUNTER=0; \
 KEEP_DATABASE_DATA="${KEEP_DATABASE_DATA:-true}"
 if [ "$KEEP_DATABASE_DATA" = true ] ; then
     KeepDatabaseYml=''
+    KeepDatabaseSh=''
 else
     KeepDatabaseYml='#'
+    KeepDatabaseSh='#'
 fi
 
 # directory containing custom built artifacts
@@ -90,7 +94,7 @@ fi
 # directory containing custom xsl templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.
-CUSTOM_XSLT_DIR="${CUSTOM_XSL_DIR}"
+CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 if [ $(OS) = "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
     CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
 fi
@@ -310,11 +314,14 @@ if [ "$PGHOST" = 'postgres-service' ]; then
     InternalDatabaseDocuEnd=''
     ExternalDatabaseDocuStart='<!--'
     ExternalDatabaseDocuEnd='-->'
+    PgHostSh=''
 else
     InternalDatabaseDocuStart='<!--'
     InternalDatabaseDocuEnd='-->'
     ExternalDatabaseDocuStart=''
     ExternalDatabaseDocuEnd=''
+    PgHostSh='#'
     KeepDatabaseDocuStart='<!--'
     KeepDatabaseDocuEnd='-->'
+    KeepDatabaseSh='#'
 fi

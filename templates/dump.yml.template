@@ -3,8 +3,7 @@ kind: Job
 metadata:
   name: dump-job
 spec:
-  # do not know, how to enable this alpha feature
-  #ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 100
   template:
     spec:
       containers:
