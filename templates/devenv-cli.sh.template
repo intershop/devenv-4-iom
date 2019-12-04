@@ -1055,7 +1055,7 @@ BACKGROUND
     cp "${ENV_DIR}/${CONFIG_FILE}" \\
        "${ENV_DIR}/${CONFIG_FILE}.\$BAK"
     "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/scripts/variables.sample" \\
+      "${PROJECT_PATH}/templates/config.properties.template" \\
       "${ENV_DIR}/${CONFIG_FILE}.\$BAK" > \\
       "${ENV_DIR}/${CONFIG_FILE}"
 EOF
@@ -2367,7 +2367,7 @@ update-config() {
         SUCCESS=false
     else
         "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/scripts/variables.sample" \
+            "${PROJECT_PATH}/templates/config.properties.template" \
             "${ENV_DIR}/${CONFIG_FILE}.$BAK" > "${ENV_DIR}/${CONFIG_FILE}" 2> "$TMP_ERR"
         if [ $? -ne 0 ]; then
             log_json ERROR "update-config: error updating config file. Please analyze the problem, restore the config file from ${CONFIG_FILE}.$BAK and retry." < "$TMP_ERR"
