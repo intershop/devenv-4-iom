@@ -533,7 +533,12 @@ help-apply-deployment() {
 deploys custom built artifacts
 
 SYNOPSIS
-    $ME apply deployment
+    $ME apply deployment [PATTERN]
+
+ARGUMENTS
+    PATTERN - optional. Pattern is simply a substring, which will be matched
+      againts deployment artifacts. If pattern is set, only artifacts matching
+      the pattern will be (re)deployed.
 
 OVERVIEW
     The Developer VM has an extended search-path for deployments. The scripts 
@@ -1849,7 +1854,7 @@ delete-cluster() {
 # ->: true|false indicating success
 #-------------------------------------------------------------------------------
 apply-deployment() {
-    PATTERN=omt
+    PATTERN=$1
     SUCCESS=true
     if [ ! -z "$CUSTOM_APPS_DIR" ]; then
         POD=$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR")
@@ -2613,6 +2618,7 @@ if [ "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-scripts' ]; then
 elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'json-config' \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'dbmigrate'   \) -o \
+          \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'deployment'  \) -o \
           \( "$LEVEL0" = 'dump'  -a "$LEVEL1" = 'create'      \) ]; then
     if [ ! -z "$ARG2" ]; then
         eval help-$LEVEL0-$LEVEL1
