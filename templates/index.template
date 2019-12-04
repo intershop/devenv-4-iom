@@ -78,17 +78,16 @@
                 <ul class="dropdown-menu">
                   <li><a href="#development--deployment-gui">Deployment using the Wildfly Admin Console</a></li>
                   <li><a href="#development--deployment-cli">Deployment using Scripts</a></li>
-                  <li><a href="#development--roll-out-mail-templates">Roll out mail templates</a></li>
-                  <li><a href="#development--roll-out-xsl-templates">Roll out xsl templates</a></li>
-                  <li><a href="#development--apply-sql">Apply sql scripts</a></li>
+                  <li><a href="#development--apply-mail-templates">Roll out mail templates</a></li>
+                  <li><a href="#development--apply-xsl-templates">Roll out xsl templates</a></li>
+                  <li><a href="#development--apply-sql-scripts">Apply sql scripts</a></li>
                   <li><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></li>
-                  <li><a href="#development--apply-sqlconfig">Apply sql configuration scripts</a></li>
-                  <li><a href="#development--apply-jsonconfig">Apply json configuration scripts</a></li>
-                  <li><a href="#development--load-dump">Load custom dump</a></li>
-                  <li><a href="#development--create-dump">Create dump</a></li>
+                  <li><a href="#development--apply-sql-config">Apply sql configuration scripts</a></li>
+                  <li><a href="#development--apply-json-config">Apply json configuration scripts</a></li>
+                  <li><a href="#development--dump-load">Load custom dump</a></li>
+                  <li><a href="#development--dump-create">Create dump</a></li>
                   <li><a href="#development--access-emails">Access E-Mails</a></li>
                   <li><a href="#development--access-pdf">Access PDF documents</a></li>
-                  <li><a href="#development--debugging">Debugging</a></li>
                   <li><a href="#development--testing">Testing</a></li>
                 </ul>
               </li>
@@ -350,90 +349,76 @@ ${ENV_DIR}/devenv-cli.sh delete iom
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # redeploy omt selectively 
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy omt
+${ENV_DIR}/devenv-cli.sh apply deployment omt
 
 # redeploy all
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic redeploy
+${ENV_DIR}/devenv-cli.sh apply deployment
         </div></code></pre>
         <p>
           Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> to update/add deployments during runtime.
         </p>
           
-        <h3 id="development--roll-out-mail-templates">Roll out custom mail templates</h3>
+        <h3 id="development--apply-mail-templates">Roll out custom mail templates</h3>
         <p>
-          The developer VM contains an additional directory <samp>/opt/oms/templates-dev</samp>, which will be used as mount point for custom mail templates. Part of the developer VM is also the script <samp>apply-templates</samp>, which copies the templates from <samp>/opt/oms/templates-dev</samp> to the standard directory <samp>/opt/oms/var/templates</samp>. If you want to roll out custom mail templates in a running developer VM, you have to:
+          If you want to roll out custom mail templates in a running developer VM, you have to:
           <ul>
             <li>set variable <samp>CUSTOM_TEMPLATES_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
             <li>After changing <samp>CUSTOM_TEMPLATES_DIR</samp>, the IOM application server needs to be restarted:</li>
             <ol>
-              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-              <li><a href="#operations--start-iom">Start IOM</a></li>
+              <li><a href="#operations--delete-iom">Delete IOM</a></li>
+              <li><a href="#operations--create-iom">Create IOM</a></li>
             </ol>
           </ul>
           Once you have configured your developer VM this way, you can apply custom mail templates by the following command:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-templates
+${ENV_DIR}/devenv-cli.sh apply mail-templates
         </div></code></pre>
         <p>
           If <samp>CUSTOM_TEMPLATES_DIR</samp> is configured, the templates are also copied when starting IOM.
         </p>
 
-        <h3 id="development--roll-out-xsl-templates">Roll out custom xsl templates</h3>
+        <h3 id="development--apply-xsl-templates">Roll out custom xsl templates</h3>
         <p>
-          The developer VM contains a directory <samp>/opt/oms/xslt-dev</samp>, which will be used as mount point for custom xsl templates. Part of the developer VM is also the script <samp>apply-xslt</samp>, which copies the templates from <samp>/opt/oms/xslt-dev</samp> to the standard directory <samp>/opt/oms/var/xslt</samp>. If you want to roll out custom xsl templates in a running developer VM, you have to:
+          If you want to roll out custom xsl templates in a running developer VM, you have to:
           <ul>
             <li>set variable <samp>CUSTOM_XSLT_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
             <li>After changing <samp>CUSTOM_XSLT_DIR</samp>, the IOM application server has to be restarted:</li>
              <ol>
-              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-              <li><a href="#operations--start-iom">Start IOM</a></li>
+              <li><a href="#operations--delete-iom">Delete IOM</a></li>
+              <li><a href="#operations--create-iom">Create IOM</a></li>
              </ol>
           </ul>
           Once you have configured your developer VM this way, you can apply custom xsl templates by the following command:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POD_NAME --namespace ${EnvId} -- bash -ic apply-xslt
+${ENV_DIR}/devenv-cli.sh apply xsl-templates
         </div></code></pre>
         <p>
           if <samp>CUSTOM_XSLT_DIR</samp> is configured, the templates are also copied when starting IOM.
         </p>
 
-        <h3 id="development--apply-sql">Apply sql scripts</h3>
+        <h3 id="development--apply-sql-scripts">Apply sql scripts</h3>
         <p>
-          The docker-image defined by <samp>IOM_DBINIT_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv-4-iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database.
+          The docker-image defined by <samp>IOM_DBINIT_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv-4-iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database. Creation and deletion of job and access to logs is provided by command "apply sql-scripts" of command line interface.
         </p><p>
           There are two different modes, that can be used.
           <ul>
             <li>If a directory is passed to the job, all sql-files found in this directory are processed in numerical order, starting with the smallest one. Sub-directories are not scanned for sql-files.</li>
             <li>If a file is passed to the job, only this file will be executed.</li>
           </ul>
-          The information about the sql-file or -directory is passed by the variable <samp>SQL_SRC</samp> (absolute name has to be set). This variable is normally not part of the config-file. Instead of it, you should set it on the fly, when running the job. (If you really want, you can add it to the config-file too.) You have to make sure, that the passed <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory/file is shared in Docker Desktop</a>. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp>. Just use another value for <samp>SQL_SRC</samp> to execute the sql-scripts you want.
+          The information about the sql-file or -directory is passed as third parameter to the command line client. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp>. 
         </p><p>
           The logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# adapt SQL_SRC to point to the directory/file you want to execute
-export SQL_SRC=${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
-
-# start apply-sql-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/apply-sql.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-
-# get logs of job
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=apply-sql-job -o jsonpath="{.items[0].metadata.name}")
-kubectl logs $POD_NAME --namespace ${EnvId}
-
-# delete apply-sql-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/apply-sql.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+# adapt third paramater according your needs
+${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
         </div></code></pre>
         
         <h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
         <p>
-          To develop and test a single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories within <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
+          To develop and test a single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql-scripts">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories within <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
         </p><p>
           The <samp>IOM_DBINIT_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use this dbmigrate script along with the migration scripts located at <samp>CUSTOM_DBMIGRATE_DIR</samp>. Hence, if you want to roll out custom dbmigrate scripts, you have to:
           <ul>
@@ -443,23 +428,15 @@ kubectl logs $POD_NAME --namespace ${EnvId}
           You can and should have an eye on the logs created by the migration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# start dbmigrate-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dbmigrate.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-
-# get logs of job
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=dbmigrate-job -o jsonpath="{.items[0].metadata.name}")
-kubectl logs $POD_NAME --namespace ${EnvId}
-
-# delete dbmigrate-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dbmigrate.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${ENV_DIR}/devenv-cli.sh apply dbmigrate
         </div></code></pre>
         <p>
           If <samp>CUSTOM_DBMIGRATE_DIR</samp> is configured, the custom dbmigrate scripts are also applied when starting IOM.
         </p>
         
-        <h3 id="development--apply-sqlconfig">Apply sql configuration scripts</h3>
+        <h3 id="development--apply-sql-config">Apply sql configuration scripts</h3>
         <p>
-          Scripts for sql-configuration are simple sql-scripts, which can be easily developed and tested with the help of the developer task <a href="#development--apply-sql">Apply sql scripts</a>. But sql-configuration in CaaS project context is more complex. E.g. the scripts are executed depending on the currently activated environment. In order to enable you to test sql configuration scripts exactly in the same context as in real IOM installation, the developer task <a href="#development--apply-sqlconfig">Apply sql configuration scripts</a> is provided.
+          Scripts for sql-configuration are simple sql-scripts, which can be easily developed and tested with the help of the developer task <a href="#development--apply-sql-scripts">Apply sql scripts</a>. But sql-configuration in CaaS project context is more complex. E.g. the scripts are executed depending on the currently activated environment. In order to enable you to test sql-configuration scripts exactly in the same context as in real IOM installation, the developer task <a href="#development--apply-sql-config">Apply sql configuration scripts</a> is provided.
         </p><p>
           To be able to roll out complete sql configurations, you have to:
           <ul>
@@ -470,23 +447,15 @@ kubectl logs $POD_NAME --namespace ${EnvId}
           You should have an eye on the logs created by the configuration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# start sqlconfig-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/sqlconfig.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-
-# get logs of job
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=sqlconfig-job -o jsonpath="{.items[0].metadata.name}")
-kubectl logs $POD_NAME --namespace ${EnvId}
-
-# delete sqlconfig-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/sqlconfig.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${ENV_DIR}/devenv-cli.sh apply sql-config
         </div></code></pre>
         <p>
           If <samp>CUSTOM_SQLCONFIG_DIR</samp> is configured, the custom sql configuration is also applied when starting IOM.
         </p>
 
-        <h3 id="development--apply-jsonconfig">Apply json configuration scripts</h3>
+        <h3 id="development--apply-json-config">Apply json configuration scripts</h3>
         <p>
-          Json configuration of IOM is not publicly available. There exists no task to support development of single json configuration scripts. Additionally the current implementation of json configuration does not use the concept of environments (configuration variable <samp>CAAS_ENV_NAME</samp>). The current developer task <a href="#development--apply-jsonconfig">Apply json configuration scripts</a> is able to apply complete json configurations exactly in the same context as in a real IOM installation.
+          Json configuration of IOM is not publicly available. There exists no task to support development of single json configuration scripts. Additionally the current implementation of json configuration does not use the concept of environments (configuration variable <samp>CAAS_ENV_NAME</samp>). The current developer task <a href="#development--apply-json-config">Apply json configuration scripts</a> is able to apply complete json configurations exactly in the same context as in a real IOM installation.
         </p><p>
           To be able to roll out json configurations, you have to:
           <ul>
@@ -496,54 +465,42 @@ kubectl logs $POD_NAME --namespace ${EnvId}
           You should have an eye on the logs created by the configuration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# start jsonconfig-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/jsonconfig.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-
-# get logs of job
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=jsonconfig-job -o jsonpath="{.items[0].metadata.name}")
-kubectl logs $POD_NAME --namespace ${EnvId}
-
-# delete jsonconfig-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/jsonconfig.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${ENV_DIR}/devenv-cli.sh apply json-config
         </div></code></pre>
         <p>
           If <samp>CUSTOM_JSONCONFIG_DIR</samp> is configured, the custom json configuration is also applied when starting IOM.
         </p>
 
-        <h3 id="development--load-dump">Load custom dump</h3>
+        <h3 id="development--dump-load">Load custom dump</h3>
         <p>
           When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv-4-iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exactly as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
           <ul>
             <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest. You can check this with following command: <samp>ls *.sql.gz | sort -nr | head -n 1</samp></li>
             ${InternalDatabaseDocuStart}
-            <li>The custom dump can be loaded only, if the database is empty. The following steps are necessary to (re)start IOM with an empty database:</li>
+            <li>The custom dump can be loaded only, if the database is empty. The "dump load" command of the command line client executes all the necessary steps to reatart IOM with an empty database:</li>
             <ul>
-              <li><a href="#operations--remove-iom">Stop/remove IOM</a></li>
-              <li><a href="#operations--remove-database">Stop/remove postgres database</a></li>
+              <li><a href="#operations--delete-iom">Delete IOM</a></li>
+              <li><a href="#operations--delete-postgres">Delete postgres database</a></li>
               ${InternalDatabaseDocuEnd}${KeepDatabaseDocuStart}
-              <li><a href="#operations--unlink-volume-from-db">Unlink Docker volume from database storage</a></li>
-              <li><a href="#operations--remove-docker-volume">Remove local Docker volume</a></li>
-              <li><a href="#operations--create-docker-volume">Create local Docker volume</a></li>
-              <li><a href="#operations--link-volume-to-db">Link Docker volume to database storage</a></li>
+              <li><a href="#operations--delete-storage">Remove local Docker volume</a></li>
+              <li><a href="#operations--create-storage">Create local Docker volume</a></li>
               ${KeepDatabaseDocuEnd}${InternalDatabaseDocuStart}
-              <li><a href="#operations--start-database">Start postgres database</a></li>
-              <li><a href="#operations--start-iom">Start IOM</a></li>
+              <li><a href="#operations--create-postgres">Create postgres database</a></li>
+              <li><a href="#operations--create-iom">Create IOM</a></li>
             </ul>
             ${InternalDatabaseDocuEnd}
             ${ExternalDatabaseDocuStart}
-            <li>The custom dump can be loaded only, if the database is empty. As you are using an external database, no steps can be listed here, how to purge the database. You have to care yourself, please.</li>
+            <li>The custom dump can be loaded only, if the database is empty. Since you are using an external database, no steps can be listed here, how to purge the database. You have to care yourself, please.</li>
             ${ExternalDatabaseDocuEnd}
           </ul>
         </p><p>
           You should inspect the logs created when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# get logs of dbinit container
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-kubectl logs $POD_NAME -c dbinit --namespace ${EnvId}
+${ENV_DIR}/devenv-cli.sh dump load
         </div></code></pre>
 
-        <h3 id="development--create-dump">Create dump</h3>
+        <h3 id="development--dump-create">Create dump</h3>
         <p>
           Devenv-4-iom provides a job to create a dump of the IOM database. This job uses variable <samp>CUSTOM_DUMPS_DIR</samp> too. It writes the dumps to this directory. The created dumps will use the following naming pattern: <samp>OmsDump.<em>year-month-day.hour.minute.second-hostname</em>.sql.gz</samp>. To create dumps, you have to:
           <ul>
@@ -553,26 +510,18 @@ kubectl logs $POD_NAME -c dbinit --namespace ${EnvId}
           You should check the output of the dump-job. The logs of the job a printed in json format. Verbosity can be controlled by the configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# start dump-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dump.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace ${EnvId} -f -
-
-# get logs of job
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l job-name=dump-job -o jsonpath="{.items[0].metadata.name}")
-kubectl logs $POD_NAME --namespace ${EnvId}
-
-# delete dump-job
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/dump.yml.template" "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace ${EnvId} -f -
+${ENV_DIR}/devenv-cli.sh dump create
         </div></code></pre>
         <p>
           If <samp>CUSTOM_DUMP_DIR</samp> is configured, the newest custom dump will be loaded, when starting IOM with an empty database (according to the <a href="#development--load-dump">load-rules</a>).
         </p>
         
         <h3 id="development--access-emails">Access E-Mails</h3>
-        <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. To do so, use the <a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a> link in the Links navigation bar.</p>
-
-        <h3 id="development--debugging">Debugging</h3>
-
-        <p>In order to debug the application port ${FORWARD_PORT_DEBUG} is available out of the box for Remote Java Debugging. For details see section <a href="#configurations--automatic-port-forwarding">Automatic port forwarding</a>.</p>
+        <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail-server UI and REST interface is given by command "info mailserver", provided by command line interface.
+	</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh info mailserver
+        </div></code></pre>
 
         <h3 id="development--testing">Testing</h3>
 
