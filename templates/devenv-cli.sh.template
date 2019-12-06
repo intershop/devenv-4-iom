@@ -613,9 +613,11 @@ SYNOPSIS
     $ME apply deployment [PATTERN]
 
 ARGUMENTS
-    PATTERN - optional. Pattern is simply a substring, which will be matched
+    PATTERN - optional. Pattern is simply a regex, which will be matched
       againts deployment artifacts. If pattern is set, only artifacts matching
-      the pattern will be (re)deployed.
+      the pattern will be redeployed in forced mode.
+      If pattern is not set, all artifacts will be undeployed and deployed
+      again.
 
 OVERVIEW
     The Developer VM has an extended search-path for deployments. The scripts 
@@ -2080,14 +2082,19 @@ apply-deployment() {
             log_json ERROR "apply-deployment: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
         else
-            kubectl exec $POD --namespace $EnvId -- bash -ic redeploy $PATTERN 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ -z "$PATTERN" ]; then
+                kubectl exec $POD --namespace $EnvId -- bash -ic redeploy 2> "$TMP_ERR" > "$TMP_OUT"
+            else
+                # TODO no messages visible, if script ended with error!
+                kubectl exec $POD --namespace $EnvId -- bash -ic "/opt/oms/bin/forced-redeploy.sh --pattern=$PATTERN || true" 2> "$TMP_ERR" > "$TMP_OUT"
+            fi   
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-deployment: error redeploy $PATTERN" < "$TMP_ERR"
+                log_json ERROR "apply-deployment: error applying deployments" < "$TMP_ERR"
                 SUCCESS=false
             else
                 # output is already in json format
                 cat "$TMP_OUT"
-                log_json INFO "apply-deployment: successfully applied deployment $PATTERN" < /dev/null
+                log_json INFO "apply-deployment: successfully applied deployments" < /dev/null
             fi
         fi
     else
