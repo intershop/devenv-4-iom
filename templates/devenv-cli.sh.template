@@ -24,6 +24,7 @@ COMMANDS
     info|i*            get information about kubernetes resources
     create|c*          create Kubernetes/Docker resources
     delete|de*         delete Kubernetes/Docker resources
+    wait|w*            wait for Kubernetes resourses to get ready
     apply|a*           apply customization
     dump|du*           create or load dump
     update|u*          update devenv4iom specific artifacts
@@ -325,6 +326,8 @@ RESOURCE
     postgres|p*        delete postgres server
     iom|i*             delete iom server
     cluster|c*         delete all resources, except storage
+
+Run '$ME delete RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -501,6 +504,80 @@ SEE
     $ME delete mailserver
     $ME delete postgres
     $ME delete storage
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-wait() {
+    ME=$(basename "$0")
+    cat <<EOF
+wait for Kubernetes resource to get ready
+
+SYNOPSIS
+    $ME wait RESOURCE
+
+RESOURCE
+    mailserver|m*      wait for mail server
+    postgres|p*        wait for postgres server
+    iom|i*             wait for iom server
+
+Run '$ME wait RESOURCE --help|-h' for more information
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-wait-mailserver() {
+    ME=$(basename "$1")
+    cat <<EOF
+wait for mailserver to get ready
+
+SYNOPSIS
+    $ME wait mailserver [TIMEOUT]
+
+ARGUMENTS
+    TIMEOUT in seconds. Defaults to 60.
+
+OVERVIEW
+    Waits for the mailserver pod to get ready. The "wait mailserver" command
+    is intended to be used in scripts, which are relying on the availability of
+    the mail server.
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-wait-postgres() {
+    ME=$(basename "$1")
+    cat <<EOF
+wait for postgres to get ready
+
+SYNOPSIS
+    $ME wait postgres [TIMEOUT]
+
+ARGUMENTS
+    TIMEOUT in seconds. Defaults to 60.
+
+OVERVIEW
+    Waits for the postgres pod to get ready. The "wait postgres" command
+    is intended to be used in scripts, which are relying on the availability of
+    the postgres server.
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-wait-iom() {
+    ME=$(basename "$1")
+    cat <<EOF
+wait for iom to get ready
+
+SYNOPSIS
+    $ME wait iom [TIMEOUT]
+
+ARGUMENTS
+    TIMEOUT in seconds. Defaults to 60.
+
+OVERVIEW
+    Waits for the iom pod to get ready. The "wait iom" command is intended to be
+    used in scripts, which are relying on the availability of the iom server.
 EOF
 }
 
@@ -1028,7 +1105,10 @@ SYNOPSIS
 RESOURCE
     config|co*         update configuration file
     doc|d*             update HTML documentation
+    ws-props|w*        update ws.properties
+    geb-props|g*       update geb.properties
     cli|cl*            update $ME
+    all|a*             update all
 
 Run '$ME update RESOURCE --help|-h' for more information on a command.
 EOF
@@ -1099,6 +1179,52 @@ EOF
 }
 
 #-------------------------------------------------------------------------------
+help-update-ws-props() {
+    ME=$(basename "$0")
+    cat <<EOF
+updates ws.properties
+
+SYNOPSIS
+    $ME update ws-props
+
+OVERVIEW
+    Updates the ws.properties file, which is required to run ws-tests on the
+    managed IOM installation.
+
+SEE
+    "${ENV_DIR}/ws.properties"
+
+BACKGROUND
+    "${PROJECT_PATH}/scripts/template_engine.sh" \\
+      "${PROJECT_PATH}/templates/ws.properties.template" \\
+      "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties"
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-update-geb-props() {
+    ME=$(basename "$0")
+    cat <<EOF
+updates geb.properties
+
+SYNOPSIS
+    $ME update geb-props
+
+OVERVIEW
+    Updates the geb.properties file, which is required to run geb-tests on the
+    managed IOM installation.
+
+SEE
+    "${ENV_DIR}/geb.properties"
+
+BACKGROUND
+    "${PROJECT_PATH}/scripts/template_engine.sh" \\
+      "${PROJECT_PATH}/templates/geb.properties.template" \\
+      "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties"
+EOF
+}
+
+#-------------------------------------------------------------------------------
 help-update-cli() {
     ME=$(basename "$0")
     cat <<EOF
@@ -1119,6 +1245,28 @@ BACKGROUND
       "${PROJECT_PATH}/templates/devenv-cli.sh.template" \\
       "${ENV_DIR}/${CONFIG_FILE}" > \\
       "${ENV_DIR}/devenv-cli.sh"
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-update-all() {
+    ME=$(basename "$0")
+    cat <<EOF
+updates all configuration artifacts
+
+SYNOPSIS
+    $ME update all
+
+OVERVIEW
+    Updates all configuration artifacts of current configuration. Shortcut for
+    all other update-tasks.
+
+SEE
+    $ME update config
+    $ME update doc
+    $ME update ws-props
+    $ME update geb-props
+    $ME update cli
 EOF
 }
 
@@ -1845,6 +1993,76 @@ delete-cluster() {
 }
 
 ################################################################################
+# functions, implementing the wait handler
+################################################################################
+
+#-------------------------------------------------------------------------------
+# wait for mailserver
+# $1: timeout [s] (optional)
+# ->  true|false indicating success
+#-------------------------------------------------------------------------------
+wait-mailserver() {
+    # check and set timeout
+    TIMEOUT=60
+    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+        log_json WARN "wait-mailserver: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+    elif [ ! -z "$1" ]; then
+        TIMEOUT=$1
+    fi
+    kube_pod_wait mailhog $TIMEOUT
+    if [ $? -ne 0 ]; then
+        log_json ERROR "wait-mailserver: timeout of $TIMEOUT s reached." < /dev/null
+        false
+    else
+        true
+    fi
+}
+
+#-------------------------------------------------------------------------------
+# wait for postgres
+# $1: timeout [s] (optional)
+# ->  true|false indicating success
+#-------------------------------------------------------------------------------
+wait-postgres() {
+    # check and set timeout
+    TIMEOUT=60
+    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+        log_json WARN "wait-postgres: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+    elif [ ! -z "$1" ]; then
+        TIMEOUT=$1
+    fi
+    kube_pod_wait postgres $TIMEOUT
+    if [ $? -ne 0 ]; then
+        log_json ERROR "wait-postgres: timeout of $TIMEOUT s reached." < /dev/null
+        false
+    else
+        true
+    fi
+}
+
+#-------------------------------------------------------------------------------
+# wait for iom
+# $1: timeout [s] (optional)
+# ->  true|false indicating success
+#-------------------------------------------------------------------------------
+wait-iom() {
+    # check and set timeout
+    TIMEOUT=60
+    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+        log_json WARN "wait-iom: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+    elif [ ! -z "$1" ]; then
+        TIMEOUT=$1
+    fi
+    kube_pod_wait iom $TIMEOUT
+    if [ $? -ne 0 ]; then
+        log_json ERROR "wait-iom: timeout of $TIMEOUT s reached." < /dev/null
+        false
+    else
+        true
+    fi
+}
+
+################################################################################
 # functions, implementing the apply handler
 ################################################################################
 
@@ -2406,12 +2624,63 @@ update-doc() {
 }
 
 #-------------------------------------------------------------------------------
+# update ws.properties
+#-------------------------------------------------------------------------------
+update-ws-props() {
+    SUCCESS=true
+
+    "${PROJECT_PATH}/scripts/template_engine.sh" \
+        "${PROJECT_PATH}/templates/ws.properties.template" \
+        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties" 2> "$TMP_ERR"
+    if [ $? -ne 0 ]; then
+        log_json ERROR "update-ws-props: error updating ws.properties." < "$TMP_ERR"
+        SUCCESS=false
+    else
+        log_json INFO "update-ws-props: successfully updated ws.properties" < /dev/null
+    fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
+}
+
+#-------------------------------------------------------------------------------
+# update geb.properties
+#-------------------------------------------------------------------------------
+update-geb-props() {
+    SUCCESS=true
+
+    "${PROJECT_PATH}/scripts/template_engine.sh" \
+        "${PROJECT_PATH}/templates/geb.properties.template" \
+        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties" 2> "$TMP_ERR"
+    if [ $? -ne 0 ]; then
+        log_json ERROR "update-geb-props: error updating geb.properties." < "$TMP_ERR"
+        SUCCESS=false
+    else
+        log_json INFO "update-geb-props: successfully updated geb.properties" < /dev/null
+    fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
+}
+
+#-------------------------------------------------------------------------------
 # update command line interface
 #-------------------------------------------------------------------------------
 update-cli() {
     exec "${PROJECT_PATH}/scripts/template_engine.sh" \
          "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
          "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/devenv-cli.sh" 2> /dev/null
+}
+
+#-------------------------------------------------------------------------------
+# update all
+#-------------------------------------------------------------------------------
+update-all() {
+    update-config &&
+        update-doc &&
+        update-ws-props &&
+        update-geb-props &&
+        exec "${PROJECT_PATH}/scripts/template_engine.sh" \
+             "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
+             "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/devenv-cli.sh" 2> /dev/null
 }
 
 ################################################################################
@@ -2443,6 +2712,9 @@ case $1 in
         ;;
     de*)
         LEVEL0=delete
+        ;;
+    w*)
+        LEVEL0=wait
         ;;
     a*)
         LEVEL0=apply
@@ -2515,6 +2787,22 @@ elif [ "$LEVEL0" = "create" -o "$LEVEL0" = "delete" ]; then
             exit 1
             ;;
     esac
+elif [ "$LEVEL0" = "wait" ]; then
+    case $1 in
+        m*)
+            LEVEL1=mailserver
+            ;;
+        p*)
+            LEVEL1=postgres
+            ;;
+        i*)
+            LEVEL1=iom
+            ;;
+        *)
+            help-wait 1>&2
+            exit 1
+            ;;
+    esac
 elif [ "$LEVEL0" = "apply" ]; then
     case $1 in
         de*)
@@ -2566,6 +2854,15 @@ elif [ "$LEVEL0" = 'update' ]; then
             ;;
         cl*)
             LEVEL1=cli
+            ;;
+        g*)
+            LEVEL1=geb-props
+            ;;
+        w*)
+            LEVEL1=ws-props
+            ;;
+        a*)
+            LEVEL1=all
             ;;
         *)
             help-update 1>&2
@@ -2619,6 +2916,7 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'json-config' \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'dbmigrate'   \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'deployment'  \) -o \
+          \( "$LEVEL0" = 'wait'                               \) -o \
           \( "$LEVEL0" = 'dump'  -a "$LEVEL1" = 'create'      \) ]; then
     if [ ! -z "$ARG2" ]; then
         eval help-$LEVEL0-$LEVEL1

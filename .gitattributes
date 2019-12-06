@@ -1,5 +1,6 @@
 # https://help.github.com/articles/dealing-with-line-endings/
-* text=lf
+*          text eol=lf
+*.template text eol=lf
 
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
