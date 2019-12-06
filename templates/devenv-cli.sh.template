@@ -1754,7 +1754,7 @@ create-namespace() {
             log_json INFO "create-namespace: namespace '$EnvId' was successfully created" < "$TMP_OUT"
         fi
     else
-        log_json INO "create-namespace: nothing to do" < /dev/null
+        log_json INFO "create-namespace: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
