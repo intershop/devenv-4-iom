@@ -341,13 +341,10 @@ SYNOPSIS
     $ME delete storage
 
 OVERVIEW
-    Deletes the Docker volume used for persistent storage of database data,
-    depending on configuratin variable KEEP_DATABASE_DATA. Before deleting
-    storage, you have to delete postgres.
+    Deletes the Docker volume used for persistent storage of database data.
+    Before deleting storage, you have to delete postgres.
 
 CONFIG
-    KEEP_DATABASE_DATA - only when set to true, the Docker volume will be
-      deleted.
     ID - name of Docker volume will be derived from ID.
 
 SEE
@@ -356,8 +353,7 @@ SEE
     $ME delete postgres
 
 BACKGROUND
-    # executed only, if KEEP_DATABASE_DATA is true
-    $KeepDatabaseSh docker volume rm $EnvId-pgdata
+    docker volume rm $EnvId-pgdata
 EOF
 }
 
@@ -423,14 +419,9 @@ SYNOPSIS
     $ME delete postgres
 
 OVERVIEW
-    Deletes postgres-server and according service. Behavior of command depends
-    heavily on current configuration.
+    Deletes postgres-server and according service.
 
 CONFIG
-    PGHOST - if it contains another value, than the default value, the command
-      does nothing, as an external database is used in this case.
-    KEEP_DATABASE_DATA - if set to true, the Docker volume will be unlinked from
-      database storage
     ID - the namespace, where postgres is deleted from, is derived from ID
 
 SEE
@@ -440,17 +431,17 @@ SEE
 
 BACKGROUND
     # Stop/Remove postgres database
-    $PgHostSh "${PROJECT_PATH}/scripts/template_engine.sh" \\
-    $PgHostSh  "${PROJECT_PATH}/templates/postgres.yml.template" \\
-    $PgHostSh  "${ENV_DIR}/${CONFIG_FILE}" | 
-    $PgHostSh  kubectl delete --namespace $EnvId -f -
+    "${PROJECT_PATH}/scripts/template_engine.sh" \\
+      "${PROJECT_PATH}/templates/postgres.yml.template" \\
+      "${ENV_DIR}/${CONFIG_FILE}" | 
+      kubectl delete --namespace $EnvId -f -
 
     # Unlink Docker volume from database storage
-    $KeepDatabaseSh MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-    $KeepDatabaseSh  "${PROJECT_PATH}/scripts/template_engine.sh" \\
-    $KeepDatabaseSh  "${PROJECT_PATH}/templates/postgres-storage.yml.template" \\
-    $KeepDatabaseSh  "${ENV_DIR}/${CONFIG_FILE}" | 
-    $KeepDatabaseSh  kubectl delete --namespace $EnvId -f -
+    MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
+      "${PROJECT_PATH}/scripts/template_engine.sh" \\
+      "${PROJECT_PATH}/templates/postgres-storage.yml.template" \\
+      "${ENV_DIR}/${CONFIG_FILE}" | 
+      kubectl delete --namespace $EnvId -f -
 EOF
 }
 
@@ -1865,7 +1856,7 @@ create-cluster() {
 #---------------------------------------------------------------------------
 delete-storage() {
     SUCCESS=true
-    if [ "$KEEP_DATABASE_DATA" = 'true' ] && docker_volume_exists pgdata; then
+    if docker_volume_exists pgdata; then
         docker volume rm $EnvId-pgdata 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-storage: error deleting volume $EnvId-pgdata" < "$TMP_ERR"
@@ -1944,7 +1935,7 @@ delete-postgres() {
         log_json INFO "delete-postgres: nothing to do, to delete postgres" < /dev/null
     fi
     # unlink Docker volume from database storage
-    if [ "$KEEP_DATABASE_DATA" = 'true' ] && kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
+    if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
         MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
                   "${PROJECT_PATH}/scripts/template_engine.sh" \
                   "${PROJECT_PATH}/templates/postgres-storage.yml.template" \
