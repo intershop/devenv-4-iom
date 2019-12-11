@@ -80,6 +80,11 @@ OMS_DB_NAME="${OMS_DB_NAME}"
 # CAAS_ENV_NAME assigns the environment name to the installation.
 CAAS_ENV_NAME=${CAAS_ENV_NAME}
 
+# CaaS projects may contain test-data, which are automatically imported when
+# starting IOM. You can skip the import of test-data, if the following variable
+# is set to 'true'.
+CAAS_SKIP_TEST_DATA_IMPORT=${CAAS_SKIP_TEST_DATA_IMPORT}
+
 # hostname to be used for the OMS_PUBLIC_URL
 # if left empty, HOST_IOM defaults to ${HOST_IOM}
 HOST_IOM=${HOST_IOM}
