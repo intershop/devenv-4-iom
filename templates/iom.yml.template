@@ -113,7 +113,7 @@ ${LogDirYml______}          mountPath: /var/log/log-share
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL
-            value: 'http://${HOST_IOM}:${FORWARD_PORT_IOM}'
+            value: 'http://${HOST_IOM}:${PORT_IOM_SERVICE}'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
           - name: OMS_SHARE
@@ -121,7 +121,7 @@ ${LogDirYml______}          mountPath: /var/log/log-share
           - name: OMS_SMTP_HOST
             value: 'mailhog-service'
           - name: OMS_SMTP_PORT
-            value: '${FORWARD_PORT_MAILHOG_SMTP}'
+            value: '${PORT_MAILHOG_SMTP_SERVICE}'
 ${LogDirYml______}          - name: LOG_SHARE
 ${LogDirYml______}            value: '/var/log/log-share'
         lifecycle:
@@ -211,15 +211,15 @@ spec:
     app: iom
   ports:
     - name: http
-      port: ${FORWARD_PORT_IOM}
+      port: ${PORT_IOM_SERVICE}
       targetPort: ${PORT_IOM}
-      nodePort: ${PUBLIC_NODEPORT_IOM}
+      nodePort: ${PORT_IOM_PUBLIC}
     - name: admin
-      port: ${FORWARD_PORT_WILDFLY}
+      port: ${PORT_WILDFLY_SERVICE}
       targetPort: ${PORT_WILDFLY}
-      nodePort: ${PUBLIC_NODEPORT_WILDFLY}
+      nodePort: ${PORT_WILDFLY_PUBLIC}
     - name: debug
-      port: ${FORWARD_PORT_DEBUG}
+      port: ${PORT_DEBUG_SERVICE}
       targetPort: ${PORT_DEBUG}
-      nodePort: ${PUBLIC_NODEPORT_DEBUG}
+      nodePort: ${PORT_DEBUG_PUBLIC}
   type: LoadBalancer

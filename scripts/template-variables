@@ -205,23 +205,25 @@ HOST_IOM="${HOST_IOM:-$(hostname)}"
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 
-# ports
-PORT_IOM="${PORT_IOM:-8080}"
-PORT_DEBUG="${PORT_DEBUG:-8787}"
-PORT_DB="${PORT_DB:-5432}"
-PORT_WILDFLY="${PORT_WILDFLY:-9990}"
-PORT_MAILHOG_UI="${PORT_MAILHOG_UI:-8025}"
-PORT_MAILHOG_SMTP="${PORT_MAILHOG_SMTP:-1025}"
+# port numbers of servers
+PORT_IOM="8080"
+PORT_DEBUG="8787"
+PORT_DB="5432"
+PORT_WILDFLY="9990"
+PORT_MAILHOG_UI="8025"
+PORT_MAILHOG_SMTP="1025"
 
-# port forwarding (port number of according service)
+# port number of according service
 # normally these ports are available inside the kubernetes cluster only,
-# but except for Docker-Desktop.
-FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_DEBUG=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_DB=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_MAILHOG_UI=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_MAILHOG_SMTP=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
+# but except for Docker-Desktop. This has two implications:
+# - services can directly connected from host machine
+# - ports of services must be different for different installations
+PORT_IOM_SERVICE=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
+PORT_DEBUG_SERVICE=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
+PORT_DB_SERVICE=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
+PORT_WILDFLY_SERVICE=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_UI_SERVICE=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_SMTP_SERVICE=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
 
 PUBLIC_NODEPORT_BASE=32000
 
@@ -230,30 +232,37 @@ PUBLIC_NODEPORT_BASE=32000
 # be used to access the services from outside the cluster. Access via Ingress is
 # not an alternative, as ports of Ingress-controller (80,443) cannot be changed.
 # When running with ICM on a single machine, this can easily lead to conflicts.
-PUBLIC_NODEPORT_IOM=$(($PUBLIC_NODEPORT_BASE + 0 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_DEBUG=$(($PUBLIC_NODEPORT_BASE + 1 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_DB=$(($PUBLIC_NODEPORT_BASE + 2 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_WILDFLY=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_MAILHOG_UI=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_MAILHOG_SMTP=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
+PORT_IOM_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 0 + ($INDEX * $PORT_OFFSET)))
+PORT_DEBUG_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 1 + ($INDEX * $PORT_OFFSET)))
+PORT_DB_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 2 + ($INDEX * $PORT_OFFSET)))
+PORT_WILDFLY_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_UI_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_SMTP_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
 
-# database connection
-PGHOST=${PGHOST:-postgres-service}
-PGPORT=${PGPORT:-$PORT_DB}
+# external database connection. Variables are empty, if postgres should be
+# managed internally. (with one exception: if set to 'postgres-service', it's
+# treated like beeing empty too.
+PGPORT=${PGPORT}
+PGHOST=${PGHOST}
+if [ "$PGHOST" = "postgres-service" ]; then
+    PGHOST=
+fi
 
-# define variables to access database externally and internally
-if [ "$PGHOST" != 'postgres-service' ]; then
+# define variables to access database externally and internally. 
+# externally means from outside of Kubernetes
+# internally means from inside of Kubernetes
+if [ ! -z "$PGHOST" ]; then
     PgHostExtern=$PGHOST
     PgPortExtern=$PGPORT
-
+    
     PgHostIntern=$PGHOST
     PgPortIntern=$PGPORT
 else
     PgHostExtern=$HOST_IOM
-    PgPortExtern=$FORWARD_PORT_DB
-
-    PgHostIntern=$PGHOST
-    PgPortIntern=$PGPORT
+    PgPortExtern=$PORT_DB_SERVICE
+    
+    PgHostIntern="postgres-service"
+    PgPortIntern=$PORT_DB_SERVICE
 fi
 
 # administrative access to database

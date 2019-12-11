@@ -226,9 +226,8 @@ OVERVIEW
 
 CONFIG
     DOCKER_DB_IMAGE - docker image to be used
-    PGHOST - having another value than default, indicates the usage of an
-      external postgres server. Command will not create a postgres server in
-      this case.
+    PGHOST - if set, indicates the usage of an external postgres server. Command
+      will not create a postgres server in this case.
     KEEP_DATABASE_DATA - if set to true, command links the local Docker volume
       to postgres store.
     IMAGE_PULL_POLICY - defines when to pull the image from origin
@@ -1504,13 +1503,13 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-OMT:                        http://$HOST_IOM:$FORWARD_PORT_IOM/omt
-DBDoc:                      http://$HOST_IOM:$FORWARD_PORT_IOM/dbdoc/
-Wildfly (admin:admin):      http://$HOST_IOM:$FORWARD_PORT_WILDFLY/console
+OMT:                        http://$HOST_IOM:$PORT_IOM_SERVICE/omt
+DBDoc:                      http://$HOST_IOM:$PORT_IOM_SERVICE/dbdoc/
+Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console
 --------------------------------------------------------------------------------
 Development:
 ============
-Debug-Port:                 $FORWARD_PORT_DEBUG
+Debug-Port:                 $PORT_DEBUG_SERVICE
 CAAS_ENV_NAME:              $CAAS_ENV_NAME
 CUSTOM_APPS_DIR:            $CUSTOM_APPS_DIR
 CUSTOM_TEMPLATES_DIR:       $CUSTOM_TEMPLATES_DIR
@@ -1588,7 +1587,7 @@ OMS_DB_OPTIONS:             $OMS_DB_OPTIONS
 OMS_DB_SEARCHPATH:          $OMS_DB_SEARCHPATH
 --------------------------------------------------------------------------------
 EOF
-    if [ "$PGHOST" = 'postgres-service' ]; then
+    if [ -z "$PGHOST" ]; then
         cat <<EOF
 Server Settings:
 ================
@@ -1627,8 +1626,8 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-Web-UI:                     http://$HOST_IOM:$FORWARD_PORT_MAILHOG_UI
-REST:                       http://$HOST_IOM:$FORWARD_PORT_MAILHOG_UI/api/v2/messages
+Web-UI:                     http://$HOST_IOM:$PORT_MAILHOG_UI_SERVICE
+REST:                       http://$HOST_IOM:$PORT_MAILHOG_UI_SERVICE/api/v2/messages
 --------------------------------------------------------------------------------
 Docker:
 =======
@@ -1764,7 +1763,7 @@ create-mailserver() {
 create-postgres() {
     SUCCESS=true
 
-    if [ "$PGHOST" = 'postgres-service' ]; then
+    if [ -z "$PGHOST" ]; then
         # link Docker volume to database storage
         if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
             MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
@@ -1793,7 +1792,7 @@ create-postgres() {
             fi
         fi
     else
-        log_json INFO "create-postgres: nothing to do, external database configured (config variable PGHOST was changed)" < /dev/null
+        log_json INFO "create-postgres: nothing to do, external database configured (config variable PGHOST is set)" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2445,7 +2444,7 @@ dump-load() {
     SUCCESS=true
     
     if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
-        if [ "$PGHOST" = 'postgres-service' ]; then
+        if [ -z "$PGHOST" ]; then
             # delete iom & postgres
             if ! delete-iom; then
                 SUCCESS=false

@@ -12,7 +12,7 @@
 
 # web app
 is.oms.app.host       = ${HOST_IOM}
-is.oms.app.http.port  = ${FORWARD_PORT_IOM}
+is.oms.app.http.port  = ${PORT_IOM_SERVICE}
 is.oms.app.https.port = 443
 
 # db

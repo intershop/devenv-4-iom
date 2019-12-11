@@ -18,13 +18,13 @@ spec:
   selector:
     app: mailhog
   ports:
-    - port: ${FORWARD_PORT_MAILHOG_UI}
+    - port: ${PORT_MAILHOG_UI_SERVICE}
       targetPort: ${PORT_MAILHOG_UI}
-      nodePort: ${PUBLIC_NODEPORT_MAILHOG_UI}
+      nodePort: ${PORT_MAILHOG_UI_PUBLIC}
       name: ui
-    - port: ${FORWARD_PORT_MAILHOG_SMTP}
+    - port: ${PORT_MAILHOG_SMTP_SERVICE}
       targetPort: ${PORT_MAILHOG_SMTP}
-      nodePort: ${PUBLIC_NODEPORT_MAILHOG_SMTP}
+      nodePort: ${PORT_MAILHOG_SMTP_PUBLIC}
       name: soap
   type: LoadBalancer
   

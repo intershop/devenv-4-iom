@@ -101,13 +101,13 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt" target="_blank">OMT</a></li>
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/dbdoc/" target="_blank">DB Documentation</a></li>
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_IOM}/omt-help/" target="_blank">Online Help</a></li>
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console" target="_blank">WildFly console</a></li>
+                  <li><a href="http://${HOST_IOM}:${PORT_IOM_SERVICE}/omt" target="_blank">OMT</a></li>
+                  <li><a href="http://${HOST_IOM}:${PORT_IOM_SERVICE}/dbdoc/" target="_blank">DB Documentation</a></li>
+                  <li><a href="http://${HOST_IOM}:${PORT_IOM_SERVICE}/omt-help/" target="_blank">Online Help</a></li>
+                  <li><a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console" target="_blank">WildFly console</a></li>
                   <li><a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=${EnvId}" target="_blank">Kubernetes Dashboard</a></li>
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}" target="_blank">Mails (Web-UI)</a></li>
-                  <li><a href="http://${HOST_IOM}:${FORWARD_PORT_MAILHOG_UI}/api/v2/messages" target="_blank">Mails (REST)</a></li>
+                  <li><a href="http://${HOST_IOM}:${PORT_MAILHOG_UI_SERVICE}" target="_blank">Mails (Web-UI)</a></li>
+                  <li><a href="http://${HOST_IOM}:${PORT_MAILHOG_UI_SERVICE}/api/v2/messages" target="_blank">Mails (REST)</a></li>
                 </ul>
               </li>
             </ul>
@@ -195,7 +195,7 @@
           <li><a href="#operations--create-storage">Create local Docker volume</a> (not required, if <samp>KEEP_DATABASE_DATA</samp> is set to <samp>false</samp>)</li>
           <li><a href="#operations--create-namespace">Create namespace</a></li>
           <li><a href="#operations--create-mailserver">Create mailserver</a></li>
-          <li><a href="#operations--create-postgres">Create postgres database</a> (not required, if an external database is used, which is the case if <samp>PGHOST</samp> is not set to <samp>postgres-service</samp>)</li>
+          <li><a href="#operations--create-postgres">Create postgres database</a> (not required, if an external database is used, which is the case if <samp>PGHOST</samp> is set)</li>
           <li><a href="#operations--create-iom">Create IOM</a></li>
         </ol>
         <p>
@@ -210,7 +210,7 @@
         <p>Removing the whole IOM development environment consists of several steps. These are:</p>
         <ol>
           <li><a href="#operations--delete-iom">Delete IOM</a></li>
-          <li><a href="#operations--delete-postgres">Delete postgres database</a> (not required, if an external database is used, which is the case if <samp>PGHOST</samp> is not set to <samp>postgres-service</samp>)</li> 
+          <li><a href="#operations--delete-postgres">Delete postgres database</a> (not required, if an external database is used, which is the case if <samp>PGHOST</samp> is set)</li> 
           <li><a href="#operations--delete-mailserver">Delete mailserver</a></li>
           <li><a href="#operations--delete-namespace">Delete namespace</a></li>
         </ol>
@@ -263,13 +263,13 @@ ${ENV_DIR}/devenv-cli.sh delete storage
         </div>
 
         <h3 id="operations--create-postgres">Create postgres database</h3>
-        <p>The following command creates the postgres database. This command has effect only, if an internal database server is used (when <samp>PGHOST</samp> is set to <samp>postgres-service</samp>).</p>
+        <p>The following command creates the postgres database. This command has effect only, if an internal database server is used (when <samp>PGHOST</samp> is not set).</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh create postgres
         </div></code></pre>
 
         <h3 id="operations--delete-postgres">Delete postgres database</h3>
-        <p>The following command deletes the postgres database. This command has effect only, if an internal database was created before (when <samp>PGHOST</samp> is set to <samp>postgres-service</samp>)</p>
+        <p>The following command deletes the postgres database. This command has effect only, if an internal database was created before (when <samp>PGHOST</samp> is not set)</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh delete postgres
         </div></code></pre>
@@ -294,7 +294,7 @@ ${ENV_DIR}/devenv-cli.sh delete iom
 
         <h3 id="development--deployment-gui">Deployment of custom built artifacts using the Wildfly Admin Console</h3>
         <p>
-          Using the <a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> is the easiest way to add or update deployments. The deployment process is simply triggered by Drag & Drop.
+          Using the <a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> is the easiest way to add or update deployments. The deployment process is simply triggered by Drag & Drop.
         </p><p>
           In difference to <a href="#development--deployment-cli">Deployment of custom built artifacts using the command line interface</a>, deployments added/updated this way, will not survive a restart of the IOM pod.
         </p>
@@ -320,7 +320,7 @@ ${ENV_DIR}/devenv-cli.sh apply deployment omt
 ${ENV_DIR}/devenv-cli.sh apply deployment
         </div></code></pre>
         <p>
-          Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <a href="http://${HOST_IOM}:${FORWARD_PORT_WILDFLY}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> to update/add deployments during runtime.
+          Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> to update/add deployments during runtime.
         </p>
           
         <h3 id="development--apply-mail-templates">Roll out custom mail templates</h3>
@@ -441,7 +441,7 @@ ${ENV_DIR}/devenv-cli.sh apply json-config
           When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv-4-iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exactly as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
           <ul>
             <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest. You can check this with following command: <samp>ls *.sql.gz | sort -nr | head -n 1</samp></li>
-            <li>The custom dump can be loaded only, if the database is empty. The <samp>'dump load'</samp> command of the command line client executes all the necessary steps to restart IOM with an empty database, but only if NOT an external database is used (only, if <samp>PGHOST</samp> is set to <samp>postgres-service</samp>)</li>
+            <li>The custom dump can be loaded only, if the database is empty. The <samp>'dump load'</samp> command of the command line client executes all the necessary steps to restart IOM with an empty database, but only if NOT an external database is used (only, if <samp>PGHOST</samp> is not set)</li>
             <ul>
               <li><a href="#operations--delete-iom">Delete IOM</a></li>
               <li><a href="#operations--delete-postgres">Delete postgres database</a></li>
@@ -450,7 +450,7 @@ ${ENV_DIR}/devenv-cli.sh apply json-config
               <li><a href="#operations--create-postgres">Create postgres database</a></li>
               <li><a href="#operations--create-iom">Create IOM</a></li>
             </ul>
-            <li>The custom dump can be loaded only, if the database is empty. When you are using an external database (<samp>PGHOST</samp> is not set to <samp>postgres-service</samp>), the steps listed above will not have any effect. You have to care yourself to purge the external database and to recreate the IOM installation.</li>
+            <li>The custom dump can be loaded only, if the database is empty. When you are using an external database (<samp>PGHOST</samp> is set), the steps listed above will not have any effect. You have to care yourself to purge the external database and to recreate the IOM installation.</li>
           </ul>
         </p><p>
           You should inspect the logs created, when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
@@ -553,7 +553,7 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 cd ${IOM_APP_SRC_DIR}/oms.soap.tests
 
 # Run all soap tests
-mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
+mvn -Dhost=${HOST_IOM}:${PORT_IOM_SERVICE} clean test
         </div></code></pre>
 
         <h2 id="log-messages">Tips on access to log-messages</h2>

@@ -51,12 +51,10 @@ IOM_APP_IMAGE=${IOM_APP_IMAGE}
 # database configuration
 ################################################################################
 
-# if you want to use an external database, you have to change the settings
-# in this section. If you want to reset settings to default values, you can
-# simply remove all variables from this section. Default values for usage with
-# local postgres pod are used in this case.
-
-# database connection
+# connection to external database
+# fill these two variables, if you want to use an external database.
+# if left empty, database is managed internally. Connection settings are known
+# in this case and don't need to be configured otherwise.
 PGHOST=${PGHOST}
 PGPORT=${PGPORT}
 
@@ -195,7 +193,7 @@ CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 # --------------
 # If you want to access the logs of IOM (the very few that are written to file),
 # you have to define a directory, which should be used for this purpose. If you
-# want to use this featuem you have to make sure, this directory is shared with
+# want to use this feature you have to make sure, this directory is shared with
 # Docker Desktop.
 # It's recommended to use a directory within the config directory structure.
 # CUSTOM_LOG_DIR="${CustomLogDirDefault}"
@@ -205,12 +203,19 @@ CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
 # multi instance settings
 ################################################################################
 
+# After changing INDEX or PORT_OFFSTE, iom cluster has to be deleted and newly
+# created. Additionally the HTML docu, geb/ws-properties should be updated:
+#   devenv-cli.sh update doc
+#   devenv-cli.sh update geb-props
+#   devenv-cli.sh update ws-props
+
 # INDEX is used in combination with PORT_OFFSET to auto-generate a port
 # forwarding for all used ports in order to run multiple iom environments in
-# parallel
+# parallel.
 INDEX=${INDEX}
 
 # PORT_OFFSET is used in combination with INDEX to auto-generate a port
 # forwarding for all used ports in order to run multiple iom environments in
-# parallel
+# parallel.
+# Usually, there is no need to change PORT_OFFSET.
 PORT_OFFSET=${PORT_OFFSET}

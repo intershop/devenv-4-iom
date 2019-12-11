@@ -26,7 +26,7 @@ spec:
   selector:
     app: postgres
   ports:
-    - port: ${FORWARD_PORT_DB}
+    - port: ${PORT_DB_SERVICE}
       targetPort: ${PORT_DB}
       name: postgres
   type: LoadBalancer
