@@ -16,9 +16,9 @@ spec:
           - name: ENVIRONMENT
             value: '${ID}'
           - name: OMS_DB_HOST
-            value: ${PGHOST}
+            value: ${PgHostIntern}
           - name: OMS_DB_PORT
-            value: '${PGPORT}'
+            value: '${PgPortIntern}'
           - name: OMS_DB_NAME
             value: '${OMS_DB_NAME}'
           - name: OMS_DB_USER

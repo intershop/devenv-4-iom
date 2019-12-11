@@ -1,6 +1,21 @@
-### required configuration parameters
+################################################################################
+#
+# IMPORTANT INFORMATION
+#
+# This file is intended to change configuration values only, but not comments!
+#
+# This file is generated from a template. With each update of devenv-4-iom it
+# has to be updated. During this process all settings are taken over, but the
+# settings only. All additional comments you may have added to the file will be
+# lost. Of course, a backup of the old file will be created. If you really want
+# to add custom comments, you have to manually migrate them from the backup
+# after each update of devenv-4-iom.
+#
+################################################################################
 
 # ID is used to create unique names for docker instances
+# This ID is assigned initially, when creating the config file. Please never
+# change the ID afterwards.
 ID=${ID}
 
 ################################################################################
@@ -37,9 +52,9 @@ IOM_APP_IMAGE=${IOM_APP_IMAGE}
 ################################################################################
 
 # if you want to use an external database, you have to change the settings
-# in this section. If you want to reset settings, you can simply remove all
-# variables from this section. Default values for usage with local postgres
-# pod are used in this case.
+# in this section. If you want to reset settings to default values, you can
+# simply remove all variables from this section. Default values for usage with
+# local postgres pod are used in this case.
 
 # database connection
 PGHOST=${PGHOST}
@@ -54,7 +69,7 @@ OMS_DB_OPTIONS="${OMS_DB_OPTIONS}"
 OMS_DB_SEARCHPATH="${OMS_DB_SEARCHPATH}"
 
 # iom database
-# values will be used when creating and accessing the account
+# values will be used when creating and accessing the oms account
 OMS_DB_USER="${OMS_DB_USER}"
 OMS_DB_PASS="${OMS_DB_PASS}"
 OMS_DB_NAME="${OMS_DB_NAME}"
@@ -78,8 +93,6 @@ HOST_IOM=${HOST_IOM}
 # postgres arguments
 POSTGRES_ARGS=( ${PostgresArgsShell} )
 
-# Keep database data
-# ------------------------------
 # If you want to keep database data even after a kubernetes restart, you have to set
 # KEEP_DATABASE_DATA to true, otherwise false.
 KEEP_DATABASE_DATA=${KEEP_DATABASE_DATA}
@@ -104,52 +117,65 @@ OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 # development settings
 ################################################################################
 
-# Share the IOM source directory
-#
-# For serveral purposes (e.g geb running tests and ws tests), the IOM source
-# directory has to be shared with the developer VM.
-#
 # Set IOM_APP_SRC_DIR to directory on your local disk, containing IOM sources.
-# Additionally the drive containing the IOM sources has to be defined as share
-# in Docker Desktop.
+# This variable is not used directly by devenv-4-iom. It's used only to:
+# - make recommendations for different CUSTOM_*_DIR properties,
+# - provide command examples in HTML documentation.
 IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR}"
 
-# Share the CAAS project directory
+# Set CAAS_SRC_DIR to directory to directory on your local disk, containing
+# CaaS project sources.
+# This variable is not used directly by devenv-4-iom. It's used only to:
+# - make recommendations for different CaaS specific CUSTOM_*_DIR properties.
 CAAS_SRC_DIR="${CAAS_SRC_DIR}"
 
 # The following config variables are all using the same pattern:
 # If you want to use a certain aspect of development, you have to define the
 # location of custom files, that should be used by the developer VM.
 # You have to make sure, that the referenced directories are shared with the
-# Docker Desktop. As the preconfigured values are all being located withing
-# IOM_APP_SRC_DIR, it's suffient if this directory is shared.
+# Docker Desktop.
 
 # Deployment of custom artifacts
-#CUSTOM_APPS_DIR="$IOM_APP_SRC_DIR/oms.deployment/applications"
+# see: ${ENV_DIR}/devenv-cli.sh apply deployment --help
+# recommended value, when doing IOM product development:
+# $IOM_APP_SRC_DIR + "/oms.deployment/applications"
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
-#CUSTOM_TEMPLATES_DIR="$IOM_APP_SRC_DIR/oms.deployment/var/templates"
+# see: ${ENV_DIR}/devenv-cli.sh apply mail-templates --help
+# recommended value, when doing IOM product development:
+# $IOM_APP_SRC_DIR + "/oms.deployment/var/templates"
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
 # Development of custom xsl templates
-#CUSTOM_XSLT_DIR="$IOM_APP_SRC_DIR/bakery.transform/transform-core/src/main/resources/document/xslt"
+# see: ${ENV_DIR}/devenv-cli.sh apply xsl-templates --help
+# recommended value, when doing IOM product development:
+# $IOM_APP_SRC_DIR + "/bakery.transform/transform-core/src/main/resources/document/xslt"
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 
 # Development of migration scripts
-#CUSTOM_DBMIGRATE_DIR="$IOM_APP_SRC_DIR/postgres"
+# see: ${ENV_DIR}/devenv-cli.sh apply dbmigrate --help
+# recommended value, when doing IOM product development:
+# $IOM_APP_SRC_DIR + "/postgres"
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 
-# load/create custom dumps
-#CUSTOM_DUMPS_DIR="$IOM_APP_SRC_DIR/postgres/dumps"
+# Load/create custom dumps
+# see: ${ENV_DIR}/devenv-cli.sh dump load --help
+# see: ${ENV_DIR}/devenv-cli.sh dump create --help
+# recommended value, whne doing IOM product development:
+# $IOM_APP_SRC_DIR + "/postgres/dumps"
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 
 # Development of custom sql-config
-#CUSTOM_SQLCONF_DIR="$CAAS_SRC_DIR/configuration/src/sql-config"
+# see: ${ENV_DIR}/devenv-cli.sh apply sql-config --help
+# recommended value, when doing IOM product development:
+# $CAAS_SRC_DIR + "/configuration/src/sql-config"
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 
 # Development of custom json-config
-#CUSTOM_JSONCONF_DIR="$CAAS_SRC_DIR/configuration/src/json-config"
+# see: ${ENV_DIR}/devenv-cli.sh apply json-config --help
+# recommended value, when doing IOM product development:
+# $CAAS_SRC_DIR + "/configuration/src/json-config"
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 
 ################################################################################

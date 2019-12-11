@@ -11,8 +11,7 @@ DEVENV4IOM_VERSION=1.0.0.0-SNAPSHOT
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
-# environment specific configuration defaults to '', which just applies base
-# configuration
+# environment specific configuration defaults to 'ci'
 CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
 
 # pull policy defaults to Always, which makes it easy for developers get always
@@ -190,7 +189,6 @@ fi
 
 # set IOM_APP_SRC_DIR depending on OS
 IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR:-D:\\svn\\oms\\trunk}"
-# directory to be used to run the soap, geb and ws tests
 if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
     IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
 fi
@@ -241,7 +239,22 @@ PUBLIC_NODEPORT_MAILHOG_SMTP=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFS
 
 # database connection
 PGHOST=${PGHOST:-postgres-service}
-PGPORT=${PGPORT:-$FORWARD_PORT_DB}
+PGPORT=${PGPORT:-$PORT_DB}
+
+# define variables to access database externally and internally
+if [ "$PGHOST" != 'postgres-service' ]; then
+    PgHostExtern=$PGHOST
+    PgPortExtern=$PGPORT
+
+    PgHostIntern=$PGHOST
+    PgPortIntern=$PGPORT
+else
+    PgHostExtern=$HOST_IOM
+    PgPortExtern=$FORWARD_PORT_DB
+
+    PgHostIntern=$PGHOST
+    PgPortIntern=$PGPORT
+fi
 
 # administrative access to database
 # will be used by dbaccount-image, when creating the oms database
@@ -292,36 +305,3 @@ OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ:-ERROR}
 OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION:-ERROR}
 OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS:-INFO}
 
-################################################################################
-# Non-versioned commands and variables
-#
-# The following section defines general commands and variables.
-################################################################################
-
-if [ "$KEEP_DATABASE_DATA" = true ] ; then
-    KeepDatabaseDocuStart=''
-    KeepDatabaseDocuEnd=''
-else
-    KeepDatabaseDocuStart='<!--'
-    KeepDatabaseDocuEnd='-->'
-fi
-
-# if PGHOST is not postgres-service, an external database will be used
-# if an external database is used, the KEEP_DATABASE_DATA config variable
-# becomes invalid.
-if [ "$PGHOST" = 'postgres-service' ]; then
-    InternalDatabaseDocuStart=''
-    InternalDatabaseDocuEnd=''
-    ExternalDatabaseDocuStart='<!--'
-    ExternalDatabaseDocuEnd='-->'
-    PgHostSh=''
-else
-    InternalDatabaseDocuStart='<!--'
-    InternalDatabaseDocuEnd='-->'
-    ExternalDatabaseDocuStart=''
-    ExternalDatabaseDocuEnd=''
-    PgHostSh='#'
-    KeepDatabaseDocuStart='<!--'
-    KeepDatabaseDocuEnd='-->'
-    KeepDatabaseSh='#'
-fi

@@ -45,11 +45,10 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-		  <li><a href="#configurations--info">Getting info about components</a></li>
-		  <li><a href="#configurations--update-cli">Update command line client</a></li>
-                  <li><a href="#configurations--update-config">Update config file</a></li>
-                  <li><a href="#configurations--update-doc">Update HTML documentation</a></li>
-		  <li><a href="#configurations--parallel-instances">Running different IOM instances in parallel</a></li>
+                  <li><a href="#configurations--devenv4iom">Update devenv-4-iom</a></li>
+                  <li><a href="#configurations--update">Update config-directory after updating devenv-4-iom</a></li>
+                  <li><a href="#configurations--info">Getting info about components</a></li>
+                  <li><a href="#configurations--parallel-instances">Running different IOM instances in parallel</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -61,14 +60,10 @@
                   <li><a href="#operations--delete-namespace">Delete namespace</a></li>
                   <li><a href="#operations--create-mailserver">Create mailserver</a></li>
                   <li><a href="#operations--delete-mailserver">Delete mailserver</a></li>
-                  ${KeepDatabaseDocuStart}
                   <li><a href="#operations--create-storage">Create local Docker volume</a></li>
                   <li><a href="#operations--delete-storage">Delete local Docker volume</a></li>
-                  ${KeepDatabaseDocuEnd}
-                  ${InternalDatabaseDocuStart}
                   <li><a href="#operations--create-postgres">Start postgres database</a></li>
                   <li><a href="#operations--delete-postgres">Delete postgres database</a></li>
-                  ${InternalDatabaseDocuEnd}
                   <li><a href="#operations--create-iom">Create IOM</a></li>
                   <li><a href="#operations--delete-iom">Delete IOM</a></li>
                 </ul>
@@ -92,17 +87,9 @@
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tips on access to log-messages <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#database--init">Initialize the database</a></li>
-                  <li><a href="#database--create-dump">Create a database dump</a></li>
-                  <li><a href="#database--open-psql-terminal">Open psql terminal</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Kubernetes <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#kubernetes--useful">Useful Kubernetes commands</a></li>
+                  <li><a href="#log-messages">Tipps on access to log-messages</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -133,20 +120,46 @@
         <h1>${ID} IOM development environment</h1>
         <h2 id="configurations">Configurations</h2>
 
-	<h3 id="configurations--info">Getting info about components</h3>
-	<p>
-	  Each component (iom, postgres, mailserver, storage) has a lot of information to provide, e.g.:
-	</p>
-	<ul>
-	  <li>Links to access services</li>
-	  <li>Public ports</li>
-	  <li>Configuration settings</li>
-	  <li>Useful commands, etc.</li>
-	</ul>
-	<p>
-	  The command line client of devenv-4-iom provides a very simple interface to get these information:
-	</p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <h3 id="configurations--devenv4iom">Update devenv-4-iom</h3>
+        <p>
+          To update devenv-4-iom you have to process the following steps:
+          <ul>
+            <li>TODO: where to download</li>
+            <li>TODO: release notes (link or colapseable box)</li>
+            <li>TODO: extract to ${PROJECT_PATH}</li>
+            <li>The step <a href="#configurations--update">'Update config after updating devenv-4-iom'</a> has to be processed for each configuration</li>
+          </ul>
+        </p>
+        
+        <h3 id="configurations--update">Update config-directory after updating devenv-4-iom</h3>
+        <p>
+          After updating devenv-4-iom, the content of current config directory has to be updated too. To do so, you have to update the command client itself and in a second step all other files.
+        </p>
+        <p>
+          You can run <samp>'update all'</samp> so often you want. Since HTML documentation also references variables from configuration, it's recommended to update it after each configuration change.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Update devenv-cli.sh files in ${ENV_DIR}
+"${ENV_DIR}/devenv-cli.sh" update cli
+
+# Update all remaining files in ${ENV_DIR}
+"${ENV_DIR}/devenv-cli.sh" update all
+        </div></code></pre>     
+        
+        <h3 id="configurations--info">Getting info about components</h3>
+        <p>
+          Each component (iom, postgres, mailserver, storage) has a lot of information to provide, e.g.:
+        </p>
+        <ul>
+          <li>Links to access services</li>
+          <li>Public ports</li>
+          <li>Configuration settings</li>
+          <li>Useful commands, etc.</li>
+        </ul>
+        <p>
+          The command line client of devenv-4-iom provides a very simple interface to get these information:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Get info about IOM
 "${ENV_DIR}/devenv-cli.sh" info iom
 
@@ -160,75 +173,34 @@
 "${ENV_DIR}/devenv-cli.sh" info storage
         </div></code></pre> 
   
-	<h3 id="configurations--update-cli">Update command line client</h3>
-	<p>
-	  Updates of devenv-4-iom may bring improvements of the command line client. For this reason, the command line client has to be updated, after a new version of devenv-4-iom is installed.
-	</p>
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Update "${ENV_DIR}/devenv-cli.sh"
-"${ENV_DIR}/devenv-cli.sh" update cli
-        </div></code></pre>     
-	
-        <H3 id="configurations--update-config">Update config file</h3>
+        <h3 id="configurations--parallel-instances">Parallel instances of devenv-4-iom environments</h3>
         <p>
-	  Updates of devenv-4-iom may introduce new configuration variables or may improve the documentation of config-variables inside the config-file. To participate on this changes, you have to update your config-file.
-	</p><p>
-	  When updating the config-file, a backup file will be created within the same directory. You can always restore the old configuration, by renaming the bakup file back to its original name (${CONFIG_FILE}).
+          Running different IOM installations within devenv-4-iom is not a problem, if they are not running at the same time. Just run <samp>'delete cluster'</samp> on one installation before run <samp>'create cluster'</samp> on another.
+        </p><p>
+          Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. But when it comes on operating system level of your host machine, the ports required to access the IOM installation from outside, are colliding.
+        </p><p>
+          Devenv-4-iom provides a simple mechanism to avoid port collisions. The configuration variable <samp>INDEX</samp> controls the port usage, when providing services on OS level. Just make sure, that every IOM configuration uses a different value of <samp>INDEX</samp>. After each change of <samp>INDEX</samp> you have to delete and create the cluster.
         </p>
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Update "${ENV_DIR}/config.properties"
-"${ENV_DIR}/devenv-cli.sh" update config
-        </div></code></pre>     
-
-        <h3 id="configurations--update-doc">Update HTML documentation</h3>
-        <p>
-          Under some circumstances an update of devenv-4-ioms HTML documentation is necessary:
-          <ul>
-            <li>After installing a new version of devenv-4-iom</li>
-            <li>After changing one of the following configuration variables. Depending on these variables, parts of HTML docu are excluded or replaced.</li>
-            <ul>
-              <li><samp>KEEP_DATABASE_DATA</samp></li>
-              <li><samp>PGHOST</samp></li>
-            </ul>
-          </ul>
-        </p>
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Update "${ENV_DIR}/index.html"
-"${ENV_DIR}/devenv-cli.sh" update doc
-        </div></code></pre>     
-
-	<h3 id="configurations--parallel-instances">Parallel instances of devenv-4-iom environments</h3>
-	<p>
-	  Running different IOM installations within devenv-4-iom is not a problem, if they are not running at the same time. Just run "delete cluster" on one installation before run "create cluster" on another.
-	</p><p>
-	  Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. But when it comes on operating system level of your host machine, the ports required to access the IOM installation from outside, are colliding.
-	</p><p>
-	  Devenv-4-iom provides a simple mechanism to avoid port collisions. The configuration variable <samp>INDEX</samp> controls the port usage, when providing services on OS level. Just make sure, that every IOM configuration uses a different value of <samp>INDEX</samp>. After each change of <samp>INDEX</samp> you have to delete and create the cluster.
-	</p>
 
         <!--
             ############# Operational commands ###############
           -->
-	
+        
         <h2 id="setup">Operations</h2>
-	
+        
         <h3 id="operations--create-cluster">Create whole IOM cluster</h3>
 
         <p>Creation of whole IOM cluster consists of several steps. These are:</p>
         <ol>
-          ${KeepDatabaseDocuStart}
-          <li><a href="#operations--create-storage">Create local Docker volume</a></li>
-          ${KeepDatabaseDocuEnd}
+          <li><a href="#operations--create-storage">Create local Docker volume</a> (not required, if <samp>KEEP_DATABASE_DATA</samp> is set to <samp>false</samp>)</li>
           <li><a href="#operations--create-namespace">Create namespace</a></li>
           <li><a href="#operations--create-mailserver">Create mailserver</a></li>
-          ${InternalDatabaseDocuStart}
-          <li><a href="#operations--create-postgres">Create postgres database</a></li>
-          ${InternalDatabaseDocuEnd}
+          <li><a href="#operations--create-postgres">Create postgres database</a> (not required, if an external database is used, which is the case if <samp>PGHOST</samp> is not set to <samp>postgres-service</samp>)</li>
           <li><a href="#operations--create-iom">Create IOM</a></li>
         </ol>
-	<p>
-	  The command line client provides all these commands separately, but it also provides the shortcut "create cluster", which does all these steps at once.
-	</p>
+        <p>
+          The command line client provides all these commands separately, but it also provides the shortcut <samp>'create cluster'</samp>, which does all these steps at once.
+        </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 "${ENV_DIR}/devenv-cli.sh" create cluster
         </div></code></pre>
@@ -238,20 +210,18 @@
         <p>Removing the whole IOM development environment consists of several steps. These are:</p>
         <ol>
           <li><a href="#operations--delete-iom">Delete IOM</a></li>
-          ${InternalDatabaseDocuStart}
-          <li><a href="#operations--delete-postgres">Delete postgres database</a></li>
-          ${InternalDatabaseDocuEnd}
+          <li><a href="#operations--delete-postgres">Delete postgres database</a> (not required, if an external database is used, which is the case if <samp>PGHOST</samp> is not set to <samp>postgres-service</samp>)</li> 
           <li><a href="#operations--delete-mailserver">Delete mailserver</a></li>
           <li><a href="#operations--delete-namespace">Delete namespace</a></li>
         </ol>
-	<p>
-	  All these steps are provided as single commands by devenv-4ioms command line client. But the command line client also provides the shortcut "delete cluster", which does all these operations at once.
-	</p><p>
-	  Please pay attention, that persistent storage will never be deleted by "delete cluster" command
-	</p>
+        <p>
+          All these steps are provided as single commands by devenv-4ioms command line client. But the command line client also provides the shortcut <samp>'delete cluster'</samp>, which does all these operations at once.
+        </p><p>
+          Please pay attention, that persistent storage will never be deleted by <samp>'delete cluster'</samp> command.
+        </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh delete cluster
-	</div></code></pre>
+        </div></code></pre>
 
         <h3 id="operations--create-namespace">Create namespace</h3>
         <p>Namespace is required, to isolate the devenv-4-iom from other resources and from resources of other configurations. The following command creates a namespace, based on the ID you have specified in your properties.</p>
@@ -277,9 +247,8 @@ ${ENV_DIR}/devenv-cli.sh create mailserver
 ${ENV_DIR}/devenv-cli.sh delete mailserver
         </div></code></pre>
 
-        ${KeepDatabaseDocuStart}
         <h3 id="operations--create-storage">Create local Docker volume</h3>
-        <p>The following command creates a local Docker volume to be used to keep database data.</p>
+        <p>The following command creates a local Docker volume to be used to keep database data. This command has effect only, if <samp>KEEP_DATABASE_DATA</samp> is set to <samp>true</samp></p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh create storage
         </div></code></pre>
@@ -287,27 +256,23 @@ ${ENV_DIR}/devenv-cli.sh create storage
         <h3 id="operations--delete-storage">Delete local Docker volume</h3>
         <div class="alert alert-warning" role="alert">
           <strong>Note!</strong>
-          <p>If you would like to remove the database data, you just have to remove the persistent database data volume with the following command.</p><br>
+          <p>If you would like to remove the database data, you just have to remove the persistent database data volume with the following command. This command has effect only, if a local Docker volume was created before (<samp>KEEP_DATABASE_DATA</samp> is set to <samp>true</samp>)</p><br>
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh delete storage
           </div></code></pre>
         </div>
-        ${KeepDatabaseDocuEnd}
 
-        ${InternalDatabaseDocuStart}
         <h3 id="operations--create-postgres">Create postgres database</h3>
-        <p>The following command creates the postgres database.</p>
+        <p>The following command creates the postgres database. This command has effect only, if an internal database server is used (when <samp>PGHOST</samp> is set to <samp>postgres-service</samp>).</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh create postgres
         </div></code></pre>
-        ${InternalDatabaseDocuEnd}
-        ${InternalDatabaseDocuStart}
+
         <h3 id="operations--delete-postgres">Delete postgres database</h3>
-        <p>The following command deletes the postgres database.</p>
+        <p>The following command deletes the postgres database. This command has effect only, if an internal database was created before (when <samp>PGHOST</samp> is set to <samp>postgres-service</samp>)</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh delete postgres
         </div></code></pre>
-        ${InternalDatabaseDocuEnd}
 
         <h3 id="operations--create-iom">Create IOM</h3>
         <p>The following command creates the IOM application server.</p>
@@ -324,7 +289,7 @@ ${ENV_DIR}/devenv-cli.sh delete iom
         <!--
             ############# development process ###############
           -->
-	
+        
         <h2 id="development">Development process</h2>
 
         <h3 id="development--deployment-gui">Deployment of custom built artifacts using the Wildfly Admin Console</h3>
@@ -333,7 +298,7 @@ ${ENV_DIR}/devenv-cli.sh delete iom
         </p><p>
           In difference to <a href="#development--deployment-cli">Deployment of custom built artifacts using the command line interface</a>, deployments added/updated this way, will not survive a restart of the IOM pod.
         </p>
-	
+        
         <h3 id="development--deployment-cli">Deployment of custom built artifacts using cli</h3>
         <p>
           If you want to deploy custom built artifacts, using the command line interfaces, you have to:
@@ -348,7 +313,7 @@ ${ENV_DIR}/devenv-cli.sh delete iom
           Once you have configured your developer VM this way, your custom built artifacts are deployed right at the start of IOM. To update/add deployments in a running developer VM, you have the following possibilities:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# redeploy omt selectively 
+# redeploy omt selectively by adding one more parameter: a regular-expression to select the artifact to be redeployed
 ${ENV_DIR}/devenv-cli.sh apply deployment omt
 
 # redeploy all
@@ -400,7 +365,7 @@ ${ENV_DIR}/devenv-cli.sh apply xsl-templates
 
         <h3 id="development--apply-sql-scripts">Apply sql scripts</h3>
         <p>
-          The docker-image defined by <samp>IOM_DBINIT_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv-4-iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database. Creation and deletion of job and access to logs is provided by command "apply sql-scripts" of command line interface.
+          The docker-image defined by <samp>IOM_DBINIT_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv-4-iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database. Creation and deletion of job and access to logs is provided by command <samp>'apply sql-scripts'</samp> of command line interface.
         </p><p>
           There are two different modes, that can be used.
           <ul>
@@ -476,25 +441,19 @@ ${ENV_DIR}/devenv-cli.sh apply json-config
           When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv-4-iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exactly as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
           <ul>
             <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest. You can check this with following command: <samp>ls *.sql.gz | sort -nr | head -n 1</samp></li>
-            ${InternalDatabaseDocuStart}
-            <li>The custom dump can be loaded only, if the database is empty. The "dump load" command of the command line client executes all the necessary steps to reatart IOM with an empty database:</li>
+            <li>The custom dump can be loaded only, if the database is empty. The <samp>'dump load'</samp> command of the command line client executes all the necessary steps to restart IOM with an empty database, but only if NOT an external database is used (only, if <samp>PGHOST</samp> is set to <samp>postgres-service</samp>)</li>
             <ul>
               <li><a href="#operations--delete-iom">Delete IOM</a></li>
               <li><a href="#operations--delete-postgres">Delete postgres database</a></li>
-              ${InternalDatabaseDocuEnd}${KeepDatabaseDocuStart}
-              <li><a href="#operations--delete-storage">Remove local Docker volume</a></li>
-              <li><a href="#operations--create-storage">Create local Docker volume</a></li>
-              ${KeepDatabaseDocuEnd}${InternalDatabaseDocuStart}
+              <li><a href="#operations--delete-storage">Remove local Docker volume</a> Required only, if <samp>KEEP_DATABASE_DATA</samp> is set to <samp>true</samp>.</li>
+              <li><a href="#operations--create-storage">Create local Docker volume</a> Required only, if <samp>KEEP_DATABASE_DATA</samp> is set to <samp>true</samp>.</li>
               <li><a href="#operations--create-postgres">Create postgres database</a></li>
               <li><a href="#operations--create-iom">Create IOM</a></li>
             </ul>
-            ${InternalDatabaseDocuEnd}
-            ${ExternalDatabaseDocuStart}
-            <li>The custom dump can be loaded only, if the database is empty. Since you are using an external database, no steps can be listed here, how to purge the database. You have to care yourself, please.</li>
-            ${ExternalDatabaseDocuEnd}
+            <li>The custom dump can be loaded only, if the database is empty. When you are using an external database (<samp>PGHOST</samp> is not set to <samp>postgres-service</samp>), the steps listed above will not have any effect. You have to care yourself to purge the external database and to recreate the IOM installation.</li>
           </ul>
         </p><p>
-          You should inspect the logs created when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
+          You should inspect the logs created, when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh dump load
@@ -517,41 +476,26 @@ ${ENV_DIR}/devenv-cli.sh dump create
         </p>
         
         <h3 id="development--access-emails">Access E-Mails</h3>
-        <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail-server UI and REST interface is given by command "info mailserver", provided by command line interface.
-	</p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail-server UI and REST interface is given by command <samp>'info mailserver'</samp>, provided by command line interface.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh info mailserver
         </div></code></pre>
 
         <h3 id="development--testing">Testing</h3>
 
-        <h4 id="provide-geb-properties">Provide geb properties</h4>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/geb.properties.template" "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties"
-
-</div></code></pre>
-
-        <h4 id="provide-ws-properties">Provide ws properties</h4>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-"${PROJECT_PATH}/scripts/template_engine.sh" "${PROJECT_PATH}/templates/ws.properties.template" "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties"
-
-</div></code></pre>
-
-<h4 id="provide-ws-properties">Apply stored procedures</h4>
+<h4 id="provide-ws-properties">Apply test-specific stored procedures</h4>
         <p>
-          To apply stored procedures, just use the development task <a href="#development--apply-sql">Apply sql scripts</a> and set <samp>SQL_SRC</samp> to the directory containing the stored procedures, required for testing.
+          To apply stored procedures, just use the command <a href="#development--apply-sql"><samp>'apply sql-scripts'</samp></a> and set the parameter to the directory containing the stored procedures, required for testing.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-export SQL_SRC=${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
-# now continue as described in "Apply sql scripts"
-</div></code></pre>
+${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
+        </div></code></pre>
+        
+        <h4 id="run-tests">Run single geb-tests or a group of geb-tests</h4>
+        <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
-          <h4 id="run-tests">Useful patterns to run single tests or a group of tests</h4>
-          <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
-
-          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
@@ -560,8 +504,10 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run a group of geb tests
 ./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
+        </div></code></pre>
 
-</div></code></pre>
+        <h4 id="run-tests">Run single ws-tests or a group of ws-tests</h4>
+        <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
@@ -572,13 +518,12 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run a group of ws tests
 ./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
+          </div></code></pre>
 
-</div></code></pre>
-
-        <h4 id="run-all-tests">All tests of a specification</h4>
+        <h4 id="run-all-tests">Run all All tests of a specification</h4>
         <p> To run all tests of a specification, just use the the name of the specification. E.g:</p>
-
-          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
@@ -587,99 +532,37 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run all tests of a ws test specification
 ./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*ReverseServiceSpec*"
+        </div></code></pre>
 
-</div></code></pre>
-
-        <h4 id="run-test-group">All tests of a group of specifications (e.g. user management, role management)</h4>
+        <h4 id="run-test-group">Run all tests of a group of specifications (e.g. user management, role management)</h4>
         <p> To run all tests of a group of specifications, just use the name of the uses package. E.g:</p>
 
-          <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
 # Run all tests of a specification group
 ./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
+        </div></code></pre>
 
-</div></code></pre>
-
-        <h4 id="run-test-group">Run soap tests</h4>
+        <h4 id="run-test-group">Run SOAP tests</h4>
         <p> To run all soap tests just use the following code:</p>
 
-  <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.soap.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.soap.tests
 
 # Run all soap tests
 mvn -Dhost=${HOST_IOM}:${FORWARD_PORT_IOM} clean test
-
-</div></code></pre>
-
-        <h2 id="database">Database</h2>
-
-<!--
-        <h3 id="database--init">Initialize the database</h3>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--init-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Initialize the postgres database container<span class="collapse database--init-aliases"># alias ${DOCKER_DATABASE_INIT_ALIAS}="${DOCKER_DATABASE_INIT}"</span>
-${DOCKER_DATABASE_INIT_ALIAS}
         </div></code></pre>
 
-
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--migrate-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Migrate the postgres database container<span class="collapse database--migrate-aliases"># alias ${DOCKER_DATABASE_MIGRATE_ALIAS}="${DOCKER_DATABASE_MIGRATE}"</span>
-${DOCKER_DATABASE_MIGRATE_ALIAS}
-        </div></code></pre>
-
-        <h3 id="database--create-dump">Create a database dump</h3>
-
-        <p>Sometimes it is very useful to create a database dump (e.g. for setting up a second environment or for giving it to other developers). Following command creates a timestamped dump in your local postgres/dumps directory.</p>
+        <h2 id="log-messages">Tips on access to log-messages</h2>
+        <h3 id="log-messages">TODO Tips on access to log-messages</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--create-dump-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Create a timestamped datbase dump in your local postgres/dumps directory<span class="collapse database--create-dump-aliases"># alias ${DOCKER_DATABASE_CREATE_DUMP_ALIAS}="${DOCKER_DATABASE_CREATE_DUMP}"</span>
-${DOCKER_DATABASE_CREATE_DUMP_ALIAS}
-        </div></code></pre>
-
-        <h3 id="database--open-psql-terminal">Open psql terminal</h3>
-
-        <p>Following command opens a psql terminal.</p>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-cd ${PROJECT_PATH}<span class="btn btn-primary btn-xs alias-toggle" style="float:right" aria-expanded="false" data-target=".database--open-psql-terminal-aliases" data-toggle="collapse" title="Show aliases"><i class="fa fa-plus"></i></span>
-${VAGRANT_SSH}
-
-# Connect to the IOM db container via psql<span class="collapse database--open-psql-terminal-aliases"># alias ${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}="${DOCKER_DATABASE_OPEN_PSQL_TERMINAL}"</span>
-${DOCKER_DATABASE_OPEN_PSQL_TERMINAL_ALIAS}
-
-# Enter the password for user ${DB_USER}: ${DB_PASSWORD}
-        </div></code></pre>
-
--->
-
-        <h2 id="kubernetes">Kubernetes</h2>
-        <h3 id="kubernetes--useful">Useful kubernetes commands</h3>
-
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# List all Deployments, Pods, replicasets, services, namespaces
-kubectl get deployments --namespace ${EnvId}
-kubectl get pods --namespace ${EnvId}
-kubectl get replicasets --namespace ${EnvId}
-kubectl get services --namespace ${EnvId}
-kubectl get namespaces
-
-# Query pod name
-POD_NAME=$(kubectl get pods --namespace ${EnvId} -l app=iom -o jsonpath="{.items[0].metadata.name}")
-
-# Logs for initContainer
-kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbaccount
-kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit
+TODO
+====
+kubectl logs iom-7d567cbf57-svxzz --namespace 21700snapshot -c iom | jq -R 'fromjson? | select(type == "object")' | jq 'select(.level == "INFO")'
 kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == "INFO") and (.processName == "load_dbmigrate.sh"))'
 
 # Logs for container
@@ -694,22 +577,14 @@ mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c i
 
 # Warnings
 mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR" or .level == "WARN") | .timestamp, .level, .message, .stackTrace' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/warnings.txt"
-
-# Login into the IOM Pod
-kubectl exec --namespace ${EnvId} "$POD_NAME" -it bash
-
-# Show important information of the pods, deployments, services
-kubectl describe --namespace ${EnvId} pod "$POD_NAME"
-kubectl describe --namespace ${EnvId} deployment iom
-kubectl describe --namespace ${EnvId} service iom-service
         </div></code></pre>
 
         <h2 id="troubleshooting">Troubleshooting</h2>
 
         <h3 id="troubleshooting--shared-drives">Shared Drives</h3>
-
+        <p>
         After resetting your password you can have some problems with your shared drives. In those cases use the Settings > Shared Drives > Reset credentials
-
+        </p>
       <br><br>
 
       </div> <!-- /container -->

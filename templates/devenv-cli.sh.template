@@ -249,10 +249,10 @@ BACKGROUND
     $KeepDatabaseSh   kubectl apply --namespace $EnvId -f -
 
     # create postgres
-    $PgHostSh "${PROJECT_PATH}/scripts/template_engine.sh" \\
-    $PgHostSh   "${PROJECT_PATH}/templates/postgres.yml.template" \\
-    $PgHostSh   "${ENV_DIR}/${CONFIG_FILE}" | 
-    $PgHostSh   kubectl apply --namespace $EnvId -f -
+    "${PROJECT_PATH}/scripts/template_engine.sh" \\
+      "${PROJECT_PATH}/templates/postgres.yml.template" \\
+      "${ENV_DIR}/${CONFIG_FILE}" | 
+      kubectl apply --namespace $EnvId -f -
 EOF
 }
 
@@ -1151,14 +1151,7 @@ SYNOPSIS
 OVERVIEW
     Devenv4io provides a template for html documention. Depending on config
     variables, the html docu provides you a matching documentation.
-    html docu has to updated, after updating devenv4iom or after changing one
-    of this config variables: KEEP_DATABASE_DATA, PGHOST
-
-CONFIG
-    KEEP_DATABASE_DATA - content of html docu depends on value stored in this
-      variable. You have to 'update docu' after every change of this variable.
-    PGHOST - content of html docu depends on value stored in this variable. You
-      have to 'update docu' after every change of this variable.
+    html docu has to updated, after updating devenv4iom.
 
 SEE
     ${ENV_DIR}/index.html
@@ -1555,8 +1548,14 @@ $(kubectl get pods --namespace=$EnvId -l app=iom)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
+
 Login into Pod:             kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}") -it bash
+
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
+Describe iom pod:           kubectl describe --namespace $EnvId pod $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
+Describe iom deployment     kubectl describe --namespace $EnvId deployment iom
+Describe iom service        kubectl describe --namespace $EnvId service iom-service
+
 Get dbaccount logs:         kubectl logs $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount
 Follow dbaccount logs:      kubectl logs --tail=1 -f $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount
 Get dbinit logs:            kubectl logs $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit
@@ -1571,34 +1570,14 @@ EOF
 # info postgres
 #-------------------------------------------------------------------------------
 info-postgres() {
-    if [ "$PGHOST" != 'postgres-service' ]; then
-        cat <<EOF
+    cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
-Access to external database:
-============================
-Host:                       $PGHOST
-Port:                       $PGPORT
-OMS_DB_USER:                $OMS_DB_USER
-OMS_DB_PASS:                $OMS_DB_PASS
-OMS_DB_NAME:                $OMS_DB_NAME
---------------------------------------------------------------------------------
-Account settings:
-=================
-OMS_DB_OPTIONS:             $OMS_DB_OPTIONS
-OMS_DB_SEARCHPATH:          $OMS_DB_SEARCHPATH
---------------------------------------------------------------------------------
-EOF
-    else
-        cat <<EOF
---------------------------------------------------------------------------------
-$ID
---------------------------------------------------------------------------------
-Access to internal database:
-============================
-Host:                       $HOST_IOM
-Port:                       $FORWARD_PORT_DB
+Access to database:
+===================
+Host:                       $PgHostExtern
+Port:                       $PgPortExtern
 OMS_DB_USER:                $OMS_DB_USER
 OMS_DB_PASS:                $OMS_DB_PASS
 OMS_DB_NAME:                $OMS_DB_NAME
@@ -1608,6 +1587,9 @@ Account Settings:
 OMS_DB_OPTIONS:             $OMS_DB_OPTIONS
 OMS_DB_SEARCHPATH:          $OMS_DB_SEARCHPATH
 --------------------------------------------------------------------------------
+EOF
+    if [ "$PGHOST" = 'postgres-service' ]; then
+        cat <<EOF
 Server Settings:
 ================
 POSTGRES_ARGS:              ${POSTGRES_ARGS[*]}
@@ -1626,6 +1608,9 @@ $(kubectl get pods --namespace=$EnvId -l app=postgres)
 Usefull commands:
 =================
 Login into Pod:             kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=postgres -o jsonpath="{.items[0].metadata.name}") -it bash
+psql into root-db:          kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=postgres -o jsonpath="{.items[0].metadata.name}") -it -- bash -c "PGUSER=$PGUSER PGDATABASE=$PGDATABASE psql"
+psql into IOM-db:           kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=postgres -o jsonpath="{.items[0].metadata.name}") -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
+
 Currently used yaml:        kubectl get pod -l app=postgres -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
 EOF
@@ -2469,10 +2454,10 @@ dump-load() {
                 SUCCESS=false
             fi
             # renew Docker local store
+            if [ "$SUCCESS" = 'true' ] && ! delete-storage; then
+                SUCCESS=false
+            fi
             if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
-                if [ "$SUCCESS" = 'true' ] && ! delete-storage; then
-                    SUCCESS=false
-                fi
                 if [ "$SUCCESS" = 'true' ] && ! create-storage; then
                     SUCCESS=false
                 fi

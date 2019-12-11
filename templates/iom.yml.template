@@ -83,7 +83,7 @@ ${LogDirYml______}          mountPath: /var/log/log-share
           - name: ENVIRONMENT
             value: '${ID}'
           - name: OMS_DB_HOSTLIST
-            value: ${PGHOST}:${PGPORT}
+            value: ${PgHostIntern}:${PgPortIntern}
           - name: OMS_DB_NAME
             value: '${OMS_DB_NAME}'
           - name: OMS_DB_USER
@@ -141,9 +141,9 @@ ${LogDirYml______}            mountPath: /var/log/log-share
             - name: ENVIRONMENT
               value: '${ID}'
             - name: PGHOST
-              value: ${PGHOST}
+              value: ${PgHostIntern}
             - name: PGPORT
-              value: '${PGPORT}'
+              value: '${PgPortIntern}'
             - name: PGDATABASE
               value: '${PGDATABASE}'
             - name: PGUSER
@@ -186,9 +186,9 @@ ${DumpsDirYml____}            mountPath: /opt/dumps
             - name: ENVIRONMENT
               value: '${ID}'
             - name: OMS_DB_HOST
-              value: ${PGHOST}
+              value: ${PgHostIntern}
             - name: OMS_DB_PORT
-              value: '${PGPORT}'
+              value: '${PgPortIntern}'
             - name: OMS_DB_NAME
               value: '${OMS_DB_NAME}'
             - name: OMS_DB_USER
