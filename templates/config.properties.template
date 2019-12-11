@@ -84,6 +84,17 @@ CAAS_ENV_NAME=${CAAS_ENV_NAME}
 # if left empty, HOST_IOM defaults to ${HOST_IOM}
 HOST_IOM=${HOST_IOM}
 
+# For some developer tasks, the execution of health-checks might be a problem,
+# e.g. when working on monitoring. In this case, you can set the variable to
+# 'false' to avoid execution of health-checks.
+# Any change made on health-check configuration triggers a restart of the IOM
+# pod. Therefore it is recommended to use following process, when changing this
+# setting:
+# - change config variable
+# - devenv-cli.sh delete iom
+# - devenv-cli.sh create iom
+PERFORM_HEALTH_CHECKS=${PERFORM_HEALTH_CHECKS}
+
 ################################################################################
 # database settings (not applied to external database)
 ################################################################################

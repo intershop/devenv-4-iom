@@ -14,6 +14,14 @@ PORT_OFFSET="${PORT_OFFSET:-10}"
 # environment specific configuration defaults to 'ci'
 CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
 
+# check for 'false' only, to enable health-checks in any other case
+PERFORM_HEALTH_CHECKS="${PERFORM_HEALTH_CHECKS:-true}"
+if [ "$PERFORM_HEALTH_CHECKS" = "false" ]; then
+    HealthCheckYml_='#'
+else
+    HealthCheckYml_=''
+fi
+
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"

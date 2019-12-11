@@ -57,15 +57,15 @@ ${DumpsDirYml____}          path: ${CUSTOM_DUMPS_DIR}
         #   runAsUser: 0
         #
         imagePullPolicy: ${IMAGE_PULL_POLICY}
-        readinessProbe:
-          httpGet:
-            path: /monitoring/services/health/status
-            port: ${PORT_IOM}
-          failureThreshold: 1
-          periodSeconds: 10
-          initialDelaySeconds: 150
-          timeoutSeconds: 8
-          successThreshold: 1
+${HealthCheckYml_}        readinessProbe:
+${HealthCheckYml_}          httpGet:
+${HealthCheckYml_}            path: /monitoring/services/health/status
+${HealthCheckYml_}            port: ${PORT_IOM}
+${HealthCheckYml_}          failureThreshold: 1
+${HealthCheckYml_}          periodSeconds: 10
+${HealthCheckYml_}          initialDelaySeconds: 150
+${HealthCheckYml_}          timeoutSeconds: 8
+${HealthCheckYml_}          successThreshold: 1
         volumeMounts:
 ${AppsDirYml_____}        - name: application-dev
 ${AppsDirYml_____}          mountPath: /opt/oms/application-dev
