@@ -21,9 +21,6 @@ MAILHOG_IMAGE=mailhog/mailhog
 # ImagePullPolicy (see https://kubernetes.io/docs/concepts/configuration/overview/#container-images)
 # IMAGE_PULL_POLICY=Always
 
-# iom psql image (name:tag)
-IOM_PSQL_IMAGE=docker-build.rnd.intershop.de/intershop/iom-psql:3.10
-
 # iom dbaccount image (name:tag)
 IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 

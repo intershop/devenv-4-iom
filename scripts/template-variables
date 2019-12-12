@@ -302,7 +302,6 @@ TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 # images
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
 MAILHOG_IMAGE="${MAILHOG_IMAGE:-mailhog/mailhog}"
-IOM_PSQL_IMAGE="${IOM_PSQL_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-psql:3.10}"
 IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT}"
 IOM_DBINIT_IMAGE="${IOM_DBINIT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT}"
 IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT}"
