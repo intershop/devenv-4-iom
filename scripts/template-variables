@@ -281,12 +281,12 @@ fi
 PGUSER="${PGUSER:-postgres}"
 PGPASSWORD="${PGPASSWORD:-postgres}"
 PGDATABASE="${PGDATABASE:-postgres}"
-# default values could be copied directly from Dockerfile!
+# default values could NOT be copied directly from Dockerfile!
 # had to change UTF-8 to utf8, otherwise following message was written:
 #  ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_US.utf8)
 #  HINT:  Use the same collation as in the template database, or use template0 as template.
-OMS_DB_OPTIONS="ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1"
-OMS_DB_SEARCHPATH="bizconf, testcases"
+OMS_DB_OPTIONS="${OMS_DB_OPTIONS:-ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1}"
+OMS_DB_SEARCHPATH="${OMS_DB_SEARCHPATH:-customer, oms, omt, product, admin, bizconf, bizconf, testcases}"
 
 # iom database
 OMS_DB_USER="${OMS_DB_USER:-oms_user}"
