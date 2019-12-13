@@ -31,22 +31,22 @@ EOF
 
 # checks if version 1 is greater than version 2
 version_gt() {
-  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
 }
 
 # checks if version 1 is greater than or equal to version 2
 version_ge() {
-  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1";
 }
 
 # checks if version 1 is less than or equal to version 2
 version_le() {
-  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1";
 }
 
 # checks if version 1 is less than  version 2
 version_lt() {
-  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
 }
 
 # returns operation system
@@ -122,14 +122,14 @@ if [ ! -z "$CONFIG_FILE" -a ! -f "$CONFIG_FILE" ]; then
     exit 1
 elif [ ! -z "$CONFIG_FILE" ]; then
 
-  # check syntax of $CONFIG_FILE
-  if ! ( set -e; . $CONFIG_FILE ); then
-      echo "error reading '$CONFIG_FILE'" 1>&2
-      exit 1
-  fi
+    # check syntax of $CONFIG_FILE
+    if ! ( set -e; . $CONFIG_FILE ); then
+        echo "error reading '$CONFIG_FILE'" 1>&2
+        exit 1
+    fi
 
-  # read $CONFIG_FILE
-  . $CONFIG_FILE
+    # read $CONFIG_FILE
+    . $CONFIG_FILE
 
 fi
 
