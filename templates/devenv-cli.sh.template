@@ -28,6 +28,7 @@ COMMANDS
     apply|a*           apply customization
     dump|du*           create or load dump
     update|u*          update devenv4iom specific artifacts
+    log|l*             simple access to log-messages
 
 Run '$ME COMMAND --help|-h' for more information on a command.
 EOF
@@ -1255,6 +1256,145 @@ SEE
 EOF
 }
 
+#-------------------------------------------------------------------------------
+help-log() {
+    ME=$(basename "$0")
+    cat <<EOF
+very basic access to log-messages
+
+SYNOPSIS
+    $ME log WHAT
+
+WHAT
+    dbaccount|d*       get message logs of dbaccount init-container
+    config|c*          get message logs of iom-config init-container
+    app|ap*            get message logs of iom-app container
+    access|ac*         get access logs of iom-app container
+
+Run '$ME log WHAT --help|-h' for more information on command
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-log-dbaccount() {
+    ME=$(basename "$0")
+    cat <<EOF
+get messages of dbaccount init-container
+
+SYNOPSIS
+    $ME log dbaccount [FATAL|ERROR|WARN|INFO|DEBUG|TRACE]
+
+OVERVIEW
+    Requires 'jq' to be installed!
+    Writes messages of dbaccount init-container and filters them according
+    the passed log-level. If no level is passed, the default WARN will be used.
+    Behaves differently when used inside and outside of a pipe. 
+    If output is written to a terminal, $ME follows only new messages and also
+    formats them.
+    If output written to a pipe, ALL messages are written and no formatting is
+    applied. This makes it easier to use the output for further processing. 
+
+CONFIG  
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
+      that are not written in container, can never be seen.
+
+SEE
+    $ME info iom
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-log-config() {
+    ME=$(basename "$0")
+    cat <<EOF
+get messages of config init-container
+
+SYNOPSYS
+    $ME log config [FATAL|ERROR|WARN|INFO|DEBUG|TRACE]
+
+OVERVIEW
+    Requires 'jq' to be installed!
+    Writes messages of config init-container and filters them according the
+    passed log-level. If no level is passed, the default WARN will be used.
+    Behaves differently when used inside and outside of a pipe. 
+    If output is written to a terminal, $ME follows only new messages and also
+    formats them.
+    If output written to a pipe, ALL messages are written and no formatting is
+    applied. This makes it easier to use the output for further processing. 
+
+CONFIG
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
+      that are not written in container, can never be seen.
+
+SEE
+    $ME info iom
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-log-app() {
+    ME=$(basename "$0")
+    cat <<EOF
+get messages of iom application-container
+
+SYNOPSIS
+    $ME log app [FATAL|ERROR|WARN|INFO|DEBUG|TRACE]
+
+OVERVIEW
+    Requires 'jq' to be installed!
+    Writes messages of iom application-container and filters them according
+    the passed log-level. If no level is passed, the default WARN will be used.
+    The Wildfly application server still writes some messages, that are not in
+    json format. Those messages can only be seen, when accessing the output of
+    the container directly.
+    Behaves differently when used inside and outside of a pipe. 
+    If output is written to a terminal, $ME follows only new messages and also
+    formats them.
+    If output written to a pipe, ALL messages are written and no formatting is
+    applied. This makes it easier to use the output for further processing. 
+
+CONFIG
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by 
+      scripts. Messages, that are not written in container, can never be seen.
+    OMS_LOGLEVEL_CONSOLE
+    OMS_LOGLEVEL_IOM
+    OMS_LOGLEVEL_HIBERNATE
+    OMS_LOGLEVEL_QUARTZ
+    OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of 
+      messages are written by Wildfly application server and the IOM 
+      applications. Messages, that are not written in container, can never be
+      seen.
+
+SEE
+    $ME info iom
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-log-access() {
+    ME=$(basename "$0")
+    cat <<EOF
+get access logs of iom application-container
+
+SYNOPSIS
+    $ME log access [ERROR|ALL]
+
+OVERVIEW
+    Requires 'jq' to be installed!
+    Writes access logs of iom application-container and filters them
+    according the passed log-level. If no level is passed, the default ERROR
+    will be used.
+    Behaves differently when used inside and outside of a pipe. 
+    If output is written to a terminal, $ME follows only new messages and also
+    formats them.
+    If output written to a pipe, ALL messages are written and no formatting is
+    applied. This makes it easier to use the output for further processing. 
+
+SEE
+    $ME info iom
+EOF
+}
+
 ################################################################################
 # helper functions
 ################################################################################
@@ -1266,20 +1406,13 @@ EOF
 # stdin: additional info (error output of programs, etc.)
 #-------------------------------------------------------------------------------
 # does not use jq, in order to reduce installation efforts and dependencies
-log_json() {
+log_json() (
     LEVEL=$1
     MSG=$2
     ADD_INFO_IN="$(mktemp)"
     ADD_INFO="$(mktemp)"
     trap "rm -f $ADD_INFO_IN $ADD_INFO" EXIT SIGTERM
     
-    # check LEVEL
-    if [ "$LEVEL" != 'ERROR' -a "$LEVEL" != 'WARN' -a "$LEVEL" != 'INFO' -a "$LEVEL" != 'DEBUG' ]; then
-        echo "log_json: unknown LEVEL '$LEVEL'" 1>&2
-        rm -f "$ADD_INFO_IN" "$ADD_INFO"
-        exit 1
-    fi
-
     # get REQUESTED_LEVEL
     case $LEVEL in
         ERROR)
@@ -1294,9 +1427,14 @@ log_json() {
         DEBUG)
             REQUESTED_LEVEL=3
             ;;
+        *)
+            echo "log_json: unknown LEVEL '$LEVEL'" 1>&2
+            rm -f "$ADD_INFO_IN" "$ADD_INFO"
+            exit 1
+            ;;
     esac
     # get ALLOWED_LEVEL (from configuration)
-    case $OMS_LOGLEVEL_SCRIPTS in
+    case $OMS_LOGLEVEL_DEVENV in
         ERROR)
             ALLOWED_LEVEL=0
             ;;
@@ -1308,6 +1446,11 @@ log_json() {
             ;;
         DEBUG)
             ALLOWED_LEVEL=3
+            ;;
+        *)
+            echo "log_json: config variable OMS_LOGLEVEL_DEVENV contains invalid value '$OMS_LOGLEVEL_DEVENV'" 1>&2
+            rm -f "$ADD_INFO_IN" "$ADD_INFO"
+            exit 1
             ;;
     esac
     
@@ -1356,7 +1499,7 @@ log_json() {
         fi
     fi
     rm -f "$ADD_INFO_IN" "$ADD_INFO"
-}
+)
 
 #-------------------------------------------------------------------------------
 # get name of operating system
@@ -1379,7 +1522,7 @@ OS() {
 # ->: true - if job was successfully completed before timeout
 #     false - else
 #-------------------------------------------------------------------------------
-kube_job_wait() {
+kube_job_wait() (
     JOB_NAME=$1
     TIMEOUT=$2
     PHASE=$(kubectl get pods --namespace $EnvId -l job-name=$JOB_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)
@@ -1389,7 +1532,7 @@ kube_job_wait() {
         PHASE=$(kubectl get pods --namespace $EnvId -l job-name=$JOB_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)
     done
     [ \( "$PHASE" = 'Succeeded' \) ]
-}
+)
 
 #-------------------------------------------------------------------------------
 # wait for pod to be in phase running
@@ -1398,7 +1541,7 @@ kube_job_wait() {
 # ->: true - if pod is running before timeout
 #     false - if timeout is reached before pod is running
 #-------------------------------------------------------------------------------
-kube_pod_wait() {
+kube_pod_wait() (
     APP_NAME=$1
     TIMEOUT=$2
     PHASE=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)    
@@ -1411,7 +1554,7 @@ kube_pod_wait() {
         PHASE=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)
     done
     [ "$PHASE" = 'Running' ]
-}
+)
 
 #-------------------------------------------------------------------------------
 # wait for initContainer to be terminated
@@ -1421,7 +1564,7 @@ kube_pod_wait() {
 # ->  true - if init-container is terminated before timeout
 #     false - else
 #-------------------------------------------------------------------------------
-kube_init_wait() {
+kube_init_wait() (
     APP_NAME=$1
     INIT_NAME=$2
     TIMEOUT=$3
@@ -1432,13 +1575,13 @@ kube_init_wait() {
         TERMINATED=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[*].status.initContainerStatuses[?(@.name=="'$INIT_NAME'")].state.terminated}' 2> /dev/null)
     done
     [ ! -z "$TERMINATED" ]
-}
+)
 
 #-------------------------------------------------------------------------------
 # kubernetes namespace exists
 # ->: true|false
 #-------------------------------------------------------------------------------
-kube_namespace_exists() {
+kube_namespace_exists() (
     NAME=$1
     # list all namespaces and check if the requested namespace exists
     NAMESPACE_EXISTS=false
@@ -1449,14 +1592,14 @@ kube_namespace_exists() {
         fi
     done
     [ "$NAMESPACE_EXISTS" = 'true' ]
-}
+)
 
 #-------------------------------------------------------------------------------
 # Docker volume exists
 # $1: name
 # ->: true|false
 #-------------------------------------------------------------------------------
-docker_volume_exists() {
+docker_volume_exists() (
     NAME=$1
     # list all volumes and check if requested volume already exists
     VOLUME_EXISTS=false
@@ -1467,7 +1610,7 @@ docker_volume_exists() {
         fi
     done
     [ "$VOLUME_EXISTS" = 'true' ]
-}
+)
 
 #-------------------------------------------------------------------------------
 # kubernetes resource exists?
@@ -1475,7 +1618,7 @@ docker_volume_exists() {
 # $2: name
 # ->: true|false
 #-------------------------------------------------------------------------------
-kube_resource_exists() {
+kube_resource_exists() (
     TYPE=$1
     NAME=$2
     # list all resources and check if NAME exists
@@ -1487,7 +1630,7 @@ kube_resource_exists() {
         fi
     done
     [ "$RESOURCE_EXISTS" = 'true' ]
-}
+)
 
 ################################################################################
 # functions, implementing the info handlers
@@ -2566,7 +2709,7 @@ dump-create() {
 update-config() {
     SUCCESS=true
     BAK="bak_$(date '+%Y-%m-%d.%H.%M.%S')"
-    
+
     if ! cp "${ENV_DIR}/${CONFIG_FILE}" "${ENV_DIR}/${CONFIG_FILE}.$BAK" 2> "$TMP_ERR"; then
         log_json ERROR "update-config: error creating backup copy" < "$TMP_ERR"
         SUCCESS=false
@@ -2666,6 +2809,186 @@ update-all() {
 }
 
 ################################################################################
+# functions, implementing the log handler
+################################################################################
+
+#-------------------------------------------------------------------------------
+# helper to find value in array
+# $1: value
+# $2: array
+# -> true if found, else false
+#-------------------------------------------------------------------------------
+is_in_array() {
+    VALUE="$1"
+    shift
+    ARRAY=( $@ )
+    for ENTRY in "${ARRAY[@]}"; do
+        if [ "$ENTRY" = "$VALUE" ]; then
+            true
+            break
+        fi
+        false
+    done
+}
+
+#-------------------------------------------------------------------------------
+# helper to build jq filter for levels. The filter has to match all higher
+# levels in array and the requested level itself.
+# $1: Level
+# $2: Array of levels
+#-------------------------------------------------------------------------------
+level_filter() {
+    LEVEL="$1"
+    shift
+    LEVELS=( $@ )
+    COUNT=0
+    for ENTRY in "${LEVELS[@]}"; do
+        if [ "$COUNT" -gt 0 ]; then
+            echo -n ' or '
+        fi
+        echo -n "( .level == \"$ENTRY\")"
+        if [ "$ENTRY" = "$LEVEL" ]; then
+            break
+        fi
+        COUNT=$(expr $COUNT + 1)
+    done
+}
+
+#-------------------------------------------------------------------------------
+# get dbaccount logs
+# $1: [FATAL|ERROR|WARN|INFO|DEBUG|TRACE], defaults to WARN
+# ->  true|false indicating success
+#-------------------------------------------------------------------------------
+log-dbaccount() {
+    LEVEL=WARN
+    LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
+    if [ ! -z "$1" ]; then
+        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
+        else
+            log_json WARN "log-dbaccount: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
+        fi
+    fi
+    
+    if [ -z "$(which jq)" ]; then
+        log_json ERROR "log-dbaccount: jq not found in PATH" < /dev/null
+        false
+    else
+        # avoid formatting if output is written to pipe. This makes it much easier,
+        # to process the results
+        if [ -t 1 ]; then
+            COMPACT_FLAG=''
+            FOLLOW_FLAG="--tail=1 -f"
+        else
+            COMPACT_FLAG='--compact-output'
+            FOLLOW_FLAG=''
+        fi
+        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount |
+            jq -R 'fromjson? | select(type == "object")' |
+            jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+    fi
+}
+
+#-------------------------------------------------------------------------------
+log-config() {
+    LEVEL=WARN
+    LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
+    if [ ! -z "$1" ]; then
+        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
+        else
+            log_json WARN "log-config: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
+        fi
+    fi
+    
+    if [ -z "$(which jq)" ]; then
+        log_json ERROR "log-config: jq not found in PATH" < /dev/null
+        false
+    else
+        # avoid formatting if output is written to pipe. This makes it much easier,
+        # to process the results
+        if [ -t 1 ]; then
+            COMPACT_FLAG=''
+            FOLLOW_FLAG='--tail=1 -f'
+        else
+            COMPACT_FLAG='--compact-output'
+            FOLLOW_FLAG=''
+        fi
+        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit |
+            jq -R 'fromjson? | select(type == "object")' |
+            jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+    fi
+}
+
+#-------------------------------------------------------------------------------
+log-app() {
+    LEVEL=WARN
+    LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
+    if [ ! -z "$1" ]; then
+        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
+        else
+            log_json WARN "log-app: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
+        fi
+    fi
+    
+    if [ -z "$(which jq)" ]; then
+        log_json ERROR "log-app: jq not found in PATH" < /dev/null
+        false
+    else
+        # avoid formatting if output is written to pipe. This makes it much easier,
+        # to process the results
+        if [ -t 1 ]; then
+            COMPACT_FLAG=''
+            FOLLOW_FLAG='--tail=1 -f'
+        else
+            COMPACT_FLAG='--compact-output'
+            FOLLOW_FLAG=''
+        fi
+        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
+            jq -R 'fromjson? | select(type == "object")' |
+            jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+    fi
+}
+
+#-------------------------------------------------------------------------------
+log-access() {
+    LEVEL=ERROR
+    LEVELS=(ERROR ALL)
+    if [ ! -z "$1" ]; then
+        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
+        else
+            log_json WARN "log-access: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
+        fi
+    fi
+    
+    if [ -z "$(which jq)" ]; then
+        log_json ERROR "log-app: jq not found in PATH" < /dev/null
+        false
+    else
+        if [ "$LEVEL" = 'ERROR' ]; then
+            FILTER='and (.responseCode >= 400)'
+        else
+            FILTER=''
+        fi
+        
+        # avoid formatting if output is written to pipe. This makes it much easier,
+        # to process the results
+        if [ -t 1 ]; then
+            COMPACT_FLAG=''
+            FOLLOW_FLAG='--tail=1 -f'
+        else
+            COMPACT_FLAG='--compact-output'
+            FOLLOW_FLAG=''
+        fi
+        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
+            jq -R 'fromjson? | select(type == "object")' |
+            jq $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
+    fi
+}
+
+################################################################################
 # read configuration
 ################################################################################
 
@@ -2706,6 +3029,9 @@ case $1 in
         ;;
     u*)
         LEVEL0=update
+        ;;
+    l*)
+        LEVEL0=log
         ;;
     *)
         help 1>&2
@@ -2851,6 +3177,25 @@ elif [ "$LEVEL0" = 'update' ]; then
             exit 1
             ;;
     esac
+elif [ "$LEVEL0" = 'log' ]; then
+    case $1 in
+        d*)
+            LEVEL1=dbaccount
+            ;;
+        c*)
+            LEVEL1=config
+            ;;
+        ap*)
+            LEVEL1=app
+            ;;
+        ac*)
+            LEVEL1=access
+            ;;
+        *)
+            help-log 1>&2
+            exit 1
+            ;;
+    esac
 fi
 
 # handle next command line argument
@@ -2899,6 +3244,7 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'dbmigrate'   \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'deployment'  \) -o \
           \( "$LEVEL0" = 'wait'                               \) -o \
+          \( "$LEVEL0" = 'log'                                \) -o \
           \( "$LEVEL0" = 'dump'  -a "$LEVEL1" = 'create'      \) ]; then
     if [ ! -z "$ARG2" ]; then
         eval help-$LEVEL0-$LEVEL1

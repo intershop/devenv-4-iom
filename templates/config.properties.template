@@ -139,6 +139,10 @@ OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION}
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 
+# log-level of devenv-cli.sh itself. Supported levels are:
+#   ERROR, WARN, INFO, DEBUG
+OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
+
 ################################################################################
 # development settings
 ################################################################################

@@ -47,8 +47,11 @@
                 <ul class="dropdown-menu">
                   <li><a href="#configurations--devenv4iom">Update devenv-4-iom</a></li>
                   <li><a href="#configurations--update">Update config-directory after updating devenv-4-iom</a></li>
+                  <li><a href="#configurations--reset-config">Reset current configuration</a></li>
                   <li><a href="#configurations--info">Getting info about components</a></li>
+                  <li><a href="#configurations--add-config">Create a new configuration/instance</a></li>
                   <li><a href="#configurations--parallel-instances">Running different IOM instances in parallel</a></li>
+                  <li><a href="#configurations--delete-config">Delete current configuration/instance</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -87,9 +90,11 @@
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tips on access to log-messages <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Log-messages <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#log-messages">Tipps on access to log-messages</a></li>
+                  <li><a href="#log-messages--jq">Log-messages & jq</a></li>
+                  <li><a href="#log-messages--devenv">Log-messages of devenv-cli.sh</a></li>
+                  <li><a href="#log-messages--iom">Log-messages of IOM</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -145,6 +150,26 @@
 # Update all remaining files in ${ENV_DIR}
 "${ENV_DIR}/devenv-cli.sh" update all
         </div></code></pre>     
+
+        <h3 id="configurations--reset-config">Reset current configuration</h3>
+        <p>
+          If you want to reset the whole configuration, simply delete all entries from <samp>${ENV_DIR}/config.properties</samp>, but do not delete the file itself. Before doing this, it's recommended to make a backup of the old configuration.
+        </p><p>
+          To reset only parts of the configuration, just delete the according entries.
+        </p><p>
+          Now you can run <samp>'update config'</samp>, to recreate <samp>config.properties</samp>. Except you know exactly what you do, it's recommended to delete the IOM cluster before and and create it again afterwards.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Delete IOM cluster
+"${ENV_DIR}/devenv-cli.sh" delete cluster
+              
+# Update config.properties in ${ENV_DIR}
+"${ENV_DIR}/devenv-cli.sh" update config
+# now check the reseted entries and change them to your needs
+
+# Create IOM cluster again
+"${ENV_DIR}/devenv-cli.sh" create cluster
+        </div></code></pre>   
         
         <h3 id="configurations--info">Getting info about components</h3>
         <p>
@@ -172,7 +197,45 @@
 # Get info about Storage
 "${ENV_DIR}/devenv-cli.sh" info storage
         </div></code></pre> 
-  
+
+        <h3 id="configurations--add-config">Create an new configuration/instance</h3>
+        <p>
+          You can have many different configurations in parallel. All these configurations are stored in sub-directories of <samp>${ENV_BASE_DIR}</samp>.
+        </p><p>
+          The name of each sub-directory has to be identical to the ID of the according configuration. Each sub-directory contains configuration (<samp>config.properties</samp>), the command line client (<samp>devenv-cli.sh</samp>) and documentation (<samp>index.html</samp>), specific for this instance of IOM development environment.
+        </p><p>
+          The following code block, shows how to create and initialize such a sub-directory of a new configuration. You just need to set ID to the right value before executing the code.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+################################################################################
+# Adapt the following variable!
+# This will become the name of your new configuration
+################################################################################
+ID=2.16.0.0-SNAPSHOT
+
+( cd "${ENV_BASE_DIR}" &&
+  # create the new configuration file with default settings
+  mkdir -p "$ID" &&
+  ID=$ID ENV_DIR="$(pwd)/$ID" \
+    "${PROJECT_PATH}/scripts/template_engine.sh" \
+    "${PROJECT_PATH}/templates/config.properties.template" > \
+    "$ID/${CONFIG_FILE}" &&
+
+  # create the command line interface
+  "${PROJECT_PATH}/scripts/template_engine.sh" \
+    "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
+    "$ID/${CONFIG_FILE}" > \
+    "$ID/devenv-cli.sh" &&
+    chmod +x "$ID/devenv-cli.sh" &&
+ 
+  # create remaining files
+  "./$ID/devenv-cli.sh" update all &&
+  echo &&
+  echo "open '$(pwd)/$ID/index.html' in your browser for further instructions" &&
+  echo
+)
+        </div></code></pre> 
+        
         <h3 id="configurations--parallel-instances">Parallel instances of devenv-4-iom environments</h3>
         <p>
           Running different IOM installations within devenv-4-iom is not a problem, if they are not running at the same time. Just run <samp>'delete cluster'</samp> on one installation before run <samp>'create cluster'</samp> on another.
@@ -182,6 +245,24 @@
           Devenv-4-iom provides a simple mechanism to avoid port collisions. The configuration variable <samp>INDEX</samp> controls the port usage, when providing services on OS level. Just make sure, that every IOM configuration uses a different value of <samp>INDEX</samp>. After each change of <samp>INDEX</samp> you have to delete and create the cluster.
         </p>
 
+        <h3 id="configurations--add-config">Delete current configuration/instance</h3>
+        <p>
+          The configuration directory (<samp>${ENV_DIR}</samp>) does not need much space on disk. You should delete it only, if you are really sure, that you will never need again this IOM development instance. Of course, you can delete this directory too, but first you have to <samp>'delete cluster'</samp> and <samp>'delete storage'</samp> to be able to remove the assigned resources. Addtionally, it's recommended to delete unused Docker images too.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Delete IOM cluster
+"${ENV_DIR}/devenv-cli.sh" delete cluster
+
+# Delete storage
+"${ENV_DIR}/devenv-cli.sh" delete storage
+
+# Do this only, if you really sure
+rm -fr "${ENV_DIR}"
+
+# Clean up unused Docker images (cleans up all unused images, not only the ones belonging to current configuration)
+docker system prune -a -f
+        </div></code></pre> 
+        
         <!--
             ############# Operational commands ###############
           -->
@@ -556,8 +637,174 @@ cd ${IOM_APP_SRC_DIR}/oms.soap.tests
 mvn -Dhost=${HOST_IOM}:${PORT_IOM_SERVICE} clean test
         </div></code></pre>
 
-        <h2 id="log-messages">Tips on access to log-messages</h2>
-        <h3 id="log-messages">TODO Tips on access to log-messages</h3>
+        <h2 id="log-messages">Log-messages</h2>
+        <h3 id="log-messages--jq">Log-messages & jq</h3>
+	<p>
+	  All log-messages provided by IOM and <samp>devenv-4-iom</samp> are written in json format. <samp>jq</samp> is a command line tool to work with json messages. <samp>jq</samp> is not included in <samp>devenv-4-iom</samp>. <samp>devenv-4-iom</samp> does not depend on it, but it's strongly recommended that you install <samp>jq</samp> too.
+	</p><p>
+	  The most important features used in context of <samp>devenv-4-iom</samp> are formatting and filtering. The following box shows some examples for these use cases. These examples are not intended to be used as they are. They should you only give an expression about <samp>jq</samp> and should animate you, to dig deeper by yourself.
+	</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Print raw json messages
+cmd_producing_json
+...
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/060_InvoicingNoConfigDO/InvoicingNoConfigDO_test_shop_TX.iombc'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/120_DocumentTransformerConfigDO/DocumentTransformerConfigDO_Shop_test_shop_TX.iombc'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/H_Shop2PaymentProvider2Payment/010_Shop2PaymentProvider2PaymentDefDO/Shop2PaymentProvider2PaymentDefDO_test_shop_TX.iombc'","configName":"ci"}
+...
+	      
+# Print formatted json messages
+cmd_producing_json | jq
+...
+{
+  "tenant": "Intershop",
+  "environment": "2.17.0.0-SNAPSHOT",
+  "logHost": "iom-6c587ddd87-42k4f",
+  "logVersion": "1.0",
+  "appName": "iom-dbinit",
+  "appVersion": "2.17.0.0-SNAPSHOT@1234",
+  "logType": "script",
+  "timestamp": "2019-12-13T13:35:45+00:00",
+  "level": "INFO",
+  "processName": "apply_json_config.sh",
+  "message": "processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/120_DocumentTransformerConfigDO/DocumentTransformerConfigDO_Shop_test_shop_TX.iombc'",
+  "configName": "ci"
+}
+{
+  "tenant": "Intershop",
+  "environment": "2.17.0.0-SNAPSHOT",
+  "logHost": "iom-6c587ddd87-42k4f",
+  "logVersion": "1.0",
+  "appName": "iom-dbinit",
+  "appVersion": "2.17.0.0-SNAPSHOT@1234",
+  "logType": "script",
+  "timestamp": "2019-12-13T13:35:45+00:00",
+  "level": "INFO",
+  "processName": "apply_json_config.sh",
+  "message": "processing file '/opt/caas-config/json-config/config/P_shopTX/H_Shop2PaymentProvider2Payment/010_Shop2PaymentProvider2PaymentDefDO/Shop2PaymentProvider2PaymentDefDO_test_shop_TX.iombc'",
+  "configName": "ci"
+}
+...
+  
+# Get entries, where key "level" has value "ERROR"
+cmd_producing_json | jq 'select(.level == "ERROR")'
+...
+{
+  "timestamp": "2019-12-13T11:55:23.608Z",
+  "sequence": 1349200,
+  "loggerClassName": "org.jboss.logging.DelegatingBasicLogger",
+  "loggerName": "org.hibernate.engine.jdbc.spi.SqlExceptionHelper",
+  "level": "ERROR",
+  "message": "javax.resource.ResourceException: IJ000453: Unable to get managed connection for java:/OmsDB",
+  "threadName": "EJB default - 61",
+  "threadId": 1113,
+  "mdc": {},
+  "ndc": "",
+  "hostName": "iom-6c587ddd87-zlznn",
+  "processName": "jboss-modules.jar",
+  "processId": 288,
+  "sourceClassName": "org.hibernate.engine.jdbc.spi.SqlExceptionHelper",
+  "sourceFileName": "SqlExceptionHelper.java",
+  "sourceMethodName": "logExceptions",
+  "sourceLineNumber": 142,
+  "sourceModuleName": "org.hibernate",
+  "sourceModuleVersion": "5.3.10.Final",
+  "tenant": "Intershop",
+  "environment": "2.17.0.0-SNAPSHOT",
+  "logHost": "iom-6c587ddd87-zlznn",
+  "logVersion": "1.0",
+  "appVersion": "2.17.0.0-SNAPSHOT@1234",
+  "appName": "iom-app",
+  "logType": "message",
+  "configName": "ci"
+}
+...
+  
+# Get entries, where key "level" has value "ERROR" and "sourceModuleName" has value "deployment.oms.monitoring-app-2.17.0.0-SNAPSHOT.war"
+cmd_producing_json | jq 'select((.level == "ERROR") and (.sourceModuleName == "deployment.oms.monitoring-app-2.17.0.0-SNAPSHOT.war"))'
+...
+{
+  "timestamp": "2019-12-13T11:50:59.698Z",
+  "sequence": 1338700,
+  "loggerClassName": "org.slf4j.impl.Slf4jLogger",
+  "loggerName": "com.intershop.oms.monitoring.internal.rest.HealthServiceTimer",
+  "level": "ERROR",
+  "message": "Server not available because of missing database connection.",
+  "threadName": "EJB default - 92",
+  "threadId": 1222,
+  "mdc": {},
+  "ndc": "",
+  "hostName": "iom-6c587ddd87-zlznn",
+  "processName": "jboss-modules.jar",
+  "processId": 288,
+  "sourceClassName": "com.intershop.oms.monitoring.internal.rest.HealthServiceTimer",
+  "sourceFileName": "HealthServiceTimer.java",
+  "sourceMethodName": "doHealthCheck",
+  "sourceLineNumber": 305,
+  "sourceModuleName": "deployment.oms.monitoring-app-2.17.0.0-SNAPSHOT.war",
+  "sourceModuleVersion": null,
+  "tenant": "Intershop",
+  "environment": "2.17.0.0-SNAPSHOT",
+  "logHost": "iom-6c587ddd87-zlznn",
+  "logVersion": "1.0",
+  "appVersion": "2.17.0.0-SNAPSHOT@1234",
+  "appName": "iom-app",
+  "logType": "message",
+  "configName": "ci"
+}
+...
+
+# Get only values "timestamp" and "message" of entries, where key "level" has value "ERROR"
+cmd_producing_json | jq 'select(.level == "ERROR") | .timestamp .message'
+...
+"2019-12-13T11:49:27.58Z"
+"WFLYEJB0034: EJB Invocation failed on component MonitoringPersistenceBean for method public abstract bakery.persistence.dataobject.monitoring.HealthCheckStatusDO bakery.persistence.service.monitoring.MonitoringPersistenceService.getServerStatus(java.lang.String)"
+"2019-12-13T11:49:27.624Z"
+"WFLYEJB0034: EJB Invocation failed on component MonitoringLogicBean for method public abstract void com.intershop.oms.monitoring.capi.logic.MonitoringLogicService.setServerStatus(com.intershop.oms.monitoring.capi.rest.HealthCheckStatus)"
+"2019-12-13T11:49:27.625Z"
+" (systemPU) exception found for object 'class bakery.persistence.dataobject.monitoring.HealthCheckStatusDO'"
+"2019-12-13T11:49:27.625Z"
+"Server not available because of missing database connection."
+"2019-12-13T11:49:27.631Z"
+"WFLYEJB0022: Error during retrying timeout for timer: [id=9cd75873-66b1-4fdd-8155-fb859d7dc73e timedObjectId=oms.monitoring-app-2.17.0.0-SNAPSHOT.oms.monitoring-app-2.17.0.0-SNAPSHOT.HealthServiceTimer auto-timer?:false persistent?:false timerService=org.jboss.as.ejb3.timerservice.TimerServiceImpl@d537ad6 initialExpiration=Fri Dec 13 11:12:17 UTC 2019 intervalDuration(in milli sec)=5000 nextExpiration=Fri Dec 13 11:49:32 UTC 2019 timerState=RETRY_TIMEOUT info= startAT=Fri Dec 13 11:12:17 UTC 2019, runInterval=5000, cacheTime=11000]"
+"2019-12-13T11:49:30.006Z"
+"Error"
+...
+
+# Get only values "timestamp", "message" and "sourceFileName" of entries, where key "level" has value "ERROR" in a new json structure
+cmd_producing_json | jq 'select(.level == "ERROR") | {timestamp: .timestamp, message: .message, sourceFileName: .sourceFileName}'
+...
+{
+  "timestamp": "2019-12-13T11:50:11.467Z",
+  "message": "WFLYEJB0034: EJB Invocation failed on component CancelOrderControllerBean for method public abstract void bakery.control.controller.ControllerJob.execute()",
+  "sourceFileName": "LoggingInterceptor.java"
+}
+{
+  "timestamp": "2019-12-13T11:50:11.472Z",
+  "message": "javax.resource.ResourceException: IJ000453: Unable to get managed connection for java:/OmsDB",
+  "sourceFileName": "SqlExceptionHelper.java"
+}
+{
+  "timestamp": "2019-12-13T11:50:11.478Z",
+  "message": "WFLYEJB0034: EJB Invocation failed on component CheckBonusPointsControllerBean for method public abstract void bakery.control.controller.ControllerJob.execute()",
+  "sourceFileName": "LoggingInterceptor.java"
+}
+{
+  "timestamp": "2019-12-13T11:50:11.486Z",
+  "message": "WFLYEJB0034: EJB Invocation failed on component ProcessControlConfigBean for method public abstract java.util.Collection bakery.persistence.service.configuration.process.ProcessControlConfigService.loadModifiedConfigs()",
+  "sourceFileName": "LoggingInterceptor.java"
+}
+...
+	</div></code></pre>
+	
+        <h3 id="log-messages--devenv">Log-messages of devenv-cli.sh</h3>
+	<p>
+	  
+	</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+	</div></code></pre>
+
+        <h3 id="log-messages--iom">Log-messages of IOM</h3>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 TODO

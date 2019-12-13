@@ -70,15 +70,15 @@ render(){
     # -r prevents backslash escapes from being interpreted.
     # || [[ -n $LINE ]] prevents the last line from being ignored if it doesn't end with a \n (since read returns a non-zero exit code when it encounters EOF).
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-	# find the variables by regex
-	while [[ "$LINE" =~ (\$\{[a-zA-Z_][a-zA-Z_0-9]*\}) ]] ; do
+        # find the variables by regex
+        while [[ "$LINE" =~ (\$\{[a-zA-Z_][a-zA-Z_0-9]*\}) ]] ; do
             MATCH=${BASH_REMATCH[1]}
-    	    REPLACED_MATCH="$(eval echo "\"$MATCH\"")"
+            REPLACED_MATCH="$(eval echo "\"$MATCH\"")"
             # replace all
-    	    LINE=${LINE//$MATCH/$REPLACED_MATCH}
-	done
-	# output
-	echo "$LINE"
+            LINE=${LINE//$MATCH/$REPLACED_MATCH}
+        done
+        # output
+        echo "$LINE"
     done < $FILE
 }
 
@@ -140,10 +140,11 @@ fi
 
 if [ ! -z "$CONFIG_FILE" ]; then
     if echo "$CONFIG_FILE" | grep -q '^/'; then
-	ENV_DIR="$(dirname "$CONFIG_FILE")"
+        ENV_DIR="$(dirname "$CONFIG_FILE")"
     else
-	ENV_DIR="$(dirname "$(pwd)/$CONFIG_FILE")"
+        ENV_DIR="$(dirname "$(pwd)/$CONFIG_FILE")"
     fi
+    ENV_BASE_DIR="$(realpath "$ENV_DIR/..")"
     CONFIG_FILE="$(basename "$CONFIG_FILE")"
 fi
 
