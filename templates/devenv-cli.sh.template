@@ -1282,17 +1282,24 @@ help-log-dbaccount() {
 get messages of dbaccount init-container
 
 SYNOPSIS
-    $ME log dbaccount [FATAL|ERROR|WARN|INFO|DEBUG|TRACE]
+    $ME log dbaccount [LEVEL] [-f]
+
+ARGUMENTS
+    LEVEL - optional. If set, has to be one of
+      FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
+      The passed level defines which messages are printed. Only messages of
+      passed level and higher levels will be shown.
+    -f - optional. If set, $ME follows new messages only. If not set, ALL 
+      messages created until now are printed and the process ends after it.
 
 OVERVIEW
     Requires 'jq' to be installed!
     Writes messages of dbaccount init-container and filters them according
-    the passed log-level. If no level is passed, the default WARN will be used.
-    Behaves differently when used inside and outside of a pipe. 
-    If output is written to a terminal, $ME follows only new messages and also
-    formats them.
-    If output written to a pipe, ALL messages are written and no formatting is
-    applied. This makes it easier to use the output for further processing. 
+    the passed log-level. 
+    Behaves differntly when used inside and outside a pipe.
+    If output is written to a terminal, $ME formats the messages.
+    If output written to a pipe, no formatting is applied. This makes it easier
+    to use the output for further processing. 
 
 CONFIG  
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
@@ -1310,17 +1317,24 @@ help-log-config() {
 get messages of config init-container
 
 SYNOPSYS
-    $ME log config [FATAL|ERROR|WARN|INFO|DEBUG|TRACE]
+    $ME log config [LEVEL] [-f]
+
+ARGUMENTS
+    LEVEL - optional. If set, has to be one of
+      FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
+      The passed level defines which messages are printed. Only messages of
+      passed level and higher levels will be shown.
+    -f - optional. If set, $ME follows new messages only. If not set, ALL
+      messages created until now are printed and the process ends after it.
 
 OVERVIEW
     Requires 'jq' to be installed!
     Writes messages of config init-container and filters them according the
-    passed log-level. If no level is passed, the default WARN will be used.
+    passed log-level. 
     Behaves differently when used inside and outside of a pipe. 
-    If output is written to a terminal, $ME follows only new messages and also
-    formats them.
-    If output written to a pipe, ALL messages are written and no formatting is
-    applied. This makes it easier to use the output for further processing. 
+    If output is written to a terminal, $ME formats the messages.
+    If output written to a pipe, no formatting is applied. This makes it easier
+    to use the output for further processing. 
 
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
@@ -1338,20 +1352,27 @@ help-log-app() {
 get messages of iom application-container
 
 SYNOPSIS
-    $ME log app [FATAL|ERROR|WARN|INFO|DEBUG|TRACE]
+    $ME log app [LEVEL] [-f]
+
+ARGUMENTS
+    LEVEL - optional. If set, has to be one of
+      FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
+      The passed level defines which messages are printed. Only messages of
+      passed level and higher levels will be shown.
+    -f - optional. If set, $ME follows new messages only. If not set, ALL
+      messages created until now are printed and the process ends after it.
 
 OVERVIEW
     Requires 'jq' to be installed!
     Writes messages of iom application-container and filters them according
-    the passed log-level. If no level is passed, the default WARN will be used.
+    the passed log-level. 
     The Wildfly application server still writes some messages, that are not in
     json format. Those messages can only be seen, when accessing the output of
     the container directly.
     Behaves differently when used inside and outside of a pipe. 
-    If output is written to a terminal, $ME follows only new messages and also
-    formats them.
-    If output written to a pipe, ALL messages are written and no formatting is
-    applied. This makes it easier to use the output for further processing. 
+    If output is written to a terminal, $ME formats the messages.
+    If output written to a pipe, no formatting is applied. This makes it easier
+    to use the output for further processing. 
 
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by 
@@ -1377,18 +1398,24 @@ help-log-access() {
 get access logs of iom application-container
 
 SYNOPSIS
-    $ME log access [ERROR|ALL]
+    $ME log access [LEVEL] [-f]
+
+ARGUMENTS
+    LEVEL - optional. If set, has to be one of ERROR|ALL. If not set, ERROR will
+      be used. The passed level defines which messages are printed. If set to 
+      ERROR, only access-log entries are printed, where http status-code is 
+      equal or greater than 400.
+    -f - optional. If set, $ME follows new log-entries only. If not set, ALL
+      log-entries created until now are printed and the process ends after it.
 
 OVERVIEW
     Requires 'jq' to be installed!
     Writes access logs of iom application-container and filters them
-    according the passed log-level. If no level is passed, the default ERROR
-    will be used.
+    according the passed log-level.
     Behaves differently when used inside and outside of a pipe. 
-    If output is written to a terminal, $ME follows only new messages and also
-    formats them.
-    If output written to a pipe, ALL messages are written and no formatting is
-    applied. This makes it easier to use the output for further processing. 
+    If output is written to a terminal, $ME formats the messages.
+    If output written to a pipe, no formatting is applied. This makes it easier
+    to use the output for further processing. 
 
 SEE
     $ME info iom
@@ -1398,6 +1425,16 @@ EOF
 ################################################################################
 # helper functions
 ################################################################################
+
+#-------------------------------------------------------------------------------
+# print error message
+# $1: level 0
+# $2: level 1
+#-------------------------------------------------------------------------------
+syntax_error() (
+    ME="$(basename "$0")"
+    log_json ERROR "Syntax error. Please call '$ME $1 $2 --help' to get more information." < /dev/null
+)
 
 #-------------------------------------------------------------------------------
 # logs message in json format to stdout
@@ -2855,136 +2892,229 @@ level_filter() {
 }
 
 #-------------------------------------------------------------------------------
-# get dbaccount logs
-# $1: [FATAL|ERROR|WARN|INFO|DEBUG|TRACE], defaults to WARN
+# get logs of dbaccount init container
+# $1|2: [FATAL|ERROR|WARN|INFO|DEBUG|TRACE], defaults to WARN
+# $1|2: [-f] if set, messages are printed in follow mode
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 log-dbaccount() {
+    FOLLOW=false
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
-    if [ ! -z "$1" ]; then
-        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
-            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
-        else
-            log_json WARN "log-dbaccount: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
-        fi
+
+    # decide how to interpret arguments
+    if [ "$1" = '-f' -a ! -z "$2" ]; then
+        FOLLOW=true
+        LEVEL="$2"
+    elif [ "$1" = '-f' ]; then
+        FOLLOW=true
+    elif [ "$2" = '-f' ]; then
+        FOLLOW=true
+        LEVEL="$1"
+    elif [ ! -z "$1" ]; then
+        LEVEL="$1"
     fi
-    
-    if [ -z "$(which jq)" ]; then
-        log_json ERROR "log-dbaccount: jq not found in PATH" < /dev/null
-        false
-    else
-        # avoid formatting if output is written to pipe. This makes it much easier,
-        # to process the results
-        if [ -t 1 ]; then
-            COMPACT_FLAG=''
-            FOLLOW_FLAG="--tail=1 -f"
+
+    # check value of LEVEL
+    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+        LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
+
+        if [ -z "$(which jq)" ]; then
+            log_json ERROR "log-dbaccount: jq not found in PATH" < /dev/null
+            false
         else
-            COMPACT_FLAG='--compact-output'
-            FOLLOW_FLAG=''
+            if [ "$FOLLOW" = 'true' ]; then
+                FOLLOW_FLAG="--tail=1 -f"
+            else
+                FOLLOW_FLAG=''
+            fi
+            
+            # avoid formatting if output is written to pipe. This makes it much easier,
+            # to process the results
+            if [ -t 1 ]; then
+                COMPACT_FLAG=''
+            else
+                COMPACT_FLAG='--compact-output'
+            fi
+            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount |
+                jq -R 'fromjson? | select(type == "object")' |
+                jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
         fi
-        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount |
-            jq -R 'fromjson? | select(type == "object")' |
-            jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+    else
+        log_json ERROR "log-dbaccount: '$LEVEL' is not a valid log-level" < /dev/null
+        false
     fi
 }
 
+#-------------------------------------------------------------------------------
+# get logs of config init container
+# $1|2: [FATAL|ERROR|WARN|INFO|DEBUG|TRACE], defaults to WARN
+# $1|2: [-f] if set, messages are printed in follow mode
+# -> true|false indicating success
 #-------------------------------------------------------------------------------
 log-config() {
+    FOLLOW=false
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
-    if [ ! -z "$1" ]; then
-        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
-            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
-        else
-            log_json WARN "log-config: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
-        fi
-    fi
+
+    # decide how to interpret arguments
+    if [ "$1" = '-f' -a ! -z "$2" ]; then
+        FOLLOW=true
+        LEVEL="$2"
+    elif [ "$1" = '-f' ]; then
+        FOLLOW=true
+    elif [ "$1" = '-f' ]; then
+        FOLLOW=true
+        LEVEL="$1"
+    elif [ ! -z "$1" ]; then
+        LEVEL="$1"
+    fi   
     
-    if [ -z "$(which jq)" ]; then
-        log_json ERROR "log-config: jq not found in PATH" < /dev/null
-        false
-    else
-        # avoid formatting if output is written to pipe. This makes it much easier,
-        # to process the results
-        if [ -t 1 ]; then
-            COMPACT_FLAG=''
-            FOLLOW_FLAG='--tail=1 -f'
+    # check value of LEVEL
+    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+        LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
+
+        if [ -z "$(which jq)" ]; then
+            log_json ERROR "log-config: jq not found in PATH" < /dev/null
+            false
         else
-            COMPACT_FLAG='--compact-output'
-            FOLLOW_FLAG=''
+            if [ "$FOLLOW" = 'true' ]; then
+                FOLLOW_FLAG='--tail=1 -f'
+            else
+                FOLLOW_FLAG=''
+            fi
+            
+            # avoid formatting if output is written to pipe. This makes it much easier,
+            # to process the results
+            if [ -t 1 ]; then
+                COMPACT_FLAG=''
+            else
+                COMPACT_FLAG='--compact-output'
+            fi
+            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit |
+                jq -R 'fromjson? | select(type == "object")' |
+                jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
         fi
-        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit |
-            jq -R 'fromjson? | select(type == "object")' |
-            jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+    else
+        log_json ERROR "log-config: '$LEVEL' is not a valid log-level." < /dev/null
+        false
     fi
 }
 
+#-------------------------------------------------------------------------------
+# get logs of IOM application container
+# $1|2: [FATAL|ERROR|WARN|INFO|DEBUG|TRACE], defaults to WARN
+# $1|2: [-f] if set, messages are printed in follow mode
+# -> true|false indicating success
 #-------------------------------------------------------------------------------
 log-app() {
+    FOLLOW=false
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
-    if [ ! -z "$1" ]; then
-        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
-            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
-        else
-            log_json WARN "log-app: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
-        fi
+
+    # decide how to interpret arguments
+    if [ "$1" = '-f' -a ! -z "$2" ]; then
+        FOLLOW=true
+        LEVEL="$2"
+    elif [ "$1" = '-f' ]; then
+        FOLLOW=true
+    elif [ "$2" = '-f' ]; then
+        FOLLOW=true
+        LEVEL="$1"
+    elif [ ! -z "$1" ]; then
+        LEVEL="$1"
     fi
     
-    if [ -z "$(which jq)" ]; then
-        log_json ERROR "log-app: jq not found in PATH" < /dev/null
-        false
-    else
-        # avoid formatting if output is written to pipe. This makes it much easier,
-        # to process the results
-        if [ -t 1 ]; then
-            COMPACT_FLAG=''
-            FOLLOW_FLAG='--tail=1 -f'
+    # check value of LEVEL
+    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+        LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
+
+        if [ -z "$(which jq)" ]; then
+            log_json ERROR "log-app: jq not found in PATH" < /dev/null
+            false
         else
-            COMPACT_FLAG='--compact-output'
-            FOLLOW_FLAG=''
+            if [ "$FOLLOW" = 'true' ]; then
+                FOLLOW_FLAG='--tail=1 -f'
+            else
+                FOLLOW_FLAG=''
+            fi
+            
+            # avoid formatting if output is written to pipe. This makes it much easier,
+            # to process the results
+            if [ -t 1 ]; then
+                COMPACT_FLAG=''
+            else
+                COMPACT_FLAG='--compact-output'
+            fi
+            
+            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
+                jq -R 'fromjson? | select(type == "object")' |
+                jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
         fi
-        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
-            jq -R 'fromjson? | select(type == "object")' |
-            jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+    else
+        log_json ERROR "log-app: '$LEVEL' is not a valid log-level." < /dev/null
+        false
     fi
 }
 
 #-------------------------------------------------------------------------------
+# get access logs of IOM application container
+# $1|2: [ERROR|ALL], defaults to ERROR
+# $1|2: [-f] if set, messages are printed in follow mode
+# -> true|false indicating success
+#-------------------------------------------------------------------------------
 log-access() {
+    FOLLOW=false
     LEVEL=ERROR
     LEVELS=(ERROR ALL)
-    if [ ! -z "$1" ]; then
-        if is_in_array "$(echo "$1" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
-            LEVEL=$(echo "$1" | tr '[a-z]' '[A-Z]')
-        else
-            log_json WARN "log-access: '$1' is not a valid log-level, default value '$LEVEL' will be used instead" < /dev/null
-        fi
+
+    # decide how to interpret arguments
+    if [ "$1" = '-f' -a ! -z "$2" ]; then
+        FOLLOW=true
+        LEVEL="$2"
+    elif [ "$1" = '-f' ]; then
+        FOLLOW=true
+    elif [ "$2" = '-f' ]; then
+        FOLLOW=true
+        LEVEL="$1"
+    elif [ ! -z "$1" ]; then
+        LEVEL="$1"
     fi
     
-    if [ -z "$(which jq)" ]; then
-        log_json ERROR "log-app: jq not found in PATH" < /dev/null
-        false
-    else
-        if [ "$LEVEL" = 'ERROR' ]; then
-            FILTER='and (.responseCode >= 400)'
+    # check value of level
+    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+        LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
+
+        if [ -z "$(which jq)" ]; then
+            log_json ERROR "log-app: jq not found in PATH" < /dev/null
+            false
         else
-            FILTER=''
-        fi
+            if [ "$FOLLOW" = 'true' ]; then
+                FOLLOW_FLAG='--tail=1 -f'
+            else
+                FOLLOW_FLAG=''
+            fi
+            
+            if [ "$LEVEL" = 'ERROR' ]; then
+                FILTER='and (.responseCode >= 400)'
+            else
+                FILTER=''
+            fi
         
-        # avoid formatting if output is written to pipe. This makes it much easier,
-        # to process the results
-        if [ -t 1 ]; then
-            COMPACT_FLAG=''
-            FOLLOW_FLAG='--tail=1 -f'
-        else
-            COMPACT_FLAG='--compact-output'
-            FOLLOW_FLAG=''
+            # avoid formatting if output is written to pipe. This makes it much easier,
+            # to process the results
+            if [ -t 1 ]; then
+                COMPACT_FLAG=''
+            else
+                COMPACT_FLAG='--compact-output'
+            fi
+            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
+                jq -R 'fromjson? | select(type == "object")' |
+                jq $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
         fi
-        kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
-            jq -R 'fromjson? | select(type == "object")' |
-            jq $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
+    else
+        log_json ERROR "log-access: '$LEVEL' is not a valid log-level." < /dev/null
+        false
     fi
 }
 
@@ -3033,8 +3163,16 @@ case $1 in
     l*)
         LEVEL0=log
         ;;
+    --help)
+        help
+        exit 0
+        ;;
+    -h)
+        help
+        exit 0
+        ;;
     *)
-        help 1>&2
+        syntax_error
         exit 1
         ;;
 esac
@@ -3061,12 +3199,20 @@ if [ "$LEVEL0" = "info" ]; then
         c*)
             LEVEL1=cluster
             ;;
+        --help)
+            help-info
+            exit 1
+            ;;
+        -h)
+            help-info
+            exit 1
+            ;;
         *)
-            help-info 1>&2
+            syntax_error info
             exit 1
             ;;
     esac
-elif [ "$LEVEL0" = "create" -o "$LEVEL0" = "delete" ]; then
+elif [ "$LEVEL0" = "create" ]; then
     case $1 in
         s*)
             LEVEL1=storage
@@ -3086,12 +3232,49 @@ elif [ "$LEVEL0" = "create" -o "$LEVEL0" = "delete" ]; then
         c*)
             LEVEL1=cluster
             ;;
+        --help)
+            help-create
+            exit 0
+            ;;
+        -h)
+            help-create
+            exit 0
+            ;;
         *)
-            if [ "$LEVEL0" = "create" ]; then
-                help-create 1>&2
-            else
-                help-delete 1>&2
-            fi
+            syntax_error create
+            exit 1
+            ;;
+    esac
+elif [ "$LEVEL0" = "delete" ]; then
+    case $1 in
+        s*)
+            LEVEL1=storage
+            ;;
+        n*)
+            LEVEL1=namespace
+            ;;
+        m*)
+            LEVEL1=mailserver
+            ;;
+        p*)
+            LEVEL1=postgres
+            ;;
+        i*)
+            LEVEL1=iom
+            ;;
+        c*)
+            LEVEL1=cluster
+            ;;
+        --help)
+            help-delete
+            exit 1
+            ;;
+        -h)
+            help-delete
+            exit 1
+            ;;
+        *)
+            syntax_error delete
             exit 1
             ;;
     esac
@@ -3106,8 +3289,16 @@ elif [ "$LEVEL0" = "wait" ]; then
         i*)
             LEVEL1=iom
             ;;
+        --help)
+            help-wait
+            exit 0
+            ;;
+        -h)
+            help-wait
+            exit 0
+            ;;
         *)
-            help-wait 1>&2
+            syntax_error wait
             exit 1
             ;;
     esac
@@ -3134,8 +3325,16 @@ elif [ "$LEVEL0" = "apply" ]; then
         db*)
             LEVEL1=dbmigrate
             ;;
+        --help)
+            help-apply
+            exit 0
+            ;;
+        -h)
+            help-apply
+            exit 0
+            ;;
         *)
-            help-apply 1>&2
+            syntax_error apply
             exit 1
             ;;
     esac
@@ -3147,8 +3346,16 @@ elif [ "$LEVEL0" = "dump" ]; then
         l*)
             LEVEL1=load
             ;;
+        --help)
+            help-dump
+            exit 0
+            ;;
+        -h)
+            help-dump
+            exit 0
+            ;;
         *)
-            help-dump 1>&2
+            syntax_error dump
             exit 1
             ;;
     esac
@@ -3172,8 +3379,16 @@ elif [ "$LEVEL0" = 'update' ]; then
         a*)
             LEVEL1=all
             ;;
+        --help)
+            help-update
+            exit 0
+            ;;
+        -h)
+            help-update
+            exit 0
+            ;;
         *)
-            help-update 1>&2
+            syntax_error update
             exit 1
             ;;
     esac
@@ -3191,8 +3406,16 @@ elif [ "$LEVEL0" = 'log' ]; then
         ac*)
             LEVEL1=access
             ;;
+        --help)
+            help-log
+            exit 0
+            ;;
+        -h)
+            help-log
+            exit 0
+            ;;
         *)
-            help-log 1>&2
+            syntax_error log
             exit 1
             ;;
     esac
@@ -3226,14 +3449,14 @@ ARG2=$2
 
 # there is no command, accepting more than two arguments
 if [ ! -z "$3" ]; then
-    eval help-$LEVEL0-$LEVEL1
+    syntax_error $LEVEL0 $LEVEL1
     exit 1
 fi
 
 # handle command, requiring one argument
 if [ "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-scripts' ]; then
     if [ -z "$ARG1" ]; then
-        eval help-$LEVEL0-$LEVEL1
+        syntax_error $LEVEL0 $LEVEL1
         exit 1
     fi
     eval $LEVEL0-$LEVEL1 "$ARG1" "$ARG2" || exit 1
@@ -3244,18 +3467,22 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'dbmigrate'   \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'deployment'  \) -o \
           \( "$LEVEL0" = 'wait'                               \) -o \
-          \( "$LEVEL0" = 'log'                                \) -o \
           \( "$LEVEL0" = 'dump'  -a "$LEVEL1" = 'create'      \) ]; then
     if [ ! -z "$ARG2" ]; then
-        eval help-$LEVEL0-$LEVEL1
+        syntax_error $LEVEL0 $LEVEL1
         exit 1
     fi
     eval $LEVEL0-$LEVEL1 "$ARG1" || exit 1
 
+
+# handle commands, accepting two arguments
+elif [ "$LEVEL0" = 'log' ]; then
+    eval $LEVEL0-$LEVEL1 "$ARG1" "$ARG2" || exit 1
+    
 # handle commands, not accepting any argument
 else
     if [ ! -z "$ARG1" ]; then
-        eval help-$LEVEL0-$LEVEL1
+        syntax_error $LEVEL0 $LEVEL1
         exit 1
     fi
     eval $LEVEL0-$LEVEL1 || exit 1

@@ -43,7 +43,19 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configurations <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">First steps <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#first-steps--overview">Overview</a></li>
+                  <li><a href="#first-steps--config">Configuration</a></li>
+                  <li><a href="#first-steps--create">Create IOM cluster</a></li>
+                  <li><a href="#first-steps--use">Access IOM GUI</a></li>
+                  <li><a href="#first-steps--logs">View access logs</a></li>
+                  <li><a href="#first-steps--sql">Execute SQL-file</a><li>
+                  <li><a href="#first-steps--delete">Delete IOM cluster</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="#configurations--devenv4iom">Update devenv-4-iom</a></li>
                   <li><a href="#configurations--update">Update config-directory after updating devenv-4-iom</a></li>
@@ -92,9 +104,10 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Log-messages <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#log-messages--jq">Log-messages & jq</a></li>
+                  <li><a href="#log-messages--jq">jq - command-line JSON processor</a></li>
                   <li><a href="#log-messages--devenv">Log-messages of devenv-cli.sh</a></li>
-                  <li><a href="#log-messages--iom">Log-messages of IOM</a></li>
+                  <li><a href="#log-messages--iom-containers">Log-messages of IOM containers</a></li>
+                  <li><a href="#log-messages--log-cmd">devenv-cli's 'log *' commands</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -123,7 +136,225 @@
       <div class="container">
 
         <h1>${ID} IOM development environment</h1>
-        <h2 id="configurations">Configurations</h2>
+
+        <h2 id="first-steps">First steps</h2>
+        <h3 id="first-steps--overview">Overview</h3>
+        <p>
+          <a href="#first-steps">First steps</a> wants you to guide through all main parts of <samp>devenv-4-iom</samp> by very simple examples. You will setup an IOM cluster. You will be able to browse through the GUI of IOM. You will take a look on access-log messages. You will solve a very simple development task: execute a SQL-file. And finally you will destroy the IOM cluster again.
+        </p><p>
+          Once you are able to setup IOM with <samp>devenv-4-iom</samp> and have an insight into its main ideas, it should become easy for you to find out more by yourself, to become able to solve the development tasks you need to solve.
+        </p>
+        
+        <h3 id="first-steps--config">Configuration</h3>
+        <p>
+          If you read this text, you have already sucessfully created the configuration file <samp>${ENV_DIR}/${CONFIG_FILE}</samp>. If this is a new configuration, it's filled with default settings defined by <samp>devenv-4-iom</samp>. The most important settings are the <samp>*_IMAGE</samp> properties, since they are defining what will be executed by <samp>devenv-4-iom</samp>. By defining the images, you can for example control to run a specific project, a standard IOM product without any customizations, the IOM product, which is currently in develepoment or even containers of the IOM product or project, you have built by yourself on your local computer.
+        </p><p>
+          The default settings are using the pure IOM product, which is currently in development. For the first steps, there is no need to change this settings. But you should check, if you are able to access the Docker images, which are set in config-file. To do so, try to pull the images manually in a shell.
+        </p><p>
+          Open the config-file <samp>${ENV_DIR}/${CONFIG_FILE}</samp>, copy the values of the <samp>*_IMAGE</samp> properties and use them to pull the Docker images manually, just as shown in the box below.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+docker pull postgres:11
+docker pull mailhog/mailhog
+docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.17.0.0-SNAPSHOT
+docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT
+        </div></code></pre>
+        
+        <h3 id="first-steps--create">Create IOM cluster</h3>
+        <p>
+          For IOM to run in Kubernetes, several (sub-)systems are needed:
+          <ul>
+            <li>A kubernetes namespace, to isolate different installations from each other</li>
+            <li>A persistent storage to be used by the database</li>
+            <li>A PostgreSQL database, which is using persistent storage.</li>
+            <li>A mail-server, to receive mails, sent by IOM. The mail-server used by <samp>devenv-4-iom</samp> allows you to access the received mails by a GUI and by a REST interface</li>
+            <li>The IOM sever itself</li>
+          </ul>
+          <samp>devenv-4-iom</samp> provides a very easy way to setup all these systems and makes them work together. Just create the cluster by executing the following command:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh create cluster
+        </div></code></pre>
+        <p>
+          The process of cluster creation will take some minutes (between 3 and 10, depending on your hardware). During this time we should take a look at the statuses of the (sub-)systems. 
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# get status of storage
+${ENV_DIR}/devenv-cli.sh info storage
+
+# get info about mail-server
+${ENV_DIR}/devenv-cli.sh info mailserver
+
+# get info about postgres-server
+${ENV_DIR}/devenv-cli.sh info postgres
+
+# get info about IOM server
+${ENV_DIR}/devenv-cli.sh info iom
+        </div></code></pre>
+        <p>
+          Mail-server and PostgreSQL-server are starting very quickly. The output of the according <samp>'info'</samp> commands contain a section 'Kubernetes', which shows the state. For these two systems, the state should be <samp>running</samp> even after a short after creating the cluster. The box below shows an example output: 
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh info postgres
+...
+--------------------------------------------------------------------------------
+Kubernetes:
+===========
+namespace:                  21700snapshot
+KEEP_DATABASE_DATA:         true
+NAME       READY   STATUS    RESTARTS   AGE
+postgres   1/1     Running   0          8s
+--------------------------------------------------------------------------------
+...
+        </div></code></pre>
+        <p>
+          The start of IOM will take much longer. You can use the <samp>'info iom'</samp> command, to check the state periodically. After some minutes IOM should be in running state too. The according output should look like this:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh info iom
+...
+--------------------------------------------------------------------------------
+Kubernetes:
+===========
+namespace:                  21700snapshot
+NAME                   READY   STATUS    RESTARTS   AGE
+iom-6c587ddd87-d7qb2   1/1     Running   0          5m5s
+--------------------------------------------------------------------------------
+...           
+        </div></code></pre>
+        
+        <h3 id="first-steps--use">Access IOM GUI</h3>
+        <p>
+          Now IOM is running and we can access its GUI. The <samp>'info iom'</samp> command provides the according information about the URL you have to use. The following box shows an example:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh info iom
+...
+--------------------------------------------------------------------------------
+Links:
+======
+OMT:                        http://Andreas-Herolds-MacBook.local:8080/omt
+DBDoc:                      http://Andreas-Herolds-MacBook.local:8080/dbdoc/
+Wildfly (admin:admin):      http://Andreas-Herolds-MacBook.local:9990/console
+--------------------------------------------------------------------------------
+...
+        </div></code></pre>
+        <p>
+          Just copy the <samp>OMT</samp> link into your browser and open the page. You should now see the login-screen. The combination of <samp>admin:!InterShop00!</samp> should give you access to IOM.
+        </p>
+        
+        <h3 id="first-steps--logs">View access logs</h3>
+        <p>
+          Now IOM is running and we are able to use it in the browser. Now it's time to look how to access some log-messages. Since we are able to browse in IOM, the access-log message will give us a good example. The following command prints access-log entries and also waits for new entries.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# press ^C to stop printing logs
+${ENV_DIR}/devenv-cli.sh log access all -f
+...
+{
+  "eventSource": "web-access",
+  "hostName": "default-host",
+  "tenant": "Intershop",
+  "environment": "2.17.0.0-SNAPSHOT",
+  "logHost": "iom-6c587ddd87-d7qb2",
+  "logVersion": "1.0",
+  "appVersion": "2.17.0.0-SNAPSHOT@1234",
+  "appName": "iom-app",
+  "logType": "access",
+  "configName": "ci",
+  "bytesSent": 33586,
+  "dateTime": "2019-12-17T14:12:36153Z",
+  "localIp": "10.1.1.210",
+  "localPort": 8080,
+  "remoteHost": "192.168.65.3",
+  "remoteUser": null,
+  "requestHeaderReferer": "http://andreas-herolds-macbook.local:8080/omt/app/order/landingpage",
+  "requestHeaderUser-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15",
+  "requestHeaderHost": "andreas-herolds-macbook.local:8080",
+  "requestHeaderCookie": "OMS_IDENTITY=eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPTVQiLCJleHAiOjE1NzY2NzgzNDksImlhdCI6MTU3NjU5MTk0OSwic3ViIjoiQXV0aGVudGljYXRpb24iLCJ1c2VyIjoiYWRtaW4ifQ.c5XuyKZM1FbrwRRGTg4CqaXog3WN6K-kuSTYSp6WEio; SessionKey=11a11a64-9ee9-44cc-bd4d-7ffbb1e12fac; JSESSIONID=k_AxMo_ElpYnjaTTLAkOeFoF3LF_W6VW67PpYcG1.iom-6c587ddd87-d7qb2; org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE=en",
+  "requestLine": "GET /omt/WEB-INF/views/widgets/shortOrderSearchContainer.jsp?_=1576591952608 HTTP/1.1",
+  "requestProtocol": "HTTP/1.1",
+  "requestScheme": "http",
+  "responseCode": 200,
+  "responseHeaderContent-Type": "text/html;charset=utf-8",
+  "responseHeaderSet-Cookie": null,
+  "responseTime": 3420
+}
+{
+  "eventSource": "web-access",
+  "hostName": "default-host",
+  "tenant": "Intershop",
+  "environment": "2.17.0.0-SNAPSHOT",
+  "logHost": "iom-6c587ddd87-d7qb2",
+  "logVersion": "1.0",
+  "appVersion": "2.17.0.0-SNAPSHOT@1234",
+  "appName": "iom-app",
+  "logType": "access",
+  "configName": "ci",
+  "bytesSent": 472,
+  "dateTime": "2019-12-17T14:12:41026Z",
+  "localIp": "10.1.1.210",
+  "localPort": 8080,
+  "remoteHost": "10.1.0.1",
+  "remoteUser": null,
+  "requestHeaderReferer": null,
+  "requestHeaderUser-Agent": "kube-probe/1.14",
+  "requestHeaderHost": "10.1.1.210:8080",
+  "requestHeaderCookie": null,
+  "requestLine": "GET /monitoring/services/health/status HTTP/1.1",
+  "requestProtocol": "HTTP/1.1",
+  "requestScheme": "http",
+  "responseCode": 200,
+  "responseHeaderContent-Type": "application/json",
+  "responseHeaderSet-Cookie": null,
+  "responseTime": 2
+}
+...
+        </div></code></pre>
+        
+        <h3 id="first-steps--sql">Execute SQL-file</h3>
+        <p>
+          The execution of an SQL-file is a very simple example of a development task. To execute this task, we have first to create a SQL-file. Just create a file, having the extension <samp>.sql</samp> and copy the following content into it:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+select * from "CountryDefDO";         
+        </div></code></pre>
+        <P>
+          You have to make sure, that the file can be shared with Docker Desktop. Just check the settings of Docker Desktop. Go to <samp>Docker Desktop > Preferences > File Sharing</samp> and check if the file is located in a shared directory. If not, move it to a shared directory (or change the preferences, but this requires a restart of Docker Desktop). For more information about Sharing with Docker Desktop, please have a look at <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">this document</a>.
+        </p><p>
+          The following box shows an example, where the file is named <samp>/Users/andreas/test.sql</samp>. If you have <samp>jq</samp> installed, you can pipe the output through <samp>jq</samp> to get pretty-printed messages.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh apply sql-script /Users/andreas/test.sql 
+{ "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:23Z", "level":"INFO", "message":"apply-sql-scripts: job successfully started", "processName":"devenv-cli.sh", "additionalInfo":"job.batch/apply-sql-job created", "configName":"ci" }
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":"ci","additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_PASS=oms_pw\nOMS_USER_CONNECTION_SUFFIX=\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=2.17.0.0-SNAPSHOT"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"success","configName":"ci"}
+{ "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:29Z", "level":"INFO", "message":"apply-sql-scripts: successfully deleted job", "processName":"devenv-cli.sh", "additionalInfo":"job.batch \"apply-sql-job\" deleted", "configName":"ci" }
+        </div></code></pre>
+        <p>
+          You can also interactively use <samp>psql</samp> to communicate with PostgreSQL-server. Just use the command <samp>'info postgres'</samp> to get the according command line.
+        </p>
+        
+        <h3 id="first-steps--delete">Delete IOM cluster</h3>
+        <p>
+          Now it comes the time, that we have to clean up the environment. To do so, we have to execute two steps:
+          <ul>
+            <li>Delete IOM cluster.</li>
+            <li>Delete persistent storage.</li>
+          </ul>
+          In difference to the cluster-creation step, which created the persistent storage too, the cluster-delete step is not touching persistent storage. This way, you could simply create a new cluster, that is using the old database data. If we now want to delete persistent storage, we have to do this explicitely by executing the according command.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+${ENV_DIR}/devenv-cli.sh delete cluster       
+${ENV_DIR}/devenv-cli.sh delete storage
+        </div></code></pre>
+        <p>
+          We have now used <samp>devenv-cli.sh</samp> a lot. If you want to explore all features of this program, just call it with argument <samp>-h</samp>.
+        </p>
+        
+        <h2 id="configurations">Configuration</h2>
 
         <h3 id="configurations--devenv4iom">Update devenv-4-iom</h3>
         <p>
@@ -638,13 +869,13 @@ mvn -Dhost=${HOST_IOM}:${PORT_IOM_SERVICE} clean test
         </div></code></pre>
 
         <h2 id="log-messages">Log-messages</h2>
-        <h3 id="log-messages--jq">Log-messages & jq</h3>
-	<p>
-	  All log-messages provided by IOM and <samp>devenv-4-iom</samp> are written in json format. <samp>jq</samp> is a command line tool to work with json messages. <samp>jq</samp> is not included in <samp>devenv-4-iom</samp>. <samp>devenv-4-iom</samp> does not depend on it, but it's strongly recommended that you install <samp>jq</samp> too.
-	</p><p>
-	  The most important features used in context of <samp>devenv-4-iom</samp> are formatting and filtering. The following box shows some examples for these use cases. These examples are not intended to be used as they are. They should you only give an expression about <samp>jq</samp> and should animate you, to dig deeper by yourself.
-	</p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <h3 id="log-messages--jq">jq - command-line JSON processor</h3>
+        <p>
+          <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> is a command line tool to work with json messages. Since all messages, created by <samp>devenv-4-iom</samp> and <samp>IOM</samp>, are json messages, it is a very useful tool. <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> is not included in <samp>devenv-4-iom</samp>. <samp>devenv-4-iom</samp> does not depend on it (except the <samp>'log *'</samp> command), but it's strongly recommended that you install <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> too.
+        </p><p>
+          The most important features used in context of <samp>devenv-4-iom</samp> are formatting and filtering. The following box shows some examples of these use cases. These examples are not intended to be used as they are. They should only give you an impression about <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> and should animate you, to dig deeper by yourself.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Print raw json messages
 cmd_producing_json
 ...
@@ -652,7 +883,7 @@ cmd_producing_json
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/120_DocumentTransformerConfigDO/DocumentTransformerConfigDO_Shop_test_shop_TX.iombc'","configName":"ci"}
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/H_Shop2PaymentProvider2Payment/010_Shop2PaymentProvider2PaymentDefDO/Shop2PaymentProvider2PaymentDefDO_test_shop_TX.iombc'","configName":"ci"}
 ...
-	      
+              
 # Print formatted json messages
 cmd_producing_json | jq
 ...
@@ -795,35 +1026,119 @@ cmd_producing_json | jq 'select(.level == "ERROR") | {timestamp: .timestamp, mes
   "sourceFileName": "LoggingInterceptor.java"
 }
 ...
-	</div></code></pre>
-	
+        </div></code></pre>
+        
         <h3 id="log-messages--devenv">Log-messages of devenv-cli.sh</h3>
-	<p>
-	  
-	</p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-	</div></code></pre>
-
-        <h3 id="log-messages--iom">Log-messages of IOM</h3>
-
+        <p>
+          Logging of <samp>devenv-cli.sh</samp> is controlled by configuration variable <samp>OMS_LOGLEVEL_DEVENV</samp>. Since every execution of <samp>devenv-cli.sh</samp> reads the configuration file, changes of this variable becomes effective immediately.
+        </p><p>
+          As mentioned <a href="#log-messages--jq">above</a>, all log-messages of <samp>devenv-cli.sh</samp> are written in json format. Hence, it's a good idea to pipe the output of <samp>devenv-cli.sh</samp> through <samp>jq</samp>, for better readability of messages.
+        </p><p>
+          Unfortunately, it is not as simple, as it seems at first glance. There three reasons, that make it more complicated:
+          <ul>
+            <li>Not every output of <samp>devenv-cli.sh</samp> is a log-message, but only log-messages are provided in json format. <samp>'info *'</samp> commands and all help-messages are written as plain-text. When piping this output through <samp>jq</samp>, no messages can be seen at all.</li>
+            <li>Some commands provide a mixture of log-messages of <samp>devenv-cli.sh</samp> and <samp>IOM</samp>. Developer commands (<samp>'apply *'</samp>) are behaving like that. E.g., when applying a sql-configuration, using <samp>'apply sql-config'</samp>, there are log-messages of <samp>devenv-cli.sh</samp>, that are reporting the progress of the process (create kubernetes-job, delete kubernetes-job, etc.) and there are other log-messages coming directly from IOM, which are giving information about applying SQL-configuration. In this case, only the log-messages of <samp>devenv-cli.sh</samp> are controlled by variable <samp>OMS_LOGLEVEL_DEVENV</samp>. The messages of IOM are controlled by other <samp>OMS_LOGLEVEL_*</samp> variables, see <a href="#log-messages--iom-containers">section below</a>.</li>
+            <li>Finally there are the <samp>'log *'</samp> commands, that try to ease the access to messages created by IOM containers. For more information, see <a href="#log-messages--log-cmd">section below</a>.</li>
+          </ul>
+        </p><p>
+          Hence, the following hints should be taken into account, when using <samp>devenv-cli.sh</samp> along with <samp>jq</samp>:
+          <ul>
+            <li>Never pipe the output of <samp>devenv-cli.sh</samp> through <samp>jq</samp>, when you want to get help for a command,</li>
+            <li>Never pipe the output of <samp>devenv-cli.sh</samp> through <samp>jq</samp>, when you are using the <samp>'info *'</samp> command.</li>
+          </ul>
+        </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-TODO
-====
-kubectl logs iom-7d567cbf57-svxzz --namespace 21700snapshot -c iom | jq -R 'fromjson? | select(type == "object")' | jq 'select(.level == "INFO")'
-kubectl logs --namespace ${EnvId} "$POD_NAME" -c dbinit | jq 'select((.level == "INFO") and (.processName == "load_dbmigrate.sh"))'
+# example of jq-usage along with devenv-cli.sh
+# creates a pretty-printed version of log-messages 
+${ENV_DIR}/devenv-cli.sh create iom | jq
 
-# Logs for container
+# never pipe output of devenv-cli.sh through jq, when requesting help
+# example:
+${ENV_DIR}/devenv-cli.sh create iom --help
 
-# Error
-mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR") | .timestamp, .message, .stackTrace'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/errors.txt"
+# never pipe the output of 'info *' command through jq
+# example:
+${ENV_DIR}/devenv-cli.sh info iom
+        </div></code></pre>
 
-# Access
-mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access") | .dateTime, .responseCode, .requestLine' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/web-access-1.txt"
+        <h3 id="log-messages--iom-containers">Log-messages of IOM containers</h3>
+        <p>
+          Besides the IOM application container, two init-containers are belonging to IOM too. All these containers are writing messages in json format to <samp>standard out</samp>. The log-levels of these messages are controlled by variables:
+          <ul>
+            <li><samp>OMS_LOGLEVEL_CONSOLE</samp></li>
+            <li><samp>OMS_LOGLEVEL_IOM</samp></li>
+            <li><samp>OMS_LOGLEVEL_HIBERNATE</samp></li>
+            <li><samp>OMS_LOGLEVEL_QUARTZ</samp></li>
+            <li><samp>OMS_LOGLEVEL_CUSTOMIZATION</samp></li>
+            <li><samp>OMS_LOGLEVEL_SCRIPTS</samp></li>
+          </ul>
+          The values of these log-levels cannot be changed at runtime. For a change to take effect, IOM has to be deleted and newly created.
+        </p><p>
+          Beside these application level messages, access logs are written to <samp>standard out</samp> in json format too. Hence, the output of the IOM containers is a mixture of different logs.
+        </p><p>
+          You can use <samp>kubectl</samp> to access this messages. In general these message can be provided in two different ways:
+          <ul>
+            <li>get all messages since container start and finish after that,</li>
+            <li>get only new messages and wait for upcoming messages (follow new messages).</li>
+          </ul>
+          The according <samp>kubectl</samp> command lines are provided by the <samp>'info iom'</samp> command.
+        </p><p>
+          Hence, if you use <samp>kubectl</samp> to get log-messages of IOM, you will get everything mixed in one stream (messages and access-log) exactly as defined by the current logging configuration. E.g., if currently a log-level is set to <samp>INFO</samp>, but you are interessed in <samp>FATAL</samp>, <samp>ERROR</samp> and <samp>WARN</samp> messages only, you have to write an according <samp>jq</samp> command line by your own, to get the requested messages only (see <a href="log-messages--jq">section jq</a>).
+        </p><p>
+          The following box shows some examples, how to access log-messages of IOM containers and how to filter and format them with the help of <samp>jq</samp>.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# get all FATAL, ERROR and WARN messages produced by IOM application container (don't follow new messages)
+#  kubectl command line was taken from output of 'info iom' command
+#  output is filtered by jq
+#  - ignore any lines, that are not valid json structures
+#  - print only json messages, with 'level' element having the value 'FATAL', 'ERROR' or 'WARN'
+kubectl logs iom-6c587ddd87-42k4f --namespace 21700snapshot -c iom |
+  jq -R 'fromjson? | select(type == "object")' |
+  jq 'select((.level == "FATAL") or (.level == "ERROR") or (.level == "WARN"))'
 
-mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.eventSource == "web-access" and .requestLine != "GET /monitoring/services/health/status HTTP/1.1") | .dateTime, .responseCode, .requestLine'| sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/web-access-2.txt"
+# follow new access log entries, having a status code indicating an error
+#  kubectl command line was taken from output of 'info iom' command
+#  output is filtered by jq
+#  - ignore any lines, that are not valid json structures
+#  - show only json messages with 'logType' element having the value 'access'
+#  - show only json messages with 'responceCode' element having a value greater or equal 400
+kubectl logs --tail=1 -f iom-6c587ddd87-42k4f --namespace 21700snapshot -c iom |
+  jq -R 'fromjson? | select(type == "object")' |
+  jq 'select((.logType == "access" ) and (.responseCode >= 400))'
+        </div></code></pre>
 
-# Warnings
-mkdir -p "${ENV_DIR}/logs" && kubectl logs --namespace ${EnvId} "$POD_NAME" -c iom | sed -n '/^{/,/}$/ p' | jq 'select(.level == "ERROR" or .level == "WARN") | .timestamp, .level, .message, .stackTrace' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g' > "${ENV_DIR}/logs/warnings.txt"
+        <h3 id="log-messages--log-cmd">devenv-cli's 'log *' commands</h3>
+        <p>
+          The <a href="#log-messages--iom-containers">section before</a> showed how to get messages out of the IOM containers and how to further process them with the help of <samp>jq</samp>. This is a valid procedure, if special requirements have to be matched. But there are some standard situations, which should be easier to handle. For this reason <samp>devenv-cli.sh</samp> provides the <samp>'log *'</samp> commands.
+        </p><p>
+          The <samp>'log *'</samp> commands makes it easy to access the logs of different IOM containers and also to access the different types of logs of IOM's application container. It is the very only command, that is using <samp>jq</samp> internally to provide a basic filtering and formatting of messages. With help of the <samp>'log *'</samp> commands you can do the following:
+          <ul>
+            <li>View log-messages of dbaccount, config or application container:</li>
+            <ul>
+              <li>filter them for passed level and all higher levels. E.g. when level <samp>WARN</samp> is passed as argument to the <samp>log</samp> command, messages of levels <samp>FATAL</samp>, <samp>ERROR</samp> and <samp>WARN</samp> will be printed only.</li>
+              <li>show all messages or follow only new messages.</li>
+              <li>format the messages or leave them unformatted for further processing with <samp>jq</samp>.</li>
+            </ul>
+            <li>View access logs of application container:</li>
+            <ul>
+              <li>filter them for http-status code: show all or only those requests, that had an http-status code >= 400.</li>
+              <li>show all access log entries or follow only new ones.</li>
+              <li>format the access-log entries or leave them unformatted for further processing with <samp>jq</samp>.</li>
+            </ul>
+          </ul>
+          The following box shows some examples how to use the <samp>'log *'</samp> commands.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# show FATAL, ERROR and WARN messages of IOM's config container and format them
+${ENV_DIR}/devenv-cli.sh log config
+
+# follow FATAL, ERROR and WARN messages of IOM's application container and format the messages
+${ENV_DIR}/devenv-cli.sh log app -f
+
+# follow all access log entries, that have a response time > 100 ms
+# do not format messages to be able to process output by a second jq stage
+${ENV_DIR}/devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
         </div></code></pre>
 
         <h2 id="troubleshooting">Troubleshooting</h2>
