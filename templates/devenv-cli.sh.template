@@ -1788,7 +1788,8 @@ IOM_APP_IMAGE:              $IOM_APP_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
-    if [ ! -z "$(kube_get_pod iom)" ]; then
+    POD="$(kube_get_pod iom)"
+    if [ ! -z "$POD" ]; then
         cat <<EOF
 Kubernetes:
 ===========
@@ -1798,19 +1799,19 @@ $(kubectl get pods --namespace=$EnvId -l app=iom)
 Usefull commands:
 =================
 
-Login into Pod:             kubectl exec --namespace $EnvId $(kube_get_pod iom) -it bash
+Login into Pod:             kubectl exec --namespace $EnvId $POD -it bash
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
-Describe iom pod:           kubectl describe --namespace $EnvId pod $(kube_get_pod iom)
+Describe iom pod:           kubectl describe --namespace $EnvId pod $POD
 Describe iom deployment     kubectl describe --namespace $EnvId deployment iom
 Describe iom service        kubectl describe --namespace $EnvId service iom-service
 
-Get dbaccount logs:         kubectl logs $(kube_get_pod iom) --namespace $EnvId -c dbaccount
-Follow dbaccount logs:      kubectl logs --tail=1 -f $(kube_get_pod iom) --namespace $EnvId -c dbaccount
-Get dbinit logs:            kubectl logs $(kube_get_pod iom) --namespace $EnvId -c dbinit
-Follow dbinit logs:         kubectl logs --tail=1 -f $(kube_get_pod iom) --namespace $EnvId -c dbinit
-Get iom logs:               kubectl logs $(kube_get_pod iom) --namespace $EnvId -c iom
-Follow iom logs:            kubectl logs --tail=1 -f $(kube_get_pod iom) --namespace $EnvId -c iom
+Get dbaccount logs:         kubectl logs $POD --namespace $EnvId -c dbaccount
+Follow dbaccount logs:      kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbaccount
+Get dbinit logs:            kubectl logs $POD --namespace $EnvId -c dbinit
+Follow dbinit logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbinit
+Get iom logs:               kubectl logs $POD --namespace $EnvId -c iom
+Follow iom logs:            kubectl logs --tail=1 -f $POD --namespace $EnvId -c iom
 --------------------------------------------------------------------------------
 EOF
     fi
@@ -1851,7 +1852,8 @@ IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
     fi
-    if [ ! -z "$(kube_get_pod postgres)" ]; then
+    POD="$(kube_get_pod postgres)"
+    if [ ! -z "$POD" ]; then
         cat <<EOF
 Kubernetes:
 ===========
@@ -1861,9 +1863,9 @@ $(kubectl get pods --namespace=$EnvId -l app=postgres)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
-Login into Pod:             kubectl exec --namespace $EnvId $(kube_get_pod postgres) -it bash
-psql into root-db:          kubectl exec --namespace $EnvId $(kube_get_pod postgres) -it -- bash -c "PGUSER=$PGUSER PGDATABASE=$PGDATABASE psql"
-psql into IOM-db:           kubectl exec --namespace $EnvId $(kube_get_pod postgres) -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
+Login into Pod:             kubectl exec --namespace $EnvId $POD -it bash
+psql into root-db:          kubectl exec --namespace $EnvId $POD -it -- bash -c "PGUSER=$PGUSER PGDATABASE=$PGDATABASE psql"
+psql into IOM-db:           kubectl exec --namespace $EnvId $POD -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
 
 Currently used yaml:        kubectl get pod -l app=postgres -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
@@ -1890,7 +1892,8 @@ MAILHOG_IMAGE:              $MAILHOG_IMAGE
 IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
-    if [ ! -z "$(kube_get_pod mailhog)" ]; then
+    POD="$(kube_get_pod mailhog)"
+    if [ ! -z "$POD" ]; then
         cat <<EOF
 Kubernetes:
 ===========
@@ -1899,7 +1902,7 @@ $(kubectl get pods --namespace=$EnvId -l app=mailhog)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
-Login into Pod:             kubectl exec --namespace $EnvId $(kube_get_pod mailhog) -it sh
+Login into Pod:             kubectl exec --namespace $EnvId $POD -it sh
 Currently used yaml:        kubectl get pod -l app=mailhog -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
 EOF

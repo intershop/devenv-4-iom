@@ -63,7 +63,7 @@ ${HealthCheckYml_}            path: /monitoring/services/health/status
 ${HealthCheckYml_}            port: ${PORT_IOM}
 ${HealthCheckYml_}          failureThreshold: 1
 ${HealthCheckYml_}          periodSeconds: 10
-${HealthCheckYml_}          initialDelaySeconds: 150
+${HealthCheckYml_}          initialDelaySeconds: 60
 ${HealthCheckYml_}          timeoutSeconds: 8
 ${HealthCheckYml_}          successThreshold: 1
         volumeMounts:
