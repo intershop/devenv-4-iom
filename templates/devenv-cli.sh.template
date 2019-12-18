@@ -1578,6 +1578,7 @@ kube_job_wait() (
 # ->: true - if pod is running before timeout
 #     false - if timeout is reached before pod is running
 #-------------------------------------------------------------------------------
+# TODO: don't test first pod only
 kube_pod_wait() (
     APP_NAME=$1
     TIMEOUT=$2
@@ -1675,7 +1676,7 @@ kube_resource_exists() (
 #-------------------------------------------------------------------------------
 time2seconds() {
     if [ "$(OS)" = 'Darwin' ]; then
-        date -j -f '%Y-%m-%dT%H:%M:%S' "$1" '+%s'
+        date -j -f '%Y-%m-%dT%H:%M:%SZ' "$1" '+%s'
     else
         date -d "$1" '+%s'
     fi
@@ -1690,38 +1691,47 @@ time2seconds() {
 # -> pod-name or empty, if no matching pod exists
 #-------------------------------------------------------------------------------
 kube_get_pod() (
-    # get name, status and creation timestamp of pods and store them in an array
-    # the array is flat and contains all names, statuses and timestamps in this order
+    # get name, status, creation timestamp of pods and store them in an array
+    # the array is flat and contains all names, statuses and creation timestamps in this order
     POD_INFO=( $(kubectl get pods --namespace $EnvId -l app=$1 -o jsonpath='{.items[*].metadata.name} {.items[*].status.phase} {.items[*].metadata.creationTimestamp}' 2> /dev/null) )
-
     POD_COUNT=$(expr ${#POD_INFO[@]} / 3)
     POD_NAME=''
 
     # search for a pod in state running and store its name
+    # terminating pods still have the state running. Terminating pods can be
+    # identified by checking deletionTimestamp. If this field exists, it is
+    # terminating.
     I=0
-    while [ -z "$POD_NAME" -a "$I" -lt "$POD_COUNT" ]; do
-        NAME_INDEX=$(expr $I * 3 + 0)
-        STATUS_INDEX=$(expr $I * 3 + 1)
+    while [ \( -z "$POD_NAME" \) -a \( "$I" -lt "$POD_COUNT" \) ]; do
+        NAME_INDEX=$(expr 0 \* $POD_COUNT + $I)
+        STATUS_INDEX=$(expr 1 \* $POD_COUNT + $I)
         if [ "${POD_INFO[$STATUS_INDEX]}" = 'Running' ]; then
-            POD_NAME="${POD_INFO[$NAME_INDEX]}"
+            # check deletionTimestamp
+            if [ -z "$(kubectl get pod "${POD_INFO[$NAME_INDEX]}" --namespace $EnvId -o jsonpath='{.metadata.deletionTimestamp}' 2> /dev/null)" ]; then
+                POD_NAME="${POD_INFO[$NAME_INDEX]}"
+            fi
         fi
         I=$(expr $I + 1)
     done
 
     # search for the newest pod and store its name
-    I=0
-    POD_SECONDS=
-    while [ -z "$POD_NAME" -a "$I" -lt "$POD_COUNT" ]; do
-        NAME_INDEX=$(expr $I * 3 + 0)
-        TIMESTAMP_INDEX=$(expr $I * 3 + 2)
-        if [ -z "$POD_SECONDS" ]; then
-            POD_SECONDS="$(time2seconds "${POD_INFO[$TIMESTAMP_INDEX]}")"
-            POD_NAME="${POD_INFO[$NAME_INDEX]}"
-        elif [ "$(time2seconds "${POD_INFO[$TIMESTAMP_INDEX]}")" -gt "$POD_SECONDS" ]; then
-            POD_SECONDS="$(time2seconds "${POD_INFO[$TIMESTAMP_INDEX]}")"
-            POD_NAME="${POD_INFO[$NAME_INDEX]}"
-        fi
-    done
+    # if no running pod was found before
+    if [ -z "$POD_NAME" ]; then
+        I=0
+        POD_SECONDS=
+        while [  "$I" -lt "$POD_COUNT" ]; do
+            NAME_INDEX=$(expr 0 \* $POD_COUNT + $I)
+            TIMESTAMP_INDEX=$(expr 2 \* $POD_COUNT + $I)
+            if [ -z "$POD_SECONDS" ]; then
+                POD_SECONDS="$(time2seconds "${POD_INFO[$TIMESTAMP_INDEX]}")"
+                POD_NAME="${POD_INFO[$NAME_INDEX]}"
+            elif [ "$(time2seconds "${POD_INFO[$TIMESTAMP_INDEX]}")" -gt "$POD_SECONDS" ]; then
+                POD_SECONDS="$(time2seconds "${POD_INFO[$TIMESTAMP_INDEX]}")"
+                POD_NAME="${POD_INFO[$NAME_INDEX]}"
+            fi
+            I=$(expr $I + 1)
+        done
+    fi
     
     echo "$POD_NAME"
 )
@@ -1777,6 +1787,9 @@ IOM_DBINIT_IMAGE:           $IOM_DBINIT_IMAGE
 IOM_APP_IMAGE:              $IOM_APP_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
+EOF
+    if [ ! -z "$(kube_get_pod iom)" ]; then
+        cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
@@ -1785,21 +1798,22 @@ $(kubectl get pods --namespace=$EnvId -l app=iom)
 Usefull commands:
 =================
 
-Login into Pod:             kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}") -it bash
+Login into Pod:             kubectl exec --namespace $EnvId $(kube_get_pod iom) -it bash
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
-Describe iom pod:           kubectl describe --namespace $EnvId pod $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
+Describe iom pod:           kubectl describe --namespace $EnvId pod $(kube_get_pod iom)
 Describe iom deployment     kubectl describe --namespace $EnvId deployment iom
 Describe iom service        kubectl describe --namespace $EnvId service iom-service
 
-Get dbaccount logs:         kubectl logs $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount
-Follow dbaccount logs:      kubectl logs --tail=1 -f $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount
-Get dbinit logs:            kubectl logs $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit
-Follow dbinit logs:         kubectl logs --tail=1 -f $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit
-Get iom logs:               kubectl logs $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom
-Follow iom logs:            kubectl logs --tail=1 -f $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom
+Get dbaccount logs:         kubectl logs $(kube_get_pod iom) --namespace $EnvId -c dbaccount
+Follow dbaccount logs:      kubectl logs --tail=1 -f $(kube_get_pod iom) --namespace $EnvId -c dbaccount
+Get dbinit logs:            kubectl logs $(kube_get_pod iom) --namespace $EnvId -c dbinit
+Follow dbinit logs:         kubectl logs --tail=1 -f $(kube_get_pod iom) --namespace $EnvId -c dbinit
+Get iom logs:               kubectl logs $(kube_get_pod iom) --namespace $EnvId -c iom
+Follow iom logs:            kubectl logs --tail=1 -f $(kube_get_pod iom) --namespace $EnvId -c iom
 --------------------------------------------------------------------------------
 EOF
+    fi
 }
 
 #-------------------------------------------------------------------------------
@@ -1835,6 +1849,10 @@ Docker:
 DOCKER_DB_IMAGE:            $DOCKER_DB_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
+EOF
+    fi
+    if [ ! -z "$(kube_get_pod postgres)" ]; then
+        cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
@@ -1843,9 +1861,9 @@ $(kubectl get pods --namespace=$EnvId -l app=postgres)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
-Login into Pod:             kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=postgres -o jsonpath="{.items[0].metadata.name}") -it bash
-psql into root-db:          kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=postgres -o jsonpath="{.items[0].metadata.name}") -it -- bash -c "PGUSER=$PGUSER PGDATABASE=$PGDATABASE psql"
-psql into IOM-db:           kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=postgres -o jsonpath="{.items[0].metadata.name}") -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
+Login into Pod:             kubectl exec --namespace $EnvId $(kube_get_pod postgres) -it bash
+psql into root-db:          kubectl exec --namespace $EnvId $(kube_get_pod postgres) -it -- bash -c "PGUSER=$PGUSER PGDATABASE=$PGDATABASE psql"
+psql into IOM-db:           kubectl exec --namespace $EnvId $(kube_get_pod postgres) -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
 
 Currently used yaml:        kubectl get pod -l app=postgres -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
@@ -1871,6 +1889,9 @@ Docker:
 MAILHOG_IMAGE:              $MAILHOG_IMAGE
 IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
+EOF
+    if [ ! -z "$(kube_get_pod mailhog)" ]; then
+        cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
@@ -1878,10 +1899,11 @@ $(kubectl get pods --namespace=$EnvId -l app=mailhog)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
-Login into Pod:             kubectl exec --namespace $EnvId $(kubectl get pods --namespace $EnvId -l app=mailhog -o jsonpath="{.items[0].metadata.name}") -it sh
+Login into Pod:             kubectl exec --namespace $EnvId $(kube_get_pod mailhog) -it sh
 Currently used yaml:        kubectl get pod -l app=mailhog -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
 EOF
+    fi
 }
 
 #-------------------------------------------------------------------------------
@@ -2289,7 +2311,7 @@ apply-deployment() {
     PATTERN=$1
     SUCCESS=true
     if [ ! -z "$CUSTOM_APPS_DIR" ]; then
-        POD=$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR")
+        POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
             log_json ERROR "apply-deployment: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
@@ -2323,7 +2345,7 @@ apply-deployment() {
 apply-mail-templates() {
     SUCCESS=true
     if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
-        POD=$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR")
+        POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
             log_json ERROR "apply-mail-templates: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
@@ -2350,7 +2372,7 @@ apply-mail-templates() {
 apply-xsl-templates() {
     SUCCESS=true
     if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
-        POD=$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR")
+        POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
             log_json ERROR "apply-xsl-templates: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
@@ -2979,7 +3001,8 @@ log-dbaccount() (
         shopt -s expand_aliases
         . ~/.profile
     fi
-    
+
+    SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
@@ -3003,7 +3026,6 @@ log-dbaccount() (
 
         if ! jq_exists; then
             log_json ERROR "log-dbaccount: jq not found" < /dev/null
-            false
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG="--tail=1 -f"
@@ -3018,14 +3040,30 @@ log-dbaccount() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbaccount |
-                jq -R 'fromjson? | select(type == "object")' |
-                jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+            
+            POD="$(kube_get_pod iom)"
+            if [ ! -z "$POD" ]; then
+                # make sure to get info about failed kubectl call
+                set -o pipefail
+                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c dbaccount 2> "$TMP_ERR" |
+                    jq -R 'fromjson? | select(type == "object")' |
+                    jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                RESULT=$?
+                set +o pipefail
+                if [ $RESULT -ne 0 ]; then
+                    log_json ERROR "log_dbaccount: error getting logs" < "$TMP_ERR"
+                else
+                    SUCCESS=true
+                fi
+            else
+                log_json ERROR "log_dbaccount: no pod available" < /dev/null
+            fi
         fi
     else
         log_json ERROR "log-dbaccount: '$LEVEL' is not a valid log-level" < /dev/null
-        false
     fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
 )
 
 #-------------------------------------------------------------------------------
@@ -3041,7 +3079,8 @@ log-config() (
         shopt -s expand_aliases
         . ~/.profile
     fi
-    
+
+    SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
@@ -3065,7 +3104,6 @@ log-config() (
 
         if ! jq_exists; then
             log_json ERROR "log-config: jq not found" < /dev/null
-            false
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3080,14 +3118,30 @@ log-config() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c dbinit |
-                jq -R 'fromjson? | select(type == "object")' |
-                jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+
+            POD="$(kube_get_pod iom)"
+            if [ ! -z "$POD" ]; then
+                # make sure to get info about failed kubectl call
+                set -o pipefail
+                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c dbinit 2> "$TMP_ERR" |
+                    jq -R 'fromjson? | select(type == "object")' |
+                    jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                RESULT=$?
+                set +o pipefail
+                if [ $RESULT -ne 0 ]; then
+                    log_json ERROR "log-config: error getting logs" < "$TMP_ERR"
+                else
+                    SUCCESS=true
+                fi
+            else
+                log_json ERROR "log-config: no pod available" < /dev/null
+            fi
         fi
     else
         log_json ERROR "log-config: '$LEVEL' is not a valid log-level." < /dev/null
-        false
     fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
 )
 
 #-------------------------------------------------------------------------------
@@ -3103,7 +3157,8 @@ log-app() (
         shopt -s expand_aliases
         . ~/.profile
     fi
-    
+
+    SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
@@ -3127,7 +3182,6 @@ log-app() (
 
         if ! jq_exists; then
             log_json ERROR "log-app: jq not found" < /dev/null
-            false
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3143,14 +3197,29 @@ log-app() (
                 COMPACT_FLAG='--compact-output'
             fi
             
-            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
-                jq -R 'fromjson? | select(type == "object")' |
-                jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+            POD="$(kube_get_pod iom)"
+            if [ ! -z "$POD" ]; then
+                # make sure to get info about failed kubectl call
+                set -o pipefail
+                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c iom 2> "$TMP_ERR" |
+                    jq -R 'fromjson? | select(type == "object")' |
+                    jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                RESULT=$?
+                set +o pipefail
+                if [ $RESULT -ne 0 ]; then
+                    log_json ERROR "log-app: error getting logs" < "$TMP_ERR"
+                else
+                    SUCCESS=true
+                fi
+            else
+                log_json ERROR "log-app: no pod available" < /dev/null
+            fi
         fi
     else
         log_json ERROR "log-app: '$LEVEL' is not a valid log-level." < /dev/null
-        false
     fi
+    rm -r "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
 )
 
 #-------------------------------------------------------------------------------
@@ -3166,7 +3235,8 @@ log-access() (
         shopt -s expand_aliases
         . ~/.profile
     fi
-    
+
+    SUCCESS=false
     FOLLOW=false
     LEVEL=ERROR
     LEVELS=(ERROR ALL)
@@ -3190,7 +3260,6 @@ log-access() (
 
         if ! jq_exists; then
             log_json ERROR "log-app: jq not found" < /dev/null
-            false
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3211,14 +3280,30 @@ log-access() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            kubectl logs $FOLLOW_FLAG $(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath='{.items[0].metadata.name}') --namespace $EnvId -c iom |
-                jq -R 'fromjson? | select(type == "object")' |
-                jq $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
+
+            POD="$(kube_get_pod iom)"
+            if [ ! -z "$POD" ]; then
+                # make sure to get info about failed kubectl call
+                set -o pipefail
+                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c iom 2> "$TMP_ERR" |
+                    jq -R 'fromjson? | select(type == "object")' |
+                    jq $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
+                RESULT=$?
+                set +o pipefail
+                if [ $RESULT -ne 0 ]; then
+                    log_json ERROR "log_access: error getting logs" < "$TMP_ERR"
+                else
+                    SUCCESS=true
+                fi
+            else
+                log_json ERROR "log-access: no pod available" < /dev/null
+            fi
         fi
     else
         log_json ERROR "log-access: '$LEVEL' is not a valid log-level." < /dev/null
-        false
     fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
 )
 
 ################################################################################
