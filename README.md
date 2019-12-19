@@ -7,7 +7,9 @@ In order to start with docker on your host machine and to work with it without p
 ## Bash
 ### Windows
 Install Git Bash (comes with https://gitforwindows.org/)
+
 Use Git Bash in VS Code, see https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration
+
 Open settings in C:\Users\myuser\AppData\Roaming\Code\User\seetings.json and add the following line:
 ```json
 // enable Git Bash in Visual Studio Code
@@ -20,6 +22,7 @@ Bash is part of Mac OS X, there is nothing to do.
 ## Docker-Desktop
 ### Windows
 Install Docker Desktop (https://www.docker.com/products/docker-desktop)
+
 **Caution: While installing you will be signed-out without further acknowledgements as well as probably be rebooted! So save everything before installing ...**
 
 
