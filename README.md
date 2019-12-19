@@ -70,7 +70,7 @@ Install jq, see https://stedolan.github.io/jq/download
     ```sh
     echo "alias jq=\"/c/Program\ Files/jq/jq-win64.exe\"" >> ~/.profile
     ```
-  - Add _jq_ to the PATH. This is required for the _'log *'_ commands of _devenv-cli.sh_ to work. These commands are executing _jq_ internally and have to find it in _PATH_.
+  - Add _jq_ to the PATH variable. This is required for the _'log *'_ commands of _devenv-cli.sh_ to work. These commands are executing _jq_ internally and have to find it in _PATH_.
     ```sh
     echo "export PATH=\"$PATH:/c/Program\ Files/jq\"" >> ~/.profile
     ```
@@ -82,7 +82,7 @@ Install jq, see https://stedolan.github.io/jq/download
     ```
 
 ### Mac OS X
-_jq_ is not part of standard distribution of Mac OS X. In order to install additional tools like _jq_, it's recommended to use one of the Open Source Package Management systems. I recommend the usage of (_Mac Ports_)[https://www.macports.org/]. Please follow the (installation instruction)[https://www.macports.org/install.php] to setup _Mac Ports_. Once _Mac Ports_ is installed, the installation of _jq_ can be done by the following command:
+_jq_ is not part of standard distribution of Mac OS X. In order to install additional tools like _jq_, it's recommended to use one of the Open Source Package Management systems. I recommend the usage of [_Mac Ports_](https://www.macports.org/). Please follow the (installation instruction)[https://www.macports.org/install.php] to setup _Mac Ports_. Once _Mac Ports_ is installed, the installation of _jq_ can be done by the following command:
 ```sh
 sudo port install jq
 ```
