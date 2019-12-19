@@ -25,6 +25,13 @@ Install Docker Desktop (https://www.docker.com/products/docker-desktop)
 
 **Caution: While installing you will be signed-out without further acknowledgements as well as probably be rebooted! So save everything before installing ...**
 
+- Start _Docker Desktop_ by clicking the Docker Desktop shortcut
+- In the context bar (bottom right on Windows Desktop), click right mouse button on Docker icon
+- Select _Settings_ and you will get the modal for settings of _Docker Desktop_.
+  - Go to _Settings > Advanced_
+    - CPUs: 3
+    - Memory: 8192
+    - _Apply_
 
     * Setting > Advanced
         * CPUs: 3
