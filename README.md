@@ -1,8 +1,8 @@
 # Introduction
-The purpose of this document is to describe how to set up an IOM environment with prepared docker images for development purposes.
+The purpose of this document is to describe how to set up _devenv-4-iom_. It provides you with all the tools and documentation, that is required to run _IOM_ in a _Kubernetes_ environment with special support for typical developer tasks.
 
 # Prerequisites
-In order to start with docker on your host machine and to work with it without problems, the installation of some tools is required.
+In order to work with _devenv-4-iom_ on your host machine, the installation of some additional tools is required.
 
 ## Bash
 ### Windows
@@ -115,16 +115,48 @@ Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
   )
   kubectl patch deployment kubernetes-dashboard --namespace kube-system --patch "$PATCH"
   ```
-  - Make Kubernetes Dashboard accessible
+- Make Kubernetes Dashboard accessible. Hint, if you want to use another port, simply append _--port <number>_ to the command line. In this case, the port has to be adjusted in link of the dashboard too.
   ```sh
   # Start proxy to make dashboard accessible
   kubectl proxy
   ```
-  - Now you can open the [Dashboard](http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/) in your browser.
-    You can _**Skip**_ the login, due to the patch, that was applied before.
+- TODO: confg-file!!!
+- Now you can open the Dashboard at http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser.
+  You can _**Skip**_ the login, due to the patch, that was applied before.
 
 # Configuration and setup of _devenv-4-iom_
+## Checkout the devenv-4-iom project
+_devenv-4-iom_ provides all the tools, that are needed to configure and run an _IOM_ instance in your local _Kubernetes_ cluster. You need to have this project locally on your computer to continue configuration process.
+```sh
+# checkout the devenv-4-iom project
+cd /d/git/oms/
+git clone https://bitbucket.intershop.de/scm/iom/devenv-4-iom.git
+```
 
+## Concept of managing different _IOM_ instances
+_devenv-4-iom_ supports a simple directory based model to manage configurations. The configuration of each _IOM_ instance is located within an own sub-directory, which is named with _ID_ of the instance. Within the sub-directory, all other configuration artifacts, shared directories, scripts, etc. are located.
+```
+<directory containing configs>/
+├── 2.16.0.0-SNAPSHOT/
+│   ├── config.properties
+│   ├── devenv-cli.sh
+│   ├── index.html
+│   ├── geb.properties
+│   ├── ws.properties
+│   ├── share/
+│   ├── logs/
+│   └── ...
+├── <ID>/
+│   ├── config.properties
+│   ├── devenv-cli.sh
+│   ├── index.html
+│   ├── geb.properties
+│   ├── ws.properties
+│   ├── share/
+│   ├── logs/
+│   └── ...
+└── .../
+```
 ### (Optional) Access to Docker Build Repositories
 ```sh
 docker login -u user -p password docker-build.rnd.intershop.de
