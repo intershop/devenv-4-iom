@@ -115,7 +115,7 @@ Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
   )
   kubectl patch deployment kubernetes-dashboard --namespace kube-system --patch "$PATCH"
   ```
-- Make Kubernetes Dashboard accessible. Hint, if you want to use another port, simply append _--port <number>_ to the command line. In this case, the port has to be adjusted in link of the dashboard too.
+- Make Kubernetes Dashboard accessible. Hint, if you want to use another port, simply append _--port \<number\>_ to the command line. In this case, the port has to be adjusted in link of the dashboard too.
   ```sh
   # Start proxy to make dashboard accessible
   kubectl proxy
