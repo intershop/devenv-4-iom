@@ -82,33 +82,48 @@ Install jq, see https://stedolan.github.io/jq/download
     ```
 
 ### Mac OS X
-_jq_ is not part of standard distribution of Mac OS X. In order to install additional tools like _jq_, it's recommended to use one of the Open Source Package Management systems. I recommend the usage of [_Mac Ports_](https://www.macports.org/). Please follow the (installation instruction)[https://www.macports.org/install.php] to setup _Mac Ports_. Once _Mac Ports_ is installed, the installation of _jq_ can be done by the following command:
+_jq_ is not part of standard distribution of Mac OS X. In order to install additional tools like _jq_, it's recommended to use one of the Open Source Package Management systems. I recommend the usage of [_Mac Ports_](https://www.macports.org/). Please follow the [installation instruction](https://www.macports.org/install.php) to setup _Mac Ports_. Once _Mac Ports_ is installed, the installation of _jq_ can be done by the following command:
 ```sh
 sudo port install jq
 ```
 
 ## Kubernetes Dashboard
-* Install Kubernetes Dashboard (https://github.com/kubernetes/dashboard)
-    ```sh
-    # Install
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
-    
-    # Determine token
-    TOKEN=$(kubectl -n kube-system describe secret default | grep "token:" | sed -E 's/.*token: *//g')
-    
-    # Configure token for current context
-    kubectl config set-credentials "$(kubectl config current-context)" --token="$TOKEN"
-    ```
+Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
+- Execute the following code in a bash:
+  ```sh
+  # Install
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+     
+  # Determine token
+  TOKEN=$(kubectl -n kube-system describe secret default | grep "token:" | sed -E 's/.*token: *//g')
+     
+  # Configure token for current context
+  kubectl config set-credentials "$(kubectl config current-context)" --token="$TOKEN"
+ 
+  # Patch kubernetes-dashboard deployment to bypassing authentication
+  PATCH=$(cat << 'EOF'
+  spec:
+    template:
+      spec:
+        containers:
+        - name: kubernetes-dashboard
+          args:
+            - --enable-skip-login
+            - --disable-settings-authorizer       
+            - --auto-generate-certificates
+  EOF
+  )
+  kubectl patch deployment kubernetes-dashboard --namespace kube-system --patch "$PATCH"
+  ```
+  - Make Kubernetes Dashboard accessible
+  ```sh
+  # Start proxy to make dashboard accessible
+  kubectl proxy
+  ```
+  - Now you can open the [Dashboard](http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/) in your browser.
+    You can _**Skip**_ the login, due to the patch, that was applied before.
 
-    * Make Kubernetes Dashboard accessible
-        ```sh
-        # Proxy to make dashboard accessible
-        kubectl proxy
-        ```
-    * Open http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser
-    * Choose kubeconfig file (C:\Users\myuser\.kube\config resp. U:\.kube\config)
-
-# Configuration and setup
+# Configuration and setup of _devenv-4-iom_
 
 ### (Optional) Access to Docker Build Repositories
 ```sh
