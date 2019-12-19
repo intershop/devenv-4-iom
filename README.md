@@ -120,9 +120,9 @@ Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
   # Start proxy to make dashboard accessible
   kubectl proxy
   ```
-- TODO: confg-file!!!
 - Now you can open the Dashboard at http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser.
-  You can _**Skip**_ the login, due to the patch, that was applied before.
+  - If you are working with different _Kubernetes_ clusters, you have to **Choose kubeconfig file** to select the cluster of _devenv-4-iom_. In this case set the config file to _C:\Users\myuser\.kube\config_ resp. _U:\.kube\config_. Normally you can simply ignore **Choose kubeconfig file**.
+  - You can _**Skip**_ the login, due to the patch, that was applied before.
 
 # Configuration and setup of _devenv-4-iom_
 ## Checkout the devenv-4-iom project
