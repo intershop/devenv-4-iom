@@ -6,15 +6,13 @@ In order to start with docker on your host machine and to work with it without p
 
 ## Bash
 ### Windows
-Install Git Bash (comes with https://gitforwindows.org/)
-
-Use Git Bash in VS Code, see https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration
-
-Open settings in C:\Users\myuser\AppData\Roaming\Code\User\seetings.json and add the following line:
-```json
-// enable Git Bash in Visual Studio Code
-"terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
-```
+- Install Git Bash (comes with https://gitforwindows.org/)
+- Use Git Bash in VS Code, see https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration
+- Open settings in C:\Users\myuser\AppData\Roaming\Code\User\seetings.json and add the following line:
+  ```json
+  // enable Git Bash in Visual Studio Code
+  "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
+  ```
 If you don't able to locate settings.json, see https://code.visualstudio.com/docs/getstarted/settings
 ### Mac OS X
 Bash is part of Mac OS X, there is nothing to do.
@@ -69,13 +67,13 @@ Install jq, see https://stedolan.github.io/jq/download
 - Download to C:\Program Files\jq
 - Open Git Bash console
   - Set an alias. The alias is required when using _jq_ interactively in the console window, e.g. to comprehend the examples, that can be found in documentation of _devenv-4-iom_h.
-  ```sh
-  echo "alias jq=\"/c/Program\ Files/jq/jq-win64.exe\"" >> ~/.profile
-  ```
+    ```sh
+    echo "alias jq=\"/c/Program\ Files/jq/jq-win64.exe\"" >> ~/.profile
+    ```
   - Add _jq_ to the PATH. This is required for the _'log *'_ commands of _devenv-cli.sh_ to work. These commands are executing _jq_ internally and have to find it in _PATH_.
-  ```sh
-  echo "export PATH=\"$PATH:/c/Program\ Files/jq\"" >> ~/.profile
-  ```
+    ```sh
+    echo "export PATH=\"$PATH:/c/Program\ Files/jq\"" >> ~/.profile
+    ```
 - Support alias in VS Code
   - Open settings in C:\Users\myuser\AppData\Roaming\Code\User\setings.json
     ```json
