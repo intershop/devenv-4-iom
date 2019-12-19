@@ -2974,20 +2974,14 @@ level_filter() {
 }
 
 #-------------------------------------------------------------------------------
-# helper to find out, if jq is available
-# -> true|false
+# get name of jq (since it differs on different platforms)
+# -> name of jq
 #-------------------------------------------------------------------------------
-jq_exists() {
+jq_get() {
     if [ ! -z "$(which jq 2> /dev/null)" ]; then
-        true
-    else
-        alias | while read IGNORE ALIAS; do
-            if echo "$ALIAS" | grep -q '^jq='; then
-                true
-                break
-            fi
-            false
-        done
+        echo 'jq'
+    elif [ ! -z "$(which jq-win64) 2> /dev/null" ]; then
+        echo 'jq-win64'
     fi
 }
 
@@ -2998,13 +2992,6 @@ jq_exists() {
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 log-dbaccount() (
-    # make sure aliases are available on windows
-    # this is needed to find and use jq
-    if [ $(OS) = "Msys" -a -f ~/.profile ]; then
-        shopt -s expand_aliases
-        . ~/.profile
-    fi
-
     SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
@@ -3026,8 +3013,8 @@ log-dbaccount() (
     # check value of LEVEL
     if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
-
-        if ! jq_exists; then
+        JQ="$(jq_get)"
+        if [ -z "$JQ" ]; then
             log_json ERROR "log-dbaccount: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
@@ -3049,8 +3036,8 @@ log-dbaccount() (
                 # make sure to get info about failed kubectl call
                 set -o pipefail
                 kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c dbaccount 2> "$TMP_ERR" |
-                    jq -R 'fromjson? | select(type == "object")' |
-                    jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                    $JQ -R 'fromjson? | select(type == "object")' |
+                    $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
@@ -3076,13 +3063,6 @@ log-dbaccount() (
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 log-config() (
-    # make sure aliases are available on windows
-    # this is needed to find and use jq
-    if [ $(OS) = "Msys" -a -f ~/.profile ]; then
-        shopt -s expand_aliases
-        . ~/.profile
-    fi
-
     SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
@@ -3104,8 +3084,8 @@ log-config() (
     # check value of LEVEL
     if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
-
-        if ! jq_exists; then
+        JQ="$(jq_get)"
+        if [ -z "$JQ" ]; then
             log_json ERROR "log-config: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
@@ -3127,8 +3107,8 @@ log-config() (
                 # make sure to get info about failed kubectl call
                 set -o pipefail
                 kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c dbinit 2> "$TMP_ERR" |
-                    jq -R 'fromjson? | select(type == "object")' |
-                    jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                    $JQ -R 'fromjson? | select(type == "object")' |
+                    $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
@@ -3154,13 +3134,6 @@ log-config() (
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 log-app() (
-    # make sure aliases are available on windows
-    # this is needed to find and use jq
-    if [ $(OS) = "Msys" -a -f ~/.profile ]; then
-        shopt -s expand_aliases
-        . ~/.profile
-    fi
-
     SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
@@ -3182,8 +3155,8 @@ log-app() (
     # check value of LEVEL
     if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
-
-        if ! jq_exists; then
+        JQ="$(jq_get)"
+        if [ -z "$JQ" ]; then
             log_json ERROR "log-app: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
@@ -3205,8 +3178,8 @@ log-app() (
                 # make sure to get info about failed kubectl call
                 set -o pipefail
                 kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c iom 2> "$TMP_ERR" |
-                    jq -R 'fromjson? | select(type == "object")' |
-                    jq $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                    $JQ -R 'fromjson? | select(type == "object")' |
+                    $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
@@ -3232,13 +3205,6 @@ log-app() (
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 log-access() (
-    # make sure aliases are available on windows
-    # this is needed to find and use jq
-    if [ $(OS) = "Msys" -a -f ~/.profile ]; then
-        shopt -s expand_aliases
-        . ~/.profile
-    fi
-
     SUCCESS=false
     FOLLOW=false
     LEVEL=ERROR
@@ -3260,8 +3226,8 @@ log-access() (
     # check value of level
     if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
-
-        if ! jq_exists; then
+        JQ="$(jq_get)"
+        if [ -z "$JQ" ]; then
             log_json ERROR "log-app: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
@@ -3289,8 +3255,8 @@ log-access() (
                 # make sure to get info about failed kubectl call
                 set -o pipefail
                 kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c iom 2> "$TMP_ERR" |
-                    jq -R 'fromjson? | select(type == "object")' |
-                    jq $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
+                    $JQ -R 'fromjson? | select(type == "object")' |
+                    $JQ $COMPACT_FLAG "select((.logType == \"access\") $FILTER)"
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
