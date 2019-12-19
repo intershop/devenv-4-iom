@@ -49,7 +49,8 @@ Install Docker Desktop, see https://www.docker.com/products/docker-desktop
     - Go to Docker _Settings > Advanced_
     - Change _Disk image location_ (e.g. D:\virtualization\Hyper-V\Virtual Hard Disks)
     - _**Apply**_
-** After resetting your password you can have some problems with your shared drives. In those cases use _Settings > Shared Drives > Reset credentials_
+
+** After resetting your password you can have some problems with your shared drives. In those cases use _Settings > Shared Drives > Reset credentials_**
 
 * Install jq (https://stedolan.github.io/jq/download)
     * Download to C:\Program Files\jq
