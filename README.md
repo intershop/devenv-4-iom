@@ -160,11 +160,11 @@ _devenv-4-iom_ supports a simple directory based model to manage configurations.
 The configuration directory structure must not be located on a shared drive, as sharing of directories with _Docker Desktop_ may not work in this case. Your Windows home directory may be located on a shared drive (e.g. U:). In this case, the configuration directory structure has to be placed somewhere else. You have to make sure, that the [configuration directory is shared with _Docker Desktop_](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (check _Docker Desktop > Preferences > File Sharing_).
 
 ## Initialize a configuration directory for your IOM instance
-This steps must only be processed, when initializing the _FIRST_ configuration directory. Any update of an existing directory has to be made using the command line interface, located inside the config-directory. The documentation (index.html) found at config directory will guide you. This documentation also shows you how to add an additional configuration directory.
+This steps must only be processed, when initializing the _**FIRST**_ configuration directory. Any update of an existing directory has to be made using the command line interface, located inside the config-directory. The documentation (index.html) found at config directory will guide you. This documentation also shows you how to add an additional configuration directory.
 
-For every _IOM_ instance in your local _Kubernetes_ cluster, you need to have a configuration directory with config-file, command line interface and other entries. The following box shows, how to create the config-directory, config-file, command line interface and further documentation.
+For every _IOM_ instance in your local _Kubernetes_ cluster, you need to have a configuration directory with config-file, command line interface and other entries. The following box shows, how to create the config-directory and all the required entries in it.
 
-Scripts found in following box have to be executed in base directory of configurations! _ID_ has to be set to the _ID_ you want to use and variable _DEVENV4IOM_DIR_ has to be set to the installation directory of _devenv-4-iom_ on your host, before executing the scripts.
+Scripts found in following box have to be executed **in base directory of configurations**! _ID_ has to be set to the _ID_ you want to use and variable _DEVENV4IOM_DIR_ has to be set to the installation directory of _devenv-4-iom_ on your host, before executing the scripts.
 ```sh
 # Adapt the following variable to the directory, where devenv-4-iom is installed:
 DEVENV4IOM=/d/git/oms/devenv-4-iom
@@ -191,19 +191,4 @@ mkdir -p "$ID" &&
 "./$ID/devenv-cli.sh" update all &&
   echo && echo "open $ID/index.html in your browser for further instructions" && echo
 ```
-Now open the newly created documentation in your browser and proceed the _First steps_ to get started with _devenv-4-iom_.
-
-
-
-
-
-
-
-
-
-
-### (Optional) Access to Docker Build Repositories
-```sh
-docker login -u user -p password docker-build.rnd.intershop.de
-```
-
+Now open the newly created documentation in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
