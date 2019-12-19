@@ -157,65 +157,53 @@ _devenv-4-iom_ supports a simple directory based model to manage configurations.
 │   └── ...
 └── .../
 ```
-**The configuration directory structure must not be located on a shared drive, as sharing of directories with _Docker Desktop_ may not work in this case. Your Windows home directory may be located on a shared drive (e.g. U:). In this case, the configuration directory structure has to be placed somewhere else. You have to make sure, that the [configuration directory is shared with Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (check _Docker Desktop > Preferences > File Sharing_).**
+**The configuration directory structure must not be located on a shared drive, as sharing of directories with _Docker Desktop_ may not work in this case. Your Windows home directory may be located on a shared drive (e.g. U:). In this case, the configuration directory structure has to be placed somewhere else. You have to make sure, that the [configuration directory is shared with _Docker Desktop_](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (check _Docker Desktop > Preferences > File Sharing_).**
+
+## Initialize a configuration directory for your IOM instance
+**This steps must only be processed, when initializing the _FIRST_ configuration directory. Any update of an existing directory has to be made using the command line interface, located inside the config-directory. The documentation (index.html) found at config directory will guide you. This documentation also shows you how to add an additional configuration directory.**
+
+For every _IOM_ instance in your local _Kubernetes_ cluster, you need to have a configuration directory with config-file, command line interface and other entries. The following box shows, how to create the config-directory, config-file, command line interface and further documentation.
+
+**Scripts found in following box have to be executed in base directory of configurations! _ID_ has to be set to the _ID_ you want to use and variable _DEVENV4IOM_DIR_ has to be set to the installation directory of _devenv-4-iom_ on your host, before executing the scripts.**
+```sh
+# Adapt the following variable to the directory, where devenv-4-iom is installed:
+DEVENV4IOM=/d/git/oms/devenv-4-iom
+ 
+# Adapt the following variable to your needs:
+ID=2.16.0.0-SNAPSHOT
+ 
+# create the configuration file containing default settings
+mkdir -p "$ID" &&
+  ID=$ID ENV_DIR="$(pwd)/$ID" \
+  "$DEVENV4IOM/scripts/template_engine.sh" \
+  "$DEVENV4IOM/templates/config.properties.template" > \
+  "$ID/config.properties" &&
+  echo success
+ 
+# create the command line interface
+"$DEVENV4IOM/scripts/template_engine.sh" \
+  "$DEVENV4IOM/templates/devenv-cli.sh.template" \
+  "$ID/config.properties" > \
+  "$ID/devenv-cli.sh" &&
+  chmod +x "$ID/devenv-cli.sh" && echo success
+ 
+# create remaining files
+"./$ID/devenv-cli.sh" update all &&
+  echo && echo "open $ID/index.html in your browser for further instructions" && echo
+```
+Now open the newly created documentation in your browser and proceed the _First steps_ to get started with _devenv-4-iom_.
+
+
+
+
+
+
+
+
+
 
 ### (Optional) Access to Docker Build Repositories
 ```sh
 docker login -u user -p password docker-build.rnd.intershop.de
 ```
 
-### (Optional) Get images from Intershop Repositories 
-```sh
-docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
-docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.15.0.0-SNAPSHOT
-docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.15.0.0-SNAPSHOT
-```
-
-## Provide configuration for your dockerized IOM instance
-
-For every IOM instance in your local Kubernetes cluster, you need to have a configuration file with some required entries. You can find a variables.sample file within the devenv-4-iom project. Create a copy of this file (e.g. at your home directory) and adapt configuration settings matching the directories you have chosen before and some other settings.
-
-```sh
-DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
-# Windows users should not use a home directory because the used drive (e.g. U:\)
-# possibly is not available to be shared in the docker desktop settings.
-# CONFIG_FILE=~/environments/2.15.0.0-SNAPSHOT/config.properties
-CONFIG_FILE=/d/environments/2.15.0.0-SNAPSHOT/config.properties
- 
-ENV_DIR=$(dirname "$CONFIG_FILE")
-   
-cd "$DEVENV4IOM_DIR"
-  
-# make a copy of the sample configuration
-mkdir -p "$ENV_DIR"
-ENV_DIR="$ENV_DIR" scripts/template_engine.sh scripts/variables.sample > "$CONFIG_FILE" && \
-    echo "adapt '$CONFIG_FILE' to your needs"
-  
-# adapt the configuration to your needs
-vi "$CONFIG_FILE"
-```
-
-## Generate documentation, aliases and Kubernetes resource configurations
-
-Once the configuration file is created and adapted, according Kubernetes resource configurations, aliases and documentation can be created. The devenv-4-iom project comes with some scripts/templates to generate these files. The example below shows an example, assuming your config file is named ~/2.15.0.0-SNAPSHOT/config.properties.
-
-```sh
-DEVENV4IOM_DIR=/d/git/oms/devenv-4-iom
-# Windows users should not use a home directory because the used drive (e.g. U:\)
-# possibly is not available to be shared in the docker desktop settings.
-# CONFIG_FILE=~/environments/2.15.0.0-SNAPSHOT/config.properties
-CONFIG_FILE=/d/environments/2.15.0.0-SNAPSHOT/config.properties
-  
-ENV_DIR=$(dirname "$CONFIG_FILE")
-  
-cd "$DEVENV4IOM_DIR"
-  
-# generate the environment specific html documentation
-scripts/template_engine.sh templates/index.template "$CONFIG_FILE" > "$ENV_DIR/index.html" && \
-    echo "Open '$ENV_DIR/index.html' in your browser"
-```
-
-## Finalize the setup
-Now use your browser to open the recently created HTML-documentation (named "$CONF_DIR/index.html" in example above). You have to process the following steps:
-
-* Continue executing steps listed in section "Initialize/Reconfigure the IOM environment" of generated HTML-docu.
