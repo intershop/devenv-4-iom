@@ -50,10 +50,23 @@ Install Docker Desktop, see https://www.docker.com/products/docker-desktop
     - Change _Disk image location_ (e.g. D:\virtualization\Hyper-V\Virtual Hard Disks)
     - _**Apply**_
 
-**After resetting your password you can have some problems with your shared drives. In those cases use _Settings > Shared Drives > Reset credentials_**
+**After resetting your password you can have some problems with your shared drives. In those cases use _Settings > Shared Drives > Reset credentials_.**
 
-* Install jq (https://stedolan.github.io/jq/download)
-    * Download to C:\Program Files\jq
+### Mac OS X
+- Install_ Docker Desktop_, see https://www.docker.com/products/docker-desktop
+- Enable _Docker Desktop version of Kubernetes_:
+  - Enable _Docker Icon > Kubernetes > docker-desktop_
+- Check file-sharing. Your home directory should be shared (if you are using it to hold configurations of _deven-4-iom_, IOM sources, etc).
+  - Check _Docker Icon > Preferences > File Sharing_
+- Set CPU and memory usage. When running a single IOM instance in Docker-Desktop you need to assign 2 CPUs and 10 GB memory.
+  - Setup at _Docker Icon > Preferences > Advanced_
+
+## jq - command-line JSON processor
+_jq_ is a command line tool to work with json messages. Since all messages, created by _devenv-4-iom_ and _IOM_, are json messages, it is a very useful tool. jq is not included in _devenv-4-iom_. _devenv-4-iom_ does not depend on it (except the _'log *'_ command), but it's strongly recommended that you install _jq_ too.
+
+### Windows
+Install jq, see https://stedolan.github.io/jq/download
+- Download to C:\Program Files\jq
     * Open Git Bash console
     * Set an alias
         ```sh
