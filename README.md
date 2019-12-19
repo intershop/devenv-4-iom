@@ -19,7 +19,11 @@ Bash is part of Mac OS X, there is nothing to do.
 
 ## Docker-Desktop
 ### Windows
-* Install Docker Desktop (https://www.docker.com/products/docker-desktop)
+Install Docker Desktop (https://www.docker.com/products/docker-desktop)
+```
+**Caution: While installing you will be signed-out without further acknowledgements as well as probably be rebooted! So save everything before installing ...**
+```
+
     * Setting > Advanced
         * CPUs: 3
         * Memory: 8192
