@@ -21,7 +21,7 @@ Bash is part of Mac OS X, there is nothing to do.
 
 ## Docker-Desktop
 ### Windows
-Install Docker Desktop (https://www.docker.com/products/docker-desktop)
+Install Docker Desktop, see https://www.docker.com/products/docker-desktop
 
 **Caution: While installing you will be signed-out without further acknowledgements as well as probably be rebooted! So save everything before installing ...**
 
@@ -31,22 +31,26 @@ Install Docker Desktop (https://www.docker.com/products/docker-desktop)
   - Go to _Settings > Advanced_
     - CPUs: 3
     - Memory: 8192
-    - _Apply_
+    - _**Apply**_
+  - Go to _Settings > Kubernetes_
+    - _Enable Kubernetes_
+    - _**Apply**_
+  - Go to _Settings > Shared Drives_
+    - Share drives that should be available for Kubernetes. You should share the drive, that is holding the IOM sources, as well the drive with the configurations of _devenv-4-iom_.
+    - _**Apply**_
+  - Optional: move your _Docker Desktop VM_ to desired device
+    - Stop Docker Desktop
+    - Start _Hyper-V Manager_
+    - Select your PC in the left hand pane
+    - Right click on the correct virtual machine (e.g.DockerDesktopVM)
+    - Select _Torn off_ if it is running
+    - Right click on it again and select _Move_
+    - Follow the prompts and move (e.g. _D:\virtualization\Hyper-V_)
+    - Go to Docker _Settings > Advanced_
+    - Change _Disk image location_ (e.g. D:\virtualization\Hyper-V\Virtual Hard Disks)
+    - _**Apply**_
+** After resetting your password you can have some problems with your shared drives. In those cases use _Settings > Shared Drives > Reset credentials_
 
-    * Setting > Advanced
-        * CPUs: 3
-        * Memory: 8192
-    * Setting > Kubernetes > Enable Kubernetes
-    * (Optional) Move your DockerDesktopVM to desired device
-        * Stop Docker Desktop
-        * Start 'Hyper-V Manager'
-        * Select your PC in the left hand pane
-        * Right click on the correct virtual machine (e.g. DockerDesktopVM)
-        * Select 'Turn off' if it is running
-        * Right click on it again and select 'Move'
-        * Follow the prompts and move (e.g. D:\virtualization\Hyper-V)
-        * Restart Docker Desktop
-        * Setting > Advanced > Change 'Disk image location' (e.g. D:\virtualization\Hyper-V\Virtual Hard Disks)
 * Install jq (https://stedolan.github.io/jq/download)
     * Download to C:\Program Files\jq
     * Open Git Bash console
