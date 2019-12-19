@@ -149,7 +149,7 @@
         <p>
           If you read this text, you have already sucessfully created the configuration file <samp>${ENV_DIR}/${CONFIG_FILE}</samp>. If this is a new configuration, it's filled with default settings defined by <samp>devenv-4-iom</samp>. The most important settings are the <samp>*_IMAGE</samp> properties, since they are defining what will be executed by <samp>devenv-4-iom</samp>. By defining the images, you can for example control to run a specific project, a standard IOM product without any customizations, the IOM product, which is currently in develepoment or even containers of the IOM product or project, you have built by yourself on your local computer.
         </p><p>
-          The default settings are using the pure IOM product, which is currently in development. For the first steps, there is no need to change this settings. The Docker registry used by default seetings requires login. Hence you have to login into the reegistry. Additionally you should check, if you are able to access the Docker images, which are set in config-file. To do so, try to pull the images manually in a shell.
+          The default settings are using the pure IOM product, which is currently in development. For the first steps, there is no need to change this settings. The Docker registry used by default seetings requires login. Hence you have to login into the registry. Additionally you should check, if you are able to access the Docker images, which are set in config-file. To do so, try to pull the images manually in a shell.
         </p><p>
           Open the config-file <samp>${ENV_DIR}/${CONFIG_FILE}</samp>, copy the values of the <samp>*_IMAGE</samp> properties and use them to pull the Docker images manually, just as shown in the box below.
         </p>
@@ -521,7 +521,8 @@ docker system prune -a -f
           Depending on the Docker registry you are using, it might be required to login at the registry before you are able to create IOM as part of the cluster. If the Docker registry needs you to be logged in, just login into it first.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# optional: only if required by registry. You have to adapt this command to the registry used by <samp>*_IMAGE</samp> variables of your current configuration.
+# optional: only if required by registry. You have to adapt this command to the
+# registry used by *_IMAGE variables of your current configuration.
 docker login docker-build.rnd.intershop.de
 
 # now create the cluster
@@ -605,7 +606,8 @@ ${ENV_DIR}/devenv-cli.sh delete postgres
         </p>
         
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# optional: only if required by registry. You have to adapt this command to the registry used by <samp>*_IMAGE</samp> variables of your current configuration.
+# optional: only if required by registry. You have to adapt this command to the
+# registry used by *_IMAGE variables of your current configuration.
 docker login docker-build.rnd.intershop.de
 
 # now create IOM
