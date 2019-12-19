@@ -4,13 +4,13 @@
 ID=${ID}
 
 # postgres image (name:tag)
-DOCKER_DB_IMAGE=postgres:11
+DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE}
 
 # postgres arguments
-POSTGRES_ARGS="[ \"-N\", \"500\", \"-c\", \"max_prepared_transactions=100\", \"-c\", \"log_line_prefix='%a %m %u %i [%p] '\", \"-c\", \"log_min_duration_statement=500\" ]"
+POSTGRES_ARGS=( ${PostgresArgsShell} )
 
 # mailhog image (name:tag)
-MAILHOG_IMAGE=mailhog/mailhog
+MAILHOG_IMAGE=${MAILHOG_IMAGE}
 
 # Docker Image settings
 # ---------------------
@@ -19,42 +19,39 @@ MAILHOG_IMAGE=mailhog/mailhog
 # if left empty, it defaults to "Always", which makes development easy, as always the newest
 # version of requested docker image will be used. Can be set to any value allowed by
 # ImagePullPolicy (see https://kubernetes.io/docs/concepts/configuration/overview/#container-images)
-# IMAGE_PULL_POLICY=Always
-
-# iom psql image (name:tag)
-IOM_PSQL_IMAGE=docker-build.rnd.intershop.de/intershop/iom-psql:3.10
+IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 
 # iom dbaccount image (name:tag)
-IOM_DBACCOUNT_IMAGE=docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom dbinit image (name:tag)
-IOM_DBINIT_IMAGE=docker-build.rnd.intershop.de/intershop/demoapp-iom-config:2.17.0.0-SNAPSHOT-1-SNAPSHOT
+IOM_DBINIT_IMAGE=${IOM_DBINIT_IMAGE}
 
 # iom app image (name:tag)
-IOM_APP_IMAGE=docker-build.rnd.intershop.de/intershop/demoapp-iom-app:2.17.0.0-SNAPSHOT-1.0.0-SNAPSHOT
+IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
 # CaaS projects may have environment specific configurations, test data, etc. CAAS_ENV_NAME assigns the environment type to an installation.
 # TODO fix confluence link
 # See: https://confluence.intershop.de/display/ISEXTBAKER/Snippet+-+Kubernetes+CaaS+hooks+-+public+variables
-CAAS_ENV_NAME=ci
+CAAS_ENV_NAME=${CAAS_ENV_NAME}
 
 # Log Messages
 # ------------
 # log-level for different scopes of iom-application. Supported levels are:
 #   FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
-OMS_LOGLEVEL_CONSOLE=ERROR
-OMS_LOGLEVEL_IOM=ERROR
-OMS_LOGLEVEL_HIBERNATE=ERROR
-OMS_LOGLEVEL_QUARTZ=ERROR
-OMS_LOGLEVEL_CUSTOMIZATION=ERROR
+OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE}
+OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM}
+OMS_LOGLEVEL_HIBERNATE=${OMS_LOGLEVEL_HIBERNATE}
+OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ}
+OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION}
 
 # log-level of helper scripts (dbmigrate, etc.). Supported levels are:
 #   ERROR, WARN, INFO, DEBUG
-OMS_LOGLEVEL_SCRIPTS=INFO
+OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 
 # Keep database data
 # ------------------------------
 # If you want to keep database data even after a kubernetes restart, you have to set
 # KEEP_DATABASE_DATA to true, otherwise false.
-KEEP_DATABASE_DATA=true
+KEEP_DATABASE_DATA=${KEEP_DATABASE_DATA}
 

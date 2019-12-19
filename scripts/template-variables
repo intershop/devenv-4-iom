@@ -1,3 +1,5 @@
+DEVENV4IOM_VERSION=1.0.0.0-SNAPSHOT
+
 ################################################################################
 # Defaults
 #
@@ -9,129 +11,178 @@
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
-# environment specific configuration defaults to '', which just applies base
-# configuration
-CAAS_ENV_NAME="${CAAS_ENV_NAME:-}"
+# environment specific configuration defaults to 'ci'
+CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
+
+# skip import of test-data
+CAAS_SKIP_TEST_DATA_IMPORT="${CAAS_SKIP_TEST_DATA_IMPORT:-false}"
+
+# check for 'false' only, to enable health-checks in any other case
+PERFORM_HEALTH_CHECKS="${PERFORM_HEALTH_CHECKS:-true}"
+if [ "$PERFORM_HEALTH_CHECKS" = "false" ]; then
+    HealthCheckYml_='#'
+else
+    HealthCheckYml_=''
+fi
 
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
+# initialize POSTGRES_ARGS
+if [ ${#POSTGRES_ARGS[@]} -eq 0 ]; then
+   POSTGRES_ARGS=( "-N" "500" "-c" "max_prepared_transactions=100" "-c" "log_line_prefix='%a %m %u %i [%p] '" "-c" "log_min_duration_statement=500" )
+fi
+# build a string from POSTGRES_ARGS, that can be used as yaml array
+PostgresArgsYml=$(COUNTER=0; \
+                  while [ $COUNTER -lt ${#POSTGRES_ARGS[@]} ]; do \
+                      echo -n "\"${POSTGRES_ARGS[$COUNTER]}\""; \
+                      COUNTER=$(expr $COUNTER + 1); \
+                      if [ $COUNTER -lt ${#POSTGRES_ARGS[@]} ]; then \
+                          echo -n ','; \
+                      fi \
+                  done)
+# build a string from POSTGRES_ARGS, that can be used as shell array
+PostgresArgsShell=$(COUNTER=0; \
+                    while [ $COUNTER -lt ${#POSTGRES_ARGS[@]} ]; do \
+                        echo -n "\"${POSTGRES_ARGS[$COUNTER]}\" "; \
+                        COUNTER=$(expr $COUNTER + 1); \
+                    done)
+
 # Add volumes / mounts if the user wants to keep databse data or not.
+KEEP_DATABASE_DATA="${KEEP_DATABASE_DATA:-true}"
 if [ "$KEEP_DATABASE_DATA" = true ] ; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecDbData="
-  - name: db-data
-    persistentVolumeClaim:
-      claimName: postgres-pvc"
-    VolumeMountDbData="
-    - name: db-data
-      mountPath: /var/lib/postgresql/data"
+    KeepDatabaseYml=''
+    KeepDatabaseSh=''
+else
+    KeepDatabaseYml='#'
+    KeepDatabaseSh='#'
 fi
 
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
+CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
   CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecAppDev="
-      - name: application-dev
-        hostPath:
-          path: ${CUSTOM_APPS_DIR}"
-    VolumeMountAppDev="
-        - name: application-dev
-          mountPath: /opt/oms/application-dev"
+    AppsDirYml_____=''
+else
+    AppsDirYml_____='#'
 fi        
 
 # directory containing custom mail templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom templates or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
     CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecTemplatesDev="
-      - name: templates-dev
-        hostPath:
-          path: ${CUSTOM_TEMPLATES_DIR}"
-    VolumeMountTemplatesDev="
-        - name: templates-dev
-          mountPath: /opt/oms/templates-dev"
+    TemplatesDirYml=''
+else
+    TemplatesDirYml='#'
+fi
+
+# directory containing custom dump(s)
+# variable has to be empty on default, in order to become able to make the
+# distinction whether the user wants to use custom dumps or not.
+CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DUMPS_DIR" ]; then
+    CUSTOM_DUMPS_DIR=$(cygpath -u "$CUSTOM_DUMPS_DIR")
+fi
+# create yaml code depending on CUSTOM_DUMPS_DIR
+if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
+    DumpsDirYml____=''
+else
+    DumpsDirYml____='#'
 fi
 
 # directory containing custom xsl templates
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
+CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
     CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecXsltDev="
-      - name: xslt-dev
-        hostPath:
-          path: ${CUSTOM_XSLT_DIR}"
-    VolumeMountXsltDev="
-        - name: xslt-dev
-          mountPath: /opt/oms/xslt-dev"
+    XsltDirYml_____=''
+else
+    XsltDirYml_____='#'
+fi
+
+# directory containing custom dbmigrate scripts
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use custom dbmigrate scripts or not.
+CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+    CUSTOM_DBMIGRATE_DIR=$(cygpath -u "$CUSTOM_DBMIGRATE_DIR")
+fi
+# create yaml code depending on CUSTOM_DBMIGRATE_DIR
+if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+    DbmigrateDirYml=''
+else
+    DbmigrateDirYml='#'
+fi
+
+# directory containing custom sql-config
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use custom sql-config or not.
+CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+    CUSTOM_SQLCONF_DIR=$(cygpath -u "$CUSTOM_SQLCONF_DIR")
+fi
+# create yaml code depending on CUSTOM_SQLCONF_DIR
+if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+    SqlconfDirYml__=''
+else
+    SqlconfDirYml__='#'
+fi
+
+# directory containing custom json-config
+# has to be empty on default, in order to become able to make the distinction
+# whether the user wants to use custom json-config or not.
+CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+    CUSTOM_JSONCONF_DIR=$(cygpath -u "$CUSTOM_JSONCONF_DIR")
+fi
+# create yaml code depending on CUSTOM_JSONCONF_DIR
+if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+    JsonconfDirYml_=''
+else
+    JsonconfDirYml_='#'
 fi
 
 # directory to be used as share
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom share or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
+CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
     CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecShareDev="
-      - name: share-dev
-        hostPath:
-          path: ${CUSTOM_SHARE_DIR}"
-    VolumeMountShareDev="
-        - name: share-dev
-          mountPath: /var/opt/share"
+    ShareDirYml____=''
+else
+    ShareDirYml____='#'
 fi
 
 # directory to be used as log directory
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom log directory or not.
-if [ $(OS) == "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
+CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
+if [ $(OS) = "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
     CUSTOM_LOG_DIR=$(cygpath -u "$CUSTOM_LOG_DIR")
 fi
 # create yaml code depending on CUSTOM_LOG_DIR
 if [ ! -z "$CUSTOM_LOG_DIR" ]; then
-    # as these variables are directly expanded within yaml-file,
-    # the leading spaces have to match correctly!
-    VolumeSpecLogDev="
-      - name: log-dev
-        hostPath:
-          path: ${CUSTOM_LOG_DIR}"
-    VolumeMountLogDevContainer="
-        - name: log-dev
-          mountPath: /var/log/log-share"
-    VolumeMountLogDevInitContainer="
-          - name: log-dev
-            mountPath: /var/log/log-share"
-    EnvLogDevContainer="
-          - name: LOG_SHARE
-            value: '/var/log/log-share'"
-    EnvLogDevInitContainer="
-            - name: LOG_SHARE
-              value: '/var/log/log-share'"
+    LogDirYml______=''
+else
+    LogDirYml______='#'
 fi
 
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
@@ -142,15 +193,21 @@ CustomLogDirDefault="$ENV_DIR/logs"
 
 # set directory defaults depending on OS
 # directory of the environment
-if [ $(OS) == "Msys" ]; then
+if [ $(OS) = "Msys" ]; then
     CustomShareDirDefault=$(cygpath -w "${CustomShareDirDefault}")
     CustomLogDirDefault=$(cygpath -w "${CustomLogDirDefault}")
 fi
 
 # set IOM_APP_SRC_DIR depending on OS
-# directory to be used to run the soap, geb and ws tests
-if [ $(OS) == "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
+IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR:-D:\\svn\\oms\\trunk}"
+if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
     IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
+fi
+
+# set CAAS_SRC_DIR depending on OS
+CAAS_SRC_DIR="${CAAS_SRC_DIR:-D:\\svn\\caas\\trunk}"
+if [ $(OS) = "Msys" -a ! -z "$CAAS_SRC_DIR" ]; then
+    CAAS_SRC_DIR=$(cygpath -u "${CAAS_SRC_DIR}")
 fi
 
 # development host
@@ -159,28 +216,25 @@ HOST_IOM="${HOST_IOM:-$(hostname)}"
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 
-# ports
-PORT_IOM="${PORT_IOM:-8080}"
-PORT_DEBUG="${PORT_DEBUG:-8787}"
-PORT_DB="${PORT_DB:-5432}"
-PORT_WILDFLY="${PORT_WILDFLY:-9990}"
-PORT_MAILHOG_UI="${PORT_MAILHOG_UI:-8025}"
-PORT_MAILHOG_SMTP="${PORT_MAILHOG_SMTP:-1025}"
+# port numbers of servers
+PORT_IOM="8080"
+PORT_DEBUG="8787"
+PORT_DB="5432"
+PORT_WILDFLY="9990"
+PORT_MAILHOG_UI="8025"
+PORT_MAILHOG_SMTP="1025"
 
-# database
-DB_NAME="${DB_NAME:-oms_db}"
-DB_USER="${DB_USER:-oms_user}"
-DB_PASSWORD="${DB_PASSWORD:-oms_pw}"
-
-# port forwarding (port number of according service)
+# port number of according service
 # normally these ports are available inside the kubernetes cluster only,
-# but except for Docker-Desktop.
-FORWARD_PORT_IOM=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_DEBUG=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_DB=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_WILDFLY=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_MAILHOG_UI=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
-FORWARD_PORT_MAILHOG_SMTP=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
+# but except for Docker-Desktop. This has two implications:
+# - services can directly connected from host machine
+# - ports of services must be different for different installations
+PORT_IOM_SERVICE=$(($PORT_IOM + ($INDEX * $PORT_OFFSET)))
+PORT_DEBUG_SERVICE=$(($PORT_DEBUG + ($INDEX * $PORT_OFFSET)))
+PORT_DB_SERVICE=$(($PORT_DB + ($INDEX * $PORT_OFFSET)))
+PORT_WILDFLY_SERVICE=$(($PORT_WILDFLY + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_UI_SERVICE=$(($PORT_MAILHOG_UI + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_SMTP_SERVICE=$(($PORT_MAILHOG_SMTP + ($INDEX * $PORT_OFFSET)))
 
 PUBLIC_NODEPORT_BASE=32000
 
@@ -189,12 +243,55 @@ PUBLIC_NODEPORT_BASE=32000
 # be used to access the services from outside the cluster. Access via Ingress is
 # not an alternative, as ports of Ingress-controller (80,443) cannot be changed.
 # When running with ICM on a single machine, this can easily lead to conflicts.
-PUBLIC_NODEPORT_IOM=$(($PUBLIC_NODEPORT_BASE + 0 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_DEBUG=$(($PUBLIC_NODEPORT_BASE + 1 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_DB=$(($PUBLIC_NODEPORT_BASE + 2 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_WILDFLY=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_MAILHOG_UI=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
-PUBLIC_NODEPORT_MAILHOG_SMTP=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
+PORT_IOM_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 0 + ($INDEX * $PORT_OFFSET)))
+PORT_DEBUG_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 1 + ($INDEX * $PORT_OFFSET)))
+PORT_DB_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 2 + ($INDEX * $PORT_OFFSET)))
+PORT_WILDFLY_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_UI_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
+PORT_MAILHOG_SMTP_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
+
+# external database connection. Variables are empty, if postgres should be
+# managed internally. (with one exception: if set to 'postgres-service', it's
+# treated like beeing empty too.
+PGPORT=${PGPORT}
+PGHOST=${PGHOST}
+if [ "$PGHOST" = "postgres-service" ]; then
+    PGHOST=
+fi
+
+# define variables to access database externally and internally. 
+# externally means from outside of Kubernetes
+# internally means from inside of Kubernetes
+if [ ! -z "$PGHOST" ]; then
+    PgHostExtern=$PGHOST
+    PgPortExtern=$PGPORT
+    
+    PgHostIntern=$PGHOST
+    PgPortIntern=$PGPORT
+else
+    PgHostExtern=$HOST_IOM
+    PgPortExtern=$PORT_DB_SERVICE
+    
+    PgHostIntern="postgres-service"
+    PgPortIntern=$PORT_DB_SERVICE
+fi
+
+# administrative access to database
+# will be used by dbaccount-image, when creating the oms database
+PGUSER="${PGUSER:-postgres}"
+PGPASSWORD="${PGPASSWORD:-postgres}"
+PGDATABASE="${PGDATABASE:-postgres}"
+# default values could NOT be copied directly from Dockerfile!
+# had to change UTF-8 to utf8, otherwise following message was written:
+#  ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_US.utf8)
+#  HINT:  Use the same collation as in the template database, or use template0 as template.
+OMS_DB_OPTIONS="${OMS_DB_OPTIONS:-ENCODING='UTF8' LC_COLLATE='en_US.utf8' LC_CTYPE='en_US.utf8' CONNECTION LIMIT=-1}"
+OMS_DB_SEARCHPATH="${OMS_DB_SEARCHPATH:-customer, oms, omt, product, admin, bizconf, testcases}"
+
+# iom database
+OMS_DB_USER="${OMS_DB_USER:-oms_user}"
+OMS_DB_PASS="${OMS_DB_PASS:-oms_pw}"
+OMS_DB_NAME="${OMS_DB_NAME:-oms_db}"
 
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
@@ -203,24 +300,28 @@ UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
-DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:9.5}"
+DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:11}"
 MAILHOG_IMAGE="${MAILHOG_IMAGE:-mailhog/mailhog}"
-IOM_PSQL_IMAGE="${IOM_PSQL_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-psql:3.10}"
 IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT}"
-IOM_DBINIT_IMAGE="${IOM_DBINIT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbinit:2.16.0.0-SNAPSHOT}"
-IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:2.16.0.0-SNAPSHOT}"
+IOM_DBINIT_IMAGE="${IOM_DBINIT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbinit:2.17.0.0-SNAPSHOT}"
+IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT}"
 
-
-################################################################################
-# Non-versioned commands and variables
-#
-# The following section defines general commands and variables.
-################################################################################
-
-if [ "$KEEP_DATABASE_DATA" = true ] ; then
-    KeepDatabaseDocuStart=''
-    KeepDatabaseDocuEnd=''
+# this variable is used to pass information to the apply-sql-job.
+# A file or directory can be passed. It's necessary to split SQL_SRC into directory-
+# and file-part, as these variables are required inside the job-template.
+SQL_SRC="${SQL_SRC}"
+if [ -d "$SQL_SRC" ]; then
+    sqlDir="$SQL_SRC"
 else
-    KeepDatabaseDocuStart='<!--'
-    KeepDatabaseDocuEnd='-->'
+    sqlFile=$(basename "$SQL_SRC")
+    sqlDir=$(dirname "$SQL_SRC")
 fi
+
+OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE:-ERROR}
+OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM:-ERROR}
+OMS_LOGLEVEL_HIBERNATE=${OMS_LOGLEVEL_HIBERNATE:-ERROR}
+OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ:-ERROR}
+OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION:-ERROR}
+OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS:-INFO}
+OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV:-INFO}
+

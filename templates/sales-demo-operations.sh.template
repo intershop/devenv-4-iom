@@ -62,10 +62,10 @@ info() {
     echo "# IOM can be accessed, if all pods are in status Running"
     echo "#"
     echo "# access to IOM:"
-    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/omt"
-    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/dbdoc"
-    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_IOM}/omt-help/"
-    echo "# http://${HOST_IOM}:${PUBLIC_NODEPORT_MAILHOG_UI}"
+    echo "# http://${HOST_IOM}:${PORT_IOM_PUBLIC}/omt"
+    echo "# http://${HOST_IOM}:${PORT_IOM_PUBLIC}/dbdoc"
+    echo "# http://${HOST_IOM}:${PORT_IOM_PUBLIC}/omt-help/"
+    echo "# http://${HOST_IOM}:${PORT_MAILHOG_UI_PUBLIC}"
     echo "######################################################################"
     kubectl get pods --namespace ${EnvId}
 }

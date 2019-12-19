@@ -31,22 +31,22 @@ EOF
 
 # checks if version 1 is greater than version 2
 version_gt() {
-  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
 }
 
 # checks if version 1 is greater than or equal to version 2
 version_ge() {
-  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1";
 }
 
 # checks if version 1 is less than or equal to version 2
 version_le() {
-  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1";
 }
 
 # checks if version 1 is less than  version 2
 version_lt() {
-  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
+    test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
 }
 
 # returns operation system
@@ -64,22 +64,22 @@ OS() {
 
 # renders the template and replace the variables
 render(){
-	FILE="$1"
-  # read the lines of the template
-  # IFS='' (or IFS=) prevents leading/trailing whitespace from being trimmed.
-  # -r prevents backslash escapes from being interpreted.
-  # || [[ -n $LINE ]] prevents the last line from being ignored if it doesn't end with a \n (since read returns a non-zero exit code when it encounters EOF).
-	while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-    # find the variables by regex
-	   while [[ "$LINE" =~ (\$\{[a-zA-Z_][a-zA-Z_0-9]*\}) ]] ; do
-        MATCH=${BASH_REMATCH[1]}
-    		REPLACED_MATCH="$(eval echo "\"$MATCH\"")"
-        # replace all
-    		LINE=${LINE//$MATCH/$REPLACED_MATCH}
-	    done
-      # output
-	    echo "$LINE"
-	done < $FILE
+    FILE="$1"
+    # read the lines of the template
+    # IFS='' (or IFS=) prevents leading/trailing whitespace from being trimmed.
+    # -r prevents backslash escapes from being interpreted.
+    # || [[ -n $LINE ]] prevents the last line from being ignored if it doesn't end with a \n (since read returns a non-zero exit code when it encounters EOF).
+    while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
+        # find the variables by regex
+        while [[ "$LINE" =~ (\$\{[a-zA-Z_][a-zA-Z_0-9]*\}) ]] ; do
+            MATCH=${BASH_REMATCH[1]}
+            REPLACED_MATCH="$(eval echo "\"$MATCH\"")"
+            # replace all
+            LINE=${LINE//$MATCH/$REPLACED_MATCH}
+        done
+        # output
+        echo "$LINE"
+    done < $FILE
 }
 
 # name of template-variables file
@@ -122,14 +122,14 @@ if [ ! -z "$CONFIG_FILE" -a ! -f "$CONFIG_FILE" ]; then
     exit 1
 elif [ ! -z "$CONFIG_FILE" ]; then
 
-  # check syntax of $CONFIG_FILE
-  if ! ( set -e; . $CONFIG_FILE ); then
-      echo "error reading '$CONFIG_FILE'" 1>&2
-      exit 1
-  fi
+    # check syntax of $CONFIG_FILE
+    if ! ( set -e; . $CONFIG_FILE ); then
+        echo "error reading '$CONFIG_FILE'" 1>&2
+        exit 1
+    fi
 
-  # read $CONFIG_FILE
-  . $CONFIG_FILE
+    # read $CONFIG_FILE
+    . $CONFIG_FILE
 
 fi
 
@@ -140,10 +140,11 @@ fi
 
 if [ ! -z "$CONFIG_FILE" ]; then
     if echo "$CONFIG_FILE" | grep -q '^/'; then
-	ENV_DIR="$(dirname "$CONFIG_FILE")"
+        ENV_DIR="$(dirname "$CONFIG_FILE")"
     else
-	ENV_DIR="$(dirname "$(pwd)/$CONFIG_FILE")"
+        ENV_DIR="$(dirname "$(pwd)/$CONFIG_FILE")"
     fi
+    ENV_BASE_DIR="$(realpath "$ENV_DIR/..")"
     CONFIG_FILE="$(basename "$CONFIG_FILE")"
 fi
 
@@ -156,7 +157,7 @@ if [ -z "$TEMPLATE_VAR_FILE" -o ! -f "$TEMPLATE_VAR_FILE" ]; then
 fi
 
 # check syntax of $TEMPLATE_VAR_FILE
-if ! ( set -e; . $TEMPLATE_VAR_FILE ); then
+if ! ( set -e; . "$TEMPLATE_VAR_FILE" ); then
     echo "error reading '$TEMPLATE_VAR_FILE'" 1>&2
     exit 1
 fi
