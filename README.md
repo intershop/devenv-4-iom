@@ -157,7 +157,7 @@ _devenv-4-iom_ supports a simple directory based model to manage configurations.
 │   └── ...
 └── .../
 ```
-**The configuration directory structure must not be located on a shared drive, as sharing of directories with _Docker Desktop_ may not work in this case. Your Windows home directory may be located on a shared drive (e.g. U:). In this case, the configuration directory structure has to be placed somewhere else. You have to make sure, that the [configuration directory is shared with Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (check _Docker Desktop > Preferences > File Sharing_).
+**The configuration directory structure must not be located on a shared drive, as sharing of directories with _Docker Desktop_ may not work in this case. Your Windows home directory may be located on a shared drive (e.g. U:). In this case, the configuration directory structure has to be placed somewhere else. You have to make sure, that the [configuration directory is shared with Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (check _Docker Desktop > Preferences > File Sharing_).**
 
 ### (Optional) Access to Docker Build Repositories
 ```sh
