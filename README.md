@@ -1,19 +1,24 @@
 # Introduction
-The purpose of this document is to describe how to set up an IOM environment with prepared docker images for development purposes.
+The purpose of this document is to describe how to set up an IOM environment with prepared docker images for development purposes.
 
 # Prerequisites
 In order to start with docker on your host machine and to work with it without problems, the installation of some tools is required.
 
-* Install Git Bash (comes with https://gitforwindows.org/)
-    * Use Git Bash in VS Code
-        * https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration
-        * Open settings in C:\Users\myuser\AppData\Roaming\Code\User\seetings.json
-            ```json
-            ...
-            // Git Bash
-            "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
-            ...
-            ```
+## Bash
+### Windows
+Install Git Bash (comes with https://gitforwindows.org/)
+Use Git Bash in VS Code, see https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration
+Open settings in C:\Users\myuser\AppData\Roaming\Code\User\seetings.json and add the following line:
+```json
+// enable Git Bash in Visual Studio Code
+"terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
+```
+If you don't able to locate settings.json, see https://code.visualstudio.com/docs/getstarted/settings
+### Mac OS X
+Bash is part of Mac OS X, there is nothing to do.
+
+## Docker-Desktop
+### Windows
 * Install Docker Desktop (https://www.docker.com/products/docker-desktop)
     * Setting > Advanced
         * CPUs: 3
