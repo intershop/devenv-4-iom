@@ -67,19 +67,29 @@ _jq_ is a command line tool to work with json messages. Since all messages, crea
 ### Windows
 Install jq, see https://stedolan.github.io/jq/download
 - Download to C:\Program Files\jq
-    * Open Git Bash console
-    * Set an alias
+- Open Git Bash console
+  - Set an alias. The alias is required when using _jq_ interactively in the console window, e.g. to comprehend the examples, that can be found in documentation of _devenv-4-iom_h.
         ```sh
         echo "alias jq=\"/c/Program\ Files/jq/jq-win64.exe\"" >> ~/.profile
         ```
-    * Support alias in VS Code
-    * Open settings in C:\Users\myuser\AppData\Roaming\Code\User\setings.json
+  - Add _jq_ to the PATH. This is required for the _'log *'_ commands of _devenv-cli.sh_ to work. These commands are executing _jq_ internally and have to find it in _PATH_.
+        ```sh
+	echo "export PATH=\"$PATH:/c/Program\ Files/jq\"" >> ~/.profile
+	```
+- Support alias in VS Code
+  - Open settings in C:\Users\myuser\AppData\Roaming\Code\User\setings.json
         ```json
-        ...
-        // Git Bash
+        // Support alias in Visual Studio Code
         "terminal.integrated.shellArgs.windows": ["-l"],
-        ...
         ```
+
+### Mac OS X
+_jq_ is not part of standard distribution of Mac OS X. In order to install additional tools like _jq_, it's recommended to use one of the Open Source Package Management systems. I recommend the usage of (_Mac Ports_)[https://www.macports.org/]. Please follow the (installation instruction)[https://www.macports.org/install.php] to setup _Mac Ports_. Once _Mac Ports_ is installed, the installation of _jq_ can be done by the following command:
+        ```sh
+	sudo port install jq
+	```
+
+## Kubernetes Dashboard
 * Install Kubernetes Dashboard (https://github.com/kubernetes/dashboard)
     ```sh
     # Install
