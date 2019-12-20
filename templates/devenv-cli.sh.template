@@ -1913,15 +1913,25 @@ EOF
 # info storage
 #-------------------------------------------------------------------------------
 info-storage() {
-    if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
-        cat <<EOF
+    cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
+Config:
+=======
+KEEP_DATABASE_DATA:         $KEEP_DATABASE_DATA
+--------------------------------------------------------------------------------
+EOF
+    if docker_volume_exists pgdata; then
+        cat <<EOF
 Docker:
 =======
 $(docker volume inspect $EnvId-pgdata)
 --------------------------------------------------------------------------------
+EOF
+    fi
+    if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
+        cat <<EOF
 Kubernetes:
 ===========
 $(kubectl get persistentvolumes --namespace=$EnvId)
