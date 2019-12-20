@@ -1929,6 +1929,13 @@ Docker:
 $(docker volume inspect $EnvId-pgdata)
 --------------------------------------------------------------------------------
 EOF
+    else
+        cat <<EOF
+Docker:
+=======
+no docker volume with name $EnvId-pgdata exists.
+--------------------------------------------------------------------------------
+EOF
     fi
     if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
         cat <<EOF
@@ -1939,6 +1946,13 @@ $(kubectl get persistentvolumes --namespace=$EnvId)
 Usefull commands:
 =================
 Currently used yaml:        kubectl get persistentvolumes -o yaml --namespace=$EnvId
+--------------------------------------------------------------------------------
+EOF
+    else
+        cat <<EOF
+Kubernetes:
+===========
+no persistent volume with name $EnvId-postgres-pv exists.
 --------------------------------------------------------------------------------
 EOF
     fi
@@ -2951,13 +2965,14 @@ is_in_array() {
     VALUE="$1"
     shift
     ARRAY=( $@ )
+    IS_IN_ARRAY=false
     for ENTRY in "${ARRAY[@]}"; do
         if [ "$ENTRY" = "$VALUE" ]; then
-            true
+            IS_IN_ARRAY=true
             break
         fi
-        false
     done
+    [ "$IS_IN_ARRAY" = 'true' ]
 }
 
 #-------------------------------------------------------------------------------
