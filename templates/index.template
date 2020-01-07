@@ -466,7 +466,7 @@ ID=2.16.0.0-SNAPSHOT
   # create remaining files
   "./$ID/devenv-cli.sh" update all &&
   echo &&
-  echo "open '$(pwd)/$ID/index.html' in your browser for further instructions" &&
+  echo "open 'file://$(pwd)/$ID/index.html' in your browser for further instructions" &&
   echo
 )
         </div></code></pre> 
