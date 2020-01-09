@@ -494,6 +494,7 @@ SEE
     $ME delete postgres
     $ME delete mailserver
     $ME delete postgres
+    $ME delete namespace
     $ME delete storage
 EOF
 }

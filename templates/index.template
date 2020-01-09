@@ -114,6 +114,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="#troubleshooting--shared-drives">Shared Drives</a></li>
+                  <li><a href="#troubleshooting--wrong-context">Wrong Kubernetes context</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -830,6 +831,9 @@ ${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_store
         <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# make sure, geb.properties are reflecting last version of configuration
+${ENV_DIR}/devenv-cli.sh update update geb-props
+
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
@@ -844,6 +848,9 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
         <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# make sure, ws.properties are reflecting last version of configuration
+${ENV_DIR}/devenv-cli.sh update update ws-props
+
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
 
@@ -1167,8 +1174,21 @@ ${ENV_DIR}/devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
 
         <h3 id="troubleshooting--shared-drives">Shared Drives</h3>
         <p>
-        After resetting your password you can have some problems with your shared drives. In those cases use the Settings > Shared Drives > Reset credentials
+          After resetting your password you can have some problems with your shared drives. In those cases use the Settings > Shared Drives > Reset credentials
         </p>
+
+        <h3 id="troubleshooting--wrong-context">Wrong Kubernetes context</h3>
+        <p>
+          kubectl can interact with more than one Kubernetes cluster, by setting the context. If <samp>devenv-cli.sh</samp> is not working properly, a wrong context might be the cause.
+        </p>
+        <pre class="prettyprint long-bash"><code><div class="col-xs-12">
+# list the existing contexts
+# look out for entry "current-context". It should be set to docker-desktop
+kubectl config view
+ 
+# change context to docker-desktop
+kubectl config use-context docker-desktop
+        </div></code></pre>
       <br><br>
 
       </div> <!-- /container -->
