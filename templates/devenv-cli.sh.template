@@ -270,7 +270,7 @@ OVERVIEW
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
-    IOM_DBINIT_IMAGE - defines the dbinit image to be used
+    IOM_CONFIG_IMAGE - defines the config image to be used
     IOM_APP_IMAGE - defines the iom application image to be used
     IMAGE_PULL_POLICY - defines when to pull images from origin
 
@@ -736,7 +736,7 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    The docker-image defined by IOM_DBINIT_IMAGE contains all the necessary 
+    The docker-image defined by IOM_CONFIG_IMAGE contains all the necessary 
     tools to apply sql-scripts to the IOM database. Devenv4iom enables you to
     use these tools as easy as possible. Therefore it provides a Kubernetes job
     (apply-sql-job), that applies sql-file(s) to the IOM database.
@@ -867,7 +867,7 @@ OVERVIEW
 CONFIG
     CUSTOM_JSONCONF_DIR - directory, where your custom json-confguration is
       located.
-    IOM_DBINIT_IMAGE - defines the image to be used when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying json-
       configuration.
@@ -915,7 +915,7 @@ OVERVIEW
     controlled by the names of sub-directories within migrations and the naming
     of the migration scripts itself (numerically sorted, smallest first).
 
-    The IOM_DBINIT_IMAGE contains a shell script, that is applying the migration
+    The IOM_CONFIG_IMAGE contains a shell script, that is applying the migration
     scripts, which are delivered along with the docker image. The developer task
     "apply dbmigrate" enables you to use this dbmigrate script along with the
     migration scripts located at CUSTOM_DBMIGRATE_DIR. Hence, if you want to
@@ -932,7 +932,7 @@ CONFIG
     CUSTOM_DBMIGRATE_DIR - directory, where your custom dbmigrate scripts are
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
-    IOM_DBINIT_IMAGE - defines the image to be used when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines, when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script doing the db-migration.
     ID - the namespace used, is derived from ID.
@@ -1004,7 +1004,7 @@ OVERVIEW
 CONFIG
     CUSTOM_DUMPS_DIR - directory, where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
-    IOM_DBINIT_IMAGE - defines the image to be used, when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used, when executing the job.
     IMAGE_PULL_POLICY - defines, when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script creating the dump.
     ID - the namespace used, is derived from ID.
@@ -1041,7 +1041,7 @@ SYNOPSIS
     $ME dump load
 
 OVERVIEW
-    When starting IOM and the conneted database is empty, the dbinit container
+    When starting IOM and the conneted database is empty, the config container
     is loading the initial dump. Devenv4iom gives you the possibility to load a
     custom dump during this process. This custom dump will be treated exactly as
     any other dump, which is part of the docker image. If you want to load a
@@ -1050,7 +1050,7 @@ OVERVIEW
       directory is shared in Docker Desktop. The dump you want to load, has to
       be located within this directory. To be recognized as a dump, it has to
       have the extension .sql.gz. If the directory contains more than one
-      dump-file, the script of the dbinit container selects the one, which's
+      dump-file, the script of the config container selects the one, which's
       name is numerically largest. You can check this with following command:
       ls *.sql.gz | sort -nr | head -n 1
 
@@ -1063,8 +1063,8 @@ OVERVIEW
     - create storage
     - create postgres
     - create iom
-    You should inspect the logs created when running the dbinit container. Was
-    really the dump loaded, you think it was? The logs of dbinit process are
+    You should inspect the logs created when running the config container. Was
+    really the dump loaded, you think it was? The logs of config process are
     printed in json format. Verbosity can be controlled by configuration
     variable OMS_LOGLEVEL_SCRIPTS.
 
@@ -1598,7 +1598,7 @@ kube_pod_wait() (
 #-------------------------------------------------------------------------------
 # wait for initContainer to be terminated
 # $1: app name (iom)
-# $2: name of init-container (e.g. dbaccount, dbinit)
+# $2: name of init-container (e.g. dbaccount, config)
 # $3: timeout [s]
 # ->  true - if init-container is terminated before timeout
 #     false - else
@@ -1784,7 +1784,7 @@ OMS_LOGLEVEL_SCRIPTS:       $OMS_LOGLEVEL_SCRIPTS
 Docker:
 =======
 IOM_DBACCOUNT_IMAGE:        $IOM_DBACCOUNT_IMAGE
-IOM_DBINIT_IMAGE:           $IOM_DBINIT_IMAGE
+IOM_CONFIG_IMAGE:           $IOM_CONFIG_IMAGE
 IOM_APP_IMAGE:              $IOM_APP_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
@@ -1809,8 +1809,8 @@ Describe iom service        kubectl describe --namespace $EnvId service iom-serv
 
 Get dbaccount logs:         kubectl logs $POD --namespace $EnvId -c dbaccount
 Follow dbaccount logs:      kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbaccount
-Get dbinit logs:            kubectl logs $POD --namespace $EnvId -c dbinit
-Follow dbinit logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbinit
+Get config logs:            kubectl logs $POD --namespace $EnvId -c config
+Follow config logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c config
 Get iom logs:               kubectl logs $POD --namespace $EnvId -c iom
 Follow iom logs:            kubectl logs --tail=1 -f $POD --namespace $EnvId -c iom
 --------------------------------------------------------------------------------
@@ -3132,7 +3132,7 @@ log-config() (
             if [ ! -z "$POD" ]; then
                 # make sure to get info about failed kubectl call
                 set -o pipefail
-                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c dbinit 2> "$TMP_ERR" |
+                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c config 2> "$TMP_ERR" |
                     $JQ -R 'fromjson? | select(type == "object")' |
                     $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
                 RESULT=$?

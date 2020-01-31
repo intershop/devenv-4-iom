@@ -24,8 +24,8 @@ IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 # iom dbaccount image (name:tag)
 IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
-# iom dbinit image (name:tag)
-IOM_DBINIT_IMAGE=${IOM_DBINIT_IMAGE}
+# iom config image (name:tag)
+IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 
 # iom app image (name:tag)
 IOM_APP_IMAGE=${IOM_APP_IMAGE}

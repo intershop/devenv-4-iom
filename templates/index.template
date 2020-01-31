@@ -162,7 +162,7 @@ docker login docker-build.rnd.intershop.de
 docker pull postgres:11
 docker pull mailhog/mailhog
 docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
-docker pull docker-build.rnd.intershop.de/intershop/iom-dbinit:2.17.0.0-SNAPSHOT
+docker pull docker-build.rnd.intershop.de/intershop/iom-config:2.17.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT
         </div></code></pre>
         
@@ -333,9 +333,9 @@ select * from "CountryDefDO";
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh apply sql-script /Users/andreas/test.sql 
 { "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:23Z", "level":"INFO", "message":"apply-sql-scripts: job successfully started", "processName":"devenv-cli.sh", "additionalInfo":"job.batch/apply-sql-job created", "configName":"ci" }
-{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":"ci","additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_PASS=oms_pw\nOMS_USER_CONNECTION_SUFFIX=\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=2.17.0.0-SNAPSHOT"}
-{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":"ci"}
-{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"success","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":"ci","additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_PASS=oms_pw\nOMS_USER_CONNECTION_SUFFIX=\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=2.17.0.0-SNAPSHOT"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"success","configName":"ci"}
 { "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:29Z", "level":"INFO", "message":"apply-sql-scripts: successfully deleted job", "processName":"devenv-cli.sh", "additionalInfo":"job.batch \"apply-sql-job\" deleted", "configName":"ci" }
         </div></code></pre>
         <p>
@@ -700,7 +700,7 @@ ${ENV_DIR}/devenv-cli.sh apply xsl-templates
 
         <h3 id="development--apply-sql-scripts">Apply sql scripts</h3>
         <p>
-          The docker-image defined by <samp>IOM_DBINIT_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv-4-iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database. Creation and deletion of job and access to logs is provided by command <samp>'apply sql-scripts'</samp> of command line interface.
+          The docker-image defined by <samp>IOM_CONFIG_IMAGE</samp> contains all the necessary tools to apply sql-scripts to the IOM database. Devenv-4-iom enables you to use these tools as easy as possible. Therefore it provides a Kubernetes job (<samp>apply-sql-job</samp>), that applies sql-file(s) to the IOM database. Creation and deletion of job and access to logs is provided by command <samp>'apply sql-scripts'</samp> of command line interface.
         </p><p>
           There are two different modes, that can be used.
           <ul>
@@ -720,7 +720,7 @@ ${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_store
         <p>
           To develop and test a single or a couple of sql-scripts (which can be migration scripts too), the developer task <em><a href="#development--apply-sql-scripts">Apply sql scripts</a></em> is the first choice. But at some point of development, the dbmigrate process as a whole has to be tested too. The dbmigrate process is somewhat more complex than simply applying sql-scripts from a directory. It first loads stored procedures from directory <samp>stored_procedures</samp> and then it applies the migrations scripts found in directory <samp>migrations</samp>. The order of execution is controlled by the names of sub-directories within <samp>migrations</samp> and the naming of the migration scripts itself (numerically sorted, smallest first).
         </p><p>
-          The <samp>IOM_DBINIT_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use this dbmigrate script along with the migration scripts located at <samp>CUSTOM_DBMIGRATE_DIR</samp>. Hence, if you want to roll out custom dbmigrate scripts, you have to:
+          The <samp>IOM_CONFIG_IMAGE</samp> contains a shell script, that is applying the migration scripts, which are delivered along with the docker image. The developer task <em><a href="#development--apply-dbmigrate">Apply dbmigrate scripts</a></em> enables you to use this dbmigrate script along with the migration scripts located at <samp>CUSTOM_DBMIGRATE_DIR</samp>. Hence, if you want to roll out custom dbmigrate scripts, you have to:
           <ul>
             <li>set variable <samp>CUSTOM_DBMIGRATE_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>.</li>
           </ul>
@@ -773,9 +773,9 @@ ${ENV_DIR}/devenv-cli.sh apply json-config
 
         <h3 id="development--dump-load">Load custom dump</h3>
         <p>
-          When starting IOM and the conneted database is empty, the dbinit container is loading the initial dump. Devenv-4-iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exactly as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
+          When starting IOM and the conneted database is empty, the config container is loading the initial dump. Devenv-4-iom gives you the possibility to load a custom dump during this process. This custom dump will be treated exactly as any other dump, which is part of the docker image. If you want to load a custom dump, you have to:
           <ul>
-            <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the dbinit container selects the one, which's name is numerically largest. You can check this with following command: <samp>ls *.sql.gz | sort -nr | head -n 1</samp></li>
+            <li>set variable <samp>CUSTOM_DUMPS_DIR</samp> in your config file and make sure, that the <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">directory is shared in Docker Desktop</a>. The dump you want to load, has to be located within this directory. To be recognized as a dump, it has to have the extension <samp>.sql.gz</samp>. If the directory contains more than one dump-file, the script of the config container selects the one, which's name is numerically largest. You can check this with following command: <samp>ls *.sql.gz | sort -nr | head -n 1</samp></li>
             <li>The custom dump can be loaded only, if the database is empty. The <samp>'dump load'</samp> command of the command line client executes all the necessary steps to restart IOM with an empty database, but only if NOT an external database is used (only, if <samp>PGHOST</samp> is not set)</li>
             <ul>
               <li><a href="#operations--delete-iom">Delete IOM</a></li>
@@ -788,7 +788,7 @@ ${ENV_DIR}/devenv-cli.sh apply json-config
             <li>The custom dump can be loaded only, if the database is empty. When you are using an external database (<samp>PGHOST</samp> is set), the steps listed above will not have any effect. You have to care yourself to purge the external database and to recreate the IOM installation.</li>
           </ul>
         </p><p>
-          You should inspect the logs created, when running the dbinit container. Was really the dump loaded, you think it was? The logs of dbinit process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
+          You should inspect the logs created, when running the config container. Was really the dump loaded, you think it was? The logs of config process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 ${ENV_DIR}/devenv-cli.sh dump load
@@ -908,9 +908,9 @@ mvn -Dhost=${HOST_IOM}:${PORT_IOM_SERVICE} clean test
 # Print raw json messages
 cmd_producing_json
 ...
-{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/060_InvoicingNoConfigDO/InvoicingNoConfigDO_test_shop_TX.iombc'","configName":"ci"}
-{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/120_DocumentTransformerConfigDO/DocumentTransformerConfigDO_Shop_test_shop_TX.iombc'","configName":"ci"}
-{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-dbinit","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/H_Shop2PaymentProvider2Payment/010_Shop2PaymentProvider2PaymentDefDO/Shop2PaymentProvider2PaymentDefDO_test_shop_TX.iombc'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/060_InvoicingNoConfigDO/InvoicingNoConfigDO_test_shop_TX.iombc'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/G_Invoicing_and_Documents/120_DocumentTransformerConfigDO/DocumentTransformerConfigDO_Shop_test_shop_TX.iombc'","configName":"ci"}
+{"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"iom-6c587ddd87-42k4f","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-13T13:35:45+00:00","level":"INFO","processName":"apply_json_config.sh","message":"processing file '/opt/caas-config/json-config/config/P_shopTX/H_Shop2PaymentProvider2Payment/010_Shop2PaymentProvider2PaymentDefDO/Shop2PaymentProvider2PaymentDefDO_test_shop_TX.iombc'","configName":"ci"}
 ...
               
 # Print formatted json messages
@@ -921,7 +921,7 @@ cmd_producing_json | jq
   "environment": "2.17.0.0-SNAPSHOT",
   "logHost": "iom-6c587ddd87-42k4f",
   "logVersion": "1.0",
-  "appName": "iom-dbinit",
+  "appName": "iom-config",
   "appVersion": "2.17.0.0-SNAPSHOT@1234",
   "logType": "script",
   "timestamp": "2019-12-13T13:35:45+00:00",
@@ -935,7 +935,7 @@ cmd_producing_json | jq
   "environment": "2.17.0.0-SNAPSHOT",
   "logHost": "iom-6c587ddd87-42k4f",
   "logVersion": "1.0",
-  "appName": "iom-dbinit",
+  "appName": "iom-config",
   "appVersion": "2.17.0.0-SNAPSHOT@1234",
   "logType": "script",
   "timestamp": "2019-12-13T13:35:45+00:00",

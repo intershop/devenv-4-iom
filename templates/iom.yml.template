@@ -166,9 +166,9 @@ ${LogDirYml______}            mountPath: /var/log/log-share
               value: '${OMS_LOGLEVEL_SCRIPTS}'
 ${LogDirYml______}            - name: LOG_SHARE
 ${LogDirYml______}              value: '/var/log/log-share'
-        - name: dbinit
+        - name: config
           imagePullPolicy: ${IMAGE_PULL_POLICY}
-          image: ${IOM_DBINIT_IMAGE}
+          image: ${IOM_CONFIG_IMAGE}
           volumeMounts:
 ${LogDirYml______}          - name: log-dev
 ${LogDirYml______}            mountPath: /var/log/log-share
