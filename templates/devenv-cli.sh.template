@@ -1770,7 +1770,6 @@ CUSTOM_JSONCONF_DIR:        $CUSTOM_JSONCONF_DIR
 Direct access:
 ==============
 CUSTOM_SHARE_DIR:           $CUSTOM_SHARE_DIR
-CUSTOM_LOG_DIR:             $CUSTOM_LOG_DIR
 --------------------------------------------------------------------------------
 Logging:
 ========

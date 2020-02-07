@@ -171,20 +171,6 @@ else
     ShareDirYml____='#'
 fi
 
-# directory to be used as log directory
-# has to be empty on default, in order to become able to make the distinction
-# whether the user wants to use a custom log directory or not.
-CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
-    CUSTOM_LOG_DIR=$(cygpath -u "$CUSTOM_LOG_DIR")
-fi
-# create yaml code depending on CUSTOM_LOG_DIR
-if [ ! -z "$CUSTOM_LOG_DIR" ]; then
-    LogDirYml______=''
-else
-    LogDirYml______='#'
-fi
-
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 

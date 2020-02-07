@@ -221,16 +221,6 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 # CUSTOM_SHARE_DIR="${CustomShareDirDefault}"
 CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 
-# Access to logs
-# --------------
-# If you want to access the logs of IOM (the very few that are written to file),
-# you have to define a directory, which should be used for this purpose. If you
-# want to use this feature you have to make sure, this directory is shared with
-# Docker Desktop.
-# It's recommended to use a directory within the config directory structure.
-# CUSTOM_LOG_DIR="${CustomLogDirDefault}"
-CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
-
 ################################################################################
 # multi instance settings
 ################################################################################

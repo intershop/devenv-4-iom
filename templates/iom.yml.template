@@ -27,9 +27,6 @@ ${XsltDirYml_____}          path: ${CUSTOM_XSLT_DIR}
 ${ShareDirYml____}      - name: share-dev
 ${ShareDirYml____}        hostPath:
 ${ShareDirYml____}          path: ${CUSTOM_SHARE_DIR}
-${LogDirYml______}      - name: log-dev
-${LogDirYml______}        hostPath:
-${LogDirYml______}          path: ${CUSTOM_LOG_DIR}
 ${DbmigrateDirYml}      - name: dbmigrate-sps
 ${DbmigrateDirYml}        hostPath:
 ${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/stored_procedures
@@ -75,8 +72,6 @@ ${XsltDirYml_____}        - name: xslt-dev
 ${XsltDirYml_____}          mountPath: /opt/oms/xslt-dev
 ${ShareDirYml____}        - name: share-dev
 ${ShareDirYml____}          mountPath: /var/opt/share
-${LogDirYml______}        - name: log-dev
-${LogDirYml______}          mountPath: /var/log/log-share
         env:
           - name: TENANT
             value: Intershop
@@ -124,8 +119,6 @@ ${LogDirYml______}          mountPath: /var/log/log-share
             value: 'mailhog-service'
           - name: OMS_SMTP_PORT
             value: '${PORT_MAILHOG_SMTP_SERVICE}'
-${LogDirYml______}          - name: LOG_SHARE
-${LogDirYml______}            value: '/var/log/log-share'
         lifecycle:
           postStart:
             exec:
@@ -135,8 +128,6 @@ ${LogDirYml______}            value: '/var/log/log-share'
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_DBACCOUNT_IMAGE}
           volumeMounts:
-${LogDirYml______}          - name: log-dev
-${LogDirYml______}            mountPath: /var/log/log-share
           env:
             - name: TENANT
               value: Intershop
@@ -164,14 +155,10 @@ ${LogDirYml______}            mountPath: /var/log/log-share
               value: "${OMS_DB_SEARCHPATH}"
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
-${LogDirYml______}            - name: LOG_SHARE
-${LogDirYml______}              value: '/var/log/log-share'
         - name: config
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           image: ${IOM_CONFIG_IMAGE}
           volumeMounts:
-${LogDirYml______}          - name: log-dev
-${LogDirYml______}            mountPath: /var/log/log-share
 ${DbmigrateDirYml}          - name: dbmigrate-sps
 ${DbmigrateDirYml}            mountPath: /opt/stored_procedures
 ${DbmigrateDirYml}          - name: dbmigrate-scripts
@@ -201,8 +188,6 @@ ${DumpsDirYml____}            mountPath: /opt/dumps
               value: '${OMS_LOGLEVEL_SCRIPTS}'
             - name: CAAS_ENV_NAME
               value: '${CAAS_ENV_NAME}'
-${LogDirYml______}            - name: LOG_SHARE
-${LogDirYml______}              value: '/var/log/log-share'
 ---
 kind: Service
 apiVersion: v1
