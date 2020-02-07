@@ -101,8 +101,8 @@ ${ShareDirYml____}          mountPath: /var/opt/share
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
             value: '${CAAS_ENV_NAME}'
-          - name: CAAS_SKIP_TEST_DATA_IMPORT
-            value: '${CAAS_SKIP_TEST_DATA_IMPORT}'
+          - name: CAAS_IMPORT_TEST_DATA
+            value: '${CAAS_IMPORT_TEST_DATA}'
           - name: JBOSS_OPTS
             value: "--debug *:8787"
           - name: JBOSS_JAVA_OPTS

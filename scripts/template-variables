@@ -14,8 +14,8 @@ PORT_OFFSET="${PORT_OFFSET:-10}"
 # environment specific configuration defaults to 'ci'
 CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
 
-# skip import of test-data
-CAAS_SKIP_TEST_DATA_IMPORT="${CAAS_SKIP_TEST_DATA_IMPORT:-false}"
+# import of test-data
+CAAS_IMPORT_TEST_DATA="${CAAS_IMPORT_TEST_DATA:-true}"
 
 # check for 'false' only, to enable health-checks in any other case
 PERFORM_HEALTH_CHECKS="${PERFORM_HEALTH_CHECKS:-true}"
