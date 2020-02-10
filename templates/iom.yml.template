@@ -122,7 +122,7 @@ ${ShareDirYml____}          mountPath: /var/opt/share
         lifecycle:
           postStart:
             exec:
-              command: ["/bin/bash", "-c", "/opt/oms/bin/iom_start_handler.sh; apply-templates > /dev/null 2>&1; apply-xslt > /dev/null 2>&1; /opt/jboss/wildfly/bin/add-user.sh -u admin -p admin"]
+              command: ["/bin/bash", "-c", "apply-templates > /dev/null 2>&1; apply-xslt > /dev/null 2>&1; /opt/jboss/wildfly/bin/add-user.sh -u admin -p admin"]
       initContainers:
         - name: dbaccount
           imagePullPolicy: ${IMAGE_PULL_POLICY}
