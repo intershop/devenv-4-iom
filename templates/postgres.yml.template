@@ -14,6 +14,13 @@ ${KeepDatabaseYml}      claimName: postgres-pvc
     image: ${DOCKER_DB_IMAGE}
     args: [ ${PostgresArgsYml} ]
     imagePullPolicy: Always
+    env:
+    - name: POSTGRES_DB
+      value: ${PGDATABASE}
+    - name: POSTGRES_USER
+      value: ${PGUSER}
+    - name: POSTGRES_PASSWORD
+      value: ${PGPASSWORD}
     volumeMounts:
 ${KeepDatabaseYml}    - name: db-data
 ${KeepDatabaseYml}      mountPath: /var/lib/postgresql/data

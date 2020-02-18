@@ -2066,15 +2066,19 @@ create-postgres() {
             log_json INFO "create-postges: no need to link docker volume to dabase storage" < /dev/null
         fi
         if [ "$SUCCESS" = 'true' ]; then
-            # start postgres pod/service
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/postgres.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
-                SUCCESS=false
+            if ! kube_resource_exists pods postgres || ! kube_resource_exists services postgres-service; then
+                # start postgres pod/service
+                "${PROJECT_PATH}/scripts/template_engine.sh" \
+                    "${PROJECT_PATH}/templates/postgres.yml.template" \
+                    "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
+                fi
             else
-                log_json INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
+                log_json INFO "create-postgres: pod and service already exist" < /dev/null
             fi
         fi
     else
