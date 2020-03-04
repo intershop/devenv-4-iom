@@ -40,14 +40,14 @@ MAILHOG_IMAGE=${MAILHOG_IMAGE}
 # iom dbaccount image (name:tag)
 # examples:
 # locally built image:      iom-dbaccount:2.17.0.0-SNAPSHOT
-# from ISH Docker registry: ${IOM_DBACCOUNT_IMAGE}
+# from ISH Docker registry: docker-build.rnd.intershop.de/intershop/iom-dbaccount:2.17.0.0-SNAPSHOT
 IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom config image (name:tag)
 # examples:                 
 # locally built IOM image:  iom-config:2.17.0.0-SNAPSHOT
 # locally built CI image:   ci-iom-config:2.17.0.0-SNAPSHOT-2.17.0.0-SNAPSHOT
-# IOM from ISH registry:    ${IOM_CONFIG_IMAGE}
+# IOM from ISH registry:    docker-build.rnd.intershop.de/intershop/iom-config:2.17.0.0-SNAPSHOT
 # CI from ISH registry:     docker-build.rnd.intershop.de/intershop/ci-iom-config:2.17.0.0-SNAPSHOT-2.17.0.0-SNAPSHOT
 IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 
@@ -55,7 +55,7 @@ IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 # examples:
 # locally built IOM image:  iom-app:2.17.0.0-SNAPSHOT
 # locally built CI image:   ci-iom-app:2.17.0.0-SNAPSHOT-2.17.0.0-SNAPSHOT
-# IOM from ISH registry:    ${IOM_APP_IMAGE}
+# IOM from ISH registry:    docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT
 # CI from ISH registry:     docker-build.rnd.intershop.de/intershop/ci-iom-app:2.17.0.0-SNAPSHOT-2.17.0.0-SNAPSHOT
 IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
@@ -224,7 +224,7 @@ CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 # multi instance settings
 ################################################################################
 
-# After changing INDEX or PORT_OFFSTE, iom cluster has to be deleted and newly
+# After changing INDEX or PORT_OFFSET, iom cluster has to be deleted and newly
 # created. Additionally the HTML docu, geb/ws-properties should be updated:
 #   devenv-cli.sh update doc
 #   devenv-cli.sh update geb-props
