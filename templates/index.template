@@ -1098,6 +1098,7 @@ ${ENV_DIR}/devenv-cli.sh info iom
             <li><samp>OMS_LOGLEVEL_IOM</samp></li>
             <li><samp>OMS_LOGLEVEL_HIBERNATE</samp></li>
             <li><samp>OMS_LOGLEVEL_QUARTZ</samp></li>
+            <li><samp>OMS_LOGLEVEL_ACTIVEMQ</samp></li>
             <li><samp>OMS_LOGLEVEL_CUSTOMIZATION</samp></li>
             <li><samp>OMS_LOGLEVEL_SCRIPTS</samp></li>
           </ul>

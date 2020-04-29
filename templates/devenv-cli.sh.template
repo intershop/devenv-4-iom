@@ -1382,6 +1382,7 @@ CONFIG
     OMS_LOGLEVEL_IOM
     OMS_LOGLEVEL_HIBERNATE
     OMS_LOGLEVEL_QUARTZ
+    OMS_LOGLEVEL_ACTIVEMQ
     OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of 
       messages are written by Wildfly application server and the IOM 
       applications. Messages, that are not written in container, can never be
@@ -1777,6 +1778,7 @@ OMS_LOGLEVEL_CONSOLE:       $OMS_LOGLEVEL_CONSOLE
 OMS_LOGLEVEL_IOM:           $OMS_LOGLEVEL_IOM
 OMS_LOGLEVEL_HIBERNATE:     $OMS_LOGLEVEL_HIBERNATE
 OMS_LOGLEVEL_QUARTZ:        $OMS_LOGLEVEL_QUARTZ
+OMS_LOGLEVEL_ACTIVEMQ:      $OMS_LOGLEVEL_ACTIVEMQ
 OMS_LOGLEVEL_CUSTOMIZATION: $OMS_LOGLEVEL_CUSTOMIZATION
 OMS_LOGLEVEL_SCRIPTS:       $OMS_LOGLEVEL_SCRIPTS
 --------------------------------------------------------------------------------

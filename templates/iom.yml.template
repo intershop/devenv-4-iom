@@ -95,6 +95,8 @@ ${ShareDirYml____}          mountPath: /var/opt/share
             value: '${OMS_LOGLEVEL_HIBERNATE}'
           - name: OMS_LOGLEVEL_QUARTZ
             value: '${OMS_LOGLEVEL_QUARTZ}'
+          - name: OMS_LOGLEVEL_ACTIVEMQ
+            value: '${OMS_LOGLEVEL_ACTIVEMQ}'
           - name: OMS_LOGLEVEL_CUSTOMIZATION
             value: '${OMS_LOGLEVEL_CUSTOMIZATION}'
           - name: OMS_LOGLEVEL_SCRIPTS
