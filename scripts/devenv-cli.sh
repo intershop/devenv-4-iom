@@ -1959,9 +1959,10 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-OMT:                        http://$HOST_IOM:$PORT_IOM_SERVICE/omt
+OMT:                        http://$HOST_IOM:$PORT_IOM_SERVICE/omt/
+Online help:                http://$HOST_IOM:$PORT_IOM_SERVICE/omt-help/
 DBDoc:                      http://$HOST_IOM:$PORT_IOM_SERVICE/dbdoc/
-Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console
+Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console/
 --------------------------------------------------------------------------------
 Development:
 ============
