@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# This is a template. All occurences of ${[A-Za-z0-9]+} are template variables, not shell variables!
-
 TMP_ERR="$(mktemp)"
 TMP_OUT="$(mktemp)"
 trap "rm -f $TMP_ERR $TMP_OUT" EXIT SIGTERM
@@ -205,9 +203,9 @@ SEE
     $ME info pods
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/mailhog.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/mailhog.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -243,15 +241,15 @@ SEE
 BACKGROUND
     # Link Docker volume to database storage (only if KEEP_DATABASE_DATA == true)
     $KeepDatabaseSh MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-    $KeepDatabaseSh   "${PROJECT_PATH}/scripts/template_engine.sh" \\
-    $KeepDatabaseSh   "${PROJECT_PATH}/templates/postgres-storage.yml.template" \\
-    $KeepDatabaseSh   "${ENV_DIR}/${CONFIG_FILE}" | 
+    $KeepDatabaseSh   "$PROJECT_PATH/scripts/template_engine.sh" \\
+    $KeepDatabaseSh   "$PROJECT_PATH/templates/postgres-storage.yml.template" \\
+    $KeepDatabaseSh   "$CONFIG_FILE" | 
     $KeepDatabaseSh   kubectl apply --namespace $EnvId -f -
 
     # create postgres
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/postgres.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/postgres.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -279,9 +277,9 @@ SEE
     $ME info pods
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/iom.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/iom.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -402,9 +400,9 @@ SEE
     $ME info   mailserver
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/mailhog.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/mailhog.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -431,16 +429,16 @@ SEE
 
 BACKGROUND
     # Stop/Remove postgres database
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/postgres.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/postgres.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 
     # Unlink Docker volume from database storage
     MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-      "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/postgres-storage.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+      "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/postgres-storage.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -466,9 +464,9 @@ SEE
     $ME info   pods
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/iom.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/iom.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -764,9 +762,9 @@ BACKGROUND
     export SQL_SRC=<DIRECTORY>
     
     # start apply-sql-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-      "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-      "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f -
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+      "$PROJECT_PATH/templates/apply-sql.yml.template" \
+      "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f -
 
     # get logs of job
     POD_NAME=\$(kubectl get pods --namespace $EnvId \
@@ -775,9 +773,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete apply-sql-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-      "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-      "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f -
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+      "$PROJECT_PATH/templates/apply-sql.yml.template" \
+      "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f -
 EOF
 }
 
@@ -822,9 +820,9 @@ SEE
 
 BACKGROUND
     # start sqlconfig-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/sqlconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/sqlconfig.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -832,9 +830,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete sqlconfig-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/sqlconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/sqlconfig.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -880,7 +878,7 @@ BACKGROUND
     # start jsonconfig-job
     "${PROJECT_DIR}/scripts/template_engine.sh" \\
       "${PROJECT_DIR}/templates/jsonconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -888,9 +886,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete jsonconfig-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/jsonconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/jsonconfig.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -942,9 +940,9 @@ SEE
 
 BACKGROUND
     # start dbmigrate-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dbmigrate.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dbmigrate.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -952,9 +950,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete dbmigrate-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dbmigrate.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dbmigrate.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -1014,9 +1012,9 @@ SEE
 
 BACKGROUND
     # start dump-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dump.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dump.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -1024,9 +1022,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete dump-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dump.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dump.yml.template" \\
+      "$CONFIG_FILE" | 
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -1127,16 +1125,16 @@ OVERVIEW
     Hence, you should run 'update config' after every update of devenv4iom.
 
 SEE
-    "${ENV_DIR}/${CONFIG_FILE}"
+    "$CONFIG_FILE"
 
 BACKGROUND
     BAK="bak_\$(date '+%Y-%m-%d.%H.%M.%S')"
-    cp "${ENV_DIR}/${CONFIG_FILE}" \\
-       "${ENV_DIR}/${CONFIG_FILE}.\$BAK"
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/config.properties.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}.\$BAK" > \\
-      "${ENV_DIR}/${CONFIG_FILE}"
+    cp "$CONFIG_FILE" \\
+       "$CONFIG_FILE.\$BAK"
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/config.properties.template" \\
+      "$CONFIG_FILE.\$BAK" > \\
+      "$CONFIG_FILE"
 EOF
 }
 
@@ -1155,13 +1153,13 @@ OVERVIEW
     html docu has to updated, after updating devenv4iom.
 
 SEE
-    ${ENV_DIR}/index.html
+    $ENV_DIR/index.html
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/index.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > \\
-      "${ENV_DIR}/index.html"
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/index.template" \\
+      "$CONFIG_FILE" > \\
+      "$ENV_DIR/index.html"
 EOF
 }
 
@@ -1179,12 +1177,12 @@ OVERVIEW
     managed IOM installation.
 
 SEE
-    "${ENV_DIR}/ws.properties"
+    "$ENV_DIR/ws.properties"
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/ws.properties.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties"
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/ws.properties.template" \\
+      "$CONFIG_FILE" > "$ENV_DIR/ws.properties"
 EOF
 }
 
@@ -1202,12 +1200,12 @@ OVERVIEW
     managed IOM installation.
 
 SEE
-    "${ENV_DIR}/geb.properties"
+    "$ENV_DIR/geb.properties"
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/geb.properties.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties"
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/geb.properties.template" \\
+      "$CONFIG_FILE" > "$ENV_DIR/geb.properties"
 EOF
 }
 
@@ -1225,13 +1223,13 @@ OVERVIEW
     Hence, after each update of devenv4iom, $ME has to be updated too.
 
 SEE
-    ${ENV_DIR}/$ME
+    $ENV_DIR/$ME
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/devenv-cli.sh.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > \\
-      "${ENV_DIR}/devenv-cli.sh"
+    "$PROJECT_PATH/scripts/template_engine.sh" \\
+      "$PROJECT_PATH/templates/devenv-cli.sh.template" \\
+      "$CONFIG_FILE" > \\
+      "$ENV_DIR/devenv-cli.sh"
 EOF
 }
 
@@ -2031,9 +2029,9 @@ create-namespace() {
 #-------------------------------------------------------------------------------
 create-mailserver() {
     SUCCESS=true
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/mailhog.yml.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+        "$PROJECT_PATH/templates/mailhog.yml.template" \
+        "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
     if [ $? -ne 0 ]; then
         log_json ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
         SUCCESS=false
@@ -2055,9 +2053,9 @@ create-postgres() {
         # link Docker volume to database storage
         if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
             MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
-                      "${PROJECT_PATH}/scripts/template_engine.sh" \
-                      "${PROJECT_PATH}/templates/postgres-storage.yml.template" \
-                      "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                      "$PROJECT_PATH/scripts/template_engine.sh" \
+                      "$PROJECT_PATH/templates/postgres-storage.yml.template" \
+                      "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "create-postgres: error linking docker volume to database storage" < "$TMP_ERR"
                 SUCCESS=false
@@ -2070,9 +2068,9 @@ create-postgres() {
         if [ "$SUCCESS" = 'true' ]; then
             if ! kube_resource_exists pods postgres || ! kube_resource_exists services postgres-service; then
                 # start postgres pod/service
-                "${PROJECT_PATH}/scripts/template_engine.sh" \
-                    "${PROJECT_PATH}/templates/postgres.yml.template" \
-                    "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                "$PROJECT_PATH/scripts/template_engine.sh" \
+                    "$PROJECT_PATH/templates/postgres.yml.template" \
+                    "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
                     log_json ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
                     SUCCESS=false
@@ -2096,9 +2094,9 @@ create-postgres() {
 #-------------------------------------------------------------------------------
 create-iom() {
     SUCCESS=true
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/iom.yml.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+        "$PROJECT_PATH/templates/iom.yml.template" \
+        "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
     if [ $? -ne 0 ]; then
         log_json ERROR "create-iom: error creating iom" < "$TMP_ERR"
         SUCCESS=false
@@ -2175,9 +2173,9 @@ delete-namespace() {
 delete-mailserver() {
     SUCCESS=true
     if kube_resource_exists pods mailhog || kube_resource_exists services mailhog-service; then
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/mailhog.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/mailhog.yml.template" \
+            "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-mailserver: error deleting mail-server" < "$TMP_ERR"
             SUCCESS=false
@@ -2198,9 +2196,9 @@ delete-postgres() {
     SUCCESS_PG=true
     SUCCESS_VL=true
     if kube_resource_exists pods postgres || kube_resource_exists services postgres-service; then
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/postgres.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/postgres.yml.template" \
+            "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-postgres: error deleting postgres" < "$TMP_ERR"
             SUCCESS_PG=false
@@ -2213,9 +2211,9 @@ delete-postgres() {
     # unlink Docker volume from database storage
     if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
         MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
-                  "${PROJECT_PATH}/scripts/template_engine.sh" \
-                  "${PROJECT_PATH}/templates/postgres-storage.yml.template" \
-                  "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                  "$PROJECT_PATH/scripts/template_engine.sh" \
+                  "$PROJECT_PATH/templates/postgres-storage.yml.template" \
+                  "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-postgres: error unlinking Docker volume from database storage" < "$TMP_ERR"
             SUCCESS_VL=false
@@ -2235,9 +2233,9 @@ delete-postgres() {
 delete-iom() {
     SUCCESS=true
     if kube_resource_exists pods iom || kube_resource_exists services iom-service; then
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/iom.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/iom.yml.template" \
+            "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-iom: error deleting iom" < "$TMP_ERR"
             SUCCESS=false
@@ -2459,9 +2457,9 @@ apply-sql-scripts() {
     if [ "$SUCCESS" = 'true' ]; then
         # start apply-sql job
         SQL_SRC="$SQL_SRC" \
-               "${PROJECT_PATH}/scripts/template_engine.sh" \
-               "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-               "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+               "$PROJECT_PATH/scripts/template_engine.sh" \
+               "$PROJECT_PATH/templates/apply-sql.yml.template" \
+               "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "apply-sql-scripts: error starting job" < "$TMP_ERR"
             SUCCESS=false
@@ -2489,9 +2487,9 @@ apply-sql-scripts() {
                 fi
             fi
             # delete apply-sql-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            "$PROJECT_PATH/scripts/template_engine.sh" \
+                "$PROJECT_PATH/templates/apply-sql.yml.template" \
+                "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "apply-sql-scripts: error deleting job" < "$TMP_ERR"
                 SUCCESS=false
@@ -2528,9 +2526,9 @@ apply-sql-config() {
 
     if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
         # start sqlconfig-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/sqlconfig.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/sqlconfig.yml.template" \
+            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "apply-sql-config: error starting job" < "$TMP_ERR"
             SUCCESS=false
@@ -2558,9 +2556,9 @@ apply-sql-config() {
                 fi
             fi
             # delete sqlconfig-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/sqlconfig.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            "$PROJECT_PATH/scripts/template_engine.sh" \
+                "$PROJECT_PATH/templates/sqlconfig.yml.template" \
+                "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "apply-sql-config: error deleting job" < "$TMP_ERR"
                 SUCCESS=false
@@ -2599,9 +2597,9 @@ apply-json-config() {
 
     if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
         # start jsonconfig-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/jsonconfig.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/jsonconfig.yml.template" \
+            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "apply-json-config: error starting job" < "$TMP_ERR"
             SUCCESS=false
@@ -2630,9 +2628,9 @@ apply-json-config() {
             fi
             
             # delete jsonconfig-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/jsonconfig.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            "$PROJECT_PATH/scripts/template_engine.sh" \
+                "$PROJECT_PATH/templates/jsonconfig.yml.template" \
+                "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "apply-json-config: error deleting job" < "$TMP_ERR"
                 SUCCESS=false
@@ -2671,9 +2669,9 @@ apply-dbmigrate() {
 
     if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
         # start dbmigrate-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/dbmigrate.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/dbmigrate.yml.template" \
+            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "apply-dbmigrate: error starting job" < "$TMP_ERR"
             SUCCESS=false
@@ -2701,9 +2699,9 @@ apply-dbmigrate() {
                 fi
             fi
             # delete dbmigrate-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/dbmigrate.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            "$PROJECT_PATH/scripts/template_engine.sh" \
+                "$PROJECT_PATH/templates/dbmigrate.yml.template" \
+                "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "apply-dbmigrate: error deleting job" < "$TMP_ERR"
                 SUCCESS=false
@@ -2793,9 +2791,9 @@ dump-create() {
     
     if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
         # start dump-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/dump.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/dump.yml.template" \
+            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "dump-create: error starting job" < "$TMP_ERR"
             SUCCESS=false
@@ -2824,9 +2822,9 @@ dump-create() {
                 fi
             fi
             # delete dump-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/dump.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            "$PROJECT_PATH/scripts/template_engine.sh" \
+                "$PROJECT_PATH/templates/dump.yml.template" \
+                "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "dump-create: error deleting job" < "$TMP_ERR"
                 SUCCESS=false
@@ -2859,15 +2857,15 @@ update-config() {
     SUCCESS=true
     BAK="bak_$(date '+%Y-%m-%d.%H.%M.%S')"
 
-    if ! cp "${ENV_DIR}/${CONFIG_FILE}" "${ENV_DIR}/${CONFIG_FILE}.$BAK" 2> "$TMP_ERR"; then
+    if ! cp "$CONFIG_FILE" "$CONFIG_FILE.$BAK" 2> "$TMP_ERR"; then
         log_json ERROR "update-config: error creating backup copy" < "$TMP_ERR"
         SUCCESS=false
     else
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/config.properties.template" \
-            "${ENV_DIR}/${CONFIG_FILE}.$BAK" > "${ENV_DIR}/${CONFIG_FILE}" 2> "$TMP_ERR"
+        "$PROJECT_PATH/scripts/template_engine.sh" \
+            "$PROJECT_PATH/templates/config.properties.template" \
+            "$CONFIG_FILE.$BAK" > "$CONFIG_FILE" 2> "$TMP_ERR"
         if [ $? -ne 0 ]; then
-            log_json ERROR "update-config: error updating config file. Please analyze the problem, restore the config file from ${CONFIG_FILE}.$BAK and retry." < "$TMP_ERR"
+            log_json ERROR "update-config: error updating config file. Please analyze the problem, restore the config file from $CONFIG_FILE.$BAK and retry." < "$TMP_ERR"
             SUCCESS=false
         else
             log_json INFO "update-config: successfully updated config file" < /dev/null
@@ -2884,9 +2882,9 @@ update-config() {
 update-doc() {
     SUCCESS=true
 
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/index.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/index.html" 2> "$TMP_ERR"
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+        "$PROJECT_PATH/templates/index.template" \
+        "$CONFIG_FILE" > "$ENV_DIR/index.html" 2> "$TMP_ERR"
     if [ $? -ne 0 ]; then
         log_json ERROR "update-doc: error updating HTML docu." < "$TMP_ERR"
         SUCCESS=false
@@ -2903,9 +2901,9 @@ update-doc() {
 update-ws-props() {
     SUCCESS=true
 
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/ws.properties.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties" 2> "$TMP_ERR"
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+        "$PROJECT_PATH/templates/ws.properties.template" \
+        "$CONFIG_FILE" > "$ENV_DIR/ws.properties" 2> "$TMP_ERR"
     if [ $? -ne 0 ]; then
         log_json ERROR "update-ws-props: error updating ws.properties." < "$TMP_ERR"
         SUCCESS=false
@@ -2922,9 +2920,9 @@ update-ws-props() {
 update-geb-props() {
     SUCCESS=true
 
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/geb.properties.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties" 2> "$TMP_ERR"
+    "$PROJECT_PATH/scripts/template_engine.sh" \
+        "$PROJECT_PATH/templates/geb.properties.template" \
+        "$CONFIG_FILE" > "$ENV_DIR/geb.properties" 2> "$TMP_ERR"
     if [ $? -ne 0 ]; then
         log_json ERROR "update-geb-props: error updating geb.properties." < "$TMP_ERR"
         SUCCESS=false
@@ -2938,23 +2936,25 @@ update-geb-props() {
 #-------------------------------------------------------------------------------
 # update command line interface
 #-------------------------------------------------------------------------------
+# TODO remove!
 update-cli() {
-    exec "${PROJECT_PATH}/scripts/template_engine.sh" \
-         "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
-         "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/devenv-cli.sh" 2> /dev/null
+    exec "$PROJECT_PATH/scripts/template_engine.sh" \
+         "$PROJECT_PATH/templates/devenv-cli.sh.template" \
+         "$CONFIG_FILE" > "$ENV_DIR/devenv-cli.sh" 2> /dev/null
 }
 
 #-------------------------------------------------------------------------------
 # update all
 #-------------------------------------------------------------------------------
+# TODO remove update of cli!
 update-all() {
     update-config &&
         update-doc &&
         update-ws-props &&
         update-geb-props &&
-        exec "${PROJECT_PATH}/scripts/template_engine.sh" \
-             "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
-             "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/devenv-cli.sh" 2> /dev/null
+        exec "$PROJECT_PATH/scripts/template_engine.sh" \
+             "$PROJECT_PATH/templates/devenv-cli.sh.template" \
+             "$CONFIG_FILE" > "$ENV_DIR/devenv-cli.sh" 2> /dev/null
 }
 
 ################################################################################
@@ -3310,15 +3310,41 @@ log-access() (
 # read configuration
 ################################################################################
 
-# read current config
-if ! ( set -e; . "${ENV_DIR}/${CONFIG_FILE}" ); then
-    echo "error reading '${ENV_DIR}/${CONFIG_FILE}'" 1>&2
+# TODO
+# determine PROJECT_PATH
+# determine CONFIG_FILE
+# determine ENV_DIR to replace the template var. Later the according variable ENV_DIR should not be needed any longer and has to be eliminated!
+# determine EnvId
+
+# if $1 is a file, it's assumed to be the config-file
+if [ ! -z "$1" -a -f "$1" ]; then
+    CONFIG_FILE="$1"
+    shift
+elif [ ! -z "$DEVENV4IOM_CONFIG" -a -f "$DEVENV4IOM_CONFIG" ]; then
+    CONFIG_FILE="$DEVENV4IOM_CONFIG"
+else
+    log_json ERROR "No configuration file set." < /dev/null
     exit 1
 fi
-. "${ENV_DIR}/${CONFIG_FILE}"
+
+log_json INFO "Reading configuration from $CONFIG_FILE" < /dev/null
+
+# read current config
+if ! ( set -e; . "$CONFIG_FILE" ); then
+    echo "error reading '$CONFIG_FILE'" 1>&2
+    exit 1
+fi
+. "$CONFIG_FILE"
+
+
+# TODO ENV_DIR has to be eliminated completely!
+ENV_DIR=$(dirname "$CONFIG_FILE")
+
+# determine PROJECT_PATH
+PROJECT_PATH="$(dirname $BASH_SOURCE)/..
 
 # get template variables
-. ${PROJECT_PATH}/scripts/template-variables
+. $PROJECT_PATH/scripts/template-variables
 
 ################################################################################
 # read command line arguments
