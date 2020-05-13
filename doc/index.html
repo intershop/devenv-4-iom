@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>${ID} IOM development environment</title>
+    <title>IOM development environment</title>
 
     <!--meta http-equiv="refresh" content="60"-->
 
@@ -38,7 +38,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">${ID}</a>
+            <a class="navbar-brand" href="#">devenv-4-iom</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -117,18 +117,6 @@
                   <li><a href="#troubleshooting--wrong-context">Wrong Kubernetes context</a></li>
                 </ul>
               </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Links <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="http://${HOST_IOM}:${PORT_IOM_SERVICE}/omt" target="_blank">OMT</a></li>
-                  <li><a href="http://${HOST_IOM}:${PORT_IOM_SERVICE}/dbdoc/" target="_blank">DB Documentation</a></li>
-                  <li><a href="http://${HOST_IOM}:${PORT_IOM_SERVICE}/omt-help/" target="_blank">Online Help</a></li>
-                  <li><a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console" target="_blank">WildFly console</a></li>
-                  <li><a href="http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/overview?namespace=${EnvId}" target="_blank">Kubernetes Dashboard</a></li>
-                  <li><a href="http://${HOST_IOM}:${PORT_MAILHOG_UI_SERVICE}" target="_blank">Mails (Web-UI)</a></li>
-                  <li><a href="http://${HOST_IOM}:${PORT_MAILHOG_UI_SERVICE}/api/v2/messages" target="_blank">Mails (REST)</a></li>
-                </ul>
-              </li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -136,7 +124,7 @@
 
       <div class="container">
 
-        <h1>${ID} IOM development environment</h1>
+        <h1>IOM development environment</h1>
 
         <h2 id="first-steps">First steps</h2>
         <h3 id="first-steps--overview">Overview</h3>
@@ -179,29 +167,29 @@ docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT
           <samp>devenv-4-iom</samp> provides a very easy way to setup all these systems and makes them work together. Just create the cluster by executing the following command:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh create cluster
+devenv-cli.sh create cluster
         </div></code></pre>
         <p>
           The process of cluster creation will take some minutes (between 3 and 10, depending on your hardware). During this time we should take a look at the statuses of the (sub-)systems. 
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # get status of storage
-${ENV_DIR}/devenv-cli.sh info storage
+devenv-cli.sh info storage
 
 # get info about mail-server
-${ENV_DIR}/devenv-cli.sh info mailserver
+devenv-cli.sh info mailserver
 
 # get info about postgres-server
-${ENV_DIR}/devenv-cli.sh info postgres
+devenv-cli.sh info postgres
 
 # get info about IOM server
-${ENV_DIR}/devenv-cli.sh info iom
+devenv-cli.sh info iom
         </div></code></pre>
         <p>
           Mail-server and PostgreSQL-server are starting very quickly. The output of the according <samp>'info'</samp> commands contain a section 'Kubernetes', which shows the state. For these two systems, the state should be <samp>running</samp> even after a short after creating the cluster. The box below shows an example output: 
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh info postgres
+devenv-cli.sh info postgres
 ...
 --------------------------------------------------------------------------------
 Kubernetes:
@@ -217,7 +205,7 @@ postgres   1/1     Running   0          8s
           The start of IOM will take much longer. You can use the <samp>'info iom'</samp> command, to check the state periodically. After some minutes IOM should be in running state too. The according output should look like this:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh info iom
+devenv-cli.sh info iom
 ...
 --------------------------------------------------------------------------------
 Kubernetes:
@@ -234,7 +222,7 @@ iom-6c587ddd87-d7qb2   1/1     Running   0          5m5s
           Now IOM is running and we can access its GUI. The <samp>'info iom'</samp> command provides the according information about the URL you have to use. The following box shows an example:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh info iom
+devenv-cli.sh info iom
 ...
 --------------------------------------------------------------------------------
 Links:
@@ -255,7 +243,7 @@ Wildfly (admin:admin):      http://Andreas-Herolds-MacBook.local:9990/console
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # press ^C to stop printing logs
-${ENV_DIR}/devenv-cli.sh log access all -f
+devenv-cli.sh log access all -f
 ...
 {
   "eventSource": "web-access",
@@ -331,7 +319,7 @@ select * from "CountryDefDO";
           The following box shows an example, where the file is named <samp>/Users/andreas/test.sql</samp>. If you have <samp>jq</samp> installed, you can pipe the output through <samp>jq</samp> to get pretty-printed messages.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply sql-script /Users/andreas/test.sql 
+devenv-cli.sh apply sql-script /Users/andreas/test.sql 
 { "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:23Z", "level":"INFO", "message":"apply-sql-scripts: job successfully started", "processName":"devenv-cli.sh", "additionalInfo":"job.batch/apply-sql-job created", "configName":"ci" }
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":"ci","additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_PASS=oms_pw\nOMS_USER_CONNECTION_SUFFIX=\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=2.17.0.0-SNAPSHOT"}
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":"ci"}
@@ -352,8 +340,8 @@ ${ENV_DIR}/devenv-cli.sh apply sql-script /Users/andreas/test.sql
           In difference to the cluster-creation step, which created the persistent storage too, the cluster-delete step is not touching persistent storage. This way, you could simply create a new cluster, that is using the old database data. If we now want to delete persistent storage, we have to do this explicitely by executing the according command.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete cluster       
-${ENV_DIR}/devenv-cli.sh delete storage
+devenv-cli.sh delete cluster       
+devenv-cli.sh delete storage
         </div></code></pre>
         <p>
           We have now used <samp>devenv-cli.sh</samp> a lot. If you want to explore all features of this program, just call it with argument <samp>-h</samp>.
@@ -380,11 +368,8 @@ ${ENV_DIR}/devenv-cli.sh delete storage
           You can run <samp>'update all'</samp> so often you want. Since HTML documentation also references variables from configuration, it's recommended to update it after each configuration change.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Update devenv-cli.sh files in ${ENV_DIR}
-"${ENV_DIR}/devenv-cli.sh" update cli
-
 # Update all remaining files in ${ENV_DIR}
-"${ENV_DIR}/devenv-cli.sh" update all
+devenv-cli.sh update all
         </div></code></pre>     
 
         <h3 id="configurations--reset-config">Reset current configuration</h3>
@@ -397,14 +382,14 @@ ${ENV_DIR}/devenv-cli.sh delete storage
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Delete IOM cluster
-"${ENV_DIR}/devenv-cli.sh" delete cluster
+devenv-cli.sh delete cluster
               
-# Update config.properties in ${ENV_DIR}
-"${ENV_DIR}/devenv-cli.sh" update config
+# Update config.properties 
+devenv-cli.sh update config
 # now check the reseted entries and change them to your needs
 
 # Create IOM cluster again
-"${ENV_DIR}/devenv-cli.sh" create cluster
+devenv-cli.sh create cluster
         </div></code></pre>   
         
         <h3 id="configurations--info">Getting info about components</h3>
@@ -422,16 +407,16 @@ ${ENV_DIR}/devenv-cli.sh delete storage
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Get info about IOM
-"${ENV_DIR}/devenv-cli.sh" info iom
+devenv-cli.sh info iom
 
 # Get info about mail-server
-"${ENV_DIR}/devenv-cli.sh" info mailserver
+devenv-cli.sh info mailserver
 
 # Get info about PostgreSQL
-"${ENV_DIR}/devenv-cli.sh" info postgres
+devenv-cli.sh info postgres
 
 # Get info about Storage
-"${ENV_DIR}/devenv-cli.sh" info storage
+devenv-cli.sh info storage
         </div></code></pre> 
 
         <h3 id="configurations--add-config">Create an new configuration/instance</h3>
@@ -487,10 +472,10 @@ ID=2.16.0.0-SNAPSHOT
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Delete IOM cluster
-"${ENV_DIR}/devenv-cli.sh" delete cluster
+devenv-cli.sh delete cluster
 
 # Delete storage
-"${ENV_DIR}/devenv-cli.sh" delete storage
+devenv-cli.sh delete storage
 
 # Do this only, if you really sure
 rm -fr "${ENV_DIR}"
@@ -527,7 +512,7 @@ docker system prune -a -f
 docker login docker-build.rnd.intershop.de
 
 # now create the cluster
-"${ENV_DIR}/devenv-cli.sh" create cluster
+devenv-cli.sh create cluster
         </div></code></pre>
 
         <h3 id="operations--delete-cluster">Delete whole IOM cluster</h3>
@@ -545,37 +530,37 @@ docker login docker-build.rnd.intershop.de
           Please pay attention, that persistent storage will never be deleted by <samp>'delete cluster'</samp> command.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete cluster
+devenv-cli.sh delete cluster
         </div></code></pre>
 
         <h3 id="operations--create-namespace">Create namespace</h3>
         <p>Namespace is required, to isolate the devenv-4-iom from other resources and from resources of other configurations. The following command creates a namespace, based on the ID you have specified in your properties.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh create namespace
+devenv-cli.sh create namespace
         </div></code></pre>
 
         <h3 id="operations--delete-namespace">Delete namespace</h3>
         <p>The following command deletes the namespace and all resouces assigned to this namespace.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete namespace
+devenv-cli.sh delete namespace
         </div></code></pre>
 
         <h3 id="operations--create-mailserver">Create mailserver</h3>
         <p>The following command creates a mailserver, that is used to receive mails from IOM.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh create mailserver
+devenv-cli.sh create mailserver
         </div></code></pre>
 
         <h3 id="operations--delete-mailserver">Delete mailserver</h3>
         <p>The following command deletes the mailserver.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete mailserver
+devenv-cli.sh delete mailserver
         </div></code></pre>
 
         <h3 id="operations--create-storage">Create local Docker volume</h3>
         <p>The following command creates a local Docker volume to be used to keep database data. This command has effect only, if <samp>KEEP_DATABASE_DATA</samp> is set to <samp>true</samp></p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh create storage
+devenv-cli.sh create storage
         </div></code></pre>
 
         <h3 id="operations--delete-storage">Delete local Docker volume</h3>
@@ -583,20 +568,20 @@ ${ENV_DIR}/devenv-cli.sh create storage
           <strong>Note!</strong>
           <p>If you would like to remove the database data, you just have to remove the persistent database data volume with the following command. This command has effect only, if a local Docker volume was created before (<samp>KEEP_DATABASE_DATA</samp> is set to <samp>true</samp>)</p><br>
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete storage
+devenv-cli.sh delete storage
           </div></code></pre>
         </div>
 
         <h3 id="operations--create-postgres">Create postgres database</h3>
         <p>The following command creates the postgres database. This command has effect only, if an internal database server is used (when <samp>PGHOST</samp> is not set).</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh create postgres
+devenv-cli.sh create postgres
         </div></code></pre>
 
         <h3 id="operations--delete-postgres">Delete postgres database</h3>
         <p>The following command deletes the postgres database. This command has effect only, if an internal database was created before (when <samp>PGHOST</samp> is not set)</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete postgres
+devenv-cli.sh delete postgres
         </div></code></pre>
 
         <h3 id="operations--create-iom">Create IOM</h3>
@@ -612,13 +597,13 @@ ${ENV_DIR}/devenv-cli.sh delete postgres
 docker login docker-build.rnd.intershop.de
 
 # now create IOM
-${ENV_DIR}/devenv-cli.sh create iom
+devenv-cli.sh create iom
         </div></code></pre>
 
         <h3 id="operations--delete-iom">Delete IOM</h3>
         <p>The following command deletes the IOM application server.</p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh delete iom
+devenv-cli.sh delete iom
         </div></code></pre>
 
         <!--
@@ -649,10 +634,10 @@ ${ENV_DIR}/devenv-cli.sh delete iom
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # redeploy omt selectively by adding one more parameter: a regular-expression to select the artifact to be redeployed
-${ENV_DIR}/devenv-cli.sh apply deployment omt
+devenv-cli.sh apply deployment omt
 
 # redeploy all
-${ENV_DIR}/devenv-cli.sh apply deployment
+devenv-cli.sh apply deployment
         </div></code></pre>
         <p>
           Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> to update/add deployments during runtime.
@@ -672,7 +657,7 @@ ${ENV_DIR}/devenv-cli.sh apply deployment
           Once you have configured your developer VM this way, you can apply custom mail templates by the following command:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply mail-templates
+devenv-cli.sh apply mail-templates
         </div></code></pre>
         <p>
           If <samp>CUSTOM_TEMPLATES_DIR</samp> is configured, the templates are also copied when starting IOM.
@@ -692,7 +677,7 @@ ${ENV_DIR}/devenv-cli.sh apply mail-templates
           Once you have configured your developer VM this way, you can apply custom xsl templates by the following command:
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply xsl-templates
+devenv-cli.sh apply xsl-templates
         </div></code></pre>
         <p>
           if <samp>CUSTOM_XSLT_DIR</samp> is configured, the templates are also copied when starting IOM.
@@ -713,7 +698,7 @@ ${ENV_DIR}/devenv-cli.sh apply xsl-templates
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # adapt third paramater according your needs
-${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
+devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
         </div></code></pre>
         
         <h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
@@ -728,7 +713,7 @@ ${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_store
           You can and should have an eye on the logs created by the migration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply dbmigrate
+devenv-cli.sh apply dbmigrate
         </div></code></pre>
         <p>
           If <samp>CUSTOM_DBMIGRATE_DIR</samp> is configured, the custom dbmigrate scripts are also applied when starting IOM.
@@ -747,7 +732,7 @@ ${ENV_DIR}/devenv-cli.sh apply dbmigrate
           You should have an eye on the logs created by the configuration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply sql-config
+devenv-cli.sh apply sql-config
         </div></code></pre>
         <p>
           If <samp>CUSTOM_SQLCONFIG_DIR</samp> is configured, the custom sql configuration is also applied when starting IOM.
@@ -765,7 +750,7 @@ ${ENV_DIR}/devenv-cli.sh apply sql-config
           You should have an eye on the logs created by the configuration process. These logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply json-config
+devenv-cli.sh apply json-config
         </div></code></pre>
         <p>
           If <samp>CUSTOM_JSONCONFIG_DIR</samp> is configured, the custom json configuration is also applied when starting IOM.
@@ -791,7 +776,7 @@ ${ENV_DIR}/devenv-cli.sh apply json-config
           You should inspect the logs created, when running the config container. Was really the dump loaded, you think it was? The logs of config process are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh dump load
+devenv-cli.sh dump load
         </div></code></pre>
 
         <h3 id="development--dump-create">Create dump</h3>
@@ -804,7 +789,7 @@ ${ENV_DIR}/devenv-cli.sh dump load
           You should check the output of the dump-job. The logs of the job a printed in json format. Verbosity can be controlled by the configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh dump create
+devenv-cli.sh dump create
         </div></code></pre>
         <p>
           If <samp>CUSTOM_DUMP_DIR</samp> is configured, the newest custom dump will be loaded, when starting IOM with an empty database (according to the <a href="#development--load-dump">load-rules</a>).
@@ -814,7 +799,7 @@ ${ENV_DIR}/devenv-cli.sh dump create
         <p>To develop e-mail templates, to test that emails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail-server UI and REST interface is given by command <samp>'info mailserver'</samp>, provided by command line interface.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh info mailserver
+devenv-cli.sh info mailserver
         </div></code></pre>
 
         <h3 id="development--testing">Testing</h3>
@@ -824,7 +809,7 @@ ${ENV_DIR}/devenv-cli.sh info mailserver
           To apply stored procedures, just use the command <a href="#development--apply-sql"><samp>'apply sql-scripts'</samp></a> and set the parameter to the directory containing the stored procedures, required for testing.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
+devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
         </div></code></pre>
         
         <h4 id="run-tests">Run single geb-tests or a group of geb-tests</h4>
@@ -832,7 +817,7 @@ ${ENV_DIR}/devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_store
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # make sure, geb.properties are reflecting last version of configuration
-${ENV_DIR}/devenv-cli.sh update update geb-props
+devenv-cli.sh update update geb-props
 
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
@@ -849,7 +834,7 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # make sure, ws.properties are reflecting last version of configuration
-${ENV_DIR}/devenv-cli.sh update update ws-props
+devenv-cli.sh update update ws-props
 
 # Go to the oms.tests directory in your oms source directory
 cd ${IOM_APP_SRC_DIR}/oms.tests
@@ -1079,15 +1064,15 @@ cmd_producing_json | jq 'select(.level == "ERROR") | {timestamp: .timestamp, mes
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # example of jq-usage along with devenv-cli.sh
 # creates a pretty-printed version of log-messages 
-${ENV_DIR}/devenv-cli.sh create iom | jq
+devenv-cli.sh create iom | jq
 
 # never pipe output of devenv-cli.sh through jq, when requesting help
 # example:
-${ENV_DIR}/devenv-cli.sh create iom --help
+devenv-cli.sh create iom --help
 
 # never pipe the output of 'info *' command through jq
 # example:
-${ENV_DIR}/devenv-cli.sh info iom
+devenv-cli.sh info iom
         </div></code></pre>
 
         <h3 id="log-messages--iom-containers">Log-messages of IOM containers</h3>
@@ -1161,14 +1146,14 @@ kubectl logs --tail=1 -f iom-6c587ddd87-42k4f --namespace 21700snapshot -c iom |
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # show FATAL, ERROR and WARN messages of IOM's config container and format them
-${ENV_DIR}/devenv-cli.sh log config
+devenv-cli.sh log config
 
 # follow FATAL, ERROR and WARN messages of IOM's application container and format the messages
-${ENV_DIR}/devenv-cli.sh log app -f
+devenv-cli.sh log app -f
 
 # follow all access log entries, that have a response time > 100 ms
 # do not format messages to be able to process output by a second jq stage
-${ENV_DIR}/devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
+devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
         </div></code></pre>
 
         <h2 id="troubleshooting">Troubleshooting</h2>
