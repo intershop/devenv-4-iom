@@ -16,7 +16,12 @@ $ME
     command line interface for $ID.
 
 SYNOPSIS
-    $ME COMMAND
+    $ME [CONFIG-FILE] COMMAND
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 COMMANDS
     info|i*            get information about kubernetes resources
@@ -28,7 +33,7 @@ COMMANDS
     update|u*          update devenv4iom specific artifacts
     log|l*             simple access to log-messages
 
-Run '$ME COMMAND --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] COMMAND --help|-h' for more information on a command.
 EOF
 }
 
@@ -39,7 +44,12 @@ help-info() {
 display information about Kubernetes/Docker resources
 
 SYNOPSIS
-    $ME info RESOURCE
+    $ME [CONFIG-FILE] info RESOURCE
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 RESOURCE
     iom|i*             view information about iom
@@ -47,7 +57,7 @@ RESOURCE
     mailserver|m*      view information about mailserver
     storage|s*         view information about storage
 
-Run '$ME info RESOURCE  --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] info RESOURCE  --help|-h' for more information on a command.
 EOF
 }
 
@@ -58,7 +68,12 @@ help-info-iom() {
 view information about IOM
 
 SYNOPSIS
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -69,7 +84,12 @@ help-info-postgres() {
 view information about postgres
 
 SYNOPSIS
-    $ME info postgres
+    $ME [CONFIG-FILE] info postgres
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -80,7 +100,12 @@ help-info-mailserver() {
 view information about mailserver
 
 SYNOPSIS
-    $ME info mailserver
+    $ME [CONFIG-FILE] info mailserver
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -91,7 +116,12 @@ help-info-storage() {
 view information about storage
 
 SYNOPSIS
-    $ME info storage
+    $ME [CONFIG-FILE] info storage
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -102,7 +132,12 @@ help-info-cluster() {
 view information about cluster
 
 SYNOPSIS
-    $ME info cluster
+    $ME [CONFIG-FILE] info cluster
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -113,7 +148,12 @@ help-create() {
 create Kubernetes/Docker resource
 
 SYNOPSIS
-    $ME create RESOURCE
+    $ME [CONFIG-FILE] create RESOURCE
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 RESOURCE
     storage|s*         create persistant local Docker storage
@@ -123,7 +163,7 @@ RESOURCE
     iom|i*             create iom server
     cluster|c*         create all resources
 
-Run '$ME create RESOURCE --help|-h' for more information
+Run '$ME [CONFIG-FILE] create RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -134,12 +174,17 @@ help-create-storage() {
 create a local Docker volume for persistent storage of DB data
 
 SYNOPSIS
-    $ME create storage
+    $ME [CONFIG-FILE] create storage
 
 OVERVIEW
     Creates a Docker volume, depending on configuration variable 
     KEEP_DATABASE_DATA. If you want to use persistent storage, the Docker volume
     has to be created before starting postgres.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     KEEP_DATABASE_DATA - only when set to true, the Docker volume will be 
@@ -147,9 +192,9 @@ CONFIG
     ID - name of Docker volume will be derived from ID
 
 SEE
-    $ME delete storage
-    $ME info   storage
-    $ME create postgres
+    $ME [CONFIG-FILE] delete storage
+    $ME [CONFIG-FILE] info   storage
+    $ME [CONFIG-FILE] create postgres
 
 BACKGROUND
     # executed only, if KEEP_DATABASE_DATA is true
@@ -164,17 +209,22 @@ help-create-namespace() {
 creates a Kubernetes namespace, which will be used for all other resources
 
 SYNOPSIS
-    $ME create namespace
+    $ME [CONFIG-FILE] create namespace
 
 OVERVIEW
     Kubernetes namespaces are isolating different devenv4iom instances from
     each other. 
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     ID - the name of namespace is derived from the ID of current configuration.
 
 SEE
-    $ME delete namespace
+    $ME [CONFIG-FILE] delete namespace
 
 BACKGROUND
     kubectl create namespace $EnvId
@@ -188,10 +238,15 @@ help-create-mailserver() {
 creates a mail-server, that is used by IOM to send mails
 
 SYNOPSIS
-    $ME create mailserver
+    $ME [CONFIG-FILE] create mailserver
 
 OVERVIEW
     Creates a mail-server and according service.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     MAILHOG_IMAGE - defines the image of the mailserver to be used.
@@ -199,8 +254,8 @@ CONFIG
     ID - the namespace to used is derived from ID
 
 SEE
-    $ME delete mailserver
-    $ME info pods
+    $ME [CONFIG-FILE] delete mailserver
+    $ME [CONFIG-FILE] info pods
 
 BACKGROUND
     "$PROJECT_PATH/scripts/template_engine.sh" \\
@@ -217,11 +272,16 @@ help-create-postgres() {
 creates postgres server for use by IOM
 
 SYNOPSIS
-    $ME create postgres
+    $ME [CONFIG-FILE] create postgres
 
 OVERVIEW
     Creates postgres-server and according service. If KEEP_DATABASE_DATA is
     set to true, the Docker volume has to be created in advance. 
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     DOCKER_DB_IMAGE - docker image to be used
@@ -234,9 +294,9 @@ CONFIG
       derived from ID of current configuration.
 
 SEE
-    $ME delete postgres
-    $ME create storage
-    $ME info pods
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] info pods
 
 BACKGROUND
     # Link Docker volume to database storage (only if KEEP_DATABASE_DATA == true)
@@ -261,10 +321,15 @@ help-create-iom() {
 creates IOM server
 
 SYNOPSIS
-    $ME create iom
+    $ME [CONFIG-FILE] create iom
 
 OVERVIEW
     Creates iom-server and according service.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
@@ -273,8 +338,8 @@ CONFIG
     IMAGE_PULL_POLICY - defines when to pull images from origin
 
 SEE
-    $ME delete iom
-    $ME info pods
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] info pods
 
 BACKGROUND
     "$PROJECT_PATH/scripts/template_engine.sh" \\
@@ -291,19 +356,24 @@ help-create-cluster() {
 creates all resources, required by IOM
 
 SYNOPSIS
-    $ME create cluster
+    $ME [CONFIG-FILE] create cluster
 
 OVERVIEW
     Creates all resources to run IOM in devenv4iom (storage, namespace, 
     postgres, mailserver, iom). Finally, this is a shorcut for a couple of
     different commands only.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 SEE
-    $ME create storage
-    $ME create namespace
-    $ME create postgres
-    $ME create mailserver
-    $ME create iom
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] create namespace
+    $ME [CONFIG-FILE] create postgres
+    $ME [CONFIG-FILE] create mailserver
+    $ME [CONFIG-FILE] create iom
 EOF
 }
 
@@ -314,7 +384,12 @@ help-delete() {
 delete Kubernetes/Docker resource
 
 SYNOPSIS
-    $ME delete RESOURCE
+    $ME [CONFIG-FILE] delete RESOURCE
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 RESOURCE
     storage|s*         delete persistant local Docker storage
@@ -325,7 +400,7 @@ RESOURCE
     iom|i*             delete iom server
     cluster|c*         delete all resources, except storage
 
-Run '$ME delete RESOURCE --help|-h' for more information
+Run '$ME [CONFIG-FILE] delete RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -336,19 +411,24 @@ help-delete-storage() {
 deletes local Docker volume, that is used for persistent storage of DB data
 
 SYNOPSIS
-    $ME delete storage
+    $ME [CONFIG-FILE] delete storage
 
 OVERVIEW
     Deletes the Docker volume used for persistent storage of database data.
     Before deleting storage, you have to delete postgres.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     ID - name of Docker volume will be derived from ID.
 
 SEE
-    $ME create storage
-    $ME info   storage
-    $ME delete postgres
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] info   storage
+    $ME [CONFIG-FILE] delete postgres
 
 BACKGROUND
     docker volume rm $EnvId-pgdata
@@ -362,18 +442,23 @@ help-delete-namespace() {
 deletes the Kubernetes namespace, used be current IOM installation
 
 SYNOPSIS
-    $ME delete namespace
+    $ME [CONFIG-FILE] delete namespace
 
 OVERVIEW
     When deleting the namespace, all resources of this namespace are deleted
     too. These are iom, posgres and mailserver, but not the Docker volume
     used for persistent storage of database data.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     ID - the name of namespace is derived from the ID of current configuration.
 
 SEE
-    $ME create namespace
+    $ME [CONFIG-FILE] create namespace
 
 BACKGROUND
     kubectl delete namespace ${EnvId}
@@ -387,17 +472,22 @@ help-delete-mailserver() {
 deletes mail-server, that is used by IOM to send mails
 
 SYNOPSIS
-    $ME delete mailserver
+    $ME [CONFIG-FILE] delete mailserver
 
 OVERVIEW
     Deletes the mail-server and the according service.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     ID - the namespace, where mail-server is deleted, is derived from ID
 
 SEE
-    $ME create mailserver
-    $ME info   mailserver
+    $ME [CONFIG-FILE] create mailserver
+    $ME [CONFIG-FILE] info   mailserver
 
 BACKGROUND
     "$PROJECT_PATH/scripts/template_engine.sh" \\
@@ -414,18 +504,23 @@ help-delete-postgres() {
 deletes postgres server used by IOM
 
 SYNOPSIS
-    $ME delete postgres
+    $ME [CONFIG-FILE] delete postgres
 
 OVERVIEW
     Deletes postgres-server and according service.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     ID - the namespace, where postgres is deleted from, is derived from ID
 
 SEE
-    $ME create postgres
-    $ME info   postgres
-    $ME info   pods
+    $ME [CONFIG-FILE] create postgres
+    $ME [CONFIG-FILE] info   postgres
+    $ME [CONFIG-FILE] info   pods
 
 BACKGROUND
     # Stop/Remove postgres database
@@ -450,18 +545,23 @@ help-delete-iom() {
 deletes IOM
 
 SYNOPSIS
-    $ME delete iom
+    $ME [CONFIG-FILE] delete iom
 
 OVERVIEW
     Deletes IOM and the according service.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 CONFIG
     ID - the namespace, where iom is deleted from, is derived from ID
 
 SEE
-    $ME create iom
-    $ME info   iom
-    $ME info   pods
+    $ME [CONFIG-FILE] create iom
+    $ME [CONFIG-FILE] info   iom
+    $ME [CONFIG-FILE] info   pods
 
 BACKGROUND
     "$PROJECT_PATH/scripts/template_engine.sh" \\
@@ -478,7 +578,7 @@ help-delete-cluster() {
 deletes all resources used by IOM, except storage
 
 SYNOPSIS
-    $ME delete cluster
+    $ME [CONFIG-FILE] delete cluster
 
 OVERVIEW
     Deletes all resources used by IOM, except storage. These are iom, postgres,
@@ -487,13 +587,18 @@ OVERVIEW
     Storage will not be deleted, as it is the basic idea of persistent storage,
     to survive the deletion of postgres.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 SEE
-    $ME delete iom
-    $ME delete postgres
-    $ME delete mailserver
-    $ME delete postgres
-    $ME delete namespace
-    $ME delete storage
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] delete mailserver
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] delete namespace
+    $ME [CONFIG-FILE] delete storage
 EOF
 }
 
@@ -504,14 +609,19 @@ help-wait() {
 wait for Kubernetes resource to get ready
 
 SYNOPSIS
-    $ME wait RESOURCE
+    $ME [CONFIG-FILE] wait RESOURCE
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 RESOURCE
     mailserver|m*      wait for mail server
     postgres|p*        wait for postgres server
     iom|i*             wait for iom server
 
-Run '$ME wait RESOURCE --help|-h' for more information
+Run '$ME [CONFIG-FILE] wait RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -522,7 +632,7 @@ help-wait-mailserver() {
 wait for mailserver to get ready
 
 SYNOPSIS
-    $ME wait mailserver [TIMEOUT]
+    $ME [CONFIG-FILE] wait mailserver [TIMEOUT]
 
 ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
@@ -531,6 +641,11 @@ OVERVIEW
     Waits for the mailserver pod to get ready. The "wait mailserver" command
     is intended to be used in scripts, which are relying on the availability of
     the mail server.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -541,7 +656,7 @@ help-wait-postgres() {
 wait for postgres to get ready
 
 SYNOPSIS
-    $ME wait postgres [TIMEOUT]
+    $ME [CONFIG-FILE] wait postgres [TIMEOUT]
 
 ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
@@ -550,6 +665,11 @@ OVERVIEW
     Waits for the postgres pod to get ready. The "wait postgres" command
     is intended to be used in scripts, which are relying on the availability of
     the postgres server.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -560,7 +680,7 @@ help-wait-iom() {
 wait for iom to get ready
 
 SYNOPSIS
-    $ME wait iom [TIMEOUT]
+    $ME [CONFIG-FILE] wait iom [TIMEOUT]
 
 ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
@@ -568,6 +688,11 @@ ARGUMENTS
 OVERVIEW
     Waits for the iom pod to get ready. The "wait iom" command is intended to be
     used in scripts, which are relying on the availability of the iom server.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 EOF
 }
 
@@ -578,7 +703,12 @@ help-apply() {
 apply customization
 
 SYNOPSIS
-    $ME apply RESOURCE
+    $ME [CONFIG-FILE] apply RESOURCE
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 RESOURCE
     deployment|de*     apply custom deployment artifacts
@@ -589,7 +719,7 @@ RESOURCE
     json-config|j*     apply custom json-config
     dbmigrate|db*      apply custom db-migration
 
-Run '$ME apply RESOURCE --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] apply RESOURCE --help|-h' for more information on a command.
 EOF
 }
 
@@ -600,7 +730,7 @@ help-apply-deployment() {
 deploys custom built artifacts
 
 SYNOPSIS
-    $ME apply deployment [PATTERN]
+    $ME [CONFIG-FILE] apply deployment [PATTERN]
 
 ARGUMENTS
     PATTERN - optional. Pattern is simply a regex, which will be matched
@@ -626,13 +756,18 @@ OVERVIEW
 
     Alternatively you can use Wildfly Console for deployments too.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_APPS_DIR - directory, where your custom built artifacts are located.
       Make sure, the directory is shared with Docker Desktop.
     ID - the namespace used, is derived from ID
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # redeploy omt selectively 
@@ -652,7 +787,7 @@ help-apply-mail-templates() {
 rolls out custom mail-templates
 
 SYNOPSIS
-  $ME apply mail-templates
+  $ME [CONFIG-FILE] apply mail-templates
 
 OVERVIEW
     The developer VM contains an additional directory /opt/oms/templates-dev,
@@ -667,15 +802,20 @@ OVERVIEW
     If CUSTOM_TEMPLATES_DIR is configured, the templates are also copied when 
     starting IOM.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_TEMPLATES_DIR - directory, where your custom mail templates are
       located. Make sure, the directory is shared with Docker Desktop.
     ID - the namespace used, is derived from ID
 
 SEE
-    $ME delete iom
-    $ME create iom
-    $ME info   iom
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] create iom
+    $ME [CONFIG-FILE] info   iom
 
 BACKGROUND
     POD_NAME=\$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
@@ -690,7 +830,7 @@ help-apply-xsl-templates() {
 rolls out custom xsl-templates
 
 SYNOPSIS
-  $ME apply xsl-templates
+  $ME [CONFIG-FILE] apply xsl-templates
 
 OVERVIEW
     The developer VM contains a directory /opt/oms/xslt-dev, which will be used
@@ -704,15 +844,20 @@ OVERVIEW
     If CUSTOM_XSLT_DIR is configured, the templates are also copied when 
     starting IOM.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_XSLT_DIR - directory, where your custom xsl templates are located.
       Make sure, the directory is shared with Docker Desktop.
     ID - the namespace used, is derived from ID.
 
 SEE
-    $ME delete iom
-    $ME create iom
-    $ME info   iom
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] create iom
+    $ME [CONFIG-FILE] info   iom
 
 BACKGROUND
     POD_NAME=\$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
@@ -727,7 +872,7 @@ help-apply-sql-scripts() {
 applies sql-files from passed directory or single sql-file
 
 SYNOPSIS
-    $ME apply sql-scripts DIRECTORY|FILE [TIMEOUT]
+    $ME [CONFIG-FILE] apply sql-scripts DIRECTORY|FILE [TIMEOUT]
 
 ARGUMENTS
     DIRECTORY|FILE has to be shared in Docker Desktop!
@@ -750,12 +895,17 @@ OVERVIEW
     The logs are printed in json format. Verbosity can be controlled by 
     configuration variable OMS_LOGLEVEL_SCRIPTS.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     ID - the namespace used, is derived from ID
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying the sql-files.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # define directory with sql-file (has to be an absolute path)
@@ -786,7 +936,7 @@ help-apply-sql-config() {
 applies custom sql configuration
 
 SYNOPSIS
-    $ME apply sql-config
+    $ME [CONFIG-FILE] apply sql-config
 
 OVERVIEW
     Scripts for sql-configuration are simple sql-scripts, which can be easily
@@ -807,6 +957,11 @@ OVERVIEW
     If CUSTOM_SQLCONFIG_DIR is configured, the custom sql configuration is also
     applied when starting IOM.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_SQLCONF_DIR - directory, where your custom sql-configuration is
       located.
@@ -816,7 +971,7 @@ CONFIG
       configuration.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # start sqlconfig-job
@@ -844,7 +999,7 @@ help-apply-json-config() {
 applies custom json configuration
 
 SYNOPSIS
-    $ME apply json-config
+    $ME [CONFIG-FILE] apply json-config
 
 OVERVIEW
     Json configuration of IOM is not publicly available. There exists no task to
@@ -862,6 +1017,11 @@ OVERVIEW
     If CUSTOM_JSONCONFIG_DIR is configured, the custom json configuration is
     also applied when starting IOM.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_JSONCONF_DIR - directory, where your custom json-confguration is
       located.
@@ -872,7 +1032,7 @@ CONFIG
     ID - the namespace used, is derived from ID.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # start jsonconfig-job
@@ -900,7 +1060,7 @@ help-apply-dbmigrate() {
 applies custom dbmigrate scripts
 
 SYNOPSIS
-    $ME apply dbmigrate
+    $ME [CONFIG-FILE] apply dbmigrate
 
 OVERVIEW
     To develop and test a single or a couple of sql-scripts (which can be 
@@ -926,6 +1086,11 @@ OVERVIEW
     If CUSTOM_DBMIGRATE_DIR is configured, the custom dbmigrate scripts are also
     applied when starting IOM.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_DBMIGRATE_DIR - directory, where your custom dbmigrate scripts are
       located. This directory needs two sub-directories: stored_procedures,
@@ -936,7 +1101,7 @@ CONFIG
     ID - the namespace used, is derived from ID.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # start dbmigrate-job
@@ -964,13 +1129,18 @@ help-dump() {
 handle dump
 
 SYNOPSIS
-    $ME dump OPERATION
+    $ME [CONFIG-FILE] dump OPERATION
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 OPERATION
     create|c*          create dump
     load|l*            load dump
 
-Run '$ME dump OPERATION --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] dump OPERATION --help|-h' for more information on a command.
 EOF
 }
 
@@ -981,7 +1151,7 @@ help-dump-create() {
 creates a dump of current database
 
 SYNOPSIS
-    $ME dump create
+    $ME [CONFIG-FILE] dump create
 
 OVERVIEW
     Devenv4iom provides a job to create a dump of the IOM database. This job
@@ -999,6 +1169,11 @@ OVERVIEW
     when starting IOM with an empty database (according to the load-rules that
     can be found in overview of '$ME dump load'.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_DUMPS_DIR - directory, where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
@@ -1008,7 +1183,7 @@ CONFIG
     ID - the namespace used, is derived from ID.
 
 SEE
-    $ME dump load
+    $ME [CONFIG-FILE] dump load
 
 BACKGROUND
     # start dump-job
@@ -1036,7 +1211,7 @@ help-dump-load() {
 loads a custom dump into database
 
 SYNOPSIS
-    $ME dump load
+    $ME [CONFIG-FILE] dump load
 
 OVERVIEW
     When starting IOM and the conneted database is empty, the config container
@@ -1069,6 +1244,11 @@ OVERVIEW
     This command works only, if an internal PostgreSQL-server is used.
     Devenv4iom is not able to control an external PostgreSQL server!
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     CUSTOM_DUMPS_DIR - the directory, where custom dumps has to be located.
 
@@ -1076,12 +1256,12 @@ CONFIG
     should find out more about CONFIG, by requesting help of these commands.
 
 SEE
-    $ME delete iom
-    $ME delete postgres
-    $ME delete storage
-    $ME create storage
-    $ME create postgres
-    $ME create iom
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] delete storage
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] create postgres
+    $ME [CONFIG-FILE] create iom
 EOF
 }
 
@@ -1092,7 +1272,12 @@ help-update() {
 update devenv4iom specific resource
 
 SYNOPSIS
-    $ME update RESOURCE
+    $ME [CONFIG-FILE] update RESOURCE
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 RESOURCE
     config|co*         update configuration file
@@ -1101,7 +1286,7 @@ RESOURCE
     geb-props|g*       update geb.properties
     all|a*             update all
 
-Run '$ME update RESOURCE --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] update RESOURCE --help|-h' for more information on a command.
 EOF
 }
 
@@ -1112,7 +1297,7 @@ help-update-config() {
 updates config file
 
 SYNOPSIS
-    $ME update config
+    $ME [CONFIG-FILE] update config
 
 OVERVIEW
     Devenv4iom provides templates of config files. With every new version new
@@ -1122,6 +1307,11 @@ OVERVIEW
     file containing the original configuration values. The old config file
     will persist as a backup copy.
     Hence, you should run 'update config' after every update of devenv4iom.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 SEE
     "$CONFIG_FILE"
@@ -1144,12 +1334,17 @@ help-update-doc() {
 updates htlm docu
 
 SYNOPSIS
-    $ME update docu
+    $ME [CONFIG-FILE] update docu
 
 OVERVIEW
     Devenv4io provides a template for html documention. Depending on config
     variables, the html docu provides you a matching documentation.
     html docu has to updated, after updating devenv4iom.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 SEE
     $ENV_DIR/index.html
@@ -1169,11 +1364,16 @@ help-update-ws-props() {
 updates ws.properties
 
 SYNOPSIS
-    $ME update ws-props
+    $ME [CONFIG-FILE] update ws-props
 
 OVERVIEW
     Updates the ws.properties file, which is required to run ws-tests on the
     managed IOM installation.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 SEE
     "$ENV_DIR/ws.properties"
@@ -1192,11 +1392,16 @@ help-update-geb-props() {
 updates geb.properties
 
 SYNOPSIS
-    $ME update geb-props
+    $ME [CONFIG-FILE] update geb-props
 
 OVERVIEW
     Updates the geb.properties file, which is required to run geb-tests on the
     managed IOM installation.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 SEE
     "$ENV_DIR/geb.properties"
@@ -1215,17 +1420,22 @@ help-update-all() {
 updates all configuration artifacts
 
 SYNOPSIS
-    $ME update all
+    $ME [CONFIG-FILE] update all
 
 OVERVIEW
     Updates all configuration artifacts of current configuration. Shortcut for
     all other update-tasks.
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 SEE
-    $ME update config
-    $ME update doc
-    $ME update ws-props
-    $ME update geb-props
+    $ME [CONFIG-FILE] update config
+    $ME [CONFIG-FILE] update doc
+    $ME [CONFIG-FILE] update ws-props
+    $ME [CONFIG-FILE] update geb-props
 EOF
 }
 
@@ -1236,7 +1446,12 @@ help-log() {
 very basic access to log-messages
 
 SYNOPSIS
-    $ME log WHAT
+    $ME [CONFIG-FILE] log WHAT
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
 
 WHAT
     dbaccount|d*       get message logs of dbaccount init-container
@@ -1244,7 +1459,7 @@ WHAT
     app|ap*            get message logs of iom-app container
     access|ac*         get access logs of iom-app container
 
-Run '$ME log WHAT --help|-h' for more information on command
+Run '$ME [CONFIG-FILE] log WHAT --help|-h' for more information on command
 EOF
 }
 
@@ -1255,7 +1470,7 @@ help-log-dbaccount() {
 get messages of dbaccount init-container
 
 SYNOPSIS
-    $ME log dbaccount [LEVEL] [-f]
+    $ME [CONFIG-FILE] log dbaccount [LEVEL] [-f]
 
 ARGUMENTS
     LEVEL - optional. If set, has to be one of
@@ -1274,12 +1489,17 @@ OVERVIEW
     If output written to a pipe, no formatting is applied. This makes it easier
     to use the output for further processing. 
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG  
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
       that are not written in container, can never be seen.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1290,7 +1510,7 @@ help-log-config() {
 get messages of config init-container
 
 SYNOPSYS
-    $ME log config [LEVEL] [-f]
+    $ME [CONFIG-FILE] log config [LEVEL] [-f]
 
 ARGUMENTS
     LEVEL - optional. If set, has to be one of
@@ -1309,12 +1529,17 @@ OVERVIEW
     If output written to a pipe, no formatting is applied. This makes it easier
     to use the output for further processing. 
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
       that are not written in container, can never be seen.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1325,7 +1550,7 @@ help-log-app() {
 get messages of iom application-container
 
 SYNOPSIS
-    $ME log app [LEVEL] [-f]
+    $ME [CONFIG-FILE] log app [LEVEL] [-f]
 
 ARGUMENTS
     LEVEL - optional. If set, has to be one of
@@ -1347,6 +1572,11 @@ OVERVIEW
     If output written to a pipe, no formatting is applied. This makes it easier
     to use the output for further processing. 
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by 
       scripts. Messages, that are not written in container, can never be seen.
@@ -1361,7 +1591,7 @@ CONFIG
       seen.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1372,7 +1602,7 @@ help-log-access() {
 get access logs of iom application-container
 
 SYNOPSIS
-    $ME log access [LEVEL] [-f]
+    $ME [CONFIG-FILE] log access [LEVEL] [-f]
 
 ARGUMENTS
     LEVEL - optional. If set, has to be one of ERROR|ALL. If not set, ERROR will
@@ -1391,8 +1621,13 @@ OVERVIEW
     If output written to a pipe, no formatting is applied. This makes it easier
     to use the output for further processing. 
 
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -3277,6 +3512,9 @@ log-access() (
 # determine ENV_DIR to replace the template var. Later the according variable ENV_DIR should not be needed any longer and has to be eliminated!
 # determine EnvId
 
+# will be overwritten by CONFIG_FILE later
+OMS_LOGLEVEL_DEVENV=ERROR
+
 # if $1 is a file, it's assumed to be the config-file
 if [ ! -z "$1" -a -f "$1" ]; then
     CONFIG_FILE="$1"
@@ -3292,7 +3530,7 @@ log_json INFO "Reading configuration from $CONFIG_FILE" < /dev/null
 
 # read current config
 if ! ( set -e; . "$CONFIG_FILE" ); then
-    echo "error reading '$CONFIG_FILE'" 1>&2
+    log_json ERROR "error reading '$CONFIG_FILE'" < /dev/null
     exit 1
 fi
 . "$CONFIG_FILE"
@@ -3301,8 +3539,9 @@ fi
 # TODO ENV_DIR has to be eliminated completely!
 ENV_DIR=$(dirname "$CONFIG_FILE")
 
+# TODO .. should not appear in PROJECT_PATH
 # determine PROJECT_PATH
-PROJECT_PATH="$(dirname $BASH_SOURCE)/..
+PROJECT_PATH="$(dirname $BASH_SOURCE)/.."
 
 # get template variables
 . $PROJECT_PATH/scripts/template-variables
