@@ -1099,7 +1099,6 @@ RESOURCE
     doc|d*             update HTML documentation
     ws-props|w*        update ws.properties
     geb-props|g*       update geb.properties
-    cli|cl*            update $ME
     all|a*             update all
 
 Run '$ME update RESOURCE --help|-h' for more information on a command.
@@ -1210,30 +1209,6 @@ EOF
 }
 
 #-------------------------------------------------------------------------------
-help-update-cli() {
-    ME=$(basename "$0")
-    cat <<EOF
-updates $ME
-
-SYNOPSIS
-    $ME update cli
-
-OVERVIEW
-    $ME is created from a template, which is part of devenv4iom.
-    Hence, after each update of devenv4iom, $ME has to be updated too.
-
-SEE
-    $ENV_DIR/$ME
-
-BACKGROUND
-    "$PROJECT_PATH/scripts/template_engine.sh" \\
-      "$PROJECT_PATH/templates/devenv-cli.sh.template" \\
-      "$CONFIG_FILE" > \\
-      "$ENV_DIR/devenv-cli.sh"
-EOF
-}
-
-#-------------------------------------------------------------------------------
 help-update-all() {
     ME=$(basename "$0")
     cat <<EOF
@@ -1251,7 +1226,6 @@ SEE
     $ME update doc
     $ME update ws-props
     $ME update geb-props
-    $ME update cli
 EOF
 }
 
@@ -2934,16 +2908,6 @@ update-geb-props() {
 }
 
 #-------------------------------------------------------------------------------
-# update command line interface
-#-------------------------------------------------------------------------------
-# TODO remove!
-update-cli() {
-    exec "$PROJECT_PATH/scripts/template_engine.sh" \
-         "$PROJECT_PATH/templates/devenv-cli.sh.template" \
-         "$CONFIG_FILE" > "$ENV_DIR/devenv-cli.sh" 2> /dev/null
-}
-
-#-------------------------------------------------------------------------------
 # update all
 #-------------------------------------------------------------------------------
 # TODO remove update of cli!
@@ -2951,10 +2915,7 @@ update-all() {
     update-config &&
         update-doc &&
         update-ws-props &&
-        update-geb-props &&
-        exec "$PROJECT_PATH/scripts/template_engine.sh" \
-             "$PROJECT_PATH/templates/devenv-cli.sh.template" \
-             "$CONFIG_FILE" > "$ENV_DIR/devenv-cli.sh" 2> /dev/null
+        update-geb-props
 }
 
 ################################################################################
@@ -3580,9 +3541,6 @@ elif [ "$LEVEL0" = 'update' ]; then
             ;;
         d*)
             LEVEL1=doc
-            ;;
-        cl*)
-            LEVEL1=cli
             ;;
         g*)
             LEVEL1=geb-props
