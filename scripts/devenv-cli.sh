@@ -1642,7 +1642,7 @@ EOF
 #-------------------------------------------------------------------------------
 syntax_error() (
     ME="$(basename "$0")"
-    log_json ERROR "Syntax error. Please call '$ME $1 $2 --help' to get more information." < /dev/null
+    log_json ERROR "Syntax error. Please call '$ME $CONFIG_FILE $1 $2 --help' to get more information." < /dev/null
 )
 
 #-------------------------------------------------------------------------------
