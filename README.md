@@ -87,44 +87,6 @@ _jq_ is not part of standard distribution of Mac OS X. In order to install addit
 sudo port install jq
 ```
 
-## TODO remove?
-## Kubernetes Dashboard
-Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
-- Execute the following code in a bash:
-  ```sh
-  # Install
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
-     
-  # Determine token
-  TOKEN=$(kubectl -n kube-system describe secret default | grep "token:" | sed -E 's/.*token: *//g')
-     
-  # Configure token for current context
-  kubectl config set-credentials "$(kubectl config current-context)" --token="$TOKEN"
- 
-  # Patch kubernetes-dashboard deployment to bypassing authentication
-  PATCH=$(cat << 'EOF'
-  spec:
-    template:
-      spec:
-        containers:
-        - name: kubernetes-dashboard
-          args:
-            - --enable-skip-login
-            - --disable-settings-authorizer       
-            - --auto-generate-certificates
-  EOF
-  )
-  kubectl patch deployment kubernetes-dashboard --namespace kube-system --patch "$PATCH"
-  ```
-- Make Kubernetes Dashboard accessible. Hint, if you want to use another port, simply append _--port \<number\>_ to the command line. In this case, the port has to be adjusted in link of the dashboard too.
-  ```sh
-  # Start proxy to make dashboard accessible
-  kubectl proxy
-  ```
-- Now you can open the Dashboard at http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ in your browser.
-  - If you are working with different _Kubernetes_ clusters, you have to **Choose kubeconfig file** to select the cluster of _devenv-4-iom_. In this case, set the config file to _C:\\Users\\myuser\\.kube\\config_ resp. _U:\\.kube\\config_. Normally you can simply ignore **Choose kubeconfig file**.
-  - You can _**Skip**_ the login, due to the patch, that was applied before.
-
 # Setup of _devenv-4-iom_
 ## Checkout the devenv-4-iom project
 _devenv-4-iom_ provides all the tools, that are needed to configure and run an _IOM_ instance in your local _Kubernetes_ cluster. You need to have this project locally on your computer to continue configuration process.
@@ -134,4 +96,4 @@ cd /d/git/oms/
 git clone https://bitbucket.intershop.de/scm/iom/devenv-4-iom.git
 ```
 
-Now open _index.html_ from devenv-4-iom directory in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
+Now open _index.html_ from _devenv-4-iom_ directory in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
