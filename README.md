@@ -89,7 +89,7 @@ sudo port install jq
 
 # Setup of _devenv-4-iom_
 ## Checkout the devenv-4-iom project
-_devenv-4-iom_ provides all the tools, that are needed to configure and run an _IOM_ instance in your local _Kubernetes_ cluster. You need to have this project locally on your computer to continue configuration process.
+_devenv-4-iom_ provides all the tools, that are needed to configure and run an _IOM_ instance in your local _Kubernetes_ cluster. You need to have this project locally on your computer.
 ```sh
 # checkout the devenv-4-iom project
 cd /d/git/oms/
