@@ -87,6 +87,7 @@ _jq_ is not part of standard distribution of Mac OS X. In order to install addit
 sudo port install jq
 ```
 
+## TODO remove?
 ## Kubernetes Dashboard
 Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
 - Execute the following code in a bash:
@@ -124,7 +125,7 @@ Install Kubernetes Dashboard, see https://github.com/kubernetes/dashboard
   - If you are working with different _Kubernetes_ clusters, you have to **Choose kubeconfig file** to select the cluster of _devenv-4-iom_. In this case, set the config file to _C:\\Users\\myuser\\.kube\\config_ resp. _U:\\.kube\\config_. Normally you can simply ignore **Choose kubeconfig file**.
   - You can _**Skip**_ the login, due to the patch, that was applied before.
 
-# Configuration and setup of _devenv-4-iom_
+# Setup of _devenv-4-iom_
 ## Checkout the devenv-4-iom project
 _devenv-4-iom_ provides all the tools, that are needed to configure and run an _IOM_ instance in your local _Kubernetes_ cluster. You need to have this project locally on your computer to continue configuration process.
 ```sh
@@ -133,62 +134,4 @@ cd /d/git/oms/
 git clone https://bitbucket.intershop.de/scm/iom/devenv-4-iom.git
 ```
 
-## Concept of managing different _IOM_ instances
-_devenv-4-iom_ supports a simple directory based model to manage configurations. The configuration of each _IOM_ instance is located within an own sub-directory, which is named with _ID_ of the instance. Within the sub-directory, all other configuration artifacts, shared directories, scripts, etc. are located.
-```
-<directory containing configs>/
-├── 2.16.0.0-SNAPSHOT/
-│   ├── config.properties
-│   ├── devenv-cli.sh
-│   ├── index.html
-│   ├── geb.properties
-│   ├── ws.properties
-│   ├── share/
-│   ├── logs/
-│   └── ...
-├── <ID>/
-│   ├── config.properties
-│   ├── devenv-cli.sh
-│   ├── index.html
-│   ├── geb.properties
-│   ├── ws.properties
-│   ├── share/
-│   ├── logs/
-│   └── ...
-└── .../
-```
-The configuration directory structure must not be located on a shared drive, as sharing of directories with _Docker Desktop_ may not work in this case. Your Windows home directory may be located on a shared drive (e.g. U:). In this case, the configuration directory structure has to be placed somewhere else. You have to make sure, that the [configuration directory is shared with _Docker Desktop_](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/) (check _Docker Desktop > Preferences > File Sharing_).
-
-## Initialize a configuration directory for your IOM instance
-This steps must only be processed, when initializing the _**FIRST**_ configuration directory. Any update of an existing directory has to be made using the command line interface, located inside the config-directory. The documentation (index.html) found at config directory will guide you. This documentation also shows you how to add an additional configuration directory.
-
-For every _IOM_ instance in your local _Kubernetes_ cluster, you need to have a configuration directory with config-file, command line interface and other entries. The following box shows, how to create the config-directory and all the required entries in it.
-
-Scripts found in following box have to be executed **in base directory of configurations**! _ID_ has to be set to the _ID_ you want to use and variable _DEVENV4IOM_DIR_ has to be set to the installation directory of _devenv-4-iom_ on your host, before executing the scripts.
-```sh
-# Adapt the following variable to the directory, where devenv-4-iom is installed:
-DEVENV4IOM=/d/git/oms/devenv-4-iom
- 
-# Adapt the following variable to your needs:
-ID=2.16.0.0-SNAPSHOT
- 
-# create the configuration file containing default settings
-mkdir -p "$ID" &&
-  ID=$ID ENV_DIR="$(pwd)/$ID" \
-  "$DEVENV4IOM/scripts/template_engine.sh" \
-  "$DEVENV4IOM/templates/config.properties.template" > \
-  "$ID/config.properties" &&
-  echo success
- 
-# create the command line interface
-"$DEVENV4IOM/scripts/template_engine.sh" \
-  "$DEVENV4IOM/templates/devenv-cli.sh.template" \
-  "$ID/config.properties" > \
-  "$ID/devenv-cli.sh" &&
-  chmod +x "$ID/devenv-cli.sh" && echo success
- 
-# create remaining files
-"./$ID/devenv-cli.sh" update all &&
-  echo && echo "open $ID/index.html in your browser for further instructions" && echo
-```
-Now open the newly created documentation in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
+Now open _index.html_ from devenv-4-iom directory in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
