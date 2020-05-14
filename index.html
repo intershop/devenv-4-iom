@@ -438,12 +438,12 @@ ID=2.16.0.0-SNAPSHOT
   # create the new configuration file with default settings
   mkdir -p "$ID" &&
   ID=$ID ENV_DIR="$(pwd)/$ID" \
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
+    "${PROJECT_PATH}/bin/template_engine.sh" \
     "${PROJECT_PATH}/templates/config.properties.template" > \
     "$ID/${CONFIG_FILE}" &&
 
   # create the command line interface
-  "${PROJECT_PATH}/scripts/template_engine.sh" \
+  "${PROJECT_PATH}/bin/template_engine.sh" \
     "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
     "$ID/${CONFIG_FILE}" > \
     "$ID/devenv-cli.sh" &&
