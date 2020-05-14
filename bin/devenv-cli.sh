@@ -3559,6 +3559,7 @@ log-access() (
 # will be overwritten by CONFIG_FILE later
 OMS_LOGLEVEL_DEVENV=ERROR
 
+#-------------------------------------------------------------------------------
 # get name of config-file
 # if $1 is a file, it's assumed to be the config-file
 if [ ! -z "$1" -a -f "$1" ]; then
@@ -3570,6 +3571,7 @@ else
     log_json WARN "No configuration file set." < /dev/null
 fi
 
+#-------------------------------------------------------------------------------
 # read config-file
 if [ ! -z "$CONFIG_FILE" ]; then
     log_json INFO "Reading configuration from $CONFIG_FILE" < /dev/null
@@ -3580,6 +3582,14 @@ if [ ! -z "$CONFIG_FILE" ]; then
         exit 1
     fi
     . "$CONFIG_FILE"
+fi
+
+#-------------------------------------------------------------------------------
+# reject config file with empty ID
+# this is the initial state after creation of file
+if [ ! -z "$CONFIG_FILE" -a -z "$ID" ]; then
+    log_json ERROR "ID in file '$CONFIG_FILE' must not be empty!" < /dev/null
+    exit 1
 fi
 
 # TODO ENV_DIR has to be eliminated completely!

@@ -57,12 +57,13 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#configurations--devenv4iom">Update devenv-4-iom</a></li>
-                  <li><a href="#configurations--update">Update config-directory after updating devenv-4-iom</a></li>
-                  <li><a href="#configurations--reset-config">Reset current configuration</a></li>
-                  <li><a href="#configurations--info">Getting info about components</a></li>
-                  <li><a href="#configurations--add-config">Create a new configuration/instance</a></li>
+                  <li><a href="#configurations--add-config">Create a new configuration</a></li>
+                  <li><a href="#configurations--use-config">Use configuration file along with <samp>devenv-cli.sh</samp></a></li>
+                  <li><a href="#configurations--pitfalls">Configuration pitfalls</a></li>
+                  <li><a href="#configurations--reset-config">Reset current configuration partially</a></li>
                   <li><a href="#configurations--parallel-instances">Running different IOM instances in parallel</a></li>
+                  <li><a href="#configurations--info">Getting info about components</a></li>
+                  <li><a href="#configurations--devenv4iom">Update devenv-4-iom</a></li>
                   <li><a href="#configurations--delete-config">Delete current configuration/instance</a></li>
                 </ul>
               </li>
@@ -124,7 +125,7 @@
 
       <div class="container">
 
-        <h1>IOM development environment</h1>
+        <h1>devenv-4-iom - IOM development environment</h1>
 
         <h2 id="first-steps">First steps</h2>
         <h3 id="first-steps--overview">Overview</h3>
@@ -136,11 +137,27 @@
         
         <h3 id="first-steps--config">Configuration</h3>
         <p>
-          If you read this text, you have already sucessfully created the configuration file <samp>${ENV_DIR}/${CONFIG_FILE}</samp>. If this is a new configuration, it's filled with default settings defined by <samp>devenv-4-iom</samp>. The most important settings are the <samp>*_IMAGE</samp> properties, since they are defining what will be executed by <samp>devenv-4-iom</samp>. By defining the images, you can for example control to run a specific project, a standard IOM product without any customizations, the IOM product, which is currently in develepoment or even containers of the IOM product or project, you have built by yourself on your local computer.
+          <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. As the first step, a new configuration file has to be created now. To do so, the script <samp>devenv-cli.sh</samp> has to be called. This can be done by using the absolute path to this script, which is located in <samp>bin</samp> directory of <samp>devenv-4-iom</samp> or by adding this directory to your <samp>PATH</samp> variable. All following examples are using <samp>devenv-cli.sh</samp> in a way that is possible when using the <samp>PATH</samp> method.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# create configuration file, filled with default values
+devenv-cli.sh get config > config.properties
+        </div></code></pre>
+        
+        <p>
+          There is one value in config.properties, that has to be set manually: <samp>ID</samp>. Every instance of IOM, hence every configuration file needs to have an unique value for <samp>ID</samp>. Once you have set the <samp>ID</samp> and started the according IOM, you must not change it any more. Otherwise you will loose the ability to access/control the resources associated with the IOM installation. Now set the <samp>ID</samp> to <samp>first-steps</samp>.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# set ID in config.properties to "first-steps"
+vi config.properties
+        </div></code></pre>
+
+        <p>
+          The other values of the new configuration file are filled with default settings defined by <samp>devenv-4-iom</samp>. The most important settings are the <samp>*_IMAGE</samp> properties, since they are defining what will be executed by <samp>devenv-4-iom</samp>. By defining the images, you can for example control to run a specific project, a standard IOM product without any customizations, the IOM product, which is currently in develepoment or even containers of the IOM product or project, you have built by yourself on your local computer.
         </p><p>
-          The default settings are using the pure IOM product, which is currently in development. For the first steps, there is no need to change this settings. The Docker registry used by default seetings requires login. Hence you have to login into the registry. Additionally you should check, if you are able to access the Docker images, which are set in config-file. To do so, try to pull the images manually in a shell.
+          The default settings are using the pure IOM product. For the first steps, there is no need to change one of these settings. The Docker registry used by default seetings requires login. Hence you have to login into the registry. Additionally you should check, if you are able to access the Docker images, which are set in config-file. To do so, try to pull the images manually in a shell.
         </p><p>
-          Open the config-file <samp>${ENV_DIR}/${CONFIG_FILE}</samp>, copy the values of the <samp>*_IMAGE</samp> properties and use them to pull the Docker images manually, just as shown in the box below.
+          Open the newly created config-file <samp>config.properties</samp> and copy the values of the <samp>*_IMAGE</samp> properties and use them to pull the Docker images manually, just as shown in the box below.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # login into Docker registry
@@ -152,6 +169,17 @@ docker pull mailhog/mailhog
 docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-config:2.17.0.0-SNAPSHOT
 docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT
+        </div></code></pre>
+        <p>
+          Before using <samp>devenv-cli.sh</samp> to manage our IOM developer instance, we need to have a look, how configuration-files are passed to the script. There are two different ways:
+          <ol>
+            <li>Set configuration-file as first command line parameter of <samp>devenv-cli.sh</samp>.</li>
+            <li>Define the configuration-file as value of environment variable <samp>DEVENV4IOM_CONFIG</samp>.</li>
+          </ol>
+          To go further, we will use the seconds variant. It's recommended to store the absolute name of the configuration-file in <samp>DEVENV4IOM_CONFIG</samp>, otherwise <samp>devenv-cli.sh</samp> would find the file only, if called in the same directory as the configuration-file resides.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+export DEVENV4IOM_CONFIG="$(pwd)/config.properties"
         </div></code></pre>
         
         <h3 id="first-steps--create">Create IOM cluster</h3>
@@ -186,7 +214,7 @@ devenv-cli.sh info postgres
 devenv-cli.sh info iom
         </div></code></pre>
         <p>
-          Mail-server and PostgreSQL-server are starting very quickly. The output of the according <samp>'info'</samp> commands contain a section 'Kubernetes', which shows the state. For these two systems, the state should be <samp>running</samp> even after a short after creating the cluster. The box below shows an example output: 
+          Mail-server and PostgreSQL-server are starting very quickly. The output of the according <samp>'info'</samp> commands contain a section 'Kubernetes', which shows the state. For these two systems, the state should be <samp>running</samp> even shortly after creating the cluster. The box below shows an example output: 
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 devenv-cli.sh info postgres
@@ -227,9 +255,9 @@ devenv-cli.sh info iom
 --------------------------------------------------------------------------------
 Links:
 ======
-OMT:                        http://Andreas-Herolds-MacBook.local:8080/omt
-DBDoc:                      http://Andreas-Herolds-MacBook.local:8080/dbdoc/
-Wildfly (admin:admin):      http://Andreas-Herolds-MacBook.local:9990/console
+OMT:                        http://computername.local:8080/omt
+DBDoc:                      http://computername.local:8080/dbdoc/
+Wildfly (admin:admin):      http://computername.local:9990/console
 --------------------------------------------------------------------------------
 ...
         </div></code></pre>
@@ -262,9 +290,9 @@ devenv-cli.sh log access all -f
   "localPort": 8080,
   "remoteHost": "192.168.65.3",
   "remoteUser": null,
-  "requestHeaderReferer": "http://andreas-herolds-macbook.local:8080/omt/app/order/landingpage",
+  "requestHeaderReferer": "http://computername.local:8080/omt/app/order/landingpage",
   "requestHeaderUser-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15",
-  "requestHeaderHost": "andreas-herolds-macbook.local:8080",
+  "requestHeaderHost": "computername.local:8080",
   "requestHeaderCookie": "OMS_IDENTITY=eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPTVQiLCJleHAiOjE1NzY2NzgzNDksImlhdCI6MTU3NjU5MTk0OSwic3ViIjoiQXV0aGVudGljYXRpb24iLCJ1c2VyIjoiYWRtaW4ifQ.c5XuyKZM1FbrwRRGTg4CqaXog3WN6K-kuSTYSp6WEio; SessionKey=11a11a64-9ee9-44cc-bd4d-7ffbb1e12fac; JSESSIONID=k_AxMo_ElpYnjaTTLAkOeFoF3LF_W6VW67PpYcG1.iom-6c587ddd87-d7qb2; org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE=en",
   "requestLine": "GET /omt/WEB-INF/views/widgets/shortOrderSearchContainer.jsp?_=1576591952608 HTTP/1.1",
   "requestProtocol": "HTTP/1.1",
@@ -316,15 +344,15 @@ select * from "CountryDefDO";
         <P>
           You have to make sure, that the file can be shared with Docker Desktop. Just check the settings of Docker Desktop. Go to <samp>Docker Desktop > Preferences > File Sharing</samp> and check if the file is located in a shared directory. If not, move it to a shared directory (or change the preferences, but this requires a restart of Docker Desktop). For more information about Sharing with Docker Desktop, please have a look at <a href="https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/" target="_blank">this document</a>.
         </p><p>
-          The following box shows an example, where the file is named <samp>/Users/andreas/test.sql</samp>. If you have <samp>jq</samp> installed, you can pipe the output through <samp>jq</samp> to get pretty-printed messages.
+          The following box shows an example, where the file is named <samp>/home/user/test.sql</samp>. If you have <samp>jq</samp> installed, you can pipe the output through <samp>jq</samp> to get pretty-printed messages.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-devenv-cli.sh apply sql-script /Users/andreas/test.sql 
-{ "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:23Z", "level":"INFO", "message":"apply-sql-scripts: job successfully started", "processName":"devenv-cli.sh", "additionalInfo":"job.batch/apply-sql-job created", "configName":"ci" }
+devenv-cli.sh apply sql-script /home/user/test.sql 
+{ "tenant":"Intershop", "environment":"devenv4iom", "logHost":"computername.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:23Z", "level":"INFO", "message":"apply-sql-scripts: job successfully started", "processName":"devenv-cli.sh", "additionalInfo":"job.batch/apply-sql-job created", "configName":"ci" }
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":"ci","additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_PASS=oms_pw\nOMS_USER_CONNECTION_SUFFIX=\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=2.17.0.0-SNAPSHOT"}
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":"ci"}
 {"tenant":"Intershop","environment":"2.17.0.0-SNAPSHOT","logHost":"apply-sql-job-kqcnh","logVersion":"1.0","appName":"iom-config","appVersion":"2.17.0.0-SNAPSHOT@1234","logType":"script","timestamp":"2019-12-17T14:42:24+00:00","level":"INFO","processName":"apply_sql.sh","message":"success","configName":"ci"}
-{ "tenant":"Intershop", "environment":"devenv4iom", "logHost":"Andreas-Herolds-MacBook.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:29Z", "level":"INFO", "message":"apply-sql-scripts: successfully deleted job", "processName":"devenv-cli.sh", "additionalInfo":"job.batch \"apply-sql-job\" deleted", "configName":"ci" }
+{ "tenant":"Intershop", "environment":"devenv4iom", "logHost":"computername.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:29Z", "level":"INFO", "message":"apply-sql-scripts: successfully deleted job", "processName":"devenv-cli.sh", "additionalInfo":"job.batch \"apply-sql-job\" deleted", "configName":"ci" }
         </div></code></pre>
         <p>
           You can also interactively use <samp>psql</samp> to communicate with PostgreSQL-server. Just use the command <samp>'info postgres'</samp> to get the according command line.
@@ -344,11 +372,58 @@ devenv-cli.sh delete cluster
 devenv-cli.sh delete storage
         </div></code></pre>
         <p>
-          We have now used <samp>devenv-cli.sh</samp> a lot. If you want to explore all features of this program, just call it with argument <samp>-h</samp>.
+          After deleting all resources belongig to our IOM developer instance, it's also save to delete the configuration file. Don't forget to unset DEVENV4IOM_CONFIG too!
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+rm config.properties
+export DEVENV4IOM_CONFIG=
+        </div></code></pre>     
+        <p>
+          Now we have used <samp>devenv-cli.sh</samp> a lot. If you want to explore all features of this program, just call it with argument <samp>-h</samp>.
         </p>
         
         <h2 id="configurations">Configuration</h2>
 
+        <h3 id="configurations--add-config">Create an new configuration</h3>
+        <p>
+          <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. Along the many configuration values needed to control the behavior of IOM, there is one property, which is required to mark Kubernetes- and Docker-resources as being associated with a certain configuration. This property is the <samp>ID</samp>. Each configuration has to have its own unique <samp>ID</samp>. Hence, the creation of a new configuration file consists of these steps:
+          <ol>
+            <li>Create a new configuration file based on the template, provided by <samp>devenv-4-iom</samp>. Make sure, there is currently no other configuration file used.</li>
+            <li>Set <samp>ID</samp> in the newly created configuration file to an unique value.</li>
+            <li>Adapt all other entries in configuration file according your needs.</li>
+          </ol>
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# make sure, no other configuration file is currently used
+export DEVENV4IOM_CONFIG=
+
+# create a new configuration file containing default values only
+devenv-cli.sh get info > config.properties
+
+# set ID to a unique value and adapt other values according your needs
+vi config.properties
+        </div></code></pre>
+
+        <h3 id="configurations--use-config">Use configuration file along with <samp>devenv-cli.sh</samp></h3>
+        <p>
+          <samp>devenv-cli.sh</samp> is used to control your IOM developer instances. Therefore call of this script has exectly to know, which configuration (which IOM instance) is meant. There are two different ways, how <samp>devenv-cli.sh</samp> can be associated to a certain configuration:
+          <ol>
+            <li>The configuration file can be passed as first parameter at the command line.</li>
+            <li>The configuration file can be set in environment variable <samp>DEVENV4IOM_CONFIG</samp></li>
+          </ol>
+          If both methods are used at once, the config-file passed on the command line has precedence.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# provide the absolute name of config-file in DEVENV4IOM_CONFIG
+export DEVENV4IOM_CONFIG="$(pwd)/config.properties"
+
+# devenv-cli.sh will now use the config defined by the environment variable
+devenv-cli.sh info iom
+
+# or set configuration-file as first parameter at the command line
+devenv-cli.sh another-config.properties info iom
+        </div></code></pre>
+        
         <h3 id="configurations--devenv4iom">Update devenv-4-iom</h3>
         <p>
           To update devenv-4-iom you have to process the following steps:
@@ -419,43 +494,6 @@ devenv-cli.sh info postgres
 devenv-cli.sh info storage
         </div></code></pre> 
 
-        <h3 id="configurations--add-config">Create an new configuration/instance</h3>
-        <p>
-          You can have many different configurations in parallel. All these configurations are stored in sub-directories of <samp>${ENV_BASE_DIR}</samp>.
-        </p><p>
-          The name of each sub-directory has to be identical to the ID of the according configuration. Each sub-directory contains configuration (<samp>config.properties</samp>), the command line client (<samp>devenv-cli.sh</samp>) and documentation (<samp>index.html</samp>), specific for this instance of IOM development environment.
-        </p><p>
-          The following code block, shows how to create and initialize such a sub-directory of a new configuration. You just need to set ID to the right value before executing the code.
-        </p>
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-################################################################################
-# Adapt the following variable!
-# This will become the name of your new configuration
-################################################################################
-ID=2.16.0.0-SNAPSHOT
-
-( cd "${ENV_BASE_DIR}" &&
-  # create the new configuration file with default settings
-  mkdir -p "$ID" &&
-  ID=$ID ENV_DIR="$(pwd)/$ID" \
-    "${PROJECT_PATH}/bin/template_engine.sh" \
-    "${PROJECT_PATH}/templates/config.properties.template" > \
-    "$ID/${CONFIG_FILE}" &&
-
-  # create the command line interface
-  "${PROJECT_PATH}/bin/template_engine.sh" \
-    "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
-    "$ID/${CONFIG_FILE}" > \
-    "$ID/devenv-cli.sh" &&
-    chmod +x "$ID/devenv-cli.sh" &&
- 
-  # create remaining files
-  "./$ID/devenv-cli.sh" update all &&
-  echo &&
-  echo "open 'file://$(pwd)/$ID/index.html' in your browser for further instructions" &&
-  echo
-)
-        </div></code></pre> 
         
         <h3 id="configurations--parallel-instances">Parallel instances of devenv-4-iom environments</h3>
         <p>
