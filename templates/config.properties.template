@@ -147,18 +147,6 @@ OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
 # development settings
 ################################################################################
 
-# Set IOM_APP_SRC_DIR to directory on your local disk, containing IOM sources.
-# This variable is not used directly by devenv-4-iom. It's used only to:
-# - make recommendations for different CUSTOM_*_DIR properties,
-# - provide command examples in HTML documentation.
-IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR}"
-
-# Set CAAS_SRC_DIR to directory to directory on your local disk, containing
-# CaaS project sources.
-# This variable is not used directly by devenv-4-iom. It's used only to:
-# - make recommendations for different CaaS specific CUSTOM_*_DIR properties.
-CAAS_SRC_DIR="${CAAS_SRC_DIR}"
-
 # The following config variables are all using the same pattern:
 # If you want to use a certain aspect of development, you have to define the
 # location of custom files, that should be used by the developer VM.
@@ -168,44 +156,45 @@ CAAS_SRC_DIR="${CAAS_SRC_DIR}"
 # Deployment of custom artifacts
 # see: ${ENV_DIR}/devenv-cli.sh apply deployment --help
 # recommended value, when doing IOM product development:
-# $IOM_APP_SRC_DIR + "/oms.deployment/applications"
+# absolute path to "/oms.deployment/applications" in IOM sources.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
 # see: ${ENV_DIR}/devenv-cli.sh apply mail-templates --help
 # recommended value, when doing IOM product development:
-# $IOM_APP_SRC_DIR + "/oms.deployment/var/templates"
+# absolute path to "/oms.deployment/var/templates" in IOM sources.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
 # Development of custom xsl templates
 # see: ${ENV_DIR}/devenv-cli.sh apply xsl-templates --help
 # recommended value, when doing IOM product development:
-# $IOM_APP_SRC_DIR + "/bakery.transform/transform-core/src/main/resources/document/xslt"
+# absolute path to "/bakery.transform/transform-core/src/main/resources/document/xslt"
+# in IOM sources.
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 
 # Development of migration scripts
 # see: ${ENV_DIR}/devenv-cli.sh apply dbmigrate --help
 # recommended value, when doing IOM product development:
-# $IOM_APP_SRC_DIR + "/postgres"
+# absolute path to "/postgres" in IOM sources.
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 
 # Load/create custom dumps
 # see: ${ENV_DIR}/devenv-cli.sh dump load --help
 # see: ${ENV_DIR}/devenv-cli.sh dump create --help
 # recommended value, whne doing IOM product development:
-# $IOM_APP_SRC_DIR + "/postgres/dumps"
+# absolute path to "/postgres/dumps" in IOM sources.
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 
 # Development of custom sql-config
 # see: ${ENV_DIR}/devenv-cli.sh apply sql-config --help
-# recommended value, when doing IOM product development:
-# $CAAS_SRC_DIR + "/configuration/src/sql-config"
+# recommended value, when doing IOM project development:
+# absolute path to "/configuration/src/sql-config" in project sources.
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 
 # Development of custom json-config
 # see: ${ENV_DIR}/devenv-cli.sh apply json-config --help
-# recommended value, when doing IOM product development:
-# $CAAS_SRC_DIR + "/configuration/src/json-config"
+# recommended value, when doing IOM project development:
+# absolute path to "/configuration/src/json-config" in project sources.
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 
 ################################################################################

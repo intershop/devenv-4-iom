@@ -730,13 +730,13 @@ devenv-cli.sh apply xsl-templates
             <li>If a directory is passed to the job, all sql-files found in this directory are processed in numerical order, starting with the smallest one. Sub-directories are not scanned for sql-files.</li>
             <li>If a file is passed to the job, only this file will be executed.</li>
           </ul>
-          The information about the sql-file or -directory is passed as third parameter to the command line client. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp>. 
+          The information about the sql-file or -directory is passed as third parameter to the command line client. The box below shows an example, that executes all sql-scripts found in <samp>oms.tests/tc_stored_procedures</samp> (of course, the directory has to exist in your current working directory). 
         </p><p>
           The logs are printed in json format. Verbosity can be controlled by configuration variable <samp>OMS_LOGLEVEL_SCRIPTS</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # adapt third paramater according your needs
-devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
+devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
         </div></code></pre>
         
         <h3 id="development--apply-dbmigrate">Apply dbmigrate scripts</h3>
@@ -847,7 +847,8 @@ devenv-cli.sh info mailserver
           To apply stored procedures, just use the command <a href="#development--apply-sql"><samp>'apply sql-scripts'</samp></a> and set the parameter to the directory containing the stored procedures, required for testing.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedures
+# oms.tests has to exist in current working directory
+devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
         </div></code></pre>
         
         <h4 id="run-tests">Run single geb-tests or a group of geb-tests</h4>
@@ -858,7 +859,8 @@ devenv-cli.sh apply sql-scripts ${IOM_APP_SRC_DIR}/oms.tests/tc_stored_procedure
 devenv-cli.sh update update geb-props
 
 # Go to the oms.tests directory in your oms source directory
-cd ${IOM_APP_SRC_DIR}/oms.tests
+# PATH_TO_IOM_SOURCES has to be replaced by the real value!
+cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run a single geb test
 ./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
@@ -875,7 +877,8 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 devenv-cli.sh update update ws-props
 
 # Go to the oms.tests directory in your oms source directory
-cd ${IOM_APP_SRC_DIR}/oms.tests
+# PATH_TO_IOM_SOURCES has to be replaced by the real value!
+cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run a single ws test
 ./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
@@ -889,7 +892,8 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
         
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-cd ${IOM_APP_SRC_DIR}/oms.tests
+# PATH_TO_IOM_SOURCES has to be replaced by the real value!           
+cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run all tests of a geb test specification
 ./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
@@ -903,7 +907,8 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-cd ${IOM_APP_SRC_DIR}/oms.tests
+# PATH_TO_IOM_SOURCES has to be replaced by the real value!           
+cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run all tests of a specification group
 ./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
@@ -914,7 +919,8 @@ cd ${IOM_APP_SRC_DIR}/oms.tests
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.soap.tests directory in your oms source directory
-cd ${IOM_APP_SRC_DIR}/oms.soap.tests
+# PATH_TO_IOM_SOURCES has to be replaced by the real value!           
+cd ${PATH_TO_IOM_SOURCES}/oms.soap.tests
 
 # Run all soap tests
 mvn -Dhost=${HOST_IOM}:${PORT_IOM_SERVICE} clean test

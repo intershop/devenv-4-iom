@@ -184,18 +184,6 @@ if [ $(OS) = "Msys" ]; then
     CustomLogDirDefault=$(cygpath -w "${CustomLogDirDefault}")
 fi
 
-# set IOM_APP_SRC_DIR depending on OS
-IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR:-D:\\svn\\oms\\trunk}"
-if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
-    IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
-fi
-
-# set CAAS_SRC_DIR depending on OS
-CAAS_SRC_DIR="${CAAS_SRC_DIR:-D:\\svn\\caas\\trunk}"
-if [ $(OS) = "Msys" -a ! -z "$CAAS_SRC_DIR" ]; then
-    CAAS_SRC_DIR=$(cygpath -u "${CAAS_SRC_DIR}")
-fi
-
 # development host
 HOST_IOM="${HOST_IOM:-$(hostname)}"
 

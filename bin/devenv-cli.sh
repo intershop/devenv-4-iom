@@ -912,19 +912,19 @@ BACKGROUND
     export SQL_SRC=<DIRECTORY>
     
     # start apply-sql-job
-    "$PROJECT_PATH/bin/template_engine.sh" \
-      "$PROJECT_PATH/templates/apply-sql.yml.template" \
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/apply-sql.yml.template" \\
       "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f -
 
     # get logs of job
-    POD_NAME=\$(kubectl get pods --namespace $EnvId \
-      -l job-name=apply-sql-job \
+    POD_NAME=\$(kubectl get pods --namespace $EnvId \\
+      -l job-name=apply-sql-job \\
       -o jsonpath="{.items[0].metadata.name}")
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete apply-sql-job
-    "$PROJECT_PATH/bin/template_engine.sh" \
-      "$PROJECT_PATH/templates/apply-sql.yml.template" \
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/apply-sql.yml.template" \\
       "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f -
 EOF
 }
