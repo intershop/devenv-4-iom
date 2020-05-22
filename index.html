@@ -114,6 +114,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  <li><a href="#troubleshooting--get-help">Get help on <samp>devenv-cli.sh</samp></a></li>
                   <li><a href="#troubleshooting--error-search">IOM is not working</a></li>
                   <li><a href="#troubleshooting--shared-drives">Shared Drives</a></li>
                   <li><a href="#troubleshooting--wrong-context">Wrong Kubernetes context</a></li>
@@ -1260,6 +1261,36 @@ devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
         </div></code></pre>
 
         <h2 id="troubleshooting">Troubleshooting</h2>
+
+        <h3 id="troubleshooting--get-help">Get help on <samp>devenv-cli.sh</samp></h3>
+        <p>
+          <samp>devenv-cli.sh</samp> has a simple system for its command line arguments. In general, each call to <samp>devenv-cli.sh</samp> requires two arguments, which could be understand best as topic and sub-topic. If you append <samp>-h</samp> or <samp>--help</samp> to the command line, you will get detailed help. This works even, if no topic or sub-topic is passed on the command line. In this case, the provided help gives information about available topics or sub-topics.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+devenv-cli.sh -h
+devenv-cli.sh
+    command line interface for configuration with ID test.
+
+SYNOPSIS
+    devenv-cli.sh [CONFIG-FILE] COMMAND
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, devenv-cli.sh
+    ends with an error, with one exception: 'get config'.
+
+COMMANDS
+    get|g*             get devenv4iom specific resource
+    info|i*            get information about kubernetes resources
+    create|c*          create Kubernetes/Docker resources
+    delete|de*         delete Kubernetes/Docker resources
+    wait|w*            wait for Kubernetes resourses to get ready
+    apply|a*           apply customization
+    dump|du*           create or load dump
+    log|l*             simple access to log-messages
+
+Run 'devenv-cli.sh [CONFIG-FILE] COMMAND --help|-h' for more information on a command.
+        </div></code></pre>
 
         <h3 id="troubleshooting--error-search">IOM is not working</h3>
         <p>

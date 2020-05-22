@@ -13,7 +13,7 @@ help() {
     ME=$(basename "$0")
     cat <<EOF
 $ME
-    command line interface for $ID.
+    command line interface for configuration with ID $ID.
 
 SYNOPSIS
     $ME [CONFIG-FILE] COMMAND
