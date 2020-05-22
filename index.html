@@ -57,14 +57,13 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#configurations--add-config">Create a new configuration</a></li>
-                  <li><a href="#configurations--use-config">Use configuration file along with <samp>devenv-cli.sh</samp></a></li>
-                  <li><a href="#configurations--pitfalls">Configuration pitfalls</a></li>
-                  <li><a href="#configurations--reset-config">Reset current configuration partially</a></li>
+                  <li><a href="#configurations--create-config">Create a new configuration</a></li>
+                  <li><a href="#configurations--link-config">Link configuration to <samp>devenv-cli.sh</samp></a></li>
+                  <li><a href="#configurations--change-config">Change configuration values</a></li>
+                  <li><a href="#configurations--reset-config">Reset configuration partially</a></li>
                   <li><a href="#configurations--parallel-instances">Running different IOM instances in parallel</a></li>
-                  <li><a href="#configurations--info">Getting info about components</a></li>
-                  <li><a href="#configurations--devenv4iom">Update devenv-4-iom</a></li>
-                  <li><a href="#configurations--delete-config">Delete current configuration/instance</a></li>
+                  <li><a href="#configurations--migrate-config">Migrate a configuration after update of <samp>devenv-4-iom</samp></a></li>
+                  <li><a href="#configurations--delete-config">Delete a configuration</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -82,6 +81,7 @@
                   <li><a href="#operations--delete-postgres">Delete postgres database</a></li>
                   <li><a href="#operations--create-iom">Create IOM</a></li>
                   <li><a href="#operations--delete-iom">Delete IOM</a></li>
+                  <li><a href="#operations--info">Getting info about components</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -137,9 +137,13 @@
         
         <h3 id="first-steps--config">Configuration</h3>
         <p>
-          <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. As the first step, a new configuration file has to be created now. To do so, the script <samp>devenv-cli.sh</samp> has to be called. This can be done by using the absolute path to this script, which is located in <samp>bin</samp> directory of <samp>devenv-4-iom</samp> or by adding this directory to your <samp>PATH</samp> variable. All following examples are using <samp>devenv-cli.sh</samp> in a way that is possible when using the <samp>PATH</samp> method.
+          <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script <samp>devenv-cli.sh</samp> has to be called with options <samp>get config</samp>. In order to get the following examples to work, you have to extend the <samp>PATH</samp> variable by the directory, containing <samp>devev-cli.sh</samp>, or you can also call the script using its absolute path.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# extend PATH variable
+# PATH_TO_DEVENV_CLI has to be replaced by the real value! 
+export PATH="${PATH_TO_DEVENV_CLI}:$PATH"
+
 # create configuration file, filled with default values
 devenv-cli.sh get config > config.properties
         </div></code></pre>
@@ -153,7 +157,7 @@ vi config.properties
         </div></code></pre>
 
         <p>
-          The other values of the new configuration file are filled with default settings defined by <samp>devenv-4-iom</samp>. The most important settings are the <samp>*_IMAGE</samp> properties, since they are defining what will be executed by <samp>devenv-4-iom</samp>. By defining the images, you can for example control to run a specific project, a standard IOM product without any customizations, the IOM product, which is currently in develepoment or even containers of the IOM product or project, you have built by yourself on your local computer.
+          The other values of the new configuration file are filled with default settings defined by <samp>devenv-4-iom</samp>. The most important settings are the <samp>*_IMAGE</samp> properties, since they are defining what will be executed by <samp>devenv-4-iom</samp>. By defining the images, you can for example control to run a specific project, a standard IOM product without any customizations, the IOM product, which is currently in development or even containers of the IOM product or project, you have built by yourself on your local computer.
         </p><p>
           The default settings are using the pure IOM product. For the first steps, there is no need to change one of these settings. The Docker registry used by default seetings requires login. Hence you have to login into the registry. Additionally you should check, if you are able to access the Docker images, which are set in config-file. To do so, try to pull the images manually in a shell.
         </p><p>
@@ -161,14 +165,14 @@ vi config.properties
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # login into Docker registry
-docker login docker-build.rnd.intershop.de
+docker login docker-iom.rnd.intershop.de
 
 # pull images from registry
 docker pull postgres:11
 docker pull mailhog/mailhog
-docker pull docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
-docker pull docker-build.rnd.intershop.de/intershop/iom-config:2.17.0.0-SNAPSHOT
-docker pull docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT
+docker pull docker-iom.rnd.intershop.de/intershop/iom-dbaccount:1.1.0.0
+docker pull docker-iom.rnd.intershop.de/intershop/iom-config:3.0.0.0
+docker pull docker-iom.rnd.intershop.de/intershop/iom-app:3.0.0.0
         </div></code></pre>
         <p>
           Before using <samp>devenv-cli.sh</samp> to manage our IOM developer instance, we need to have a look, how configuration-files are passed to the script. There are two different ways:
@@ -214,7 +218,7 @@ devenv-cli.sh info postgres
 devenv-cli.sh info iom
         </div></code></pre>
         <p>
-          Mail-server and PostgreSQL-server are starting very quickly. The output of the according <samp>'info'</samp> commands contain a section 'Kubernetes', which shows the state. For these two systems, the state should be <samp>running</samp> even shortly after creating the cluster. The box below shows an example output: 
+          Mail-server and PostgreSQL-server are starting very quickly. The output of the according <samp>'info'</samp> commands contains a section 'Kubernetes', which shows the state. For these two systems, the state should be <samp>running</samp> even shortly after creating the cluster. The box below shows an example output: 
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 devenv-cli.sh info postgres
@@ -267,7 +271,7 @@ Wildfly (admin:admin):      http://computername.local:9990/console
         
         <h3 id="first-steps--logs">View access logs</h3>
         <p>
-          Now IOM is running and we are able to use it in the browser. Now it's time to look how to access some log-messages. Since we are able to browse in IOM, the access-log message will give us a good example. The following command prints access-log entries and also waits for new entries.
+          IOM is now running and we are able to use it in the browser. It's time to look how to access some log-messages. Since we are able to browse in IOM, the access-log message will give us a good example. The following command prints access-log entries and also waits for new entries.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # press ^C to stop printing logs
@@ -355,9 +359,35 @@ devenv-cli.sh apply sql-script /home/user/test.sql
 { "tenant":"Intershop", "environment":"devenv4iom", "logHost":"computername.local", "logVersion":"1.0", "appName":"devenv4iom", "appVersion":"1.0.0.0-SNAPSHOT", "logType":"script", "timestamp":"2019-12-17T14:42:29Z", "level":"INFO", "message":"apply-sql-scripts: successfully deleted job", "processName":"devenv-cli.sh", "additionalInfo":"job.batch \"apply-sql-job\" deleted", "configName":"ci" }
         </div></code></pre>
         <p>
-          You can also interactively use <samp>psql</samp> to communicate with PostgreSQL-server. Just use the command <samp>'info postgres'</samp> to get the according command line.
+          As you can see, the method shown above is not intended to show you the results of your <samp>select</samp> statement. For such purposes the interactive usage of <samp>psql</samp> to communicate with PostgreSQL-server is the better solution. Just use the command <samp>'info postgres'</samp> to get the according command line.
         </p>
-        
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+devenv-cli.sh info postgres
+...
+Usefull commands:
+=================
+Login into Pod:             kubectl exec --namespace firststeps postgres -it bash
+psql into root-db:          kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=postgres PGDATABASE=postgres psql"
+psql into IOM-db:           kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
+...
+
+# now use the command for "psql into IOM-db" and
+# enter the select statement interactively
+kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
+psql (11.8 (Debian 11.8-1.pgdg90+1))
+Type "help" for help.
+
+oms_db=> select * from "CountryDefDO";
+ id | currency |       currencyName        | currencySymbol | isoCode2 | isoCode3 | isoNumeric |                 name                 
+----+----------+---------------------------+----------------+----------+----------+------------+--------------------------------------
+  1 | JMD      | Jamaica Dollar            | J$             | JM       | JAM      | 388        | Jamaica
+  2 | EUR      | Euro                      | &euro;              | DE       | DEU      | 276        | Germany
+  3 | EUR      | Euro                      | &euro;              | AT       | AUT      | 040        | Austria
+  4 | EUR      | Euro                      | &euro;              | NL       | NLD      | 528        | Netherlands
+  5 | CHF      | Schweizer Franken         | SFr            | CH       | CHE      | 756        | Switzerland
+...
+	</div></code></pre>
+	
         <h3 id="first-steps--delete">Delete IOM cluster</h3>
         <p>
           Now it comes the time, that we have to clean up the environment. To do so, we have to execute two steps:
@@ -384,7 +414,7 @@ export DEVENV4IOM_CONFIG=
         
         <h2 id="configurations">Configuration</h2>
 
-        <h3 id="configurations--add-config">Create an new configuration</h3>
+        <h3 id="configurations--create-config">Create an new configuration</h3>
         <p>
           <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. Along the many configuration values needed to control the behavior of IOM, there is one property, which is required to mark Kubernetes- and Docker-resources as being associated with a certain configuration. This property is the <samp>ID</samp>. Each configuration has to have its own unique <samp>ID</samp>. Hence, the creation of a new configuration file consists of these steps:
           <ol>
@@ -398,17 +428,17 @@ export DEVENV4IOM_CONFIG=
 export DEVENV4IOM_CONFIG=
 
 # create a new configuration file containing default values only
-devenv-cli.sh get info > config.properties
+devenv-cli.sh get config > config.properties
 
 # set ID to a unique value and adapt other values according your needs
 vi config.properties
         </div></code></pre>
 
-        <h3 id="configurations--use-config">Use configuration file along with <samp>devenv-cli.sh</samp></h3>
+        <h3 id="configurations--link-config">Link configuration to <samp>devenv-cli.sh</samp></h3>
         <p>
-          <samp>devenv-cli.sh</samp> is used to control your IOM developer instances. Therefore call of this script has exectly to know, which configuration (which IOM instance) is meant. There are two different ways, how <samp>devenv-cli.sh</samp> can be associated to a certain configuration:
+          <samp>devenv-cli.sh</samp> is used to control your IOM developer instances. Therefore on each call of this script the configuration has to be passed. There exist two different ways, how <samp>devenv-cli.sh</samp> can be linkted to a certain configuration:
           <ol>
-            <li>The configuration file can be passed as first parameter at the command line.</li>
+            <li>The configuration file can be passed as first parameter of the command line.</li>
             <li>The configuration file can be set in environment variable <samp>DEVENV4IOM_CONFIG</samp></li>
           </ol>
           If both methods are used at once, the config-file passed on the command line has precedence.
@@ -424,89 +454,62 @@ devenv-cli.sh info iom
 devenv-cli.sh another-config.properties info iom
         </div></code></pre>
         
-        <h3 id="configurations--devenv4iom">Update devenv-4-iom</h3>
+        <h3 id="configurations--change-config">Change configuration values</h3>
         <p>
-          To update devenv-4-iom you have to process the following steps:
-          <ul>
-            <li>TODO: where to download</li>
-            <li>TODO: release notes (link or colapseable box)</li>
-            <li>TODO: extract to ${PROJECT_PATH}</li>
-            <li>The step <a href="#configurations--update">'Update config after updating devenv-4-iom'</a> has to be processed for each configuration</li>
-          </ul>
-        </p>
-        
-        <h3 id="configurations--update">Update config-directory after updating devenv-4-iom</h3>
-        <p>
-          After updating devenv-4-iom, the content of current config directory has to be updated too. To do so, you have to update the command client itself and in a second step all other files.
-        </p>
-        <p>
-          You can run <samp>'update all'</samp> so often you want. Since HTML documentation also references variables from configuration, it's recommended to update it after each configuration change.
+          Changing a value in configuration file does not automatically change the according developer instance of IOM. The only process guaranteeing, that changes are applied, is the complete recreation of the IOM installation.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Update all remaining files in ${ENV_DIR}
-devenv-cli.sh update all
-        </div></code></pre>     
-
-        <h3 id="configurations--reset-config">Reset current configuration</h3>
-        <p>
-          If you want to reset the whole configuration, simply delete all entries from <samp>${ENV_DIR}/config.properties</samp>, but do not delete the file itself. Before doing this, it's recommended to make a backup of the old configuration.
-        </p><p>
-          To reset only parts of the configuration, just delete the according entries.
-        </p><p>
-          Now you can run <samp>'update config'</samp>, to recreate <samp>config.properties</samp>. Except you know exactly what you do, it's recommended to delete the IOM cluster before and and create it again afterwards.
-        </p>
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Delete IOM cluster
-devenv-cli.sh delete cluster
+# change configuration file
+vi config.properties
               
-# Update config.properties 
-devenv-cli.sh update config
-# now check the reseted entries and change them to your needs
+# delete the whole IOM cluster
+devenv-cli.sh delete iom
 
-# Create IOM cluster again
-devenv-cli.sh create cluster
+# create the IOM cluster
+devenv-cli.sh create iom
+        </div></code></pre>
+        
+        <h3 id="configurations--reset-config">Reset configuration partially</h3>
+        <p>
+          If you want to reset the whole configuration, simply create a new one and set the ID inside the properties file to the old value (see <a href="#configurations--create-config">Create a new configuration</a>).
+        </p><p>
+          To reset only parts of the configuration, just delete the according entries from your configuration file. Now create a new configuration file, but make sure the old conifguration is used during this process. In this case, only the missing/empty properties of the old configuration are filled with default values in the new configuration file.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# remove entries from config file, that should be filled with default values
+vi config.properties
+              
+# create a new configuration file based on the old one
+devenv-cli.sh config.properties get config > new-config.properties
+
+# now check the reseted entries and change them to your needs
         </div></code></pre>   
         
-        <h3 id="configurations--info">Getting info about components</h3>
-        <p>
-          Each component (iom, postgres, mailserver, storage) has a lot of information to provide, e.g.:
-        </p>
-        <ul>
-          <li>Links to access services</li>
-          <li>Public ports</li>
-          <li>Configuration settings</li>
-          <li>Useful commands, etc.</li>
-        </ul>
-        <p>
-          The command line client of devenv-4-iom provides a very simple interface to get these information:
-        </p>
-        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# Get info about IOM
-devenv-cli.sh info iom
-
-# Get info about mail-server
-devenv-cli.sh info mailserver
-
-# Get info about PostgreSQL
-devenv-cli.sh info postgres
-
-# Get info about Storage
-devenv-cli.sh info storage
-        </div></code></pre> 
-
         
         <h3 id="configurations--parallel-instances">Parallel instances of devenv-4-iom environments</h3>
         <p>
           Running different IOM installations within devenv-4-iom is not a problem, if they are not running at the same time. Just run <samp>'delete cluster'</samp> on one installation before run <samp>'create cluster'</samp> on another.
         </p><p>
-          Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. But when it comes on operating system level of your host machine, the ports required to access the IOM installation from outside, are colliding.
+          Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. Precondition is the use of unique IDs in configurations (see <a href="#configurations--create-config">Create a new configuration</a>). But when it comes on operating system level of your host machine, the ports required to access the IOM installation from outside, are colliding.
         </p><p>
-          Devenv-4-iom provides a simple mechanism to avoid port collisions. The configuration variable <samp>INDEX</samp> controls the port usage, when providing services on OS level. Just make sure, that every IOM configuration uses a different value of <samp>INDEX</samp>. After each change of <samp>INDEX</samp> you have to delete and create the cluster.
+          Devenv-4-iom provides a simple mechanism to avoid port collisions. The configuration variable <samp>INDEX</samp> controls the port usage, when providing services on OS level. Just make sure, that every IOM configuration uses a different value of <samp>INDEX</samp>. After each change of <samp>INDEX</samp> you have to delete and create the cluster (see <a href="#configurations--change-config">Change configuration values</a>).
         </p>
 
-        <h3 id="configurations--add-config">Delete current configuration/instance</h3>
+        <h3 id="configurations--migrate-config">Migrate a configuration after update of <samp>devenv-4-iom</samp></h3>
         <p>
-          The configuration directory (<samp>${ENV_DIR}</samp>) does not need much space on disk. You should delete it only, if you are really sure, that you will never need again this IOM development instance. Of course, you can delete this directory too, but first you have to <samp>'delete cluster'</samp> and <samp>'delete storage'</samp> to be able to remove the assigned resources. Addtionally, it's recommended to delete unused Docker images too.
+          After updating <samp>devenv-4-iom</samp>, the content of current configuration file has to be updated too. The new version of <samp>devenv-4-iom</samp> might bring a new template for configuration files, which may contain new properties or improved comments. You need to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new configuration file, but make sure your current configuration is used during this process (see <a href="#configurations--reset-config">Reset configuration partially</a>).
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# create a new configuration file based on the old one
+devenv-cli.sh config.properties get config > migrated-config.properties
+
+# now check the migrated configuration file for new properties and change them to your needs
+vi migrated-config.properties
+        </div></code></pre>     
+
+        <h3 id="configurations--delete-config">Delete a configuration</h3>
+        <p>
+          Before deleting a configuration file, you have to make sure all belonging Kubernetes and Docker resources are deleted too. You will not be able to delete them using <samp>devenv-cli.sh</samp> afterwards. Executing <samp>'delete cluster'</samp> and <samp>'delete storage'</samp> will remove all resources assigned to a configuration. Addtionally, it's recommended to delete unused Docker images too.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Delete IOM cluster
@@ -515,8 +518,11 @@ devenv-cli.sh delete cluster
 # Delete storage
 devenv-cli.sh delete storage
 
-# Do this only, if you really sure
-rm -fr "${ENV_DIR}"
+# now the configuration file can be deleted
+rm config.properties
+
+# don't forget to unset the environment variable pointing to the configuration file
+export DEVENV4IOM_CONFIG=
 
 # Clean up unused Docker images (cleans up all unused images, not only the ones belonging to current configuration)
 docker system prune -a -f
@@ -547,7 +553,7 @@ docker system prune -a -f
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # optional: only if required by registry. You have to adapt this command to the
 # registry used by *_IMAGE variables of your current configuration.
-docker login docker-build.rnd.intershop.de
+docker login docker-iom.rnd.intershop.de
 
 # now create the cluster
 devenv-cli.sh create cluster
@@ -632,7 +638,7 @@ devenv-cli.sh delete postgres
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # optional: only if required by registry. You have to adapt this command to the
 # registry used by *_IMAGE variables of your current configuration.
-docker login docker-build.rnd.intershop.de
+docker login docker-iom.rnd.intershop.de
 
 # now create IOM
 devenv-cli.sh create iom
@@ -644,6 +650,33 @@ devenv-cli.sh create iom
 devenv-cli.sh delete iom
         </div></code></pre>
 
+        <h3 id="operations--info">Getting info about components</h3>
+        <p>
+          Each component (iom, postgres, mailserver, storage) has a lot of information to provide, e.g.:
+        </p>
+        <ul>
+          <li>Links to access services</li>
+          <li>Public ports</li>
+          <li>Configuration settings</li>
+          <li>Useful commands, etc.</li>
+        </ul>
+        <p>
+          The command line client of devenv-4-iom provides a very simple interface to get these information:
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Get info about IOM
+devenv-cli.sh info iom
+
+# Get info about mail-server
+devenv-cli.sh info mailserver
+
+# Get info about PostgreSQL
+devenv-cli.sh info postgres
+
+# Get info about Storage
+devenv-cli.sh info storage
+        </div></code></pre> 
+
         <!--
             ############# development process ###############
           -->
@@ -652,10 +685,29 @@ devenv-cli.sh delete iom
 
         <h3 id="development--deployment-gui">Deployment of custom built artifacts using the Wildfly Admin Console</h3>
         <p>
-          Using the <a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> is the easiest way to add or update deployments. The deployment process is simply triggered by Drag & Drop.
+          Using the <samp>Wildfly Admin Console</samp> is the easiest way to add or update deployments. The deployment process is simply triggered by Drag & Drop.
         </p><p>
-          In difference to <a href="#development--deployment-cli">Deployment of custom built artifacts using the command line interface</a>, deployments added/updated this way, will not survive a restart of the IOM pod.
+          In difference to <a href="#development--deployment-cli">Deployment of custom built artifacts using cli</a>, deployments added/updated this way, will not survive a restart of the IOM pod.
         </p>
+	<p>
+	  The <samp>Wildfly Admin Console</samp> has to be opened in a web-browser. The according URL can be found in the output of the <samp>'info iom'</samp> command.
+	</p>
+	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# Get info about IOM
+devenv-cli.sh info iom
+...
+--------------------------------------------------------------------------------
+Links:
+======
+OMT:                        http://computername.local:8080/omt/
+Online help:                http://computername.local:8080/omt-help/
+DBDoc:                      http://computername.local:8080/dbdoc/
+Wildfly (admin:admin):      http://computername.local:9990/console/
+--------------------------------------------------------------------------------
+...
+
+# copy the 'Wildfly' link into your web-browser
+        </div></code></pre> 
         
         <h3 id="development--deployment-cli">Deployment of custom built artifacts using cli</h3>
         <p>
@@ -678,7 +730,7 @@ devenv-cli.sh apply deployment omt
 devenv-cli.sh apply deployment
         </div></code></pre>
         <p>
-          Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <a href="http://${HOST_IOM}:${PORT_WILDFLY_SERVICE}/console/index.html#deployments" target="_blank">Wildfly Admin Console (admin:admin)</a> to update/add deployments during runtime.
+          Of course, you can combine both methods of deploying custom built artifacts, to get the best out of both methods. If you set <samp>CUSTOM_APPS_DIR</samp> and make sure the according directory contains your custom built artifacts, your developer VM will always use these artifacts, even right after start of IOM. Additionally you can use <samp>Wildfly Admin Console</samp> to update/add deployments during runtime.
         </p>
           
         <h3 id="development--apply-mail-templates">Roll out custom mail templates</h3>
@@ -855,36 +907,36 @@ devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
         <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# make sure, geb.properties are reflecting last version of configuration
-devenv-cli.sh update update geb-props
+# make sure, geb.properties are reflecting latest version of configuration
+devenv-cli.sh get geb-props > geb.properties
 
 # Go to the oms.tests directory in your oms source directory
-# PATH_TO_IOM_SOURCES has to be replaced by the real value!
+# PATH_TO_IOM_SOURCES and PATH_TO_GEB_PROPERTIES have to be replaced by real values!
 cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run a single geb test
-./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
+./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
 
 # Run a group of geb tests
-./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
+./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
         </div></code></pre>
 
         <h4 id="run-tests">Run single ws-tests or a group of ws-tests</h4>
         <p> To run a single test, just use the the feature name or a substring of it. E.g:</p>
 
           <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# make sure, ws.properties are reflecting last version of configuration
-devenv-cli.sh update update ws-props
+# make sure, ws.properties are reflecting latest version of configuration
+devenv-cli.sh get ws-props > ws.properties
 
 # Go to the oms.tests directory in your oms source directory
-# PATH_TO_IOM_SOURCES has to be replaced by the real value!
+# PATH_TO_IOM_SOURCES and PATH_TO_WS_PROPERTIES have to be replaced by real values!
 cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run a single ws test
-./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
+./gradlew wsTest -Pws.propFile=${PATH_TO_WS_PROPERTIES}/ws.properties --tests="IOM-7421-1: OrderService v1.2: Create an order with one position and billing address == shipping address"
 
 # Run a group of ws tests
-./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
+./gradlew wsTest -Pws.propFile=${PATH_TO_WS_PROPERTIES}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
           </div></code></pre>
 
         <h4 id="run-all-tests">Run all All tests of a specification</h4>
@@ -892,14 +944,14 @@ cd ${PATH_TO_IOM_SOURCES}/oms.tests
         
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-# PATH_TO_IOM_SOURCES has to be replaced by the real value!           
+# PATH_TO_IOM_SOURCES, PATH_TO_GEB_PROPERTIES and PATH_TO_WS_PROPERTIES have to be replaced by real values!           
 cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run all tests of a geb test specification
-./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
+./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
 
 # Run all tests of a ws test specification
-./gradlew wsTest -Pws.propFile=${ENV_DIR}/ws.properties --tests="*ReverseServiceSpec*"
+./gradlew wsTest -Pws.propFile=${PATH_TO_WS_PROPERTIES}/ws.properties --tests="*ReverseServiceSpec*"
         </div></code></pre>
 
         <h4 id="run-test-group">Run all tests of a group of specifications (e.g. user management, role management)</h4>
@@ -907,29 +959,32 @@ cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Go to the oms.tests directory in your oms source directory
-# PATH_TO_IOM_SOURCES has to be replaced by the real value!           
+# PATH_TO_IOM_SOURCES and PATH_TO_GEB_PROPERTIES have to be replaced by real values!           
 cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
 # Run all tests of a specification group
-./gradlew gebTest -Pgeb.propFile=${ENV_DIR}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
+./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
         </div></code></pre>
 
         <h4 id="run-test-group">Run SOAP tests</h4>
-        <p> To run all soap tests just use the following code:</p>
+        <p> To run all soap tests just use the following method:</p>
 
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# make sure, soap.properties are reflecting latest version of configuration
+devenv-cli.sh get soap-props > soap.properties
+	      
 # Go to the oms.soap.tests directory in your oms source directory
-# PATH_TO_IOM_SOURCES has to be replaced by the real value!           
+# PATH_TO_IOM_SOURCES an PATH_TO_SOAP_PROPERTIES have to be replaced by the real values!           
 cd ${PATH_TO_IOM_SOURCES}/oms.soap.tests
 
 # Run all soap tests
-mvn -Dhost=${HOST_IOM}:${PORT_IOM_SERVICE} clean test
+mvn -Dhost=$(cat "${PATH_TO_SOAP_PROPERTIES}/soap.properties") clean test
         </div></code></pre>
 
         <h2 id="log-messages">Log-messages</h2>
         <h3 id="log-messages--jq">jq - command-line JSON processor</h3>
         <p>
-          <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> is a command line tool to work with json messages. Since all messages, created by <samp>devenv-4-iom</samp> and <samp>IOM</samp>, are json messages, it is a very useful tool. <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> is not included in <samp>devenv-4-iom</samp>. <samp>devenv-4-iom</samp> does not depend on it (except the <samp>'log *'</samp> command), but it's strongly recommended that you install <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> too.
+          <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> is a command line tool to work with json messages. Since all messages, created by <samp>devenv-4-iom</samp> and <samp>IOM</samp>, are json messages, it is a very useful tool. <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> is not included in <samp>devenv-4-iom</samp>. <samp>devenv-4-iom</samp> does not depend on it (except the <samp>'log *'</samp> commands), but it's strongly recommended that you install <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> too.
         </p><p>
           The most important features used in context of <samp>devenv-4-iom</samp> are formatting and filtering. The following box shows some examples of these use cases. These examples are not intended to be used as they are. They should only give you an impression about <samp><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></samp> and should animate you, to dig deeper by yourself.
         </p>
@@ -1094,34 +1149,34 @@ cmd_producing_json | jq 'select(.level == "ERROR") | {timestamp: .timestamp, mes
         </p><p>
           Unfortunately, it is not as simple, as it seems at first glance. There three reasons, that make it more complicated:
           <ul>
-            <li>Not every output of <samp>devenv-cli.sh</samp> is a log-message, but only log-messages are provided in json format. <samp>'info *'</samp> commands and all help-messages are written as plain-text. When piping this output through <samp>jq</samp>, no messages can be seen at all.</li>
-            <li>Some commands provide a mixture of log-messages of <samp>devenv-cli.sh</samp> and <samp>IOM</samp>. Developer commands (<samp>'apply *'</samp>) are behaving like that. E.g., when applying a sql-configuration, using <samp>'apply sql-config'</samp>, there are log-messages of <samp>devenv-cli.sh</samp>, that are reporting the progress of the process (create kubernetes-job, delete kubernetes-job, etc.) and there are other log-messages coming directly from IOM, which are giving information about applying SQL-configuration. In this case, only the log-messages of <samp>devenv-cli.sh</samp> are controlled by variable <samp>OMS_LOGLEVEL_DEVENV</samp>. The messages of IOM are controlled by other <samp>OMS_LOGLEVEL_*</samp> variables, see <a href="#log-messages--iom-containers">section below</a>.</li>
+            <li>Not every output of <samp>devenv-cli.sh</samp> is a log-message, but only log-messages are provided in json format. <samp>'info *'</samp> and <samp>'get *'</samp> commands and all help-messages are written as plain-text. The intended output of these command is written to <samp>stdout</samp>. Any additional log-messages are written to <samp>stderr</samp>. In fact, all log-messages of <samp>devenv-cli.sh</samp> are written to <samp>stderr</samp>.</li>
+            <li>Some commands provide a mixture of log-messages of <samp>devenv-cli.sh</samp> and <samp>IOM</samp>. Developer commands (<samp>'apply *'</samp>) are behaving like that. E.g., when applying a sql-configuration, using <samp>'apply sql-config'</samp>, there are log-messages of <samp>devenv-cli.sh</samp>, that are reporting the progress of the process (create kubernetes-job, delete kubernetes-job, etc.) and there are other log-messages coming directly from IOM, which are giving information about applying SQL-configuration. In this case, only the log-messages of <samp>devenv-cli.sh</samp> are controlled by variable <samp>OMS_LOGLEVEL_DEVENV</samp>. The messages of IOM are controlled by other <samp>OMS_LOGLEVEL_*</samp> variables, see <a href="#log-messages--iom-containers">section below</a>. Additionally you have to know, that log-messages of IOM are written to <samp>stdout</samp>, in difference to the log-messages of <samp>devenv-cli.sh</samp>, which are written to <samp>stderr</samp>.</li>
             <li>Finally there are the <samp>'log *'</samp> commands, that try to ease the access to messages created by IOM containers. For more information, see <a href="#log-messages--log-cmd">section below</a>.</li>
           </ul>
         </p><p>
           Hence, the following hints should be taken into account, when using <samp>devenv-cli.sh</samp> along with <samp>jq</samp>:
           <ul>
-            <li>Never pipe the output of <samp>devenv-cli.sh</samp> through <samp>jq</samp>, when you want to get help for a command,</li>
-            <li>Never pipe the output of <samp>devenv-cli.sh</samp> through <samp>jq</samp>, when you are using the <samp>'info *'</samp> command.</li>
+            <li>When executing commands writing their intended output to <samp>stdout</samp> (e.g. <samp>'info'</samp>, <samp>'get'</samp>), only <samp>stderr</samp> must be redirected to <samp>jq</samp>.</li>
+            <li>When executing commands without any intended output (e.g. <samp>'apply'</samp>, <samp>'dump'</samp>), <samp>stdout</samp> and <samp>stderr</samp> must be piped into <samp>jq</samp>.</li>
           </ul>
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
-# example of jq-usage along with devenv-cli.sh
+# example of jq-usage along with devenv-cli.sh command, having intended output printed to stdout
+# intended output is written to file config.properties
+# log-messages are piped to jq
 # creates a pretty-printed version of log-messages 
-devenv-cli.sh create iom | jq
+devenv-cli.sh get config 2>&1 >config.properties | jq
 
-# never pipe output of devenv-cli.sh through jq, when requesting help
-# example:
-devenv-cli.sh create iom --help
-
-# never pipe the output of 'info *' command through jq
-# example:
-devenv-cli.sh info iom
+# example of jq-usage with mixed log-messages from devenv-cli.sh and IOM
+# log-messages of devenv-cli.sh are written to stderr
+# log-messages of IOM are written to stdout
+# both are piped to jq
+devenv-cli.sh apply sql-script test.sql 2>&1 | jq
         </div></code></pre>
 
         <h3 id="log-messages--iom-containers">Log-messages of IOM containers</h3>
         <p>
-          Besides the IOM application container, two init-containers are belonging to IOM too. All these containers are writing messages in json format to <samp>standard out</samp>. The log-levels of these messages are controlled by variables:
+          Besides the IOM application container, two init-containers are belonging to IOM too. All these containers are writing messages in json format to <samp>stdout</samp>. The log-levels of these messages are controlled by variables:
           <ul>
             <li><samp>OMS_LOGLEVEL_CONSOLE</samp></li>
             <li><samp>OMS_LOGLEVEL_IOM</samp></li>
@@ -1133,7 +1188,7 @@ devenv-cli.sh info iom
           </ul>
           The values of these log-levels cannot be changed at runtime. For a change to take effect, IOM has to be deleted and newly created.
         </p><p>
-          Beside these application level messages, access logs are written to <samp>standard out</samp> in json format too. Hence, the output of the IOM containers is a mixture of different logs.
+          Beside these application level messages, access logs are written to <samp>stdout</samp> in json format too. Hence, the output of the IOM containers is a mixture of different logs.
         </p><p>
           You can use <samp>kubectl</samp> to access this messages. In general these message can be provided in two different ways:
           <ul>
@@ -1192,11 +1247,14 @@ kubectl logs --tail=1 -f iom-6c587ddd87-42k4f --namespace 21700snapshot -c iom |
 # show FATAL, ERROR and WARN messages of IOM's config container and format them
 devenv-cli.sh log config
 
+# show INFO messages of IOM's config container and format them
+devenv-cli.sh log config info
+
 # follow FATAL, ERROR and WARN messages of IOM's application container and format the messages
 devenv-cli.sh log app -f
 
-# follow all access log entries, that have a response time > 100 ms
-# do not format messages to be able to process output by a second jq stage
+# follow all access log entries
+# do not format messages to be able to process output by a second jq stage, that filters for response time > 100 ms
 devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
         </div></code></pre>
 

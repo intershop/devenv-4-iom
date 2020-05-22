@@ -16,6 +16,12 @@
 # ID is used to create unique names for docker instances
 # This ID is assigned initially, when creating the config file. Please never
 # change the ID afterwards.
+# Since ID is also used to derive the kubernetes namespace to be used for IOM,
+# ID must not collide with namespaces used by Docker-Desktop. Forbidden are
+# all values beginning with:
+# - default
+# - docker
+# - kube
 ID=${ID}
 
 ################################################################################
@@ -39,24 +45,24 @@ MAILHOG_IMAGE=${MAILHOG_IMAGE}
 
 # iom dbaccount image (name:tag)
 # examples:
-# locally built image:      iom-dbaccount:1.0.0.0-SNAPSHOT
-# from ISH Docker registry: docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT
+# locally built image:              iom-dbaccount:1.2.0.0-SNAPSHOT
+# release from ISH Docker registry: docker-iom.rnd.intershop.de/intershop/iom-dbaccount:1.1.0.0
 IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom config image (name:tag)
 # examples:                 
-# locally built IOM image:  iom-config:2.17.1.0-SNAPSHOT
-# locally built CI image:   ci-iom-config:2.17.1.0-SNAPSHOT-1.1.0.0-SNAPSHOT
-# IOM from ISH registry:    docker-build.rnd.intershop.de/intershop/iom-config:2.17.1.0-SNAPSHOT
-# CI from ISH registry:     docker-build.rnd.intershop.de/intershop/ci-iom-config:2.17.1.0-SNAPSHOT-1.0.0.0-SNAPSHOT
+# locally built IOM image:          iom-config:3.1.0.0-SNAPSHOT
+# locally built CI image:           ci-iom-config:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# IOM relase from ISH registry:     docker-iom.rnd.intershop.de/intershop/iom-config:3.0.0.0
+# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-config:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
 IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 
 # iom app image (name:tag)
 # examples:
-# locally built IOM image:  iom-app:2.17.1.0-SNAPSHOT
-# locally built CI image:   ci-iom-app:2.17.1.0-SNAPSHOT-1.1.0.0-SNAPSHOT
-# IOM from ISH registry:    docker-build.rnd.intershop.de/intershop/iom-app:2.17.1.0-SNAPSHOT
-# CI from ISH registry:     docker-build.rnd.intershop.de/intershop/ci-iom-app:2.17.1.0-SNAPSHOT-1.1.0.0-SNAPSHOT
+# locally built IOM image:          iom-app:3.1.0.0-SNAPSHOT
+# locally built CI image:           ci-iom-app:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# IOM release from ISH registry:    docker-iom.rnd.intershop.de/intershop/iom-app:3.0.0.0
+# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-app:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
 IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
 ################################################################################
@@ -154,45 +160,45 @@ OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
 # Docker Desktop.
 
 # Deployment of custom artifacts
-# see: ${ENV_DIR}/devenv-cli.sh apply deployment --help
+# see: devenv-cli.sh apply deployment --help
 # recommended value, when doing IOM product development:
 # absolute path to "/oms.deployment/applications" in IOM sources.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
-# see: ${ENV_DIR}/devenv-cli.sh apply mail-templates --help
+# see: devenv-cli.sh apply mail-templates --help
 # recommended value, when doing IOM product development:
 # absolute path to "/oms.deployment/var/templates" in IOM sources.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
 # Development of custom xsl templates
-# see: ${ENV_DIR}/devenv-cli.sh apply xsl-templates --help
+# see: devenv-cli.sh apply xsl-templates --help
 # recommended value, when doing IOM product development:
 # absolute path to "/bakery.transform/transform-core/src/main/resources/document/xslt"
 # in IOM sources.
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 
 # Development of migration scripts
-# see: ${ENV_DIR}/devenv-cli.sh apply dbmigrate --help
+# see: devenv-cli.sh apply dbmigrate --help
 # recommended value, when doing IOM product development:
 # absolute path to "/postgres" in IOM sources.
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 
 # Load/create custom dumps
-# see: ${ENV_DIR}/devenv-cli.sh dump load --help
-# see: ${ENV_DIR}/devenv-cli.sh dump create --help
+# see: devenv-cli.sh dump load --help
+# see: devenv-cli.sh dump create --help
 # recommended value, whne doing IOM product development:
 # absolute path to "/postgres/dumps" in IOM sources.
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 
 # Development of custom sql-config
-# see: ${ENV_DIR}/devenv-cli.sh apply sql-config --help
+# see: devenv-cli.sh apply sql-config --help
 # recommended value, when doing IOM project development:
 # absolute path to "/configuration/src/sql-config" in project sources.
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 
 # Development of custom json-config
-# see: ${ENV_DIR}/devenv-cli.sh apply json-config --help
+# see: devenv-cli.sh apply json-config --help
 # recommended value, when doing IOM project development:
 # absolute path to "/configuration/src/json-config" in project sources.
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"

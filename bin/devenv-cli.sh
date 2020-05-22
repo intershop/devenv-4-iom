@@ -1281,8 +1281,9 @@ CONFIG-FILE
 
 RESOURCE
     config|co*         get configuration file
-    ws-props|w*        get ws.properties
-    geb-props|g*       get geb.properties
+    ws-props|w*        get ws properties
+    geb-props|g*       get geb properties
+    soap-props|s*      get soap properties
 
 Run '$ME [CONFIG-FILE] get RESOURCE --help|-h' for more information on a command.
 EOF
@@ -1327,13 +1328,13 @@ EOF
 help-get-ws-props() {
     ME=$(basename "$0")
     cat <<EOF
-writes ws.properties to stdout
+writes ws properties to stdout
 
 SYNOPSIS
     $ME [CONFIG-FILE] get ws-props
 
 OVERVIEW
-    Writes ws.properties to stdout. This file is required to run ws-tests on the
+    Writes ws properties to stdout. This file is required to run ws-tests on the
     managed IOM installation.
 
 CONFIG-FILE
@@ -1352,13 +1353,13 @@ EOF
 help-get-geb-props() {
     ME=$(basename "$0")
     cat <<EOF
-writes geb.properties to stdout
+writes geb properties to stdout
 
 SYNOPSIS
     $ME [CONFIG-FILE] get geb-props
 
 OVERVIEW
-    Writes geb.properties to stdout. This file is required to run geb-tests on
+    Writes geb properties to stdout. This file is required to run geb-tests on
     the managed IOM installation.
 
 CONFIG-FILE
@@ -1369,6 +1370,31 @@ CONFIG-FILE
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/geb.properties.template" \\
+      "$CONFIG_FILE"
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-get-soap-props() {
+    ME=$(basename "$0")
+    cat <<EOF
+writes soap properties to stdout
+
+SYNOPSIS
+    $ME [CONFIG-FILE] get soap-props
+
+OVERVIEW
+    Writes soap properties to stdout. This file is required to run soap-tests on
+    the managed IOM installation.
+
+CONFIG-FILE
+    Name of config-file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
+    ends with an error.
+
+BACKGROUND
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/soap.properties.template" \\
       "$CONFIG_FILE"
 EOF
 }
@@ -3191,6 +3217,30 @@ get-geb-props() {
     [ "$SUCCESS" = 'true' ]
 }
 
+#-------------------------------------------------------------------------------
+# get soap.properties
+#-------------------------------------------------------------------------------
+get-soap-props() {
+    SUCCESS=true
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "get-soap-props: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/soap.properties.template" \
+            "$CONFIG_FILE" 2> "$TMP_ERR"
+        if [ $? -ne 0 ]; then
+            log_json ERROR "get-soap-props: error writing soap.properties." < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_json INFO "get-soap-props: soap.properties successfully written" < /dev/null
+        fi
+    fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
+}
+
 ################################################################################
 # functions, implementing the log handler
 ################################################################################
@@ -3342,13 +3392,13 @@ log-config() (
         LEVEL="$2"
     elif [ "$1" = '-f' ]; then
         FOLLOW=true
-    elif [ "$1" = '-f' ]; then
+    elif [ "$2" = '-f' ]; then
         FOLLOW=true
         LEVEL="$1"
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
     fi   
-    
+
     if [ -z "$CONFIG_FILE" ]; then
         log_json ERROR "log-config: no config-file given!" < /dev/null
         SUCCESS=false
@@ -3585,15 +3635,19 @@ if [ ! -z "$CONFIG_FILE" ]; then
 fi
 
 #-------------------------------------------------------------------------------
-# reject config file with empty ID
-# this is the initial state after creation of file
-if [ ! -z "$CONFIG_FILE" -a -z "$ID" ]; then
-    log_json ERROR "ID in file '$CONFIG_FILE' must not be empty!" < /dev/null
-    exit 1
+if [ ! -z "$CONFIG_FILE" ]; then
+    if [ -z "$ID" ]; then
+        # reject config file with empty ID
+        # this is the initial state after creation of file
+        log_json ERROR "ID in file '$CONFIG_FILE' must not be empty!" < /dev/null
+        exit 1
+    elif echo "$ID" | grep -qi '^default' || echo "$ID" | grep -qi '^docker' || echo "$ID" | grep -qi '^kube'; then
+        # reject config file with ID starting with one of the reserved words,
+        # which are used by namespaces of Docker-Destop
+        log_json ERROR "ID in file '$CONFIG_FILE' must not start with one of the reserverd words 'default', 'docker', 'kube'" < /dev/null
+        exit 1
+    fi
 fi
-
-# TODO ENV_DIR has to be eliminated completely!
-ENV_DIR=$(dirname "$CONFIG_FILE")
 
 # TODO .. should not appear in PROJECT_PATH
 # determine PROJECT_PATH
@@ -3839,6 +3893,9 @@ elif [ "$LEVEL0" = 'get' ]; then
             ;;
         w*)
             LEVEL1=ws-props
+            ;;
+        s*)
+            LEVEL1=soap-props
             ;;
         --help)
             help-get
