@@ -2047,6 +2047,10 @@ psql into root-db:          kubectl exec --namespace $EnvId $POD -it -- bash -c 
 psql into IOM-db:           kubectl exec --namespace $EnvId $POD -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
 
 Currently used yaml:        kubectl get pod -l app=postgres -o yaml --namespace=$EnvId
+Describe pod:               kubectl describe --namespace $EnvId pod $POD
+
+Get logs:                   kubectl logs $POD --namespace $EnvId
+Follow logs:                kubectl logs --tail=1 -f $POD --namespace $EnvId
 --------------------------------------------------------------------------------
 EOF
         fi

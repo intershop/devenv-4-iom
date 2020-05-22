@@ -114,6 +114,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Troubleshooting <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  <li><a href="#troubleshooting--error-search">IOM is not working</a></li>
                   <li><a href="#troubleshooting--shared-drives">Shared Drives</a></li>
                   <li><a href="#troubleshooting--wrong-context">Wrong Kubernetes context</a></li>
                 </ul>
@@ -137,7 +138,7 @@
         
         <h3 id="first-steps--config">Configuration</h3>
         <p>
-          <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script <samp>devenv-cli.sh</samp> has to be called with options <samp>get config</samp>. In order to get the following examples to work, you have to extend the <samp>PATH</samp> variable by the directory, containing <samp>devev-cli.sh</samp>, or you can also call the script using its absolute path.
+          <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file is holding all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script <samp>devenv-cli.sh</samp> has to be called with options <samp>get config</samp>. In order to get the following examples to work, you have to extend the <samp>PATH</samp> variable by the directory, containing <samp>devenv-cli.sh</samp>, or you can also call the script using its absolute path.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # extend PATH variable
@@ -361,7 +362,7 @@ devenv-cli.sh apply sql-script /home/user/test.sql
         <p>
           As you can see, the method shown above is not intended to show you the results of your <samp>select</samp> statement. For such purposes the interactive usage of <samp>psql</samp> to communicate with PostgreSQL-server is the better solution. Just use the command <samp>'info postgres'</samp> to get the according command line.
         </p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 devenv-cli.sh info postgres
 ...
 Usefull commands:
@@ -386,8 +387,8 @@ oms_db=> select * from "CountryDefDO";
   4 | EUR      | Euro                      | &euro;              | NL       | NLD      | 528        | Netherlands
   5 | CHF      | Schweizer Franken         | SFr            | CH       | CHE      | 756        | Switzerland
 ...
-	</div></code></pre>
-	
+        </div></code></pre>
+        
         <h3 id="first-steps--delete">Delete IOM cluster</h3>
         <p>
           Now it comes the time, that we have to clean up the environment. To do so, we have to execute two steps:
@@ -689,10 +690,10 @@ devenv-cli.sh info storage
         </p><p>
           In difference to <a href="#development--deployment-cli">Deployment of custom built artifacts using cli</a>, deployments added/updated this way, will not survive a restart of the IOM pod.
         </p>
-	<p>
-	  The <samp>Wildfly Admin Console</samp> has to be opened in a web-browser. The according URL can be found in the output of the <samp>'info iom'</samp> command.
-	</p>
-	<pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+        <p>
+          The <samp>Wildfly Admin Console</samp> has to be opened in a web-browser. The according URL can be found in the output of the <samp>'info iom'</samp> command.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # Get info about IOM
 devenv-cli.sh info iom
 ...
@@ -972,7 +973,7 @@ cd ${PATH_TO_IOM_SOURCES}/oms.tests
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # make sure, soap.properties are reflecting latest version of configuration
 devenv-cli.sh get soap-props > soap.properties
-	      
+              
 # Go to the oms.soap.tests directory in your oms source directory
 # PATH_TO_IOM_SOURCES an PATH_TO_SOAP_PROPERTIES have to be replaced by the real values!           
 cd ${PATH_TO_IOM_SOURCES}/oms.soap.tests
@@ -1260,6 +1261,201 @@ devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
 
         <h2 id="troubleshooting">Troubleshooting</h2>
 
+        <h3 id="troubleshooting--error-search">IOM is not working</h3>
+        <p>
+          "IOM is not working" is a very unspecific description, but it's the most common. For a systematic search for the root cause, you have to know the different stages of starting IOM and how to get detailed information about each stage.
+        </p>
+        <p>
+          The IOM development environment consists of three main components: database, mail-server and IOM. If mail-server is not working properly, it cannot hindre IOM from starting. Hence, in a situation where IOM is not working at all, we only have to take a look at database and IOM itself.
+        </p>
+        <h4>Search for problems of postgres database</h4>
+        <p>
+          Before searching for a problem, the status of the postgres database should be checked. The easiest way to do this, is to use the <samp>'info postgres'</samp> command. The output of this command contains a section named "Kubernetes", which is showing the status of <samp>postgres</samp>. If postgres is working, the entry "READY" should be "1/1" and the entry "STATUS" should be running, see example below.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# get information about postgres component
+devenv-cli.sh info postgres
+...
+--------------------------------------------------------------------------------
+Kubernetes:
+===========
+namespace:                  test
+KEEP_DATABASE_DATA:         true
+NAME       READY   STATUS    RESTARTS   AGE
+postgres   1/1     Running   0          74m
+--------------------------------------------------------------------------------
+...
+        </div></code></pre>
+        <p>
+          If there is no "Kubernetes" section at all, the problem occured in a very early stage, just before the Kubernetes resources were created. E.g. you might have tried to start the system with an invalid configuration. Please check the output of the command, you have used to create the postgres database (<samp>'create cluster'</samp> or <samp>'create postgres'</samp>), for error messages. 
+        </p><p>
+          If there is a "Kubernetes" section, but <samp>postgres</samp> is not running or not ready, the start process of the postgres database has to be investigated. There are two possible causes of the problem:
+          <ol>
+            <li>The Kubernetes resource cannot be created for a certain reason (e.g. problem to access the docker-image).</li>
+            <li>The postgres process itself has problems to get in "ready" state (e.g. postgres version in not compatible with persistently stored data)</li>
+          </ol>
+          To get information about these two different stages, two different strategies are necessary:
+          <ol>
+            <li>Problems of first category can be seen in output of <samp>kubectl describe</samp> command.</li>
+            <li>Problems of the second category can be seen, when looking at log messages of postgres.</li>
+          </ol>
+          The <samp>'info postgres'</samp> command of <samp>devenv-cli.sh</samp> provides you the neccessary command lines, for further investigation. You will find them in section "Usefull commands" as "Describe pod" and "Get logs".
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# get information about postgres component
+devenv-cli.sh info postgres
+...
+--------------------------------------------------------------------------------
+Usefull commands:
+=================
+...
+Describe pod:               kubectl describe --namespace test pod postgres
+Get logs:                   kubectl logs postgres --namespace test
+...
+--------------------------------------------------------------------------------
+
+# just execute these commands for further investigation
+kubectl describe --namespace test pod postgres
+...
+Events:
+  Type    Reason     Age        From                     Message
+  ----    ------     ----       ----                     -------
+  Normal  Scheduled  <unknown>  default-scheduler        Successfully assigned test/postgres to docker-desktop
+  Normal  Pulling    9m11s      kubelet, docker-desktop  Pulling image "postgres:11"
+  Normal  Pulled     9m7s       kubelet, docker-desktop  Successfully pulled image "postgres:11"
+  Normal  Created    9m7s       kubelet, docker-desktop  Created container postgres
+  Normal  Started    9m7s       kubelet, docker-desktop  Started container postgres
+
+kubectl logs postgres --namespace test
+...
+' 2020-05-22 11:36:15.750 UTC   [1] 'LOG:  listening on IPv4 address "0.0.0.0", port 5432
+' 2020-05-22 11:36:15.750 UTC   [1] 'LOG:  listening on IPv6 address "::", port 5432
+' 2020-05-22 11:36:15.754 UTC   [1] 'LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+' 2020-05-22 11:36:15.780 UTC   [26] 'LOG:  database system was interrupted; last known up at 2020-05-22 11:13:26 UTC
+' 2020-05-22 11:36:17.036 UTC   [26] 'LOG:  database system was not properly shut down; automatic recovery in progress
+' 2020-05-22 11:36:17.042 UTC   [26] 'LOG:  redo starts at 0/31FE868
+' 2020-05-22 11:36:17.043 UTC   [26] 'LOG:  invalid record length at 0/3204028: wanted 24, got 0
+' 2020-05-22 11:36:17.043 UTC   [26] 'LOG:  redo done at 0/3203FE8
+' 2020-05-22 11:36:17.043 UTC   [26] 'LOG:  last completed transaction was at log time 2020-05-22 11:15:51.823575+00
+' 2020-05-22 11:36:17.071 UTC   [1] 'LOG:  database system is ready to accept connections
+...
+        </div></code></pre>
+        <h4>Search for problems of IOM</h4>
+        <p>
+          The process of searching problems of IOM is in general identical the one used for postgres database, with one slight addition: IOM has two init-containers, which may cause problems too. Hence, the process of searching for errors consists of these steps:
+          <ol>
+            <li>check status of IOM in Kubernetes.</li>
+            <li>If "Kubernetes" section is missing:</li>
+            <ol>
+              <li>Check <samp>devenv-cli.sh</samp> commands, used to create IOM, for error messages.</li>
+            </ol>
+            <li>If "Kubernetes" section is present, but IOM is not running or not ready:</li>
+            <ol>
+              <li>Check output of <samp>kubectl describe</samp> command for errors.</li>
+              <li>Check log-messages of account initialization for errors (dbaccount init-container).</li>
+              <li>Check log-messages of database configuration for errors (config init-container).</li>
+              <li>Check log-messages of IOM for errors.</li>
+            </ol>
+          </ol>
+          According to the checklist above, the first step is getting the status of IOM. This can be easily done by using the <samp>'info iom'</samp> command. The "Kubernetes" section in the output shows the current status. If everything is fine, "READY" should be "1/1" and "STATUS" shoulb be "Running".
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+devenv-cli.sh info iom
+...
+--------------------------------------------------------------------------------
+Kubernetes:
+===========
+namespace:                  test
+NAME                   READY   STATUS    RESTARTS   AGE
+iom-849dcb5d88-6dnss   1/1     Running   0          60m
+--------------------------------------------------------------------------------
+...
+        </div></code></pre>
+        <p>
+          If there is no "Kubernetes" section at all, the problem occured in a very early stage, just before the Kubernetes resources were created. E.g. you might have tried to start the system with an invalid configuration. Please check the output of the command, you have used to create IOM ('create cluster' or 'create iom'), for error messages.
+        </p><p>
+          If there is a "Kubernetes" section, but IOM is not running or not ready, the start process of IOM has to be investigated. There are following possible causes of the problem:
+          <ol>
+            <li>The Kubernetes resource cannot be created for a certain reason (e.g. problem to access the docker-image).</li>
+            <li>The dbaccount init-container has problems to be executed successfully (e.g. wrong credentials).</li>
+            <li>The config init-container has problems to be executed successfully (e.g. missing database dump).</li>
+            <li>The IOM server itself has problems to get in "ready" state (e.g. erroneous deployment artifact).</li>
+          </ol>
+          To get information about these different stages, according strategies have to be used:
+          <ol>
+            <li>Problems of first category can be found in output of <samp>kubectl describe</samp> command.</li>
+            <li>Problems of dbaccount init-container can be found by checking the output of the container for error messages.</li>
+            <li>Problems of config init-container can be found by checking the output of the container for error messages.</li>
+            <li>Problems of IOM server can be found by checking the output of the IOM container for error messages.</li>
+          </ol>
+          The <samp>'info iom'</samp> command provides you the neccessary command line to investigate the actions made by Kubernetes when starting IOM. The <samp>'log *'</samp> commands of <samp>devenv-cli.sh</samp> provides you access to the log-messages, created by containers belonging to IOM.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# get information about IOM
+devenv-cli.sh info iom
+...
+--------------------------------------------------------------------------------
+Usefull commands:
+=================
+...
+Describe iom pod:           kubectl describe --namespace test pod iom-849dcb5d88-6dnss
+Describe iom deployment     kubectl describe --namespace test deployment iom
+...
+--------------------------------------------------------------------------------
+
+# just execute these commands for further investigation
+kubectl describe --namespace test pod iom-849dcb5d88-6dnss
+...
+QoS Class:       BestEffort
+Node-Selectors:  &lt;none&gt;
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:          &lt;none&gt;
+
+kubectl describe --namespace test deployment iom
+...
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  &lt;none&gt;
+NewReplicaSet:   iom-849dcb5d88 (1/1 replicas created)
+Events:          &lt;none&gt;
+        </div></code></pre>
+        <p>
+          The easiest method to get log-messages out of containers, are the <samp>'log *'</samp> commands, provided by <samp>devenv-cli.sh</samp>. If called without further parameters, only messages of levels <samp>ERROR</samp> and <samp>FATAL</samp> are displayed, which makes it easy to find errors. You can use these commands only, if <samp>jq</samp> is properly installed.
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+# show error messages of dbaccout init-container
+devenv-cli.sh log dbaccount
+...
+
+# show error messages of config init-container
+devenv-cli.sh log config
+...
+
+# show error messages of iom application server
+devenv-cli.sh log app
+...
+        </div></code></pre>
+        <p>
+          There might be unexpected errors, which are not properly handled. These errors cannot be found by using the <samp>'log *'</samp> commands. To find such errors, the raw output of containers has to investigated. If you don't have <samp>jq</samp> properly installed, you have to fallback to this very basic access to log-messages too. The according command lines are provided by <samp>'info iom'</samp> within section "Usefull commands".
+        </p>
+        <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
+devenv-cli.sh info iom
+...
+--------------------------------------------------------------------------------
+Usefull commands:
+=================
+...
+Get dbaccount logs:         kubectl logs iom-849dcb5d88-6dnss --namespace test -c dbaccount
+Get config logs:            kubectl logs iom-849dcb5d88-6dnss --namespace test -c config
+Get iom logs:               kubectl logs iom-849dcb5d88-6dnss --namespace test -c iom
+...
+--------------------------------------------------------------------------------
+        </div></code></pre>
+              
         <h3 id="troubleshooting--shared-drives">Shared Drives</h3>
         <p>
           After resetting your password you can have some problems with your shared drives. In those cases use the Settings > Shared Drives > Reset credentials
@@ -1277,6 +1473,9 @@ kubectl config view
 # change context to docker-desktop
 kubectl config use-context docker-desktop
         </div></code></pre>
+        <p>
+          When using Docker-Desktop, this setting can be easily changed by menu entry "Kubernetes". It lists all existing contexts. You just have to select the right one: "docker-desktop".
+        </p>
       <br><br>
 
       </div> <!-- /container -->
