@@ -3653,9 +3653,8 @@ if [ ! -z "$CONFIG_FILE" ]; then
     fi
 fi
 
-# TODO .. should not appear in PROJECT_PATH
 # determine PROJECT_PATH
-PROJECT_PATH="$(dirname $BASH_SOURCE)/.."
+PROJECT_PATH="$(dirname "$(dirname "$BASH_SOURCE")")"
 
 # get template variables
 . $PROJECT_PATH/bin/template-variables
