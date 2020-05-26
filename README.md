@@ -74,9 +74,10 @@ Install jq, see https://stedolan.github.io/jq/download
     ```sh
     echo "export PATH=\"\$PATH:/c/Program\ Files/jq\"" >> ~/.profile
     ```
-    Depending on your shell it migth be necessary to edit the PATH before calling any other shell in ~/.profile. So you can either add this path element in your shell profile (might be ~/.bash_profile).
+    Depending on your shell it migth be necessary to edit the PATH before calling any other shell in ~/.profile. So you can either add this path element in your shell profile (might be ~/.bash_profile) or
 - A better way would be to add a path element to the global windows environment as it's supposed to be - this also removes variances with the mount points of your windows drive paths
-    
+
+
 - Support alias in VS Code
   - Open settings in C:\Users\myuser\AppData\Roaming\Code\User\settings.json
     ```json
@@ -105,7 +106,7 @@ Add _devenv-cli.sh_ to the PATH variable if you want to be able to call from eve
     ```sh
     echo "export PATH=\"\$PATH:/d/git/devenv-4-iom\"" >> ~/.profile
     ```
-    (your profile file might vary is your using bash)
+    (your profile file might vary if you're using bash)
    - or edit your whole windows system to search also in the directory your devenv-cli.sh is checked out to. This way also removes variances with the mount points of your windows drive paths
 
 Now open _index.html_ from _devenv-4-iom_ directory in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
