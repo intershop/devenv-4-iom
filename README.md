@@ -51,7 +51,7 @@ Install Docker Desktop, see https://www.docker.com/products/docker-desktop
 **After resetting your password you can have some problems with your shared drives. In those cases use _Settings > Shared Drives > Reset credentials_.**
 
 ### Mac OS X
-- Install_ Docker Desktop_, see https://www.docker.com/products/docker-desktop
+- Install _Docker Desktop_, see https://www.docker.com/products/docker-desktop
 - Enable _Docker Desktop version of Kubernetes_:
   - Enable _Docker Icon > Kubernetes > docker-desktop_
 - Check file-sharing. Your home directory should be shared (if you are using it to hold configurations of _deven-4-iom_, IOM sources, etc).
@@ -109,4 +109,8 @@ Add _devenv-cli.sh_ to the PATH variable if you want to be able to call from eve
     (your profile file might vary if you're using bash)
    - or edit your whole windows system to search also in the directory your devenv-cli.sh is checked out to. This way also removes variances with the mount points of your windows drive paths
 
+### Mac OS X
+In order to become able to use _devenv-cli.sh_ without the need to call it with its absolute path, you have to extend your PATH variable. Please edit _.profile_ in your home-directory and add the according entry.
+
+## Next steps
 Now open _index.html_ from _devenv-4-iom_ directory in your browser and proceed the _First steps_ section to get familiar with _devenv-4-iom_.
