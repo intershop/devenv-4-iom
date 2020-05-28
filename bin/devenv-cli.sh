@@ -3611,31 +3611,32 @@ log-access() (
 ################################################################################
 
 # will be overwritten by CONFIG_FILE later
-OMS_LOGLEVEL_DEVENV=ERROR
+OMS_LOGLEVEL_DEVENV=WARN
 
 #-------------------------------------------------------------------------------
-# get name of config-file
 # if $1 is a file, it's assumed to be the config-file
+CONFIG_READ=0
 if [ ! -z "$1" -a -f "$1" ]; then
-    CONFIG_FILE="$1"
-    shift
-elif [ ! -z "$DEVENV4IOM_CONFIG" -a -f "$DEVENV4IOM_CONFIG" ]; then
-    CONFIG_FILE="$DEVENV4IOM_CONFIG"
-else
-    log_json WARN "No configuration file set." < /dev/null
-fi
-
-#-------------------------------------------------------------------------------
-# read config-file
-if [ ! -z "$CONFIG_FILE" ]; then
-    log_json INFO "Reading configuration from $CONFIG_FILE" < /dev/null
-    
-    # read current config
-    if ! ( set -e; . "$CONFIG_FILE" ); then
-        log_json ERROR "error reading '$CONFIG_FILE'" < /dev/null
-        exit 1
+    # try to read config
+    if ! ( set -e; . "$1" ) 2> /dev/null; then
+        log_json WARN "error reading config file '$1'" < /dev/null
+    else
+        . "$1"
+        shift
+        CONFIG_FILE="$1"
+        CONFIG_READ=1
     fi
-    . "$CONFIG_FILE"
+fi
+    
+if [ "$CONFIG_READ" = '0' -a ! -z "$DEVENV4IOM_CONFIG" -a -f "$DEVENV4IOM_CONFIG" ]; then
+    # try to read config
+    if ! ( set -e; . "$DEVENV4IOM_CONFIG" ) 2> /dev/null; then
+        log_json ERROR "error reading config file '$DEVENV4IOM_CONFIG'" < /dev/null
+        exit 1
+    else
+        . "$DEVENV4IOM_CONFIG"
+        CONFIG_FILE="$DEVENV4IOM_CONFIG"
+    fi
 fi
 
 #-------------------------------------------------------------------------------
