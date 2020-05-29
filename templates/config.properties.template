@@ -75,6 +75,11 @@ IOM_APP_IMAGE=${IOM_APP_IMAGE}
 # in this case and don't need to be configured otherwise.
 PGHOST=${PGHOST}
 PGPORT=${PGPORT}
+# if using an Azure service as postgres server, the user name has to be extended
+# by a suffix, which is starting with '@'. This suffix has to be set in variable
+# PGUSER_CONNECTION_SUFFIX. The suffix must not appended to variables PGUSER
+# and OMS_DB_USER!
+PGUSER_CONNECTION_SUFFIX=${PGUSER_CONNECTION_SUFFIX}
 
 # administrative access to database
 # will be used by dbaccount-image, when creating the oms database

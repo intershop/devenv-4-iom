@@ -18,7 +18,7 @@ is.oms.app.https.port = 443
 # db
 is.oms.db.hostlist = ${PgHostExtern}:${PgPortExtern}
 is.oms.db.name = ${OMS_DB_NAME}
-is.oms.db.user = ${OMS_DB_USER}
+is.oms.db.user = ${OMS_DB_USER}${PGUSER_CONNECTION_SUFFIX}
 is.oms.db.pass = ${OMS_DB_PASS}
 is.oms.db.serverTimezone = UTC
 

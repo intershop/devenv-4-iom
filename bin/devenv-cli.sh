@@ -2334,7 +2334,6 @@ create-cluster() {
     create-storage &&
         create-namespace &&
         create-postgres &&
-        kube_pod_wait postgres 300 &&
         create-mailserver &&
         create-iom
 }
@@ -3622,9 +3621,9 @@ if [ ! -z "$1" -a -f "$1" ]; then
         log_json WARN "error reading config file '$1'" < /dev/null
     else
         . "$1"
-        shift
         CONFIG_FILE="$1"
         CONFIG_READ=1
+        shift
     fi
 fi
     

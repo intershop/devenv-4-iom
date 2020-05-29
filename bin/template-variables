@@ -232,6 +232,7 @@ PGHOST=${PGHOST}
 if [ "$PGHOST" = "postgres-service" ]; then
     PGHOST=
 fi
+PGUSER_CONNECTION_SUFFIX="${PGUSER_CONNECTION_SUFFIX}"
 
 # define variables to access database externally and internally. 
 # externally means from outside of Kubernetes

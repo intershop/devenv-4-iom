@@ -85,6 +85,8 @@ ${ShareDirYml____}          mountPath: /var/opt/share
             value: '${OMS_DB_USER}'
           - name: OMS_DB_PASS
             value: '${OMS_DB_PASS}'
+          - name: OMS_DB_USER_CONNECTION_SUFFIX
+            value: '${PGUSER_CONNECTION_SUFFIX}'
           - name: OMS_SHAREDFS_HEALTHCHECK
             value: disabled
           - name: OMS_LOGLEVEL_CONSOLE
@@ -145,6 +147,8 @@ ${ShareDirYml____}          mountPath: /var/opt/share
               value: '${PGUSER}'
             - name: PGPASSWORD
               value: '${PGPASSWORD}'
+            - name: PGUSER_CONNECTION_SUFFIX
+              value: '${PGUSER_CONNECTION_SUFFIX}'
             - name: OMS_DB_USER
               value: '${OMS_DB_USER}'
             - name: OMS_DB_PASS
@@ -186,6 +190,8 @@ ${DumpsDirYml____}            mountPath: /opt/dumps
               value: '${OMS_DB_USER}'
             - name: OMS_DB_PASS
               value: '${OMS_DB_PASS}'
+            - name: OMS_DB_USER_CONNECTION_SUFFIX
+              value: '${PGUSER_CONNECTION_SUFFIX}'
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
             - name: CAAS_ENV_NAME
