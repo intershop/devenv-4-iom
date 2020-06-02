@@ -19,19 +19,19 @@ SYNOPSIS
     $ME [CONFIG-FILE] COMMAND
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error, with one exception: 'get config'.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error, with one exception: 'get config'.
 
 COMMANDS
     get|g*             get devenv4iom specific resource
-    info|i*            get information about kubernetes resources
+    info|i*            get information about Kubernetes resources
     create|c*          create Kubernetes/Docker resources
     delete|de*         delete Kubernetes/Docker resources
-    wait|w*            wait for Kubernetes resourses to get ready
+    wait|w*            wait for Kubernetes resources to get ready
     apply|a*           apply customization
     dump|du*           create or load dump
-    log|l*             simple access to log-messages
+    log|l*             simple access to log messages
 
 Run '$ME [CONFIG-FILE] COMMAND --help|-h' for more information on a command.
 EOF
@@ -47,14 +47,14 @@ SYNOPSIS
     $ME [CONFIG-FILE] info RESOURCE
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
-    iom|i*             view information about iom
-    postgres|p*        view information about postgres
-    mailserver|m*      view information about mailserver
+    iom|i*             view information about IOM
+    postgres|p*        view information about Postgres
+    mailserver|m*      view information about mail server
     storage|s*         view information about storage
 
 Run '$ME [CONFIG-FILE] info RESOURCE  --help|-h' for more information on a command.
@@ -71,9 +71,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] info iom
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -87,9 +87,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] info postgres
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -103,9 +103,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] info mailserver
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -119,9 +119,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] info storage
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -135,9 +135,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] info cluster
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -151,14 +151,14 @@ SYNOPSIS
     $ME [CONFIG-FILE] create RESOURCE
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     storage|s*         create persistant local Docker storage
     namespace|n*       create kubernetes namespace
-    mailserver|m*      create mail server 
+    mailserver|m*      create mail server
     postgres|p*        create postgres server
     iom|i*             create iom server
     cluster|c*         create all resources
@@ -177,18 +177,18 @@ SYNOPSIS
     $ME [CONFIG-FILE] create storage
 
 OVERVIEW
-    Creates a Docker volume, depending on configuration variable 
-    KEEP_DATABASE_DATA. If you want to use persistent storage, the Docker volume
-    has to be created before starting postgres.
+    Creates a Docker volume, depending on the configuration variable
+    KEEP_DATABASE_DATA. If you want to use persistent storage, the Docker
+    volume has to be created before starting postgres.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    KEEP_DATABASE_DATA - only when set to true, the Docker volume will be 
-      created. 
+    KEEP_DATABASE_DATA - only when set to true, the Docker volume will be
+      created.
     ID - name of Docker volume will be derived from ID
 
 SEE
@@ -206,22 +206,22 @@ EOF
 help-create-namespace() {
     ME=$(basename "$0")
     cat <<EOF
-creates a Kubernetes namespace, which will be used for all other resources
+creates a Kubernetes namespace which will be used for all other resources
 
 SYNOPSIS
     $ME [CONFIG-FILE] create namespace
 
 OVERVIEW
-    Kubernetes namespaces are isolating different devenv4iom instances from
-    each other. 
+    Kubernetes namespaces isolate different devenv4iom instances from
+    each other.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the name of namespace is derived from the ID of current configuration.
+    ID - the name of namespace is derived from the ID of the current configuration.
 
 SEE
     $ME [CONFIG-FILE] delete namespace
@@ -235,23 +235,23 @@ EOF
 help-create-mailserver() {
     ME=$(basename "$0")
     cat <<EOF
-creates a mail-server, that is used by IOM to send mails
+creates a mail server that is used by IOM to send mails
 
 SYNOPSIS
     $ME [CONFIG-FILE] create mailserver
 
 OVERVIEW
-    Creates a mail-server and according service.
+    Creates a mail server and according service.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    MAILHOG_IMAGE - defines the image of the mailserver to be used.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
-    ID - the namespace to used is derived from ID
+    MAILHOG_IMAGE - defines the image of the mailserver to be used
+    IMAGE_PULL_POLICY - defines when to pull the image from origin
+    ID - the namespace to be used is derived from ID
 
 SEE
     $ME [CONFIG-FILE] delete mailserver
@@ -260,7 +260,7 @@ SEE
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/mailhog.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -275,23 +275,23 @@ SYNOPSIS
     $ME [CONFIG-FILE] create postgres
 
 OVERVIEW
-    Creates postgres-server and according service. If KEEP_DATABASE_DATA is
-    set to true, the Docker volume has to be created in advance. 
+    Creates Postgres server and according service. If KEEP_DATABASE_DATA is
+    set to true, the Docker volume has to be created in advance.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     DOCKER_DB_IMAGE - docker image to be used
-    PGHOST - if set, indicates the usage of an external postgres server. Command
-      will not create a postgres server in this case.
-    KEEP_DATABASE_DATA - if set to true, command links the local Docker volume
-      to postgres store.
+    PGHOST - if set, it indicates the usage of an external Postgres server.
+      The command will not create a Postgres server in this case.
+    KEEP_DATABASE_DATA - if set to true, the command links the local Docker volume
+      to the Postgres store.
     IMAGE_PULL_POLICY - defines when to pull the image from origin
-    ID - the namespace, where postgres-server and -service are created, is
-      derived from ID of current configuration.
+    ID - the namespace where Postgres server and service are created. It is
+      derived from the ID of the current configuration.
 
 SEE
     $ME [CONFIG-FILE] delete postgres
@@ -303,13 +303,13 @@ BACKGROUND
     $KeepDatabaseSh MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
     $KeepDatabaseSh   "$PROJECT_PATH/bin/template_engine.sh" \\
     $KeepDatabaseSh   "$PROJECT_PATH/templates/postgres-storage.yml.template" \\
-    $KeepDatabaseSh   "$CONFIG_FILE" | 
+    $KeepDatabaseSh   "$CONFIG_FILE" |
     $KeepDatabaseSh   kubectl apply --namespace $EnvId -f -
 
-    # create postgres
+    # create Postgres
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/postgres.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -324,17 +324,17 @@ SYNOPSIS
     $ME [CONFIG-FILE] create iom
 
 OVERVIEW
-    Creates iom-server and according service.
+    Creates IOM server and according service.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
     IOM_CONFIG_IMAGE - defines the config image to be used
-    IOM_APP_IMAGE - defines the iom application image to be used
+    IOM_APP_IMAGE - defines the IOM application image to be used
     IMAGE_PULL_POLICY - defines when to pull images from origin
 
 SEE
@@ -344,7 +344,7 @@ SEE
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/iom.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -353,20 +353,20 @@ EOF
 help-create-cluster() {
     ME=$(basename "$0")
     cat <<EOF
-creates all resources, required by IOM
+creates all resources required by IOM
 
 SYNOPSIS
     $ME [CONFIG-FILE] create cluster
 
 OVERVIEW
-    Creates all resources to run IOM in devenv4iom (storage, namespace, 
-    postgres, mailserver, iom). Finally, this is a shorcut for a couple of
+    Creates all resources to run IOM in devenv4iom (storage, namespace,
+    Postgres, mail server, IOM). Finally, this is a shorcut for a couple of
     different commands only.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 SEE
     $ME [CONFIG-FILE] create storage
@@ -387,17 +387,17 @@ SYNOPSIS
     $ME [CONFIG-FILE] delete RESOURCE
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     storage|s*         delete persistant local Docker storage
-    namespace|n*       delete kubernetes namespace including all resources 
+    namespace|n*       delete Kubernetes namespace including all resources
                        belonging to this namespace
     mailserver|m*      delete mail server
-    postgres|p*        delete postgres server
-    iom|i*             delete iom server
+    postgres|p*        delete Postgres server
+    iom|i*             delete IOM server
     cluster|c*         delete all resources, except storage
 
 Run '$ME [CONFIG-FILE] delete RESOURCE --help|-h' for more information
@@ -408,22 +408,22 @@ EOF
 help-delete-storage() {
     ME=$(basename "$0")
     cat <<EOF
-deletes local Docker volume, that is used for persistent storage of DB data
+deletes local Docker volume that is used for persistent storage of DB data
 
 SYNOPSIS
     $ME [CONFIG-FILE] delete storage
 
 OVERVIEW
     Deletes the Docker volume used for persistent storage of database data.
-    Before deleting storage, you have to delete postgres.
+    Before deleting storage, you have to delete Postgres.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - name of Docker volume will be derived from ID.
+    ID - the name of the Docker volume will be derived from the ID.
 
 SEE
     $ME [CONFIG-FILE] create storage
@@ -439,23 +439,23 @@ EOF
 help-delete-namespace() {
     ME=$(basename "$0")
     cat <<EOF
-deletes the Kubernetes namespace, used be current IOM installation
+deletes the Kubernetes namespace used by the current IOM installation
 
 SYNOPSIS
     $ME [CONFIG-FILE] delete namespace
 
 OVERVIEW
     When deleting the namespace, all resources of this namespace are deleted
-    too. These are iom, posgres and mailserver, but not the Docker volume
+    too. These are IOM, Posgres and mail server, but not the Docker volume
     used for persistent storage of database data.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the name of namespace is derived from the ID of current configuration.
+    ID - the name of the namespace is derived from the ID of the current configuration.
 
 SEE
     $ME [CONFIG-FILE] create namespace
@@ -469,21 +469,21 @@ EOF
 help-delete-mailserver() {
     ME=$(basename "$0")
     cat <<EOF
-deletes mail-server, that is used by IOM to send mails
+deletes mail server that is used by IOM to send mails
 
 SYNOPSIS
     $ME [CONFIG-FILE] delete mailserver
 
 OVERVIEW
-    Deletes the mail-server and the according service.
+    Deletes the mail server and the according service.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the namespace, where mail-server is deleted, is derived from ID
+    ID - the namespace where the mail server is deleted is derived from ID
 
 SEE
     $ME [CONFIG-FILE] create mailserver
@@ -492,7 +492,7 @@ SEE
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/mailhog.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -501,21 +501,21 @@ EOF
 help-delete-postgres() {
     ME=$(basename "$0")
     cat <<EOF
-deletes postgres server used by IOM
+deletes Postgres server used by IOM
 
 SYNOPSIS
     $ME [CONFIG-FILE] delete postgres
 
 OVERVIEW
-    Deletes postgres-server and according service.
+    Deletes Postgres server and according service.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the namespace, where postgres is deleted from, is derived from ID
+    ID - the namespace where Postgres is deleted from is derived from ID
 
 SEE
     $ME [CONFIG-FILE] create postgres
@@ -526,14 +526,14 @@ BACKGROUND
     # Stop/Remove postgres database
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/postgres.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 
     # Unlink Docker volume from database storage
     MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
       "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/postgres-storage.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -551,12 +551,12 @@ OVERVIEW
     Deletes IOM and the according service.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of configuration file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the namespace, where iom is deleted from, is derived from ID
+    ID - the namespace where IOM is deleted from is derived from ID
 
 SEE
     $ME [CONFIG-FILE] create iom
@@ -566,7 +566,7 @@ SEE
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/iom.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -581,16 +581,16 @@ SYNOPSIS
     $ME [CONFIG-FILE] delete cluster
 
 OVERVIEW
-    Deletes all resources used by IOM, except storage. These are iom, postgres,
-    mailserver, postgres, namespace. Finally, this is a shortcut for a couple of
+    Deletes all resources used by IOM, except storage. These are IOM, Postgres,
+    mail server, namespace. Finally, this is a shortcut for a couple of
     different commands only.
     Storage will not be deleted, as it is the basic idea of persistent storage,
     to survive the deletion of postgres.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 SEE
     $ME [CONFIG-FILE] delete iom
@@ -612,9 +612,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] wait RESOURCE
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     mailserver|m*      wait for mail server
@@ -638,14 +638,14 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    Waits for the mailserver pod to get ready. The "wait mailserver" command
+    Waits for the mail server pod to get ready. The "wait mailserver" command
     is intended to be used in scripts, which are relying on the availability of
     the mail server.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -653,7 +653,7 @@ EOF
 help-wait-postgres() {
     ME=$(basename "$1")
     cat <<EOF
-wait for postgres to get ready
+wait for Postgres to get ready
 
 SYNOPSIS
     $ME [CONFIG-FILE] wait postgres [TIMEOUT]
@@ -662,14 +662,14 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    Waits for the postgres pod to get ready. The "wait postgres" command
-    is intended to be used in scripts, which are relying on the availability of
+    Waits for the Postgres pod to get ready. The "wait postgres" command
+    is intended to be used in scripts, which rely on the availability of
     the postgres server.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -677,7 +677,7 @@ EOF
 help-wait-iom() {
     ME=$(basename "$1")
     cat <<EOF
-wait for iom to get ready
+wait for IOM to get ready
 
 SYNOPSIS
     $ME [CONFIG-FILE] wait iom [TIMEOUT]
@@ -686,13 +686,13 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    Waits for the iom pod to get ready. The "wait iom" command is intended to be
-    used in scripts, which are relying on the availability of the iom server.
+    Waits for the IOM pod to get ready. The "wait iom" command is intended to be
+    used in scripts, which rely on the availability of the IOM server.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -706,18 +706,18 @@ SYNOPSIS
     $ME [CONFIG-FILE] apply RESOURCE
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     deployment|de*     apply custom deployment artifacts
-    mail-templates|m*  apply custom mail-templates
-    xsl-templates|x*   apply custom xsl-template
-    sql-scripts|sql-s* apply custom sql-scripts
-    sql-config|sql-c*  apply custom sql-config
-    json-config|j*     apply custom json-config
-    dbmigrate|db*      apply custom db-migration
+    mail-templates|m*  apply custom mail templates
+    xsl-templates|x*   apply custom XSL template
+    sql-scripts|sql-s* apply custom SQL scripts
+    sql-config|sql-c*  apply custom SQL config
+    json-config|j*     apply custom JSON config
+    dbmigrate|db*      apply custom DB migration
 
 Run '$ME [CONFIG-FILE] apply RESOURCE --help|-h' for more information on a command.
 EOF
@@ -734,43 +734,43 @@ SYNOPSIS
 
 ARGUMENTS
     PATTERN - optional. Pattern is simply a regex, which will be matched
-      againts deployment artifacts. If pattern is set, only artifacts matching
+      against deployment artifacts. If pattern is set, only artifacts matching
       the pattern will be redeployed in forced mode.
       If pattern is not set, all artifacts will be undeployed and deployed
       again.
 
 OVERVIEW
-    The Developer VM has an extended search-path for deployments. The scripts 
-    doing the deployment are looking first at directory /opt/oms/application-dev,
+    The Developer VM has an extended search path for deployments. The scripts
+    doing the deployment look first at directory /opt/oms/application-dev,
     instead of the standard directory /opt/oms/application, which contains all
-    the standard deployment artifacts delivered by the Docker image. Hence, if 
-    an artifact was found in /opt/oms/application-dev, the according standard 
+    the standard deployment artifacts delivered by the Docker image. Hence, if
+    an artifact was found in /opt/oms/application-dev, the according standard
     artifact will be ignored.
-    All you have to do, is to mount a directory containing your custom built 
+    All you have to do is to mount a directory containing your custom built
     artifacts at /opt/oms/application-dev. To do so, you have to:
-    - set variable CUSTOM_APPS_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop.
-    - After changing CUSTOM_APPS_DIR, the IOM needs to be restarted.
-    Once you have configured your developer VM this way, your custom built 
+    - Set variable CUSTOM_APPS_DIR in your configuration file and make sure,
+      that the directory is shared in Docker Desktop.
+    - After changing CUSTOM_APPS_DIR, IOM needs to be restarted.
+    Once you have configured your developer VM this way, your custom built
     artifacts are deployed right at the start of IOM.
 
     Alternatively you can use Wildfly Console for deployments too.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     CUSTOM_APPS_DIR - directory, where your custom built artifacts are located.
       Make sure, the directory is shared with Docker Desktop.
-    ID - the namespace used, is derived from ID
+    ID - the namespace used is derived from ID
 
 SEE
     $ME [CONFIG-FILE] info iom
 
 BACKGROUND
-    # redeploy omt selectively 
+    # redeploy omt selectively
     POD_NAME=\$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
     kubectl exec \$POD_NAME --namespace $EnvId -- bash -ic redeploy omt
 
@@ -784,33 +784,33 @@ EOF
 help-apply-mail-templates() {
     ME=$(basename "$0")
     cat <<EOF
-rolls out custom mail-templates
+rolls out custom mail templates
 
 SYNOPSIS
   $ME [CONFIG-FILE] apply mail-templates
 
 OVERVIEW
     The developer VM contains an additional directory /opt/oms/templates-dev,
-    which will be used as mount point for custom mail templates. Part of the 
+    which will be used as mount point for custom mail templates. Part of the
     developer VM is also the script apply-templates, which copies the templates
     from /opt/oms/templates-dev to the standard directory /opt/oms/var/templates.
     If you want to roll out custom mail templates in a running developer VM, you
     have to:
-    - set variable CUSTOM_TEMPLATES_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
-    - After changing CUSTOM_TEMPLATES_DIR, the IOM needs to be restarted.
-    If CUSTOM_TEMPLATES_DIR is configured, the templates are also copied when 
+    - Set variable CUSTOM_TEMPLATES_DIR in your configuration file and make sure
+      that the directory is shared in Docker Desktop.
+    - After changing CUSTOM_TEMPLATES_DIR, IOM needs to be restarted.
+    If CUSTOM_TEMPLATES_DIR is configured, the templates are also copied when
     starting IOM.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     CUSTOM_TEMPLATES_DIR - directory, where your custom mail templates are
       located. Make sure, the directory is shared with Docker Desktop.
-    ID - the namespace used, is derived from ID
+    ID - the namespace used is derived from ID
 
 SEE
     $ME [CONFIG-FILE] delete iom
@@ -827,32 +827,32 @@ EOF
 help-apply-xsl-templates() {
     ME=$(basename "$0")
     cat <<EOF
-rolls out custom xsl-templates
+rolls out custom XSL templates
 
 SYNOPSIS
   $ME [CONFIG-FILE] apply xsl-templates
 
 OVERVIEW
     The developer VM contains a directory /opt/oms/xslt-dev, which will be used
-    as mount point for custom xsl templates. Part of the developer VM is also
+    as mount point for custom XSL templates. Part of the developer VM is also
     the script apply-xslt, which copies the templates from /opt/oms/xslt-dev to
     the standard directory /opt/oms/var/xslt. If you want to roll out custom xsl
     templates in a running developer VM, you have to:
-    - set variable CUSTOM_XSLT_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop.
+    - Set variable CUSTOM_XSLT_DIR in your configuration file and make sure, that
+      the directory is shared in Docker Desktop.
     - After changing CUSTOM_XSLT_DIR, IOM has to be restarted.
-    If CUSTOM_XSLT_DIR is configured, the templates are also copied when 
+    If CUSTOM_XSLT_DIR is configured, the templates are also copied when
     starting IOM.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_XSLT_DIR - directory, where your custom xsl templates are located.
+    CUSTOM_XSLT_DIR - directory, where your custom XSL templates are located.
       Make sure, the directory is shared with Docker Desktop.
-    ID - the namespace used, is derived from ID.
+    ID - the namespace used is derived from ID.
 
 SEE
     $ME [CONFIG-FILE] delete iom
@@ -869,48 +869,48 @@ EOF
 help-apply-sql-scripts() {
     ME=$(basename "$0")
     cat <<EOF
-applies sql-files from passed directory or single sql-file
+applies SQL files from passed directory or single SQL file
 
 SYNOPSIS
     $ME [CONFIG-FILE] apply sql-scripts DIRECTORY|FILE [TIMEOUT]
 
 ARGUMENTS
-    DIRECTORY|FILE has to be shared in Docker Desktop!
+    DIRECTORY|FILE has to be shared in Docker Desktop.
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    The docker-image defined by IOM_CONFIG_IMAGE contains all the necessary 
-    tools to apply sql-scripts to the IOM database. Devenv4iom enables you to
-    use these tools as easy as possible. Therefore it provides a Kubernetes job
-    (apply-sql-job), that applies sql-file(s) to the IOM database.
+    The docker-image defined by IOM_CONFIG_IMAGE contains all the necessary
+    tools to apply SQL scripts to the IOM database. Devenv4iom enables you to
+    use these tools as easily as possible. Therefore it provides a Kubernetes
+    job (apply-sql-job), that applies SQL file(s) to the IOM database.
 
-    There are two different modes, that can be used.
+    There are two different modes that can be used.
 
-    If a directory is passed to the job, all sql-files found in this directory 
-    are processed in numerical order, starting with the smallest one. 
-    Sub-directories are not scanned for sql-files.
+    If a directory is passed to the job, all SQL files found in this directory
+    are processed in numerical order, starting with the smallest one.
+    Sub-directories are not scanned for SQL files.
 
     If a file is passed to the job, only this file will be executed.
 
-    The logs are printed in json format. Verbosity can be controlled by 
+    The logs are printed in JSON format. Verbosity can be controlled by
     configuration variable OMS_LOGLEVEL_SCRIPTS.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the namespace used, is derived from ID
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying the sql-files.
+    ID - the namespace used is derived from ID
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying the SQL files.
 
 SEE
     $ME [CONFIG-FILE] info iom
 
 BACKGROUND
-    # define directory with sql-file (has to be an absolute path)
+    # define directory with SQL file (has to be an absolute path)
     export SQL_SRC=<DIRECTORY>
-    
+
     # start apply-sql-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/apply-sql.yml.template" \\
@@ -939,35 +939,35 @@ SYNOPSIS
     $ME [CONFIG-FILE] apply sql-config
 
 OVERVIEW
-    Scripts for sql-configuration are simple sql-scripts, which can be easily
-    developed and tested with the help of the developer task 
-    "apply sql-scripts". But sql-configuration in CaaS project context is more
-    complex. E.g. the scripts are executed depending on the currently activated
-    environment. In order to enable you to test sql configuration scripts
-    exactly in the same context as in real IOM installations, the developer task
-    "apply sql-config" is provided.
-    To be able to roll out complete sql configurations, you have to:
-    - set variable CUSTOM_SQLCONF_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
-    - set variable CAAS_ENV_NAME in your config file to the environment you want
-      to test.
+    Scripts for SQL configuration are simple SQL scripts, which can be easily
+    developed and tested using the developer task "apply sql-scripts".
+    However, SQL configuration in a CaaS project context is more complex. E.g.
+    the scripts are executed depending on the currently activated environment.
+    In order to enable you to test SQL configuration scripts exactly in the same
+    context as in real IOM installations, the developer task "apply sql-config"
+    is provided.
+    To be able to roll out complete SQL configurations, you have to:
+    - Set variable CUSTOM_SQLCONF_DIR in your configuration file and make sure,
+      that the directory is shared in Docker Desktop.
+    - Set variable CAAS_ENV_NAME in your configuratoin file to the environment
+      you want to test.
     You should have an eye on the logs created by the configuration process.
-    These logs are printed in json format. Verbosity can be controlled by
+    These logs are printed in JSON format. Verbosity can be controlled by the
     configuration variable OMS_LOGLEVEL_SCRIPTS.
-    If CUSTOM_SQLCONFIG_DIR is configured, the custom sql configuration is also
+    If CUSTOM_SQLCONFIG_DIR is configured, the custom SQL configuration is also
     applied when starting IOM.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_SQLCONF_DIR - directory, where your custom sql-configuration is
+    CUSTOM_SQLCONF_DIR - directory where your custom SQL configuration is
       located.
-    CAAS_ENV_NAME - the name of environment controls, which parts of sql-
-      configuration will be applied and which not.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying sql-
+    CAAS_ENV_NAME - environment name; controls which parts of the SQL
+    configuration will be applied and which not.
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying SQL
       configuration.
 
 SEE
@@ -977,7 +977,7 @@ BACKGROUND
     # start sqlconfig-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/sqlconfig.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -987,7 +987,7 @@ BACKGROUND
     # delete sqlconfig-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/sqlconfig.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -996,40 +996,40 @@ EOF
 help-apply-json-config() {
     ME=$(basename "$0")
     cat <<EOF
-applies custom json configuration
+applies custom JSON configuration
 
 SYNOPSIS
     $ME [CONFIG-FILE] apply json-config
 
 OVERVIEW
-    Json configuration of IOM is not publicly available. There exists no task to
-    support development of single json configuration scripts. Additionally the
-    current implementation of json configuration does not use the concept of
+    JSON configuration of IOM is not publicly available. There is no task to
+    support development of single JSON configuration scripts. Additionally the
+    current implementation of JSON configuration does not use the concept of
     environments (configuration variable CAAS_ENV_NAME). The current developer
-    task "apply json-config" is able to apply complete json configurations
+    task "apply json-config" allows to apply complete JSON configurations
     exactly in the same context as in a real IOM installation.
-    To be able to roll out json configurations, you have to:
-    - set variable CUSTOM_JSONCONF_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
+    To be able to roll out JSON configurations, you have to:
+    - Set variable CUSTOM_JSONCONF_DIR in your configuration file and make sure,
+      that the directory is shared in Docker Desktop.
     You should have an eye on the logs created by the configuration process.
-    These logs are printed in json format. Verbosity can be controlled by
+    These logs are printed in JSON format. Verbosity can be controlled by
     configuration variable OMS_LOGLEVEL_SCRIPTS.
-    If CUSTOM_JSONCONFIG_DIR is configured, the custom json configuration is
+    If CUSTOM_JSONCONFIG_DIR is configured, the custom JSON configuration is
     also applied when starting IOM.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_JSONCONF_DIR - directory, where your custom json-confguration is
+    CUSTOM_JSONCONF_DIR - directory where your custom JSON confguration is
       located.
     IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying json-
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
       configuration.
-    ID - the namespace used, is derived from ID.
+    ID - the namespace used is derived from ID.
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -1038,7 +1038,7 @@ BACKGROUND
     # start jsonconfig-job
     "${PROJECT_DIR}/bin/template_engine.sh" \\
       "${PROJECT_DIR}/templates/jsonconfig.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -1048,7 +1048,7 @@ BACKGROUND
     # delete jsonconfig-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/jsonconfig.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -1063,42 +1063,43 @@ SYNOPSIS
     $ME [CONFIG-FILE] apply dbmigrate
 
 OVERVIEW
-    To develop and test a single or a couple of sql-scripts (which can be 
+    To develop and test a single or a couple of SQL scripts (which can be
     migration scripts too), the developer task "apply sql-scripts" is the first
-    choice. But at some point of development, the dbmigrate process as a whole
-    has to be tested too. The dbmigrate process is somewhat more complex than
-    simply applying sql-scripts from a directory. It first loads stored
-    procedures from directory stored_procedures and then it applies the
-    migrations scripts found in directory migrations. The order of execution is
-    controlled by the names of sub-directories within migrations and the naming
-    of the migration scripts itself (numerically sorted, smallest first).
+    choice. However, at some point of development, the dbmigrate process as a
+    whole has to be tested too. The dbmigrate process is somewhat more complex
+    than simply applying SQL scripts from a directory. It first loads stored
+    procedures from the stored_procedures directory and then it applies the
+    migrations scripts found in the migrations directory. The order of execution
+    is controlled by the names of sub-directories within migrations and the
+    naming of the migration scripts itself (numerically sorted, smallest first).
 
-    The IOM_CONFIG_IMAGE contains a shell script, that is applying the migration
-    scripts, which are delivered along with the docker image. The developer task
+    The IOM_CONFIG_IMAGE contains a shell script, that applies the migration
+    scripts which are delivered along with the Docker image. The developer task
     "apply dbmigrate" enables you to use this dbmigrate script along with the
     migration scripts located at CUSTOM_DBMIGRATE_DIR. Hence, if you want to
     roll out custom dbmigrate scripts, you have to:
-    - set variable CUSTOM_DBMIGRATE_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
+    - Set the variable CUSTOM_DBMIGRATE_DIR in your configuration file and make
+      sure, that the directory is shared in Docker Desktop.
     You can and should have an eye on the logs created by the migration process.
-    These logs are printed in json format. Verbosity can be controlled by
+    These logs are printed in JSON format. Verbosity can be controlled by the
     configuration variable OMS_LOGLEVEL_SCRIPTS.
     If CUSTOM_DBMIGRATE_DIR is configured, the custom dbmigrate scripts are also
     applied when starting IOM.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_DBMIGRATE_DIR - directory, where your custom dbmigrate scripts are
+    CUSTOM_DBMIGRATE_DIR - directory where your custom dbmigrate scripts are
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
     IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
-    IMAGE_PULL_POLICY - defines, when to pull the image from origin.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script doing the db-migration.
-    ID - the namespace used, is derived from ID.
+    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
+      the db-migration.
+    ID - the namespace used is derived from ID.
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -1107,7 +1108,7 @@ BACKGROUND
     # start dbmigrate-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/dbmigrate.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -1117,7 +1118,7 @@ BACKGROUND
     # delete dbmigrate-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/dbmigrate.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -1132,9 +1133,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] dump OPERATION
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 OPERATION
     create|c*          create dump
@@ -1155,32 +1156,32 @@ SYNOPSIS
 
 OVERVIEW
     Devenv4iom provides a job to create a dump of the IOM database. This job
-    uses variable CUSTOM_DUMPS_DIR. It writes the dumps to this directory. The
-    created dumps will use the following naming pattern:
+    uses the variable CUSTOM_DUMPS_DIR. It writes the dumps to this directory.
+    The created dumps uses the following naming pattern:
     OmsDump.year-month-day.hour.minute.second-hostname.sql.gz. To create dumps,
     you have to:
-    - set variable CUSTOM_DUMPS_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop.
-    You should check the output of the dump-job. The logs of the job a printed
-    in json format. Verbosity can be controlled by the configuration variable 
+    - Set variable CUSTOM_DUMPS_DIR in your configuration file and make sure
+      that the directory is shared in Docker Desktop.
+    You should check the output of the dump-job. The logs of the job are printed
+    in JSON format. Verbosity can be controlled by the configuration variable
     OMS_LOGLEVEL_SCRIPTS.
-    
-    If CUSTOM_DUMPS_DIR is configured, the newest custom dump will be loaded,
+
+    If CUSTOM_DUMPS_DIR is configured, the newest custom dump will be loaded
     when starting IOM with an empty database (according to the load-rules that
     can be found in overview of '$ME dump load'.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_DUMPS_DIR - directory, where custom dumps will be stored. If this
+    CUSTOM_DUMPS_DIR - directory where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
-    IOM_CONFIG_IMAGE - defines the image to be used, when executing the job.
-    IMAGE_PULL_POLICY - defines, when to pull the image from origin.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script creating the dump.
-    ID - the namespace used, is derived from ID.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
+    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
+    ID - the namespace used is derived from ID.
 
 SEE
     $ME [CONFIG-FILE] dump load
@@ -1189,7 +1190,7 @@ BACKGROUND
     # start dump-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/dump.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -1199,7 +1200,7 @@ BACKGROUND
     # delete dump-job
     "$PROJECT_PATH/bin/template_engine.sh" \\
       "$PROJECT_PATH/templates/dump.yml.template" \\
-      "$CONFIG_FILE" | 
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -1215,19 +1216,19 @@ SYNOPSIS
 
 OVERVIEW
     When starting IOM and the conneted database is empty, the config container
-    is loading the initial dump. Devenv4iom gives you the possibility to load a
-    custom dump during this process. This custom dump will be treated exactly as
-    any other dump, which is part of the docker image. If you want to load a
-    custom dump, you have to:
-    - set variable CUSTOM_DUMPS_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop. The dump you want to load, has to
-      be located within this directory. To be recognized as a dump, it has to
-      have the extension .sql.gz. If the directory contains more than one
-      dump-file, the script of the config container selects the one, which's
-      name is numerically largest. You can check this with following command:
+    loads the initial dump. Devenv4iom allows to load a custom dump during this
+    process. This custom dump will be treated exactly as any other dump which
+    is part of the docker image.
+    If you want to load a custom dump, you have to:
+    - Set variable CUSTOM_DUMPS_DIR in your configuration file and make sure
+      that the directory is shared in Docker Desktop. The dump you want to load
+      has to be located within this directory. To be recognized as a dump, it
+      has to have the extension .sql.gz. If the directory contains more than one
+      dump file, the script of the config container selects the one with the
+      largest numerical name. You can check this with following command:
       ls *.sql.gz | sort -nr | head -n 1
 
-    The custom dump can be loaded only, if the database is empty. The current
+    The custom dump can only be loaded if the database is empty. The current
     command executes all the necessary steps to restart IOM with an empty
     database:
     - delete iom
@@ -1236,24 +1237,24 @@ OVERVIEW
     - create storage
     - create postgres
     - create iom
-    You should inspect the logs created when running the config container. Was
-    really the dump loaded, you think it was? The logs of config process are
-    printed in json format. Verbosity can be controlled by configuration
+    You should inspect the logs created when running the config container to
+    know if the dump was actually loaded. The logs of the config process are
+    printed in JSON format. Verbosity can be controlled by configuration
     variable OMS_LOGLEVEL_SCRIPTS.
 
-    This command works only, if an internal PostgreSQL-server is used.
-    Devenv4iom is not able to control an external PostgreSQL server!
+    This command works only if an internal PostgreSQL server is used.
+    Devenv4iom is not able to control an external PostgreSQL server.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_DUMPS_DIR - the directory, where custom dumps has to be located.
+    CUSTOM_DUMPS_DIR - the directory in which custom dumps must be located.
 
-    As 'dump load' is a shortcut for a couple of others commands only, you 
-    should find out more about CONFIG, by requesting help of these commands.
+    As 'dump load' is only a shortcut for a couple of others commands, you
+    can learn more about CONFIG by requesting help of these commands.
 
 SEE
     $ME [CONFIG-FILE] delete iom
@@ -1275,9 +1276,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] get RESOURCE
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     config|co*         get configuration file
@@ -1299,20 +1300,20 @@ SYNOPSIS
     $ME [CONFIG-FILE] get config
 
 OVERVIEW
-    Devenv4iom provides a templates for config files. With every new version new
-    config variables might be introduced or the description of existing config
-    variables might be improved.
+    Devenv4iom provides a template for configuration files. With every new
+    version new configuration variables might be introduced or the description
+    of existing configuration variables might be improved.
     The 'get config' writes a new configuration to stdout based on the template
     but containing the original configuration values.
     Hence, you should run 'get config' after every update of devenv4iom to keep
-    your configuration files uptodate.
-    When called without passing a config-file, a configuration containg default
-    values is written to stdout.
+    your configuration files up to date.
+    When called without passing a configuration file, a configuration containg
+    default values is written to stdout.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    writes a configuration containing the default values.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME writes a configuration containing the default values.
 
 SEE
     "$CONFIG_FILE"
@@ -1338,9 +1339,9 @@ OVERVIEW
     managed IOM installation.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
@@ -1363,9 +1364,9 @@ OVERVIEW
     the managed IOM installation.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
@@ -1388,9 +1389,9 @@ OVERVIEW
     the managed IOM installation.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 BACKGROUND
     "$PROJECT_PATH/bin/template_engine.sh" \\
@@ -1409,9 +1410,9 @@ SYNOPSIS
     $ME [CONFIG-FILE] log WHAT
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 WHAT
     dbaccount|d*       get message logs of dbaccount init-container
@@ -1433,30 +1434,30 @@ SYNOPSIS
     $ME [CONFIG-FILE] log dbaccount [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of
+    LEVEL - optional. If set, it has to be one of
       FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
-      The passed level defines which messages are printed. Only messages of
-      passed level and higher levels will be shown.
-    -f - optional. If set, $ME follows new messages only. If not set, ALL 
+      The specified level defines which messages are printed. Only messages of
+      the specified level and higher levels will be shown.
+    -f - optional. If set, $ME follows new messages only. If not set, ALL
       messages created until now are printed and the process ends after it.
 
 OVERVIEW
-    Requires 'jq' to be installed!
-    Writes messages of dbaccount init-container and filters them according
-    the passed log-level. 
+    Requires 'jq' to be installed.
+    Writes messages of dbaccount init-container and filters them according to
+    the specified log-level.
     Behaves differntly when used inside and outside a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
-CONFIG  
-    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
-      that are not written in container, can never be seen.
+CONFIG
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages
+      that are not written in container can never be seen.
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -1473,30 +1474,30 @@ SYNOPSYS
     $ME [CONFIG-FILE] log config [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of
+    LEVEL - optional. If set, it has to be one of
       FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
-      The passed level defines which messages are printed. Only messages of
-      passed level and higher levels will be shown.
+      The specified level defines which messages are printed. Only messages of
+      specified level and higher levels will be shown.
     -f - optional. If set, $ME follows new messages only. If not set, ALL
       messages created until now are printed and the process ends after it.
 
 OVERVIEW
-    Requires 'jq' to be installed!
+    Requires 'jq' to be installed.
     Writes messages of config init-container and filters them according the
-    passed log-level. 
-    Behaves differently when used inside and outside of a pipe. 
+    specified log level.
+    Behaves differently when used inside and outside of a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
-      that are not written in container, can never be seen.
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages
+      that are not written in container can never be seen.
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -1513,41 +1514,41 @@ SYNOPSIS
     $ME [CONFIG-FILE] log app [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of
+    LEVEL - optional. If set, it has to be one of
       FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
-      The passed level defines which messages are printed. Only messages of
-      passed level and higher levels will be shown.
+      The specified level defines which messages are printed. Only messages of
+      specified level and higher levels will be shown.
     -f - optional. If set, $ME follows new messages only. If not set, ALL
       messages created until now are printed and the process ends after it.
 
 OVERVIEW
     Requires 'jq' to be installed!
-    Writes messages of iom application-container and filters them according
-    the passed log-level. 
-    The Wildfly application server still writes some messages, that are not in
-    json format. Those messages can only be seen, when accessing the output of
+    Writes messages of the IOM application container and filters them according
+    the specified log level.
+    The Wildfly application server still writes some messages that are not in
+    JSON format. Those messages can only be seen when accessing the output of
     the container directly.
-    Behaves differently when used inside and outside of a pipe. 
+    Behaves differently when used inside and outside of a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuratoin file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by 
-      scripts. Messages, that are not written in container, can never be seen.
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by
+      scripts. Messages that are not written in the container cannot be seen.
     OMS_LOGLEVEL_CONSOLE
     OMS_LOGLEVEL_IOM
     OMS_LOGLEVEL_HIBERNATE
     OMS_LOGLEVEL_QUARTZ
     OMS_LOGLEVEL_ACTIVEMQ
-    OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of 
-      messages are written by Wildfly application server and the IOM 
-      applications. Messages, that are not written in container, can never be
+    OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of
+      messages are written by Wildfly application server and the IOM
+      applications. Messages that are not written in the container cannot be
       seen.
 
 SEE
@@ -1565,26 +1566,26 @@ SYNOPSIS
     $ME [CONFIG-FILE] log access [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of ERROR|ALL. If not set, ERROR will
-      be used. The passed level defines which messages are printed. If set to 
-      ERROR, only access-log entries are printed, where http status-code is 
-      equal or greater than 400.
-    -f - optional. If set, $ME follows new log-entries only. If not set, ALL
-      log-entries created until now are printed and the process ends after it.
+    LEVEL - optional. If set, it has to be one of ERROR|ALL. If not set, ERROR
+      will be used. The specified level defines which messages are printed. If
+      set to ERROR, only access-log entries where HTTP status code is equal or
+      greater than 400 are printed.
+    -f - optional. If set, $ME follows new log entries only. If not set, ALL
+      log entries created until now are printed and the process ends after it.
 
 OVERVIEW
-    Requires 'jq' to be installed!
+    Requires 'jq' to be installed.
     Writes access logs of iom application-container and filters them
-    according the passed log-level.
-    Behaves differently when used inside and outside of a pipe. 
+    according the specified log-level.
+    Behaves differently when used inside and outside of a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
 
 CONFIG-FILE
-    Name of config-file to be used. If not set, the environment variable
-    DEVENV4IOM_CONFIG will be checked. If no config-file can be found, $ME
-    ends with an error.
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -1618,7 +1619,7 @@ log_json() (
     ADD_INFO_IN="$(mktemp)"
     ADD_INFO="$(mktemp)"
     trap "rm -f $ADD_INFO_IN $ADD_INFO" EXIT SIGTERM
-    
+
     # get REQUESTED_LEVEL
     case $LEVEL in
         ERROR)
@@ -1659,7 +1660,7 @@ log_json() (
             exit 1
             ;;
     esac
-    
+
     # quote MSG
     MSG="$(echo $MSG | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037')"
 
@@ -1751,7 +1752,7 @@ kube_job_wait() (
 kube_pod_wait() (
     APP_NAME=$1
     TIMEOUT=$2
-    PHASE=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)    
+    PHASE=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)
     START_TIME=$(date '+%s')
     while [ \( "$PHASE" != 'Succeeded' \) -a \
                \( "$PHASE" != 'Failed' \) -a \
@@ -1901,7 +1902,7 @@ kube_get_pod() (
             I=$(expr $I + 1)
         done
     fi
-    
+
     echo "$POD_NAME"
 )
 
@@ -2307,7 +2308,7 @@ create-postgres() {
 #-------------------------------------------------------------------------------
 create-iom() {
     SUCCESS=true
-    
+
     if [ -z "$CONFIG_FILE" ]; then
         log_json ERROR "create-iom: no config-file given!" < /dev/null
         SUCCESS=false
@@ -2613,7 +2614,7 @@ apply-deployment() {
             else
                 # TODO no messages visible, if script ended with error!
                 kubectl exec $POD --namespace $EnvId -- bash -ic "/opt/oms/bin/forced-redeploy.sh --pattern=$PATTERN || true" 2> "$TMP_ERR" > "$TMP_OUT"
-            fi   
+            fi
             if [ $? -ne 0 ]; then
                 log_json ERROR "apply-deployment: error applying deployments" < "$TMP_ERR"
                 SUCCESS=false
@@ -2718,7 +2719,7 @@ apply-sql-scripts() {
                     SQL_SRC="$(pwd)/$1"
             esac
         fi
-        
+
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$2" ] && ! ( echo "$2" | grep -q '^[0-9]*$'); then
@@ -2726,7 +2727,7 @@ apply-sql-scripts() {
         elif [ ! -z "$2" ]; then
             TIMEOUT=$2
         fi
-        
+
         if [ "$SUCCESS" = 'true' ]; then
             # start apply-sql job
             SQL_SRC="$SQL_SRC" \
@@ -2738,7 +2739,7 @@ apply-sql-scripts() {
                 SUCCESS=false
             else
                 log_json INFO "apply-sql-scripts: job successfully started" < "$TMP_OUT"
-                
+
                 # wait for job to finish
                 if ! kube_job_wait apply-sql-job $TIMEOUT; then
                     log_json ERROR "apply-sql-scripts: timeout of $TIMEOUT seconds reached" < /dev/null
@@ -2769,7 +2770,7 @@ apply-sql-scripts() {
                 else
                     log_json INFO "apply-sql-scripts: successfully deleted job" < "$TMP_OUT"
                 fi
-                
+
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
@@ -2801,7 +2802,7 @@ apply-sql-config() {
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
-        
+
         if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
             # start sqlconfig-job
             "$PROJECT_PATH/bin/template_engine.sh" \
@@ -2812,7 +2813,7 @@ apply-sql-config() {
                 SUCCESS=false
             else
                 log_json INFO "apply-sql-config: job successfully started" < "$TMP_OUT"
-                
+
                 # wait for job to finish
                 if ! kube_job_wait sqlconfig-job $TIMEOUT; then
                     log_json ERROR "apply-sql-config: timeout of $TIMEOUT seconds reached" < /dev/null
@@ -2843,7 +2844,7 @@ apply-sql-config() {
                 else
                     log_json INFO "apply-sql-config: successfully deleted job" < "$TMP_OUT"
                 fi
-                
+
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
@@ -2877,7 +2878,7 @@ apply-json-config() {
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
-        
+
         if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
             # start jsonconfig-job
             "$PROJECT_PATH/bin/template_engine.sh" \
@@ -2888,7 +2889,7 @@ apply-json-config() {
                 SUCCESS=false
             else
                 log_json INFO "apply-json-config: job successfully started" < "$TMP_OUT"
-                
+
                 # wait for job to finish
                 if ! kube_job_wait jsonconfig-job $TIMEOUT; then
                     log_json ERROR "apply-json-config: timeout of $TIMEOUT seconds reached" < /dev/null
@@ -2909,7 +2910,7 @@ apply-json-config() {
                         cat "$TMP_OUT"
                     fi
                 fi
-                
+
                 # delete jsonconfig-job
                 "$PROJECT_PATH/bin/template_engine.sh" \
                     "$PROJECT_PATH/templates/jsonconfig.yml.template" \
@@ -2920,7 +2921,7 @@ apply-json-config() {
                 else
                     log_json INFO "apply-json-config: successfully deleted job" < "$TMP_OUT"
                 fi
-                
+
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
@@ -2954,7 +2955,7 @@ apply-dbmigrate() {
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
-        
+
         if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
             # start dbmigrate-job
             "$PROJECT_PATH/bin/template_engine.sh" \
@@ -2965,7 +2966,7 @@ apply-dbmigrate() {
                 SUCCESS=false
             else
                 log_json INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
-                
+
                 # wait for job to finish
                 if ! kube_job_wait dbmigrate_job $TIMEOUT; then
                     log_json ERRO "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
@@ -2996,7 +2997,7 @@ apply-dbmigrate() {
                 else
                     log_json INFO "apply-dbmigrate: successfully deleted job" < "$TMP_OUT"
                 fi
-                
+
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
@@ -3021,7 +3022,7 @@ apply-dbmigrate() {
 #-------------------------------------------------------------------------------
 dump-load() {
     SUCCESS=true
-    
+
     if [ -z "$CONFIG_FILE" ]; then
         log_json ERROR "dump-load: no config-file given!" < /dev/null
         SUCCESS=false
@@ -3084,7 +3085,7 @@ dump-create() {
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
-        
+
         if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
             # start dump-job
             "$PROJECT_PATH/bin/template_engine.sh" \
@@ -3095,13 +3096,13 @@ dump-create() {
                 SUCCESS=false
             else
                 log_json INFO "dump-create: job successfully started" < "$TMP_OUT"
-                
+
                 # wait for job to finish
                 if ! kube_job_wait dump-job $TIMEOUT; then
                     log_json ERROR "dump-create: timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 fi
-                
+
                 # get logs of job
                 POD=$(kubectl get pods --namespace $EnvId -l job-name=dump-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
                 if [ -z "$POD" ]; then
@@ -3127,7 +3128,7 @@ dump-create() {
                 else
                     log_json INFO "dump-create: successfully deleted job" < "$TMP_OUT"
                 fi
-                
+
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
@@ -3168,7 +3169,7 @@ get-config() {
     else
         log_json INFO "get-config: configuration successfully written." < /dev/null
     fi
-    
+
     rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
 }
@@ -3344,7 +3345,7 @@ log-dbaccount() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3352,7 +3353,7 @@ log-dbaccount() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            
+
             POD="$(kube_get_pod iom)"
             if [ ! -z "$POD" ]; then
                 # make sure to get info about failed kubectl call
@@ -3401,7 +3402,7 @@ log-config() (
         LEVEL="$1"
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
-    fi   
+    fi
 
     if [ -z "$CONFIG_FILE" ]; then
         log_json ERROR "log-config: no config-file given!" < /dev/null
@@ -3418,7 +3419,7 @@ log-config() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3476,7 +3477,7 @@ log-app() (
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
     fi
-    
+
     if [ -z "$CONFIG_FILE" ]; then
         log_json ERROR "log-app: no config-file given!" < /dev/null
         SUCCESS=false
@@ -3492,7 +3493,7 @@ log-app() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3500,7 +3501,7 @@ log-app() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            
+
             POD="$(kube_get_pod iom)"
             if [ ! -z "$POD" ]; then
                 # make sure to get info about failed kubectl call
@@ -3550,7 +3551,7 @@ log-access() (
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
     fi
-    
+
     if [ -z "$CONFIG_FILE" ]; then
         log_json ERROR "log-access: no config-file given!" < /dev/null
         SUCCESS=false
@@ -3566,13 +3567,13 @@ log-access() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             if [ "$LEVEL" = 'ERROR' ]; then
                 FILTER='and (.responseCode >= 400)'
             else
                 FILTER=''
             fi
-        
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3629,7 +3630,7 @@ fi
 # read config-file
 if [ ! -z "$CONFIG_FILE" ]; then
     log_json INFO "Reading configuration from $CONFIG_FILE" < /dev/null
-    
+
     # read current config
     if ! ( set -e; . "$CONFIG_FILE" ); then
         log_json ERROR "error reading '$CONFIG_FILE'" < /dev/null
@@ -3999,7 +4000,7 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
 # handle commands, accepting two arguments
 elif [ "$LEVEL0" = 'log' ]; then
     eval $LEVEL0-$LEVEL1 "$ARG1" "$ARG2" || exit 1
-    
+
 # handle commands, not accepting any argument
 else
     if [ ! -z "$ARG1" ]; then
