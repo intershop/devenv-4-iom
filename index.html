@@ -157,7 +157,7 @@ devenv-cli.sh get config > config.properties
         </div></code></pre>
 
         <p>
-          There is one value in config.properties, that has to be set manually: <samp>ID</samp>. Every instance of IOM, hence every configuration file, needs to have an unique value for <samp>ID</samp>. Once you have set the <samp>ID</samp> and started the according IOM, you must not change it anymore. Otherwise you will loose the ability to access/control the resources associated with the IOM installation. Now set the <samp>ID</samp> to <samp>first-steps</samp>.
+          There is one value in config.properties, that has to be set manually: <samp>ID</samp>. Every instance of IOM, hence every configuration file, needs to have a unique value for <samp>ID</samp>. Once you have set the <samp>ID</samp> and started the according IOM, you must not change it anymore. Otherwise you will loose the ability to access/control the resources associated with the IOM installation. Now set the <samp>ID</samp> to <samp>first-steps</samp>.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # set ID in config.properties to "first-steps"
@@ -427,7 +427,7 @@ export DEVENV4IOM_CONFIG=
           <samp>devenv-4-iom</samp> uses a very simple concept to manage developer instances of IOM. One configuration file holds all the information required to run one instance of IOM. Along the many configuration values needed to control the behavior of IOM, there is one property which is required to mark Kubernetes and Docker resources as being associated with a certain configuration. This property is the <samp>ID</samp>. Each configuration has to have its own unique <samp>ID</samp>. Hence, the creation of a new configuration file consists of these steps:
           <ol>
             <li>Create a new configuration file based on the template provided by <samp>devenv-4-iom</samp>. Make sure that there is currently no other configuration file used.</li>
-            <li>Set <samp>ID</samp> in the newly created configuration file to an unique value.</li>
+            <li>Set <samp>ID</samp> in the newly created configuration file to a unique value.</li>
             <li>Adapt all other entries in the configuration file according your needs.</li>
           </ol>
         </p>
@@ -787,7 +787,7 @@ devenv-cli.sh apply xsl-templates
         </p><p>
           There are two different modes that can be used:
           <ul>
-            <li>If a directory is passed to the job, all SQL files found in this directory are processed in numerical order, starting with the smallest one. Sub-directories are not scanned for sql-files.</li>
+            <li>If a directory is passed to the job, all SQL files found in this directory are processed in numerical order, starting with the smallest one. Sub-directories are not scanned for SQL files.</li>
             <li>If a file is passed to the job, only this file will be executed.</li>
           </ul>
           The information about the SQL file or directory is passed as third parameter to the command line client. The box below shows an example that executes all SQL scripts found in <samp>oms.tests/tc_stored_procedures</samp> (of course, the directory has to exist in your current working directory).
@@ -894,7 +894,7 @@ devenv-cli.sh dump create
         </p>
 
         <h3 id="development--access-emails">Access E-Mails</h3>
-        <p>To develop e-mail templates to test whether e-mails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail server UI and REST interface is given by the command <samp>'info mailserver'</samp>, provided by command line interface.
+        <p>To develop e-mail templates to test whether e-mails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail server UI and REST interface is given by the command <samp>'info mailserver'</samp>, provided by the command line interface.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 devenv-cli.sh info mailserver
@@ -1477,7 +1477,7 @@ devenv-cli.sh log app
 ...
         </div></code></pre>
         <p>
-          Unexpected errors may occur that are not handled properly. These errors cannot be found by using the <samp>'log *'</samp> commands. To find such errors, the raw output of containers has to investigated. If you do not have <samp>jq</samp> properly installed, you have to use this basic access to log messages as well. The according command lines are provided by <samp>'info iom'</samp> within the section "Useful commands".
+          Unexpected errors may occur that are not handled properly. These errors cannot be found by using the <samp>'log *'</samp> commands. To find such errors, the raw output of containers has to be investigated. If you do not have <samp>jq</samp> properly installed, you have to use this basic access to log messages as well. The according command lines are provided by <samp>'info iom'</samp> within the section "Useful commands".
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 devenv-cli.sh info iom
