@@ -2,37 +2,37 @@
 #
 # IMPORTANT INFORMATION
 #
-# This file is intended to change configuration values only, but not comments!
+# This file is only intended for changing configuration values, not comments.
 #
 # This file is generated from a template. With each update of devenv-4-iom it
-# has to be updated. During this process all settings are taken over, but the
-# settings only. All additional comments you may have added to the file will be
-# lost. Of course, a backup of the old file will be created. If you really want
-# to add custom comments, you have to manually migrate them from the backup
-# after each update of devenv-4-iom.
+# has to be updated. Only the settings are taken over during this process. All
+# additional comments you may have added to the file will be lost. Of course,
+# a backup of the old file will be created. If you want to add custom comments,
+# you have to manually migrate them from the backup after each update of
+# devenv-4-iom.
 #
 ################################################################################
 
-# ID is used to create unique names for docker instances
-# This ID is assigned initially, when creating the config file. Please never
-# change the ID afterwards.
-# Since ID is also used to derive the kubernetes namespace to be used for IOM,
-# ID must not collide with namespaces used by Docker-Desktop. Forbidden are
-# all values beginning with:
+# The ID is used to create unique names for docker instances.
+# This ID is initially assigned when creating the configuration file. Please
+# never change the ID afterwards.
+# Since the ID is also used to derive the Kubernetes namespace to be used for
+# IOM, the ID must not collide with namespaces used by Docker-Desktop. Forbidden
+# are all values beginning with:
 # - default
 # - docker
 # - kube
 ID=${ID}
 
 ################################################################################
-# Docker Image settings
+# Docker Image Settings
 ################################################################################
 
-# image pull policy defines when to pull docker images
-# if left empty, it defaults to "Always", which makes development easy, as
-# always the newest version of requested docker image will be used. Can be set
-# to any value allowed by ImagePullPolicy.
-# see https://kubernetes.io/docs/concepts/configuration/overview/#container-images
+# The image pull policy defines when to pull docker images.
+# If left empty, it defaults to "Always", which makes development easy, as
+# always the newest version of the requested Docker image will be used. It can
+# be set to any value allowed by ImagePullPolicy.
+# See https://kubernetes.io/docs/concepts/configuration/overview/#container-images
 IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 
 # postgres image (name:tag)
@@ -50,7 +50,7 @@ MAILHOG_IMAGE=${MAILHOG_IMAGE}
 IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom config image (name:tag)
-# examples:                 
+# examples:
 # locally built IOM image:          iom-config:3.1.0.0-SNAPSHOT
 # locally built CI image:           ci-iom-config:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
 # IOM relase from ISH registry:     docker-iom.rnd.intershop.de/intershop/iom-config:3.0.0.0
@@ -66,13 +66,13 @@ IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
 ################################################################################
-# database configuration
+# Database Configuration
 ################################################################################
 
-# connection to external database
-# fill these two variables, if you want to use an external database.
-# if left empty, database is managed internally. Connection settings are known
-# in this case and don't need to be configured otherwise.
+# Connection to external database
+# Fill these two variables, if you want to use an external database.
+# If left empty, the database is managed internally. Connection settings are
+# known in this case and do not need to be configured otherwise.
 PGHOST=${PGHOST}
 PGPORT=${PGPORT}
 # if using an Azure service as postgres server, the user name has to be extended
@@ -81,63 +81,63 @@ PGPORT=${PGPORT}
 # and OMS_DB_USER!
 PGUSER_CONNECTION_SUFFIX=${PGUSER_CONNECTION_SUFFIX}
 
-# administrative access to database
-# will be used by dbaccount-image, when creating the oms database
+# Administrative access to database
+# Will be used by dbaccount-image, when creating the OMS database
 PGUSER="${PGUSER}"
 PGPASSWORD="${PGPASSWORD}"
 PGDATABASE="${PGDATABASE}"
 OMS_DB_OPTIONS="${OMS_DB_OPTIONS}"
 OMS_DB_SEARCHPATH="${OMS_DB_SEARCHPATH}"
 
-# iom database
-# values will be used when creating and accessing the oms account
+# IOM database
+# Values will be used when creating and accessing the OMS account
 OMS_DB_USER="${OMS_DB_USER}"
 OMS_DB_PASS="${OMS_DB_PASS}"
 OMS_DB_NAME="${OMS_DB_NAME}"
 
 ################################################################################
-# IOM runtime configuration
+# IOM Runtime Configuration
 ################################################################################
 
 # CaaS projects may have environment specific configurations, test data, etc.
 # CAAS_ENV_NAME assigns the environment name to the installation.
 CAAS_ENV_NAME=${CAAS_ENV_NAME}
 
-# CaaS projects may contain test-data, which are automatically imported when
-# starting IOM, if this propertie is set to 'true'.
+# CaaS projects may contain test data which are automatically imported when
+# starting IOM if this propertie is set to 'true'.
 CAAS_IMPORT_TEST_DATA=${CAAS_IMPORT_TEST_DATA}
 
-# hostname to be used for the OMS_PUBLIC_URL
-# if left empty, HOST_IOM defaults to ${HOST_IOM}
+# Hostname to be used for the OMS_PUBLIC_URL
+# If left empty, HOST_IOM defaults to ${HOST_IOM}
 HOST_IOM=${HOST_IOM}
 
-# For some developer tasks, the execution of health-checks might be a problem,
+# For some developer tasks, the execution of health checks might be a problem,
 # e.g. when working on monitoring. In this case, you can set the variable to
-# 'false' to avoid execution of health-checks.
-# Any change made on health-check configuration triggers a restart of the IOM
-# pod. Therefore it is recommended to use following process, when changing this
-# setting:
+# 'false' to avoid the execution of health checks.
+# Any change made on health check configuration triggers a restart of the IOM
+# pod. Therefore it is recommended to use the following process when changing
+# this setting:
 # - change config variable
 # - devenv-cli.sh delete iom
 # - devenv-cli.sh create iom
 PERFORM_HEALTH_CHECKS=${PERFORM_HEALTH_CHECKS}
 
 ################################################################################
-# database settings (not applied to external database)
+# Database settings (not applied to external database)
 ################################################################################
 
-# postgres arguments
+# Postgres arguments
 POSTGRES_ARGS=( ${PostgresArgsShell} )
 
-# If you want to keep database data even after a kubernetes restart, you have to set
+# If you want to keep database data even after a Kubernetes restart, you have to set
 # KEEP_DATABASE_DATA to true, otherwise false.
 KEEP_DATABASE_DATA=${KEEP_DATABASE_DATA}
 
 ################################################################################
-# log seetings
+# Log seetings
 ################################################################################
 
-# log-level for different scopes of iom-application. Supported levels are:
+# Log level for different scopes of iom-application. Supported levels are:
 #   FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL
 OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE}
 OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM}
@@ -146,98 +146,100 @@ OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ}
 OMS_LOGLEVEL_ACTIVEMQ=${OMS_LOGLEVEL_ACTIVEMQ}
 OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION}
 
-# log-level of helper scripts (dbmigrate, etc.). Supported levels are:
+# Log level of helper scripts (dbmigrate, etc.). Supported levels are:
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 
-# log-level of devenv-cli.sh itself. Supported levels are:
+# Log level of devenv-cli.sh itself. Supported levels are:
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
 
 ################################################################################
-# development settings
+# Development settings
 ################################################################################
 
-# The following config variables are all using the same pattern:
+# The following config variables use the same pattern:
 # If you want to use a certain aspect of development, you have to define the
-# location of custom files, that should be used by the developer VM.
-# You have to make sure, that the referenced directories are shared with the
+# location of custom files that should be used by the developer VM.
+# You must ensure that the referenced directories are shared with the
 # Docker Desktop.
 
 # Deployment of custom artifacts
 # see: devenv-cli.sh apply deployment --help
-# recommended value, when doing IOM product development:
-# absolute path to "/applications" in IOM sources.
+# Recommended value when doing IOM product development:
+# Absolute path to "/oms.deployment/applications" in IOM sources.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
-# see: devenv-cli.sh apply mail-templates --help
-# recommended value, when doing IOM product development:
-# absolute path to "/oms.deployment/var/templates" in IOM sources.
+# See: devenv-cli.sh apply mail-templates --help
+# Recommended value when doing IOM product development:
+# Absolute path to "/oms.deployment/var/templates" in IOM sources.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
-# Development of custom xsl templates
-# see: devenv-cli.sh apply xsl-templates --help
-# recommended value, when doing IOM product development:
-# absolute path to "/bakery.transform/transform-core/src/main/resources/document/xslt"
+# Development of custom XSL templates
+# See: devenv-cli.sh apply xsl-templates --help
+# Recommended value when doing IOM product development:
+# Absolute path to "/bakery.transform/transform-core/src/main/resources/document/xslt"
 # in IOM sources.
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 
 # Development of migration scripts
-# see: devenv-cli.sh apply dbmigrate --help
-# recommended value, when doing IOM product development:
-# absolute path to "/postgres" in IOM sources.
+# See: devenv-cli.sh apply dbmigrate --help
+# Recommended value, when doing IOM product development:
+# Absolute path to "/postgres" in IOM sources.
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 
 # Load/create custom dumps
-# see: devenv-cli.sh dump load --help
-# see: devenv-cli.sh dump create --help
-# recommended value, whne doing IOM product development:
-# absolute path to "/postgres/dumps" in IOM sources.
+# See: devenv-cli.sh dump load --help
+# See: devenv-cli.sh dump create --help
+# Recommended value when doing IOM product development:
+# Absolute path to "/postgres/dumps" in IOM sources.
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 
 # Development of custom sql-config
-# see: devenv-cli.sh apply sql-config --help
-# recommended value, when doing IOM project development:
-# absolute path to "/configuration/src/sql-config" in project sources.
+# See: devenv-cli.sh apply sql-config --help
+# Recommended value when doing IOM project development:
+# Absolute path to "/configuration/src/sql-config" in project sources.
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 
 # Development of custom json-config
-# see: devenv-cli.sh apply json-config --help
-# recommended value, when doing IOM project development:
-# absolute path to "/configuration/src/json-config" in project sources.
+# See: devenv-cli.sh apply json-config --help
+# Recommended value when doing IOM project development:
+# Absolute path to "/configuration/src/json-config" in project sources.
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 
 ################################################################################
-# access to developer VM
+# Access to developer VM
 ################################################################################
 
 # Access to shared FS
 # -------------------
-# If you want to access the shared file-system of IOM, you have to define a
-# directory, which should be used for this purpose. If you want to use this
-# feature, you have to make sure, this directory is shared with Docker Desktop.
-# It's recommended to use a directory within the config directory structure.
+# If you want to access the shared file system of IOM, you have to define a
+# directory which should be used for this purpose. If you want to use this
+# feature, you have to make sure that this directory is shared with Docker
+# Desktop. It is recommended to use a directory within the config directory
+# structure.
 # CUSTOM_SHARE_DIR="${CustomShareDirDefault}"
 CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 
 ################################################################################
-# multi instance settings
+# Multi-instance settings
 ################################################################################
 
-# After changing INDEX or PORT_OFFSET, iom cluster has to be deleted and newly
-# created. Additionally the HTML docu, geb/ws-properties should be updated:
+# After changing INDEX or PORT_OFFSET, the IOM cluster has to be deleted and
+# newly created. Additionally, the HTML doc and geb/ws-properties should be
+# updated:
 #   devenv-cli.sh update doc
 #   devenv-cli.sh update geb-props
 #   devenv-cli.sh update ws-props
 
 # INDEX is used in combination with PORT_OFFSET to auto-generate a port
-# forwarding for all used ports in order to run multiple iom environments in
+# forwarding for all used ports in order to run multiple IOM environments in
 # parallel.
 INDEX=${INDEX}
 
 # PORT_OFFSET is used in combination with INDEX to auto-generate a port
-# forwarding for all used ports in order to run multiple iom environments in
+# forwarding for all used ports in order to run multiple IOM environments in
 # parallel.
 # Usually, there is no need to change PORT_OFFSET.
 PORT_OFFSET=${PORT_OFFSET}
