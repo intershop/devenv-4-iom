@@ -1945,6 +1945,15 @@ Direct access:
 ==============
 CUSTOM_SHARE_DIR:           $CUSTOM_SHARE_DIR
 --------------------------------------------------------------------------------
+Runtime:
+========
+CAAS_ENV_NAME:              $CAAS_ENV_NAME
+CAAS_IMPORT_TEST_DATA:      $CAAS_IMPORT_TEST_DATA
+PERFORM_HEALTH_CHECKS:      $PERFORM_HEALTH_CHECKS
+JBOSS_JAVA_OPTS:            $JBOSS_JAVA_OPTS
+JBOSS_XA_POOLSIZE_MIN:      $JBOSS_XA_POOLSIZE_MIN
+JBOSS_XA_POOLSIZE_MAX:      $JBOSS_XA_POOLSIZE_MAX
+--------------------------------------------------------------------------------
 Logging:
 ========
 OMS_LOGLEVEL_CONSOLE:       $OMS_LOGLEVEL_CONSOLE
@@ -1975,6 +1984,7 @@ Usefull commands:
 =================
 
 Login into Pod:             kubectl exec --namespace $EnvId $POD -it bash
+jboss-cli:                  kubectl exec --namespace $EnvId $POD -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
 Describe iom pod:           kubectl describe --namespace $EnvId pod $POD

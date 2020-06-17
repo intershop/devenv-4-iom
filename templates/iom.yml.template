@@ -110,7 +110,11 @@ ${ShareDirYml____}          mountPath: /var/opt/share
           - name: JBOSS_OPTS
             value: "--debug *:8787"
           - name: JBOSS_JAVA_OPTS
-            value: "-Xms1024M -Xmx2048M"
+            value: '${JBOSS_JAVA_OPTS}'
+          - name: JBOSS_XA_POOLSIZE_MIN
+            value: '${JBOSS_XA_POOLSIZE_MIN}'
+          - name: JBOSS_XA_POOLSIZE_MAX
+            value: '${JBOSS_XA_POOLSIZE_MAX}'
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL

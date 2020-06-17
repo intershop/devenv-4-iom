@@ -122,6 +122,11 @@ HOST_IOM=${HOST_IOM}
 # - devenv-cli.sh create iom
 PERFORM_HEALTH_CHECKS=${PERFORM_HEALTH_CHECKS}
 
+JBOSS_JAVA_OPTS="${JBOSS_JAVA_OPTS}"
+
+JBOSS_XA_POOLSIZE_MIN="${JBOSS_XA_POOLSIZE_MIN}"
+JBOSS_XA_POOLSIZE_MAX="${JBOSS_XA_POOLSIZE_MAX}"
+
 ################################################################################
 # Database settings (not applied to external database)
 ################################################################################
