@@ -1499,7 +1499,7 @@ Get iom logs:               kubectl logs iom-849dcb5d88-6dnss --namespace test -
 
         <h3 id="troubleshooting--manual-cleanup">Manual Cleanup</h3>
         <p>
-          According to section <a href="#configurations--delete-config">"Delete a Configuration"</a>, a configuration must not be deleted, while according Kubernetes and Docker resources still exist. If you are in a situation, where the configuration file is deleted and resources belonging to this configuration still exist, you have to delete these resources manually. In general, you have to proceed the following steps:
+          According to section <a href="#configurations--delete-config">"Delete a Configuration"</a>, a configuration must not be deleted as long as corresponding Kubernetes and Docker resources still exist. In a situation where the configuration file is deleted and resources belonging to this configuration still exist, you have to delete these resources manually. To do so, perform the following steps:
           <ol>
             <li>Search and delete orphaned Kubernetes namespaces.</li>
             <li>Delete orphaned Docker volumes.</li>
@@ -1507,15 +1507,15 @@ Get iom logs:               kubectl logs iom-849dcb5d88-6dnss --namespace test -
         </p>
         <h4>Search and delete orphaned Kubernetes namespaces</h4>
         <p>
-          All Kubernetes resources belonging to a configuration, are assigned to one Kubernetes namespace. The name of this namespace is derived from <samp>ID</samp> defined in configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from <samp>ID</samp> and the remaining characters are transformed to lowercase. E.g., if you had used <samp>CustomerProject IOM 3.0.0.0</samp> for <samp>ID</samp>, the derived name of namespace is <samp>customerprojectiom3000</samp>.
+          All Kubernetes resources belonging to a configuration are assigned to one Kubernetes namespace. The name of this namespace is derived from the <samp>ID</samp> defined in the configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from the <samp>ID</samp> and the remaining characters are transformed to lowercase. E.g., if you had used <samp>CustomerProject IOM 3.0.0.0</samp> as <samp>ID</samp>, the derived name of the namespace is <samp>customerprojectiom3000</samp>.
         </p><p>
-          Kubernetes uses namespaces for own purposes. To avoid any conflict with these namespaces, <samp>devenv-4-iom</samp> will not allow you to use an <samp>ID</samp>, that starts with on of: <samp>default</samp>, <samp>docker</samp>, <samp>kube</samp>. Hence, the orphaned Kubernetes namespace we are searching, will NEVER start with one of these thress phrases.
+          Kubernetes uses namespaces for its own purposes. To avoid any conflict with these namespaces, <samp>devenv-4-iom</samp> will not allow you to use an <samp>ID</samp> that starts with: <samp>default</samp>, <samp>docker</samp> or <samp>kube</samp>. Hence, the orphaned Kubernetes namespace we search, will never start with any of these three phrases.
         </p><p>
-          The following box shows how to list all existing namespaces. According to the naming rules of namespaces created by <samp>devenv-4-iom</samp>, only two entries in the list of results are of interest: <samp>customerprojectiom3000</samp> and <samp>oldprojectiom3000</samp>. If you know the <samp>ID</samp>s of your currently existing configurations, you can find out the name of the orphaned namespace. In our example <samp>oldprojectiom3000</samp> is the one we have searched for.
+          The following box shows how to list all existing namespaces. According to the naming rules of namespaces created by <samp>devenv-4-iom</samp>, only two entries in the list of results are of interest: <samp>customerprojectiom3000</samp> and <samp>oldprojectiom3000</samp>. If you know the <samp>ID</samp>s of your currently existing configurations, you can find out the name of the orphaned namespace. In our example, <samp>oldprojectiom3000</samp> is the one we have searched for.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # list all existing Kubernetes namespaces
-kubectl get namespace         
+kubectl get namespace
 NAME                     STATUS   AGE
 customerprojectiom3000   Active   40m
 default                  Active   28d
@@ -1534,7 +1534,7 @@ namespace "oldprojectiom3000" deleted
         <p>
           Docker volumes are used to provide persistent storage for the PostgreSQL database server. Since the usage of persistent storage is optional, an orphaned Docker volume might not exist at all. Once you have found the name of an orphaned Kubernetes namespace, it is very simple to find out whether an according Docker volume exists or not. The name of the Docker volume is derived from <samp>ID</samp> too. The same rules are applied to the <samp>ID</samp> as described above, additionally the prefix <samp>-pgdata</samp> is appended.
         </p><p>
-          Hence, if the orphaned Kubernetes namespaces is <samp>oldprojectiom3000</samp>, the according Docker volume is named <samp>oldprojectiom3000-pgdata</samp>. The following command lists all Docker volumes and shows you, how to delete the one Docker volume, you have identified before.
+          Hence, if the orphaned Kubernetes namespaces is <samp>oldprojectiom3000</samp>, the according Docker volume is named <samp>oldprojectiom3000-pgdata</samp>. The following command lists all Docker volumes and shows you how to delete the one Docker volume you have identified before.
         </p>
         <pre class="prettyprint lang-bash"><code><div class="col-xs-12">
 # list all existing Docker volumes
@@ -1546,8 +1546,8 @@ oldprojectiom3000-pgdata
 # delete orphaned Docker volume
 docker volume rm oldprojectiom3000-pgdata
 oldprojectiom3000-pgdata
-        </div></code></pre>  
-        
+        </div></code></pre>
+
         <h3 id="troubleshooting--shared-drives">Shared Drives</h3>
         <p>
           After resetting your password you may experience problems with your shared drives. In those cases go to Settings > Shared Drives > Reset credentials
