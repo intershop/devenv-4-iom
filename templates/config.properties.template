@@ -224,7 +224,6 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 # feature, you have to make sure that this directory is shared with Docker
 # Desktop. It is recommended to use a directory within the config directory
 # structure.
-# CUSTOM_SHARE_DIR="${CustomShareDirDefault}"
 CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 
 ################################################################################

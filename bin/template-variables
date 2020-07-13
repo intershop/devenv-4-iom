@@ -178,16 +178,6 @@ fi
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
-CustomShareDirDefault=""
-CustomLogDirDefault=""
-
-# set directory defaults depending on OS
-# directory of the environment
-if [ $(OS) = "Msys" ]; then
-    CustomShareDirDefault=$(cygpath -w "${CustomShareDirDefault}")
-    CustomLogDirDefault=$(cygpath -w "${CustomLogDirDefault}")
-fi
-
 # development host
 HOST_IOM="${HOST_IOM:-$(hostname)}"
 
