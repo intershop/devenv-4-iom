@@ -172,13 +172,13 @@ OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
 # Deployment of custom artifacts
 # see: devenv-cli.sh apply deployment --help
 # Recommended value when doing IOM product development:
-# Absolute path to "/oms.deployment/applications" in IOM sources.
+# Absolute path to "/applications" in IOM sources.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
 # See: devenv-cli.sh apply mail-templates --help
 # Recommended value when doing IOM product development:
-# Absolute path to "/oms.deployment/var/templates" in IOM sources.
+# Absolute path to "/kubernetes.deployment/var/templates" in IOM sources.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
 # Development of custom XSL templates
