@@ -123,4 +123,4 @@ Add _devenv-cli.sh_ to the PATH variable if you want to be able to call it from 
 In order to become able to use _devenv-cli.sh_ without the need to call it with its absolute path, you have to extend your PATH variable. Please edit _.profile_ in your home-directory and add the according entry.
 
 # Next Steps
-Open _index.html_ from the _devenv-4-iom_ directory in your browser and proceed with the _First steps_ section to get familiar with _devenv-4-iom_.
+Open https://confluence.intershop.de/display/ENFDEVDOC/Guide+-+IOM+Development+Environment in your browser and proceed with the _First steps_ section to get familiar with _devenv-4-iom_.
