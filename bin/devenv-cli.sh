@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# This is a template. All occurences of ${[A-Za-z0-9]+} are template variables, not shell variables!
-
 TMP_ERR="$(mktemp)"
 TMP_OUT="$(mktemp)"
 trap "rm -f $TMP_ERR $TMP_OUT" EXIT SIGTERM
@@ -15,22 +13,27 @@ help() {
     ME=$(basename "$0")
     cat <<EOF
 $ME
-    command line interface for $ID.
+    command line interface for configuration with ID $ID.
 
 SYNOPSIS
-    $ME COMMAND
+    $ME [CONFIG-FILE] COMMAND
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error, with one exception: 'get config'.
 
 COMMANDS
-    info|i*            get information about kubernetes resources
+    get|g*             get devenv4iom specific resource
+    info|i*            get information about Kubernetes resources
     create|c*          create Kubernetes/Docker resources
     delete|de*         delete Kubernetes/Docker resources
-    wait|w*            wait for Kubernetes resourses to get ready
+    wait|w*            wait for Kubernetes resources to get ready
     apply|a*           apply customization
     dump|du*           create or load dump
-    update|u*          update devenv4iom specific artifacts
-    log|l*             simple access to log-messages
+    log|l*             simple access to log messages
 
-Run '$ME COMMAND --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] COMMAND --help|-h' for more information on a command.
 EOF
 }
 
@@ -41,15 +44,20 @@ help-info() {
 display information about Kubernetes/Docker resources
 
 SYNOPSIS
-    $ME info RESOURCE
+    $ME [CONFIG-FILE] info RESOURCE
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
-    iom|i*             view information about iom
-    postgres|p*        view information about postgres
-    mailserver|m*      view information about mailserver
+    iom|i*             view information about IOM
+    postgres|p*        view information about Postgres
+    mailserver|m*      view information about mail server
     storage|s*         view information about storage
 
-Run '$ME info RESOURCE  --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] info RESOURCE  --help|-h' for more information on a command.
 EOF
 }
 
@@ -60,7 +68,12 @@ help-info-iom() {
 view information about IOM
 
 SYNOPSIS
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -71,7 +84,12 @@ help-info-postgres() {
 view information about postgres
 
 SYNOPSIS
-    $ME info postgres
+    $ME [CONFIG-FILE] info postgres
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -82,7 +100,12 @@ help-info-mailserver() {
 view information about mailserver
 
 SYNOPSIS
-    $ME info mailserver
+    $ME [CONFIG-FILE] info mailserver
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -93,7 +116,12 @@ help-info-storage() {
 view information about storage
 
 SYNOPSIS
-    $ME info storage
+    $ME [CONFIG-FILE] info storage
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -104,7 +132,12 @@ help-info-cluster() {
 view information about cluster
 
 SYNOPSIS
-    $ME info cluster
+    $ME [CONFIG-FILE] info cluster
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -115,17 +148,22 @@ help-create() {
 create Kubernetes/Docker resource
 
 SYNOPSIS
-    $ME create RESOURCE
+    $ME [CONFIG-FILE] create RESOURCE
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     storage|s*         create persistant local Docker storage
     namespace|n*       create kubernetes namespace
-    mailserver|m*      create mail server 
+    mailserver|m*      create mail server
     postgres|p*        create postgres server
     iom|i*             create iom server
     cluster|c*         create all resources
 
-Run '$ME create RESOURCE --help|-h' for more information
+Run '$ME [CONFIG-FILE] create RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -136,22 +174,27 @@ help-create-storage() {
 create a local Docker volume for persistent storage of DB data
 
 SYNOPSIS
-    $ME create storage
+    $ME [CONFIG-FILE] create storage
 
 OVERVIEW
-    Creates a Docker volume, depending on configuration variable 
-    KEEP_DATABASE_DATA. If you want to use persistent storage, the Docker volume
-    has to be created before starting postgres.
+    Creates a Docker volume, depending on the configuration variable
+    KEEP_DATABASE_DATA. If you want to use persistent storage, the Docker
+    volume has to be created before starting postgres.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    KEEP_DATABASE_DATA - only when set to true, the Docker volume will be 
-      created. 
+    KEEP_DATABASE_DATA - only when set to true, the Docker volume will be
+      created.
     ID - name of Docker volume will be derived from ID
 
 SEE
-    $ME delete storage
-    $ME info   storage
-    $ME create postgres
+    $ME [CONFIG-FILE] delete storage
+    $ME [CONFIG-FILE] info   storage
+    $ME [CONFIG-FILE] create postgres
 
 BACKGROUND
     # executed only, if KEEP_DATABASE_DATA is true
@@ -163,20 +206,25 @@ EOF
 help-create-namespace() {
     ME=$(basename "$0")
     cat <<EOF
-creates a Kubernetes namespace, which will be used for all other resources
+creates a Kubernetes namespace which will be used for all other resources
 
 SYNOPSIS
-    $ME create namespace
+    $ME [CONFIG-FILE] create namespace
 
 OVERVIEW
-    Kubernetes namespaces are isolating different devenv4iom instances from
-    each other. 
+    Kubernetes namespaces isolate different devenv4iom instances from
+    each other.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the name of namespace is derived from the ID of current configuration.
+    ID - the name of namespace is derived from the ID of the current configuration.
 
 SEE
-    $ME delete namespace
+    $ME [CONFIG-FILE] delete namespace
 
 BACKGROUND
     kubectl create namespace $EnvId
@@ -187,27 +235,32 @@ EOF
 help-create-mailserver() {
     ME=$(basename "$0")
     cat <<EOF
-creates a mail-server, that is used by IOM to send mails
+creates a mail server that is used by IOM to send mails
 
 SYNOPSIS
-    $ME create mailserver
+    $ME [CONFIG-FILE] create mailserver
 
 OVERVIEW
-    Creates a mail-server and according service.
+    Creates a mail server and according service.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    MAILHOG_IMAGE - defines the image of the mailserver to be used.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
-    ID - the namespace to used is derived from ID
+    MAILHOG_IMAGE - defines the image of the mailserver to be used
+    IMAGE_PULL_POLICY - defines when to pull the image from origin
+    ID - the namespace to be used is derived from ID
 
 SEE
-    $ME delete mailserver
-    $ME info pods
+    $ME [CONFIG-FILE] delete mailserver
+    $ME [CONFIG-FILE] info pods
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/mailhog.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/mailhog.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -219,39 +272,44 @@ help-create-postgres() {
 creates postgres server for use by IOM
 
 SYNOPSIS
-    $ME create postgres
+    $ME [CONFIG-FILE] create postgres
 
 OVERVIEW
-    Creates postgres-server and according service. If KEEP_DATABASE_DATA is
-    set to true, the Docker volume has to be created in advance. 
+    Creates Postgres server and according service. If KEEP_DATABASE_DATA is
+    set to true, the Docker volume has to be created in advance.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     DOCKER_DB_IMAGE - docker image to be used
-    PGHOST - if set, indicates the usage of an external postgres server. Command
-      will not create a postgres server in this case.
-    KEEP_DATABASE_DATA - if set to true, command links the local Docker volume
-      to postgres store.
+    PGHOST - if set, it indicates the usage of an external Postgres server.
+      The command will not create a Postgres server in this case.
+    KEEP_DATABASE_DATA - if set to true, the command links the local Docker volume
+      to the Postgres store.
     IMAGE_PULL_POLICY - defines when to pull the image from origin
-    ID - the namespace, where postgres-server and -service are created, is
-      derived from ID of current configuration.
+    ID - the namespace where Postgres server and service are created. It is
+      derived from the ID of the current configuration.
 
 SEE
-    $ME delete postgres
-    $ME create storage
-    $ME info pods
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] info pods
 
 BACKGROUND
     # Link Docker volume to database storage (only if KEEP_DATABASE_DATA == true)
     $KeepDatabaseSh MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-    $KeepDatabaseSh   "${PROJECT_PATH}/scripts/template_engine.sh" \\
-    $KeepDatabaseSh   "${PROJECT_PATH}/templates/postgres-storage.yml.template" \\
-    $KeepDatabaseSh   "${ENV_DIR}/${CONFIG_FILE}" | 
+    $KeepDatabaseSh   "$PROJECT_PATH/bin/template_engine.sh" \\
+    $KeepDatabaseSh   "$PROJECT_PATH/templates/postgres-storage.yml.template" \\
+    $KeepDatabaseSh   "$CONFIG_FILE" |
     $KeepDatabaseSh   kubectl apply --namespace $EnvId -f -
 
-    # create postgres
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/postgres.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    # create Postgres
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/postgres.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -263,25 +321,30 @@ help-create-iom() {
 creates IOM server
 
 SYNOPSIS
-    $ME create iom
+    $ME [CONFIG-FILE] create iom
 
 OVERVIEW
-    Creates iom-server and according service.
+    Creates IOM server and according service.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
-    IOM_DBINIT_IMAGE - defines the dbinit image to be used
-    IOM_APP_IMAGE - defines the iom application image to be used
+    IOM_CONFIG_IMAGE - defines the config image to be used
+    IOM_APP_IMAGE - defines the IOM application image to be used
     IMAGE_PULL_POLICY - defines when to pull images from origin
 
 SEE
-    $ME delete iom
-    $ME info pods
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] info pods
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/iom.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/iom.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 EOF
 }
@@ -290,22 +353,27 @@ EOF
 help-create-cluster() {
     ME=$(basename "$0")
     cat <<EOF
-creates all resources, required by IOM
+creates all resources required by IOM
 
 SYNOPSIS
-    $ME create cluster
+    $ME [CONFIG-FILE] create cluster
 
 OVERVIEW
-    Creates all resources to run IOM in devenv4iom (storage, namespace, 
-    postgres, mailserver, iom). Finally, this is a shorcut for a couple of
+    Creates all resources to run IOM in devenv4iom (storage, namespace,
+    Postgres, mail server, IOM). Finally, this is a shorcut for a couple of
     different commands only.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 SEE
-    $ME create storage
-    $ME create namespace
-    $ME create postgres
-    $ME create mailserver
-    $ME create iom
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] create namespace
+    $ME [CONFIG-FILE] create postgres
+    $ME [CONFIG-FILE] create mailserver
+    $ME [CONFIG-FILE] create iom
 EOF
 }
 
@@ -316,18 +384,23 @@ help-delete() {
 delete Kubernetes/Docker resource
 
 SYNOPSIS
-    $ME delete RESOURCE
+    $ME [CONFIG-FILE] delete RESOURCE
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     storage|s*         delete persistant local Docker storage
-    namespace|n*       delete kubernetes namespace including all resources 
+    namespace|n*       delete Kubernetes namespace including all resources
                        belonging to this namespace
     mailserver|m*      delete mail server
-    postgres|p*        delete postgres server
-    iom|i*             delete iom server
+    postgres|p*        delete Postgres server
+    iom|i*             delete IOM server
     cluster|c*         delete all resources, except storage
 
-Run '$ME delete RESOURCE --help|-h' for more information
+Run '$ME [CONFIG-FILE] delete RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -335,22 +408,27 @@ EOF
 help-delete-storage() {
     ME=$(basename "$0")
     cat <<EOF
-deletes local Docker volume, that is used for persistent storage of DB data
+deletes local Docker volume that is used for persistent storage of DB data
 
 SYNOPSIS
-    $ME delete storage
+    $ME [CONFIG-FILE] delete storage
 
 OVERVIEW
     Deletes the Docker volume used for persistent storage of database data.
-    Before deleting storage, you have to delete postgres.
+    Before deleting storage, you have to delete Postgres.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - name of Docker volume will be derived from ID.
+    ID - the name of the Docker volume will be derived from the ID.
 
 SEE
-    $ME create storage
-    $ME info   storage
-    $ME delete postgres
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] info   storage
+    $ME [CONFIG-FILE] delete postgres
 
 BACKGROUND
     docker volume rm $EnvId-pgdata
@@ -361,21 +439,26 @@ EOF
 help-delete-namespace() {
     ME=$(basename "$0")
     cat <<EOF
-deletes the Kubernetes namespace, used be current IOM installation
+deletes the Kubernetes namespace used by the current IOM installation
 
 SYNOPSIS
-    $ME delete namespace
+    $ME [CONFIG-FILE] delete namespace
 
 OVERVIEW
     When deleting the namespace, all resources of this namespace are deleted
-    too. These are iom, posgres and mailserver, but not the Docker volume
+    too. These are IOM, Posgres and mail server, but not the Docker volume
     used for persistent storage of database data.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    ID - the name of namespace is derived from the ID of current configuration.
+    ID - the name of the namespace is derived from the ID of the current configuration.
 
 SEE
-    $ME create namespace
+    $ME [CONFIG-FILE] create namespace
 
 BACKGROUND
     kubectl delete namespace ${EnvId}
@@ -386,25 +469,30 @@ EOF
 help-delete-mailserver() {
     ME=$(basename "$0")
     cat <<EOF
-deletes mail-server, that is used by IOM to send mails
+deletes mail server that is used by IOM to send mails
 
 SYNOPSIS
-    $ME delete mailserver
+    $ME [CONFIG-FILE] delete mailserver
 
 OVERVIEW
-    Deletes the mail-server and the according service.
+    Deletes the mail server and the according service.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the namespace, where mail-server is deleted, is derived from ID
+    ID - the namespace where the mail server is deleted is derived from ID
 
 SEE
-    $ME create mailserver
-    $ME info   mailserver
+    $ME [CONFIG-FILE] create mailserver
+    $ME [CONFIG-FILE] info   mailserver
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/mailhog.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/mailhog.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -413,34 +501,39 @@ EOF
 help-delete-postgres() {
     ME=$(basename "$0")
     cat <<EOF
-deletes postgres server used by IOM
+deletes Postgres server used by IOM
 
 SYNOPSIS
-    $ME delete postgres
+    $ME [CONFIG-FILE] delete postgres
 
 OVERVIEW
-    Deletes postgres-server and according service.
+    Deletes Postgres server and according service.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    ID - the namespace, where postgres is deleted from, is derived from ID
+    ID - the namespace where Postgres is deleted from is derived from ID
 
 SEE
-    $ME create postgres
-    $ME info   postgres
-    $ME info   pods
+    $ME [CONFIG-FILE] create postgres
+    $ME [CONFIG-FILE] info   postgres
+    $ME [CONFIG-FILE] info   pods
 
 BACKGROUND
     # Stop/Remove postgres database
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/postgres.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/postgres.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 
     # Unlink Docker volume from database storage
     MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-      "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/postgres-storage.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+      "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/postgres-storage.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -452,23 +545,28 @@ help-delete-iom() {
 deletes IOM
 
 SYNOPSIS
-    $ME delete iom
+    $ME [CONFIG-FILE] delete iom
 
 OVERVIEW
     Deletes IOM and the according service.
 
+CONFIG-FILE
+    Name of configuration file to be used. If not set, the environment variable
+    DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    ID - the namespace, where iom is deleted from, is derived from ID
+    ID - the namespace where IOM is deleted from is derived from ID
 
 SEE
-    $ME create iom
-    $ME info   iom
-    $ME info   pods
+    $ME [CONFIG-FILE] create iom
+    $ME [CONFIG-FILE] info   iom
+    $ME [CONFIG-FILE] info   pods
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/iom.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/iom.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -480,21 +578,27 @@ help-delete-cluster() {
 deletes all resources used by IOM, except storage
 
 SYNOPSIS
-    $ME delete cluster
+    $ME [CONFIG-FILE] delete cluster
 
 OVERVIEW
-    Deletes all resources used by IOM, except storage. These are iom, postgres,
-    mailserver, postgres, namespace. Finally, this is a shortcut for a couple of
+    Deletes all resources used by IOM, except storage. These are IOM, Postgres,
+    mail server, namespace. Finally, this is a shortcut for a couple of
     different commands only.
     Storage will not be deleted, as it is the basic idea of persistent storage,
     to survive the deletion of postgres.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 SEE
-    $ME delete iom
-    $ME delete postgres
-    $ME delete mailserver
-    $ME delete postgres
-    $ME delete storage
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] delete mailserver
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] delete namespace
+    $ME [CONFIG-FILE] delete storage
 EOF
 }
 
@@ -505,14 +609,19 @@ help-wait() {
 wait for Kubernetes resource to get ready
 
 SYNOPSIS
-    $ME wait RESOURCE
+    $ME [CONFIG-FILE] wait RESOURCE
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     mailserver|m*      wait for mail server
     postgres|p*        wait for postgres server
     iom|i*             wait for iom server
 
-Run '$ME wait RESOURCE --help|-h' for more information
+Run '$ME [CONFIG-FILE] wait RESOURCE --help|-h' for more information
 EOF
 }
 
@@ -523,15 +632,20 @@ help-wait-mailserver() {
 wait for mailserver to get ready
 
 SYNOPSIS
-    $ME wait mailserver [TIMEOUT]
+    $ME [CONFIG-FILE] wait mailserver [TIMEOUT]
 
 ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    Waits for the mailserver pod to get ready. The "wait mailserver" command
+    Waits for the mail server pod to get ready. The "wait mailserver" command
     is intended to be used in scripts, which are relying on the availability of
     the mail server.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -539,18 +653,23 @@ EOF
 help-wait-postgres() {
     ME=$(basename "$1")
     cat <<EOF
-wait for postgres to get ready
+wait for Postgres to get ready
 
 SYNOPSIS
-    $ME wait postgres [TIMEOUT]
+    $ME [CONFIG-FILE] wait postgres [TIMEOUT]
 
 ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    Waits for the postgres pod to get ready. The "wait postgres" command
-    is intended to be used in scripts, which are relying on the availability of
+    Waits for the Postgres pod to get ready. The "wait postgres" command
+    is intended to be used in scripts, which rely on the availability of
     the postgres server.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -558,17 +677,22 @@ EOF
 help-wait-iom() {
     ME=$(basename "$1")
     cat <<EOF
-wait for iom to get ready
+wait for IOM to get ready
 
 SYNOPSIS
-    $ME wait iom [TIMEOUT]
+    $ME [CONFIG-FILE] wait iom [TIMEOUT]
 
 ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    Waits for the iom pod to get ready. The "wait iom" command is intended to be
-    used in scripts, which are relying on the availability of the iom server.
+    Waits for the IOM pod to get ready. The "wait iom" command is intended to be
+    used in scripts, which rely on the availability of the IOM server.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 EOF
 }
 
@@ -579,18 +703,23 @@ help-apply() {
 apply customization
 
 SYNOPSIS
-    $ME apply RESOURCE
+    $ME [CONFIG-FILE] apply RESOURCE
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
     deployment|de*     apply custom deployment artifacts
-    mail-templates|m*  apply custom mail-templates
-    xsl-templates|x*   apply custom xsl-template
-    sql-scripts|sql-s* apply custom sql-scripts
-    sql-config|sql-c*  apply custom sql-config
-    json-config|j*     apply custom json-config
-    dbmigrate|db*      apply custom db-migration
+    mail-templates|m*  apply custom mail templates
+    xsl-templates|x*   apply custom XSL template
+    sql-scripts|sql-s* apply custom SQL scripts
+    sql-config|sql-c*  apply custom SQL config
+    json-config|j*     apply custom JSON config
+    dbmigrate|db*      apply custom DB migration
 
-Run '$ME apply RESOURCE --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] apply RESOURCE --help|-h' for more information on a command.
 EOF
 }
 
@@ -601,42 +730,47 @@ help-apply-deployment() {
 deploys custom built artifacts
 
 SYNOPSIS
-    $ME apply deployment [PATTERN]
+    $ME [CONFIG-FILE] apply deployment [PATTERN]
 
 ARGUMENTS
     PATTERN - optional. Pattern is simply a regex, which will be matched
-      againts deployment artifacts. If pattern is set, only artifacts matching
+      against deployment artifacts. If pattern is set, only artifacts matching
       the pattern will be redeployed in forced mode.
       If pattern is not set, all artifacts will be undeployed and deployed
       again.
 
 OVERVIEW
-    The Developer VM has an extended search-path for deployments. The scripts 
-    doing the deployment are looking first at directory /opt/oms/application-dev,
+    The Developer VM has an extended search path for deployments. The scripts
+    doing the deployment look first at directory /opt/oms/application-dev,
     instead of the standard directory /opt/oms/application, which contains all
-    the standard deployment artifacts delivered by the Docker image. Hence, if 
-    an artifact was found in /opt/oms/application-dev, the according standard 
+    the standard deployment artifacts delivered by the Docker image. Hence, if
+    an artifact was found in /opt/oms/application-dev, the according standard
     artifact will be ignored.
-    All you have to do, is to mount a directory containing your custom built 
+    All you have to do is to mount a directory containing your custom built
     artifacts at /opt/oms/application-dev. To do so, you have to:
-    - set variable CUSTOM_APPS_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop.
-    - After changing CUSTOM_APPS_DIR, the IOM needs to be restarted.
-    Once you have configured your developer VM this way, your custom built 
+    - Set variable CUSTOM_APPS_DIR in your configuration file and make sure,
+      that the directory is shared in Docker Desktop.
+    - After changing CUSTOM_APPS_DIR, IOM needs to be restarted.
+    Once you have configured your developer VM this way, your custom built
     artifacts are deployed right at the start of IOM.
 
     Alternatively you can use Wildfly Console for deployments too.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
     CUSTOM_APPS_DIR - directory, where your custom built artifacts are located.
       Make sure, the directory is shared with Docker Desktop.
-    ID - the namespace used, is derived from ID
+    ID - the namespace used is derived from ID
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
-    # redeploy omt selectively 
+    # redeploy omt selectively
     POD_NAME=\$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
     kubectl exec \$POD_NAME --namespace $EnvId -- bash -ic redeploy omt
 
@@ -650,33 +784,38 @@ EOF
 help-apply-mail-templates() {
     ME=$(basename "$0")
     cat <<EOF
-rolls out custom mail-templates
+rolls out custom mail templates
 
 SYNOPSIS
-  $ME apply mail-templates
+  $ME [CONFIG-FILE] apply mail-templates
 
 OVERVIEW
     The developer VM contains an additional directory /opt/oms/templates-dev,
-    which will be used as mount point for custom mail templates. Part of the 
+    which will be used as mount point for custom mail templates. Part of the
     developer VM is also the script apply-templates, which copies the templates
     from /opt/oms/templates-dev to the standard directory /opt/oms/var/templates.
     If you want to roll out custom mail templates in a running developer VM, you
     have to:
-    - set variable CUSTOM_TEMPLATES_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
-    - After changing CUSTOM_TEMPLATES_DIR, the IOM needs to be restarted.
-    If CUSTOM_TEMPLATES_DIR is configured, the templates are also copied when 
+    - Set variable CUSTOM_TEMPLATES_DIR in your configuration file and make sure
+      that the directory is shared in Docker Desktop.
+    - After changing CUSTOM_TEMPLATES_DIR, IOM needs to be restarted.
+    If CUSTOM_TEMPLATES_DIR is configured, the templates are also copied when
     starting IOM.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
     CUSTOM_TEMPLATES_DIR - directory, where your custom mail templates are
       located. Make sure, the directory is shared with Docker Desktop.
-    ID - the namespace used, is derived from ID
+    ID - the namespace used is derived from ID
 
 SEE
-    $ME delete iom
-    $ME create iom
-    $ME info   iom
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] create iom
+    $ME [CONFIG-FILE] info   iom
 
 BACKGROUND
     POD_NAME=\$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
@@ -688,32 +827,37 @@ EOF
 help-apply-xsl-templates() {
     ME=$(basename "$0")
     cat <<EOF
-rolls out custom xsl-templates
+rolls out custom XSL templates
 
 SYNOPSIS
-  $ME apply xsl-templates
+  $ME [CONFIG-FILE] apply xsl-templates
 
 OVERVIEW
     The developer VM contains a directory /opt/oms/xslt-dev, which will be used
-    as mount point for custom xsl templates. Part of the developer VM is also
+    as mount point for custom XSL templates. Part of the developer VM is also
     the script apply-xslt, which copies the templates from /opt/oms/xslt-dev to
     the standard directory /opt/oms/var/xslt. If you want to roll out custom xsl
     templates in a running developer VM, you have to:
-    - set variable CUSTOM_XSLT_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop.
+    - Set variable CUSTOM_XSLT_DIR in your configuration file and make sure, that
+      the directory is shared in Docker Desktop.
     - After changing CUSTOM_XSLT_DIR, IOM has to be restarted.
-    If CUSTOM_XSLT_DIR is configured, the templates are also copied when 
+    If CUSTOM_XSLT_DIR is configured, the templates are also copied when
     starting IOM.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    CUSTOM_XSLT_DIR - directory, where your custom xsl templates are located.
+    CUSTOM_XSLT_DIR - directory, where your custom XSL templates are located.
       Make sure, the directory is shared with Docker Desktop.
-    ID - the namespace used, is derived from ID.
+    ID - the namespace used is derived from ID.
 
 SEE
-    $ME delete iom
-    $ME create iom
-    $ME info   iom
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] create iom
+    $ME [CONFIG-FILE] info   iom
 
 BACKGROUND
     POD_NAME=\$(kubectl get pods --namespace $EnvId -l app=iom -o jsonpath="{.items[0].metadata.name}")
@@ -725,58 +869,63 @@ EOF
 help-apply-sql-scripts() {
     ME=$(basename "$0")
     cat <<EOF
-applies sql-files from passed directory or single sql-file
+applies SQL files from passed directory or single SQL file
 
 SYNOPSIS
-    $ME apply sql-scripts DIRECTORY|FILE [TIMEOUT]
+    $ME [CONFIG-FILE] apply sql-scripts DIRECTORY|FILE [TIMEOUT]
 
 ARGUMENTS
-    DIRECTORY|FILE has to be shared in Docker Desktop!
+    DIRECTORY|FILE has to be shared in Docker Desktop.
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    The docker-image defined by IOM_DBINIT_IMAGE contains all the necessary 
-    tools to apply sql-scripts to the IOM database. Devenv4iom enables you to
-    use these tools as easy as possible. Therefore it provides a Kubernetes job
-    (apply-sql-job), that applies sql-file(s) to the IOM database.
+    The docker-image defined by IOM_CONFIG_IMAGE contains all the necessary
+    tools to apply SQL scripts to the IOM database. Devenv4iom enables you to
+    use these tools as easily as possible. Therefore it provides a Kubernetes
+    job (apply-sql-job), that applies SQL file(s) to the IOM database.
 
-    There are two different modes, that can be used.
+    There are two different modes that can be used.
 
-    If a directory is passed to the job, all sql-files found in this directory 
-    are processed in numerical order, starting with the smallest one. 
-    Sub-directories are not scanned for sql-files.
+    If a directory is passed to the job, all SQL files found in this directory
+    are processed in numerical order, starting with the smallest one.
+    Sub-directories are not scanned for SQL files.
 
     If a file is passed to the job, only this file will be executed.
 
-    The logs are printed in json format. Verbosity can be controlled by 
+    The logs are printed in JSON format. Verbosity can be controlled by
     configuration variable OMS_LOGLEVEL_SCRIPTS.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    ID - the namespace used, is derived from ID
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying the sql-files.
+    ID - the namespace used is derived from ID
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying the SQL files.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
-    # define directory with sql-file (has to be an absolute path)
+    # define directory with SQL file (has to be an absolute path)
     export SQL_SRC=<DIRECTORY>
-    
+
     # start apply-sql-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-      "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-      "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f -
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/apply-sql.yml.template" \\
+      "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f -
 
     # get logs of job
-    POD_NAME=\$(kubectl get pods --namespace $EnvId \
-      -l job-name=apply-sql-job \
+    POD_NAME=\$(kubectl get pods --namespace $EnvId \\
+      -l job-name=apply-sql-job \\
       -o jsonpath="{.items[0].metadata.name}")
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete apply-sql-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-      "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-      "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f -
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/apply-sql.yml.template" \\
+      "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f -
 EOF
 }
 
@@ -787,43 +936,48 @@ help-apply-sql-config() {
 applies custom sql configuration
 
 SYNOPSIS
-    $ME apply sql-config
+    $ME [CONFIG-FILE] apply sql-config
 
 OVERVIEW
-    Scripts for sql-configuration are simple sql-scripts, which can be easily
-    developed and tested with the help of the developer task 
-    "apply sql-scripts". But sql-configuration in CaaS project context is more
-    complex. E.g. the scripts are executed depending on the currently activated
-    environment. In order to enable you to test sql configuration scripts
-    exactly in the same context as in real IOM installations, the developer task
-    "apply sql-config" is provided.
-    To be able to roll out complete sql configurations, you have to:
-    - set variable CUSTOM_SQLCONF_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
-    - set variable CAAS_ENV_NAME in your config file to the environment you want
-      to test.
+    Scripts for SQL configuration are simple SQL scripts, which can be easily
+    developed and tested using the developer task "apply sql-scripts".
+    However, SQL configuration in a CaaS project context is more complex. E.g.
+    the scripts are executed depending on the currently activated environment.
+    In order to enable you to test SQL configuration scripts exactly in the same
+    context as in real IOM installations, the developer task "apply sql-config"
+    is provided.
+    To be able to roll out complete SQL configurations, you have to:
+    - Set variable CUSTOM_SQLCONF_DIR in your configuration file and make sure,
+      that the directory is shared in Docker Desktop.
+    - Set variable CAAS_ENV_NAME in your configuratoin file to the environment
+      you want to test.
     You should have an eye on the logs created by the configuration process.
-    These logs are printed in json format. Verbosity can be controlled by
+    These logs are printed in JSON format. Verbosity can be controlled by the
     configuration variable OMS_LOGLEVEL_SCRIPTS.
-    If CUSTOM_SQLCONFIG_DIR is configured, the custom sql configuration is also
+    If CUSTOM_SQLCONFIG_DIR is configured, the custom SQL configuration is also
     applied when starting IOM.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    CUSTOM_SQLCONF_DIR - directory, where your custom sql-configuration is
+    CUSTOM_SQLCONF_DIR - directory where your custom SQL configuration is
       located.
-    CAAS_ENV_NAME - the name of environment controls, which parts of sql-
-      configuration will be applied and which not.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying sql-
+    CAAS_ENV_NAME - environment name; controls which parts of the SQL
+    configuration will be applied and which not.
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying SQL
       configuration.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # start sqlconfig-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/sqlconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/sqlconfig.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -831,9 +985,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete sqlconfig-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/sqlconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/sqlconfig.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -842,44 +996,49 @@ EOF
 help-apply-json-config() {
     ME=$(basename "$0")
     cat <<EOF
-applies custom json configuration
+applies custom JSON configuration
 
 SYNOPSIS
-    $ME apply json-config
+    $ME [CONFIG-FILE] apply json-config
 
 OVERVIEW
-    Json configuration of IOM is not publicly available. There exists no task to
-    support development of single json configuration scripts. Additionally the
-    current implementation of json configuration does not use the concept of
+    JSON configuration of IOM is not publicly available. There is no task to
+    support development of single JSON configuration scripts. Additionally the
+    current implementation of JSON configuration does not use the concept of
     environments (configuration variable CAAS_ENV_NAME). The current developer
-    task "apply json-config" is able to apply complete json configurations
+    task "apply json-config" allows to apply complete JSON configurations
     exactly in the same context as in a real IOM installation.
-    To be able to roll out json configurations, you have to:
-    - set variable CUSTOM_JSONCONF_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
+    To be able to roll out JSON configurations, you have to:
+    - Set variable CUSTOM_JSONCONF_DIR in your configuration file and make sure,
+      that the directory is shared in Docker Desktop.
     You should have an eye on the logs created by the configuration process.
-    These logs are printed in json format. Verbosity can be controlled by
+    These logs are printed in JSON format. Verbosity can be controlled by
     configuration variable OMS_LOGLEVEL_SCRIPTS.
-    If CUSTOM_JSONCONFIG_DIR is configured, the custom json configuration is
+    If CUSTOM_JSONCONFIG_DIR is configured, the custom JSON configuration is
     also applied when starting IOM.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    CUSTOM_JSONCONF_DIR - directory, where your custom json-confguration is
+    CUSTOM_JSONCONF_DIR - directory where your custom JSON confguration is
       located.
-    IOM_DBINIT_IMAGE - defines the image to be used when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying json-
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
       configuration.
-    ID - the namespace used, is derived from ID.
+    ID - the namespace used is derived from ID.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # start jsonconfig-job
-    "${PROJECT_DIR}/scripts/template_engine.sh" \\
+    "${PROJECT_DIR}/bin/template_engine.sh" \\
       "${PROJECT_DIR}/templates/jsonconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -887,9 +1046,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete jsonconfig-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/jsonconfig.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/jsonconfig.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -901,49 +1060,55 @@ help-apply-dbmigrate() {
 applies custom dbmigrate scripts
 
 SYNOPSIS
-    $ME apply dbmigrate
+    $ME [CONFIG-FILE] apply dbmigrate
 
 OVERVIEW
-    To develop and test a single or a couple of sql-scripts (which can be 
+    To develop and test a single or a couple of SQL scripts (which can be
     migration scripts too), the developer task "apply sql-scripts" is the first
-    choice. But at some point of development, the dbmigrate process as a whole
-    has to be tested too. The dbmigrate process is somewhat more complex than
-    simply applying sql-scripts from a directory. It first loads stored
-    procedures from directory stored_procedures and then it applies the
-    migrations scripts found in directory migrations. The order of execution is
-    controlled by the names of sub-directories within migrations and the naming
-    of the migration scripts itself (numerically sorted, smallest first).
+    choice. However, at some point of development, the dbmigrate process as a
+    whole has to be tested too. The dbmigrate process is somewhat more complex
+    than simply applying SQL scripts from a directory. It first loads stored
+    procedures from the stored_procedures directory and then it applies the
+    migrations scripts found in the migrations directory. The order of execution
+    is controlled by the names of sub-directories within migrations and the
+    naming of the migration scripts itself (numerically sorted, smallest first).
 
-    The IOM_DBINIT_IMAGE contains a shell script, that is applying the migration
-    scripts, which are delivered along with the docker image. The developer task
+    The IOM_CONFIG_IMAGE contains a shell script, that applies the migration
+    scripts which are delivered along with the Docker image. The developer task
     "apply dbmigrate" enables you to use this dbmigrate script along with the
     migration scripts located at CUSTOM_DBMIGRATE_DIR. Hence, if you want to
     roll out custom dbmigrate scripts, you have to:
-    - set variable CUSTOM_DBMIGRATE_DIR in your config file and make sure, that
-      the directory is shared in Docker Desktop.
+    - Set the variable CUSTOM_DBMIGRATE_DIR in your configuration file and make
+      sure, that the directory is shared in Docker Desktop.
     You can and should have an eye on the logs created by the migration process.
-    These logs are printed in json format. Verbosity can be controlled by
+    These logs are printed in JSON format. Verbosity can be controlled by the
     configuration variable OMS_LOGLEVEL_SCRIPTS.
     If CUSTOM_DBMIGRATE_DIR is configured, the custom dbmigrate scripts are also
     applied when starting IOM.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    CUSTOM_DBMIGRATE_DIR - directory, where your custom dbmigrate scripts are
+    CUSTOM_DBMIGRATE_DIR - directory where your custom dbmigrate scripts are
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
-    IOM_DBINIT_IMAGE - defines the image to be used when executing the job.
-    IMAGE_PULL_POLICY - defines, when to pull the image from origin.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script doing the db-migration.
-    ID - the namespace used, is derived from ID.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
+    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
+      the db-migration.
+    ID - the namespace used is derived from ID.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 
 BACKGROUND
     # start dbmigrate-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dbmigrate.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dbmigrate.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -951,9 +1116,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete dbmigrate-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dbmigrate.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dbmigrate.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -965,13 +1130,18 @@ help-dump() {
 handle dump
 
 SYNOPSIS
-    $ME dump OPERATION
+    $ME [CONFIG-FILE] dump OPERATION
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 OPERATION
     create|c*          create dump
     load|l*            load dump
 
-Run '$ME dump OPERATION --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] dump OPERATION --help|-h' for more information on a command.
 EOF
 }
 
@@ -982,40 +1152,45 @@ help-dump-create() {
 creates a dump of current database
 
 SYNOPSIS
-    $ME dump create
+    $ME [CONFIG-FILE] dump create
 
 OVERVIEW
     Devenv4iom provides a job to create a dump of the IOM database. This job
-    uses variable CUSTOM_DUMPS_DIR. It writes the dumps to this directory. The
-    created dumps will use the following naming pattern:
+    uses the variable CUSTOM_DUMPS_DIR. It writes the dumps to this directory.
+    The created dumps uses the following naming pattern:
     OmsDump.year-month-day.hour.minute.second-hostname.sql.gz. To create dumps,
     you have to:
-    - set variable CUSTOM_DUMPS_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop.
-    You should check the output of the dump-job. The logs of the job a printed
-    in json format. Verbosity can be controlled by the configuration variable 
+    - Set variable CUSTOM_DUMPS_DIR in your configuration file and make sure
+      that the directory is shared in Docker Desktop.
+    You should check the output of the dump-job. The logs of the job are printed
+    in JSON format. Verbosity can be controlled by the configuration variable
     OMS_LOGLEVEL_SCRIPTS.
-    
-    If CUSTOM_DUMPS_DIR is configured, the newest custom dump will be loaded,
+
+    If CUSTOM_DUMPS_DIR is configured, the newest custom dump will be loaded
     when starting IOM with an empty database (according to the load-rules that
     can be found in overview of '$ME dump load'.
 
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
 CONFIG
-    CUSTOM_DUMPS_DIR - directory, where custom dumps will be stored. If this
+    CUSTOM_DUMPS_DIR - directory where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
-    IOM_DBINIT_IMAGE - defines the image to be used, when executing the job.
-    IMAGE_PULL_POLICY - defines, when to pull the image from origin.
-    OMS_LOGLEVEL_SCRIPTS - controls verbosity of script creating the dump.
-    ID - the namespace used, is derived from ID.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
+    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
+    ID - the namespace used is derived from ID.
 
 SEE
-    $ME dump load
+    $ME [CONFIG-FILE] dump load
 
 BACKGROUND
     # start dump-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dump.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dump.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl apply --namespace $EnvId -f -
 
     # get logs of job
@@ -1023,9 +1198,9 @@ BACKGROUND
     kubectl logs \$POD_NAME --namespace $EnvId
 
     # delete dump-job
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/dump.yml.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" | 
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/dump.yml.template" \\
+      "$CONFIG_FILE" |
       kubectl delete --namespace $EnvId -f -
 EOF
 }
@@ -1037,23 +1212,23 @@ help-dump-load() {
 loads a custom dump into database
 
 SYNOPSIS
-    $ME dump load
+    $ME [CONFIG-FILE] dump load
 
 OVERVIEW
-    When starting IOM and the conneted database is empty, the dbinit container
-    is loading the initial dump. Devenv4iom gives you the possibility to load a
-    custom dump during this process. This custom dump will be treated exactly as
-    any other dump, which is part of the docker image. If you want to load a
-    custom dump, you have to:
-    - set variable CUSTOM_DUMPS_DIR in your config file and make sure, that the
-      directory is shared in Docker Desktop. The dump you want to load, has to
-      be located within this directory. To be recognized as a dump, it has to
-      have the extension .sql.gz. If the directory contains more than one
-      dump-file, the script of the dbinit container selects the one, which's
-      name is numerically largest. You can check this with following command:
+    When starting IOM and the conneted database is empty, the config container
+    loads the initial dump. Devenv4iom allows to load a custom dump during this
+    process. This custom dump will be treated exactly as any other dump which
+    is part of the docker image.
+    If you want to load a custom dump, you have to:
+    - Set variable CUSTOM_DUMPS_DIR in your configuration file and make sure
+      that the directory is shared in Docker Desktop. The dump you want to load
+      has to be located within this directory. To be recognized as a dump, it
+      has to have the extension .sql.gz. If the directory contains more than one
+      dump file, the script of the config container selects the one with the
+      largest numerical name. You can check this with following command:
       ls *.sql.gz | sort -nr | head -n 1
 
-    The custom dump can be loaded only, if the database is empty. The current
+    The custom dump can only be loaded if the database is empty. The current
     command executes all the necessary steps to restart IOM with an empty
     database:
     - delete iom
@@ -1062,197 +1237,166 @@ OVERVIEW
     - create storage
     - create postgres
     - create iom
-    You should inspect the logs created when running the dbinit container. Was
-    really the dump loaded, you think it was? The logs of dbinit process are
-    printed in json format. Verbosity can be controlled by configuration
+    You should inspect the logs created when running the config container to
+    know if the dump was actually loaded. The logs of the config process are
+    printed in JSON format. Verbosity can be controlled by configuration
     variable OMS_LOGLEVEL_SCRIPTS.
 
-    This command works only, if an internal PostgreSQL-server is used.
-    Devenv4iom is not able to control an external PostgreSQL server!
+    This command works only if an internal PostgreSQL server is used.
+    Devenv4iom is not able to control an external PostgreSQL server.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    CUSTOM_DUMPS_DIR - the directory, where custom dumps has to be located.
+    CUSTOM_DUMPS_DIR - the directory in which custom dumps must be located.
 
-    As 'dump load' is a shortcut for a couple of others commands only, you 
-    should find out more about CONFIG, by requesting help of these commands.
+    As 'dump load' is only a shortcut for a couple of others commands, you
+    can learn more about CONFIG by requesting help of these commands.
 
 SEE
-    $ME delete iom
-    $ME delete postgres
-    $ME delete storage
-    $ME create storage
-    $ME create postgres
-    $ME create iom
+    $ME [CONFIG-FILE] delete iom
+    $ME [CONFIG-FILE] delete postgres
+    $ME [CONFIG-FILE] delete storage
+    $ME [CONFIG-FILE] create storage
+    $ME [CONFIG-FILE] create postgres
+    $ME [CONFIG-FILE] create iom
 EOF
 }
 
 #-------------------------------------------------------------------------------
-help-update() {
+help-get() {
     ME=$(basename "$0")
     cat <<EOF
-update devenv4iom specific resource
+writes devenv4iom specific resource to stdout
 
 SYNOPSIS
-    $ME update RESOURCE
+    $ME [CONFIG-FILE] get RESOURCE
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 RESOURCE
-    config|co*         update configuration file
-    doc|d*             update HTML documentation
-    ws-props|w*        update ws.properties
-    geb-props|g*       update geb.properties
-    cli|cl*            update $ME
-    all|a*             update all
+    config|co*         get configuration file
+    ws-props|w*        get ws properties
+    geb-props|g*       get geb properties
+    soap-props|s*      get soap properties
 
-Run '$ME update RESOURCE --help|-h' for more information on a command.
+Run '$ME [CONFIG-FILE] get RESOURCE --help|-h' for more information on a command.
 EOF
 }
 
 #-------------------------------------------------------------------------------
-help-update-config() {
+help-get-config() {
     ME=$(basename "$0")
     cat <<EOF
-updates config file
+writes configuration to stdout
 
 SYNOPSIS
-    $ME update config
+    $ME [CONFIG-FILE] get config
 
 OVERVIEW
-    Devenv4iom provides templates of config files. With every new version new
-    config variables might be introduced or the description of existing config
-    variables might be improved.
-    The 'update config' reads the old configuration and creates a new config
-    file containing the original configuration values. The old config file
-    will persist as a backup copy.
-    Hence, you should run 'update config' after every update of devenv4iom.
+    Devenv4iom provides a template for configuration files. With every new
+    version new configuration variables might be introduced or the description
+    of existing configuration variables might be improved.
+    The 'get config' writes a new configuration to stdout based on the template
+    but containing the original configuration values.
+    Hence, you should run 'get config' after every update of devenv4iom to keep
+    your configuration files up to date.
+    When called without passing a configuration file, a configuration containg
+    default values is written to stdout.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME writes a configuration containing the default values.
 
 SEE
-    "${ENV_DIR}/${CONFIG_FILE}"
+    "$CONFIG_FILE"
 
 BACKGROUND
-    BAK="bak_\$(date '+%Y-%m-%d.%H.%M.%S')"
-    cp "${ENV_DIR}/${CONFIG_FILE}" \\
-       "${ENV_DIR}/${CONFIG_FILE}.\$BAK"
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/config.properties.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}.\$BAK" > \\
-      "${ENV_DIR}/${CONFIG_FILE}"
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/config.properties.template" \\
+      "$CONFIG_FILE"
 EOF
 }
 
 #-------------------------------------------------------------------------------
-help-update-doc() {
+help-get-ws-props() {
     ME=$(basename "$0")
     cat <<EOF
-updates htlm docu
+writes ws properties to stdout
 
 SYNOPSIS
-    $ME update docu
+    $ME [CONFIG-FILE] get ws-props
 
 OVERVIEW
-    Devenv4io provides a template for html documention. Depending on config
-    variables, the html docu provides you a matching documentation.
-    html docu has to updated, after updating devenv4iom.
-
-SEE
-    ${ENV_DIR}/index.html
-
-BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/index.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > \\
-      "${ENV_DIR}/index.html"
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-update-ws-props() {
-    ME=$(basename "$0")
-    cat <<EOF
-updates ws.properties
-
-SYNOPSIS
-    $ME update ws-props
-
-OVERVIEW
-    Updates the ws.properties file, which is required to run ws-tests on the
+    Writes ws properties to stdout. This file is required to run ws-tests on the
     managed IOM installation.
 
-SEE
-    "${ENV_DIR}/ws.properties"
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/ws.properties.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties"
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/ws.properties.template" \\
+      "$CONFIG_FILE"
 EOF
 }
 
 #-------------------------------------------------------------------------------
-help-update-geb-props() {
+help-get-geb-props() {
     ME=$(basename "$0")
     cat <<EOF
-updates geb.properties
+writes geb properties to stdout
 
 SYNOPSIS
-    $ME update geb-props
+    $ME [CONFIG-FILE] get geb-props
 
 OVERVIEW
-    Updates the geb.properties file, which is required to run geb-tests on the
-    managed IOM installation.
+    Writes geb properties to stdout. This file is required to run geb-tests on
+    the managed IOM installation.
 
-SEE
-    "${ENV_DIR}/geb.properties"
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/geb.properties.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties"
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/geb.properties.template" \\
+      "$CONFIG_FILE"
 EOF
 }
 
 #-------------------------------------------------------------------------------
-help-update-cli() {
+help-get-soap-props() {
     ME=$(basename "$0")
     cat <<EOF
-updates $ME
+writes soap properties to stdout
 
 SYNOPSIS
-    $ME update cli
+    $ME [CONFIG-FILE] get soap-props
 
 OVERVIEW
-    $ME is created from a template, which is part of devenv4iom.
-    Hence, after each update of devenv4iom, $ME has to be updated too.
+    Writes soap properties to stdout. This file is required to run soap-tests on
+    the managed IOM installation.
 
-SEE
-    ${ENV_DIR}/$ME
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 BACKGROUND
-    "${PROJECT_PATH}/scripts/template_engine.sh" \\
-      "${PROJECT_PATH}/templates/devenv-cli.sh.template" \\
-      "${ENV_DIR}/${CONFIG_FILE}" > \\
-      "${ENV_DIR}/devenv-cli.sh"
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-update-all() {
-    ME=$(basename "$0")
-    cat <<EOF
-updates all configuration artifacts
-
-SYNOPSIS
-    $ME update all
-
-OVERVIEW
-    Updates all configuration artifacts of current configuration. Shortcut for
-    all other update-tasks.
-
-SEE
-    $ME update config
-    $ME update doc
-    $ME update ws-props
-    $ME update geb-props
-    $ME update cli
+    "$PROJECT_PATH/bin/template_engine.sh" \\
+      "$PROJECT_PATH/templates/soap.properties.template" \\
+      "$CONFIG_FILE"
 EOF
 }
 
@@ -1263,7 +1407,12 @@ help-log() {
 very basic access to log-messages
 
 SYNOPSIS
-    $ME log WHAT
+    $ME [CONFIG-FILE] log WHAT
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 WHAT
     dbaccount|d*       get message logs of dbaccount init-container
@@ -1271,7 +1420,7 @@ WHAT
     app|ap*            get message logs of iom-app container
     access|ac*         get access logs of iom-app container
 
-Run '$ME log WHAT --help|-h' for more information on command
+Run '$ME [CONFIG-FILE] log WHAT --help|-h' for more information on command
 EOF
 }
 
@@ -1282,31 +1431,36 @@ help-log-dbaccount() {
 get messages of dbaccount init-container
 
 SYNOPSIS
-    $ME log dbaccount [LEVEL] [-f]
+    $ME [CONFIG-FILE] log dbaccount [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of
+    LEVEL - optional. If set, it has to be one of
       FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
-      The passed level defines which messages are printed. Only messages of
-      passed level and higher levels will be shown.
-    -f - optional. If set, $ME follows new messages only. If not set, ALL 
+      The specified level defines which messages are printed. Only messages of
+      the specified level and higher levels will be shown.
+    -f - optional. If set, $ME follows new messages only. If not set, ALL
       messages created until now are printed and the process ends after it.
 
 OVERVIEW
-    Requires 'jq' to be installed!
-    Writes messages of dbaccount init-container and filters them according
-    the passed log-level. 
+    Requires 'jq' to be installed.
+    Writes messages of dbaccount init-container and filters them according to
+    the specified log-level.
     Behaves differntly when used inside and outside a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
 
-CONFIG  
-    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
-      that are not written in container, can never be seen.
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
+
+CONFIG
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages
+      that are not written in container can never be seen.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1317,31 +1471,36 @@ help-log-config() {
 get messages of config init-container
 
 SYNOPSYS
-    $ME log config [LEVEL] [-f]
+    $ME [CONFIG-FILE] log config [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of
+    LEVEL - optional. If set, it has to be one of
       FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
-      The passed level defines which messages are printed. Only messages of
-      passed level and higher levels will be shown.
+      The specified level defines which messages are printed. Only messages of
+      specified level and higher levels will be shown.
     -f - optional. If set, $ME follows new messages only. If not set, ALL
       messages created until now are printed and the process ends after it.
 
 OVERVIEW
-    Requires 'jq' to be installed!
+    Requires 'jq' to be installed.
     Writes messages of config init-container and filters them according the
-    passed log-level. 
-    Behaves differently when used inside and outside of a pipe. 
+    specified log level.
+    Behaves differently when used inside and outside of a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages,
-      that are not written in container, can never be seen.
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages
+      that are not written in container can never be seen.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1352,42 +1511,48 @@ help-log-app() {
 get messages of iom application-container
 
 SYNOPSIS
-    $ME log app [LEVEL] [-f]
+    $ME [CONFIG-FILE] log app [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of
+    LEVEL - optional. If set, it has to be one of
       FATAL|ERROR|WARN|INFO|DEBUG|TRACE. If not set, WARN will be used.
-      The passed level defines which messages are printed. Only messages of
-      passed level and higher levels will be shown.
+      The specified level defines which messages are printed. Only messages of
+      specified level and higher levels will be shown.
     -f - optional. If set, $ME follows new messages only. If not set, ALL
       messages created until now are printed and the process ends after it.
 
 OVERVIEW
     Requires 'jq' to be installed!
-    Writes messages of iom application-container and filters them according
-    the passed log-level. 
-    The Wildfly application server still writes some messages, that are not in
-    json format. Those messages can only be seen, when accessing the output of
+    Writes messages of the IOM application container and filters them according
+    the specified log level.
+    The Wildfly application server still writes some messages that are not in
+    JSON format. Those messages can only be seen when accessing the output of
     the container directly.
-    Behaves differently when used inside and outside of a pipe. 
+    Behaves differently when used inside and outside of a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
+
+CONFIG-FILE
+    Name of the configuratoin file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 CONFIG
-    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by 
-      scripts. Messages, that are not written in container, can never be seen.
+    OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by
+      scripts. Messages that are not written in the container cannot be seen.
     OMS_LOGLEVEL_CONSOLE
     OMS_LOGLEVEL_IOM
     OMS_LOGLEVEL_HIBERNATE
     OMS_LOGLEVEL_QUARTZ
-    OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of 
-      messages are written by Wildfly application server and the IOM 
-      applications. Messages, that are not written in container, can never be
+    OMS_LOGLEVEL_ACTIVEMQ
+    OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of
+      messages are written by Wildfly application server and the IOM
+      applications. Messages that are not written in the container cannot be
       seen.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1398,27 +1563,32 @@ help-log-access() {
 get access logs of iom application-container
 
 SYNOPSIS
-    $ME log access [LEVEL] [-f]
+    $ME [CONFIG-FILE] log access [LEVEL] [-f]
 
 ARGUMENTS
-    LEVEL - optional. If set, has to be one of ERROR|ALL. If not set, ERROR will
-      be used. The passed level defines which messages are printed. If set to 
-      ERROR, only access-log entries are printed, where http status-code is 
-      equal or greater than 400.
-    -f - optional. If set, $ME follows new log-entries only. If not set, ALL
-      log-entries created until now are printed and the process ends after it.
+    LEVEL - optional. If set, it has to be one of ERROR|ALL. If not set, ERROR
+      will be used. The specified level defines which messages are printed. If
+      set to ERROR, only access-log entries where HTTP status code is equal or
+      greater than 400 are printed.
+    -f - optional. If set, $ME follows new log entries only. If not set, ALL
+      log entries created until now are printed and the process ends after it.
 
 OVERVIEW
-    Requires 'jq' to be installed!
+    Requires 'jq' to be installed.
     Writes access logs of iom application-container and filters them
-    according the passed log-level.
-    Behaves differently when used inside and outside of a pipe. 
+    according the specified log-level.
+    Behaves differently when used inside and outside of a pipe.
     If output is written to a terminal, $ME formats the messages.
-    If output written to a pipe, no formatting is applied. This makes it easier
-    to use the output for further processing. 
+    If output is written to a pipe, no formatting is applied. This makes it
+    easier to use the output for further processing.
+
+CONFIG-FILE
+    Name of the configuration file to be used. If not set, the environment
+    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
+    found, $ME ends with an error.
 
 SEE
-    $ME info iom
+    $ME [CONFIG-FILE] info iom
 EOF
 }
 
@@ -1449,7 +1619,7 @@ log_json() (
     ADD_INFO_IN="$(mktemp)"
     ADD_INFO="$(mktemp)"
     trap "rm -f $ADD_INFO_IN $ADD_INFO" EXIT SIGTERM
-    
+
     # get REQUESTED_LEVEL
     case $LEVEL in
         ERROR)
@@ -1490,7 +1660,7 @@ log_json() (
             exit 1
             ;;
     esac
-    
+
     # quote MSG
     MSG="$(echo $MSG | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037')"
 
@@ -1517,7 +1687,7 @@ log_json() (
 \"processName\":\"$(basename $0)\", \
 \"additionalInfo\":$(cat $ADD_INFO), \
 \"configName\":\"$CAAS_ENV_NAME\" \
-}"
+}" 1>&2
         else
             echo "{ \
 \"tenant\":\"Intershop\", \
@@ -1532,7 +1702,7 @@ log_json() (
 \"message\":\"$MSG\", \
 \"processName\":\"$(basename $0)\", \
 \"configName\":\"$CAAS_ENV_NAME\" \
-}"
+}" 1>&2
         fi
     fi
     rm -f "$ADD_INFO_IN" "$ADD_INFO"
@@ -1582,7 +1752,7 @@ kube_job_wait() (
 kube_pod_wait() (
     APP_NAME=$1
     TIMEOUT=$2
-    PHASE=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)    
+    PHASE=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)
     START_TIME=$(date '+%s')
     while [ \( "$PHASE" != 'Succeeded' \) -a \
                \( "$PHASE" != 'Failed' \) -a \
@@ -1597,7 +1767,7 @@ kube_pod_wait() (
 #-------------------------------------------------------------------------------
 # wait for initContainer to be terminated
 # $1: app name (iom)
-# $2: name of init-container (e.g. dbaccount, dbinit)
+# $2: name of init-container (e.g. dbaccount, config)
 # $3: timeout [s]
 # ->  true - if init-container is terminated before timeout
 #     false - else
@@ -1732,7 +1902,7 @@ kube_get_pod() (
             I=$(expr $I + 1)
         done
     fi
-    
+
     echo "$POD_NAME"
 )
 
@@ -1744,15 +1914,20 @@ kube_get_pod() (
 # info iom
 #-------------------------------------------------------------------------------
 info-iom() {
-    cat <<EOF
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "info-iom: no config-file given!" < /dev/null
+        false
+    else
+        cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-OMT:                        http://$HOST_IOM:$PORT_IOM_SERVICE/omt
+OMT:                        http://$HOST_IOM:$PORT_IOM_SERVICE/omt/
+Online help:                http://$HOST_IOM:$PORT_IOM_SERVICE/omt-help/
 DBDoc:                      http://$HOST_IOM:$PORT_IOM_SERVICE/dbdoc/
-Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console
+Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console/
 --------------------------------------------------------------------------------
 Development:
 ============
@@ -1769,7 +1944,15 @@ CUSTOM_JSONCONF_DIR:        $CUSTOM_JSONCONF_DIR
 Direct access:
 ==============
 CUSTOM_SHARE_DIR:           $CUSTOM_SHARE_DIR
-CUSTOM_LOG_DIR:             $CUSTOM_LOG_DIR
+--------------------------------------------------------------------------------
+Runtime:
+========
+CAAS_ENV_NAME:              $CAAS_ENV_NAME
+CAAS_IMPORT_TEST_DATA:      $CAAS_IMPORT_TEST_DATA
+PERFORM_HEALTH_CHECKS:      $PERFORM_HEALTH_CHECKS
+JBOSS_JAVA_OPTS:            $JBOSS_JAVA_OPTS
+JBOSS_XA_POOLSIZE_MIN:      $JBOSS_XA_POOLSIZE_MIN
+JBOSS_XA_POOLSIZE_MAX:      $JBOSS_XA_POOLSIZE_MAX
 --------------------------------------------------------------------------------
 Logging:
 ========
@@ -1777,20 +1960,21 @@ OMS_LOGLEVEL_CONSOLE:       $OMS_LOGLEVEL_CONSOLE
 OMS_LOGLEVEL_IOM:           $OMS_LOGLEVEL_IOM
 OMS_LOGLEVEL_HIBERNATE:     $OMS_LOGLEVEL_HIBERNATE
 OMS_LOGLEVEL_QUARTZ:        $OMS_LOGLEVEL_QUARTZ
+OMS_LOGLEVEL_ACTIVEMQ:      $OMS_LOGLEVEL_ACTIVEMQ
 OMS_LOGLEVEL_CUSTOMIZATION: $OMS_LOGLEVEL_CUSTOMIZATION
 OMS_LOGLEVEL_SCRIPTS:       $OMS_LOGLEVEL_SCRIPTS
 --------------------------------------------------------------------------------
 Docker:
 =======
 IOM_DBACCOUNT_IMAGE:        $IOM_DBACCOUNT_IMAGE
-IOM_DBINIT_IMAGE:           $IOM_DBINIT_IMAGE
+IOM_CONFIG_IMAGE:           $IOM_CONFIG_IMAGE
 IOM_APP_IMAGE:              $IOM_APP_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
-    POD="$(kube_get_pod iom)"
-    if [ ! -z "$POD" ]; then
-        cat <<EOF
+        POD="$(kube_get_pod iom)"
+        if [ ! -z "$POD" ]; then
+            cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
@@ -1800,6 +1984,7 @@ Usefull commands:
 =================
 
 Login into Pod:             kubectl exec --namespace $EnvId $POD -it bash
+jboss-cli:                  kubectl exec --namespace $EnvId $POD -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
 Describe iom pod:           kubectl describe --namespace $EnvId pod $POD
@@ -1808,12 +1993,13 @@ Describe iom service        kubectl describe --namespace $EnvId service iom-serv
 
 Get dbaccount logs:         kubectl logs $POD --namespace $EnvId -c dbaccount
 Follow dbaccount logs:      kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbaccount
-Get dbinit logs:            kubectl logs $POD --namespace $EnvId -c dbinit
-Follow dbinit logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbinit
+Get config logs:            kubectl logs $POD --namespace $EnvId -c config
+Follow config logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c config
 Get iom logs:               kubectl logs $POD --namespace $EnvId -c iom
 Follow iom logs:            kubectl logs --tail=1 -f $POD --namespace $EnvId -c iom
 --------------------------------------------------------------------------------
 EOF
+        fi
     fi
 }
 
@@ -1821,7 +2007,11 @@ EOF
 # info postgres
 #-------------------------------------------------------------------------------
 info-postgres() {
-    cat <<EOF
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "info-postgres: no config-file given!" < /dev/null
+        false
+    else
+        cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
@@ -1839,8 +2029,8 @@ OMS_DB_OPTIONS:             $OMS_DB_OPTIONS
 OMS_DB_SEARCHPATH:          $OMS_DB_SEARCHPATH
 --------------------------------------------------------------------------------
 EOF
-    if [ -z "$PGHOST" ]; then
-        cat <<EOF
+        if [ -z "$PGHOST" ]; then
+            cat <<EOF
 Server Settings:
 ================
 POSTGRES_ARGS:              ${POSTGRES_ARGS[*]}
@@ -1851,10 +2041,10 @@ DOCKER_DB_IMAGE:            $DOCKER_DB_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
-    fi
-    POD="$(kube_get_pod postgres)"
-    if [ ! -z "$POD" ]; then
-        cat <<EOF
+        fi
+        POD="$(kube_get_pod postgres)"
+        if [ ! -z "$POD" ]; then
+            cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
@@ -1868,8 +2058,13 @@ psql into root-db:          kubectl exec --namespace $EnvId $POD -it -- bash -c 
 psql into IOM-db:           kubectl exec --namespace $EnvId $POD -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
 
 Currently used yaml:        kubectl get pod -l app=postgres -o yaml --namespace=$EnvId
+Describe pod:               kubectl describe --namespace $EnvId pod $POD
+
+Get logs:                   kubectl logs $POD --namespace $EnvId
+Follow logs:                kubectl logs --tail=1 -f $POD --namespace $EnvId
 --------------------------------------------------------------------------------
 EOF
+        fi
     fi
 }
 
@@ -1877,7 +2072,11 @@ EOF
 # info mailserver
 #-------------------------------------------------------------------------------
 info-mailserver() {
-    cat <<EOF
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "info-mailserver: no config-file given!" < /dev/null
+        false
+    else
+        cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
@@ -1892,9 +2091,9 @@ MAILHOG_IMAGE:              $MAILHOG_IMAGE
 IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
-    POD="$(kube_get_pod mailhog)"
-    if [ ! -z "$POD" ]; then
-        cat <<EOF
+        POD="$(kube_get_pod mailhog)"
+        if [ ! -z "$POD" ]; then
+            cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
@@ -1906,6 +2105,7 @@ Login into Pod:             kubectl exec --namespace $EnvId $POD -it sh
 Currently used yaml:        kubectl get pod -l app=mailhog -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
 EOF
+        fi
     fi
 }
 
@@ -1913,15 +2113,36 @@ EOF
 # info storage
 #-------------------------------------------------------------------------------
 info-storage() {
-    if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "info-storage: no config-file given!" < /dev/null
+        false
+    else
         cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
+Config:
+=======
+KEEP_DATABASE_DATA:         $KEEP_DATABASE_DATA
+--------------------------------------------------------------------------------
+EOF
+        if docker_volume_exists pgdata; then
+            cat <<EOF
 Docker:
 =======
 $(docker volume inspect $EnvId-pgdata)
 --------------------------------------------------------------------------------
+EOF
+        else
+            cat <<EOF
+Docker:
+=======
+no docker volume with name $EnvId-pgdata exists.
+--------------------------------------------------------------------------------
+EOF
+        fi
+        if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
+            cat <<EOF
 Kubernetes:
 ===========
 $(kubectl get persistentvolumes --namespace=$EnvId)
@@ -1931,6 +2152,14 @@ Usefull commands:
 Currently used yaml:        kubectl get persistentvolumes -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
 EOF
+        else
+            cat <<EOF
+Kubernetes:
+===========
+no persistent volume with name $EnvId-postgres-pv exists.
+--------------------------------------------------------------------------------
+EOF
+        fi
     fi
 }
 
@@ -1938,7 +2167,11 @@ EOF
 # info cluster
 #-------------------------------------------------------------------------------
 info-cluster() {
-    cat <<EOF
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "info-cluster: no config-file given!" < /dev/null
+        false
+    else
+        cat <<EOF
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
@@ -1951,6 +2184,7 @@ Kubernetes Services:
 $(kubectl get services --namespace=$EnvId)
 --------------------------------------------------------------------------------
 EOF
+    fi
 }
 
 ################################################################################
@@ -1963,7 +2197,10 @@ EOF
 #-------------------------------------------------------------------------------
 create-storage() {
     SUCCESS=true
-    if [ "$KEEP_DATABASE_DATA" = 'true' ] && ! docker_volume_exists pgdata; then
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "create-storage: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif [ "$KEEP_DATABASE_DATA" = 'true' ] && ! docker_volume_exists pgdata; then
         docker volume create --name=$EnvId-pgdata -d local 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "create-storage: error creating docker volume $EnvId-pgdata" < "$TMP_ERR"
@@ -1984,7 +2221,10 @@ create-storage() {
 #-------------------------------------------------------------------------------
 create-namespace() {
     SUCCESS=true
-    if ! kube_namespace_exists; then
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "create-namespace: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif ! kube_namespace_exists; then
         kubectl create namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "create-namespace: error creating namespace '$EnvId'" < "$TMP_ERR"
@@ -2005,14 +2245,19 @@ create-namespace() {
 #-------------------------------------------------------------------------------
 create-mailserver() {
     SUCCESS=true
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/mailhog.yml.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-    if [ $? -ne 0 ]; then
-        log_json ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "create-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
     else
-        log_json INFO "create-mailserver: mailserver successfully created" < "$TMP_OUT"
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/mailhog.yml.template" \
+            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        if [ $? -ne 0 ]; then
+            log_json ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_json INFO "create-mailserver: mailserver successfully created" < "$TMP_OUT"
+        fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2025,13 +2270,16 @@ create-mailserver() {
 create-postgres() {
     SUCCESS=true
 
-    if [ -z "$PGHOST" ]; then
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "create-postgres: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif [ -z "$PGHOST" ]; then
         # link Docker volume to database storage
         if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
             MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
-                      "${PROJECT_PATH}/scripts/template_engine.sh" \
-                      "${PROJECT_PATH}/templates/postgres-storage.yml.template" \
-                      "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                      "$PROJECT_PATH/bin/template_engine.sh" \
+                      "$PROJECT_PATH/templates/postgres-storage.yml.template" \
+                      "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_json ERROR "create-postgres: error linking docker volume to database storage" < "$TMP_ERR"
                 SUCCESS=false
@@ -2042,15 +2290,19 @@ create-postgres() {
             log_json INFO "create-postges: no need to link docker volume to dabase storage" < /dev/null
         fi
         if [ "$SUCCESS" = 'true' ]; then
-            # start postgres pod/service
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/postgres.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
-                SUCCESS=false
+            if ! kube_resource_exists pods postgres || ! kube_resource_exists services postgres-service; then
+                # start postgres pod/service
+                "$PROJECT_PATH/bin/template_engine.sh" \
+                    "$PROJECT_PATH/templates/postgres.yml.template" \
+                    "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
+                fi
             else
-                log_json INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
+                log_json INFO "create-postgres: pod and service already exist" < /dev/null
             fi
         fi
     else
@@ -2066,14 +2318,20 @@ create-postgres() {
 #-------------------------------------------------------------------------------
 create-iom() {
     SUCCESS=true
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/iom.yml.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-    if [ $? -ne 0 ]; then
-        log_json ERROR "create-iom: error creating iom" < "$TMP_ERR"
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "create-iom: no config-file given!" < /dev/null
         SUCCESS=false
     else
-        log_json INFO "create-iom: successfully created iom" < "$TMP_OUT"
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/iom.yml.template" \
+            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        if [ $? -ne 0 ]; then
+            log_json ERROR "create-iom: error creating iom" < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_json INFO "create-iom: successfully created iom" < "$TMP_OUT"
+        fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2087,7 +2345,6 @@ create-cluster() {
     create-storage &&
         create-namespace &&
         create-postgres &&
-        kube_pod_wait postgres 300 &&
         create-mailserver &&
         create-iom
 }
@@ -2102,7 +2359,11 @@ create-cluster() {
 #---------------------------------------------------------------------------
 delete-storage() {
     SUCCESS=true
-    if docker_volume_exists pgdata; then
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "delete-storage: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif docker_volume_exists pgdata; then
         docker volume rm $EnvId-pgdata 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-storage: error deleting volume $EnvId-pgdata" < "$TMP_ERR"
@@ -2123,7 +2384,11 @@ delete-storage() {
 #-------------------------------------------------------------------------------
 delete-namespace() {
     SUCCESS=true
-    if kube_namespace_exists; then
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "delete-namespace: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif kube_namespace_exists; then
         kubectl delete namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-namespace: error deleting namespace '$EnvId'" < "$TMP_ERR"
@@ -2144,10 +2409,14 @@ delete-namespace() {
 #-------------------------------------------------------------------------------
 delete-mailserver() {
     SUCCESS=true
-    if kube_resource_exists pods mailhog || kube_resource_exists services mailhog-service; then
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/mailhog.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "delete-mailserver: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif kube_resource_exists pods mailhog || kube_resource_exists services mailhog-service; then
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/mailhog.yml.template" \
+            "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-mailserver: error deleting mail-server" < "$TMP_ERR"
             SUCCESS=false
@@ -2167,33 +2436,40 @@ delete-mailserver() {
 delete-postgres() {
     SUCCESS_PG=true
     SUCCESS_VL=true
-    if kube_resource_exists pods postgres || kube_resource_exists services postgres-service; then
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/postgres.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "delete-postgres: error deleting postgres" < "$TMP_ERR"
-            SUCCESS_PG=false
-        else
-            log_json INFO "delete-postgres: successfully deleted postgres" < "$TMP_OUT"
-        fi
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "delete-postgres: no config-file given!" < /dev/null
+        SUCCESS_PG=false
+        SUCCESS_VL=false
     else
-        log_json INFO "delete-postgres: nothing to do, to delete postgres" < /dev/null
-    fi
-    # unlink Docker volume from database storage
-    if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
-        MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
-                  "${PROJECT_PATH}/scripts/template_engine.sh" \
-                  "${PROJECT_PATH}/templates/postgres-storage.yml.template" \
-                  "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "delete-postgres: error unlinking Docker volume from database storage" < "$TMP_ERR"
-            SUCCESS_VL=false
+        if kube_resource_exists pods postgres || kube_resource_exists services postgres-service; then
+            "$PROJECT_PATH/bin/template_engine.sh" \
+                "$PROJECT_PATH/templates/postgres.yml.template" \
+                "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "delete-postgres: error deleting postgres" < "$TMP_ERR"
+                SUCCESS_PG=false
+            else
+                log_json INFO "delete-postgres: successfully deleted postgres" < "$TMP_OUT"
+            fi
         else
-            log_json INFO "delete-postgres: successfully unlinked Docker volume from database storage" < "$TMP_OUT"
+            log_json INFO "delete-postgres: nothing to do, to delete postgres" < /dev/null
         fi
-    else
-        log_json INFO "delete-postgres: nothing to do, to unlink Docker volume from database storage" < /dev/null
+        # unlink Docker volume from database storage
+        if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
+            MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
+                      "$PROJECT_PATH/bin/template_engine.sh" \
+                      "$PROJECT_PATH/templates/postgres-storage.yml.template" \
+                      "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "delete-postgres: error unlinking Docker volume from database storage" < "$TMP_ERR"
+                SUCCESS_VL=false
+            else
+                log_json INFO "delete-postgres: successfully unlinked Docker volume from database storage" < "$TMP_OUT"
+            fi
+        else
+            log_json INFO "delete-postgres: nothing to do, to unlink Docker volume from database storage" < /dev/null
+        fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ \( "$SUCCESS_PG" = 'true' \) -a \( "$SUCCESS_VL" = 'true' \) ]
@@ -2204,10 +2480,14 @@ delete-postgres() {
 #-------------------------------------------------------------------------------
 delete-iom() {
     SUCCESS=true
-    if kube_resource_exists pods iom || kube_resource_exists services iom-service; then
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/iom.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "delete-iom: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif kube_resource_exists pods iom || kube_resource_exists services iom-service; then
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/iom.yml.template" \
+            "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
             log_json ERROR "delete-iom: error deleting iom" < "$TMP_ERR"
             SUCCESS=false
@@ -2241,19 +2521,24 @@ delete-cluster() {
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 wait-mailserver() {
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "wait-mailserver: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
-    kube_pod_wait mailhog $TIMEOUT
-    if [ $? -ne 0 ]; then
-        log_json ERROR "wait-mailserver: timeout of $TIMEOUT s reached." < /dev/null
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "wait-mailserver: no config-file given!" < /dev/null
         false
     else
-        true
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "wait-mailserver: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
+        kube_pod_wait mailhog $TIMEOUT
+        if [ $? -ne 0 ]; then
+            log_json ERROR "wait-mailserver: timeout of $TIMEOUT s reached." < /dev/null
+            false
+        else
+            true
+        fi
     fi
 }
 
@@ -2263,19 +2548,24 @@ wait-mailserver() {
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 wait-postgres() {
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "wait-postgres: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
-    kube_pod_wait postgres $TIMEOUT
-    if [ $? -ne 0 ]; then
-        log_json ERROR "wait-postgres: timeout of $TIMEOUT s reached." < /dev/null
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "wait-postgres: no config-file given!" < /dev/null
         false
     else
-        true
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "wait-postgres: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
+        kube_pod_wait postgres $TIMEOUT
+        if [ $? -ne 0 ]; then
+            log_json ERROR "wait-postgres: timeout of $TIMEOUT s reached." < /dev/null
+            false
+        else
+            true
+        fi
     fi
 }
 
@@ -2285,19 +2575,24 @@ wait-postgres() {
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 wait-iom() {
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "wait-iom: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
-    kube_pod_wait iom $TIMEOUT
-    if [ $? -ne 0 ]; then
-        log_json ERROR "wait-iom: timeout of $TIMEOUT s reached." < /dev/null
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "wait-iom: no config-file given!" < /dev/null
         false
     else
-        true
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "wait-iom: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
+        kube_pod_wait iom $TIMEOUT
+        if [ $? -ne 0 ]; then
+            log_json ERROR "wait-iom: timeout of $TIMEOUT s reached." < /dev/null
+            false
+        else
+            true
+        fi
     fi
 }
 
@@ -2313,7 +2608,11 @@ wait-iom() {
 apply-deployment() {
     PATTERN=$1
     SUCCESS=true
-    if [ ! -z "$CUSTOM_APPS_DIR" ]; then
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-deployment: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif [ ! -z "$CUSTOM_APPS_DIR" ]; then
         POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
             log_json ERROR "apply-deployment: error getting pod name" < "$TMP_ERR"
@@ -2324,7 +2623,7 @@ apply-deployment() {
             else
                 # TODO no messages visible, if script ended with error!
                 kubectl exec $POD --namespace $EnvId -- bash -ic "/opt/oms/bin/forced-redeploy.sh --pattern=$PATTERN || true" 2> "$TMP_ERR" > "$TMP_OUT"
-            fi   
+            fi
             if [ $? -ne 0 ]; then
                 log_json ERROR "apply-deployment: error applying deployments" < "$TMP_ERR"
                 SUCCESS=false
@@ -2347,7 +2646,11 @@ apply-deployment() {
 #-------------------------------------------------------------------------------
 apply-mail-templates() {
     SUCCESS=true
-    if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-mail-templates: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
         POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
             log_json ERROR "apply-mail-templates: error getting pod name" < "$TMP_ERR"
@@ -2374,7 +2677,11 @@ apply-mail-templates() {
 #-------------------------------------------------------------------------------
 apply-xsl-templates() {
     SUCCESS=true
-    if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-xsl-templates: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif [ ! -z "$CUSTOM_XSLT_DIR" ]; then
         POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
             log_json ERROR "apply-xsl-templates: error getting pod name" < "$TMP_ERR"
@@ -2404,75 +2711,80 @@ apply-xsl-templates() {
 apply-sql-scripts() {
     SUCCESS=true
 
-    # check and convert to absolute path
-    if [ ! -d "$1" -a ! -f "$1" ]; then
-        log_json ERROR "apply-sql-scripts: '$1' is nor a file or directory" < /dev/null
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-sql-scripts: no config-file given!" < /dev/null
         SUCCESS=false
     else
-        case "$1" in
-            /*)
-                SQL_SRC="$1"
-                ;;
-            *)
-                SQL_SRC="$(pwd)/$1"
-        esac
-    fi
-
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$2" ] && ! ( echo "$2" | grep -q '^[0-9]*$'); then
-        log_json WARN "apply-sql-scripts: invalid value passed for timeout ($2). Default value will be used" < /dev/null
-    elif [ ! -z "$2" ]; then
-        TIMEOUT=$2
-    fi
-
-    if [ "$SUCCESS" = 'true' ]; then
-        # start apply-sql job
-        SQL_SRC="$SQL_SRC" \
-               "${PROJECT_PATH}/scripts/template_engine.sh" \
-               "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-               "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "apply-sql-scripts: error starting job" < "$TMP_ERR"
+        # check and convert to absolute path
+        if [ ! -d "$1" -a ! -f "$1" ]; then
+            log_json ERROR "apply-sql-scripts: '$1' is nor a file or directory" < /dev/null
             SUCCESS=false
         else
-            log_json INFO "apply-sql-scripts: job successfully started" < "$TMP_OUT"
-            
-            # wait for job to finish
-            if ! kube_job_wait apply-sql-job $TIMEOUT; then
-                log_json ERROR "apply-sql-scripts: timeout of $TIMEOUT seconds reached" < /dev/null
-                SUCCESS=false
-            fi
-            # get logs of job
-            POD=$(kubectl get pods --namespace $EnvId -l job-name=apply-sql-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
-            if [ -z "$POD" ]; then
-                log_json ERROR "apply-sql-scripts: error getting pod name" < "$TMP_ERR"
+            case "$1" in
+                /*)
+                    SQL_SRC="$1"
+                    ;;
+                *)
+                    SQL_SRC="$(pwd)/$1"
+            esac
+        fi
+
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$2" ] && ! ( echo "$2" | grep -q '^[0-9]*$'); then
+            log_json WARN "apply-sql-scripts: invalid value passed for timeout ($2). Default value will be used" < /dev/null
+        elif [ ! -z "$2" ]; then
+            TIMEOUT=$2
+        fi
+
+        if [ "$SUCCESS" = 'true' ]; then
+            # start apply-sql job
+            SQL_SRC="$SQL_SRC" \
+                   "$PROJECT_PATH/bin/template_engine.sh" \
+                   "$PROJECT_PATH/templates/apply-sql.yml.template" \
+                   "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "apply-sql-scripts: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
-                if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-sql-scripts: error getting logs of job" < "$TMP_ERR"
+                log_json INFO "apply-sql-scripts: job successfully started" < "$TMP_OUT"
+
+                # wait for job to finish
+                if ! kube_job_wait apply-sql-job $TIMEOUT; then
+                    log_json ERROR "apply-sql-scripts: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                fi
+                # get logs of job
+                POD=$(kubectl get pods --namespace $EnvId -l job-name=apply-sql-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
+                if [ -z "$POD" ]; then
+                    log_json ERROR "apply-sql-scripts: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    # logs of job are already in json format
-                    cat "$TMP_OUT"
+                    kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
+                    if [ $? -ne 0 ]; then
+                        log_json ERROR "apply-sql-scripts: error getting logs of job" < "$TMP_ERR"
+                        SUCCESS=false
+                    else
+                        # logs of job are already in json format
+                        cat "$TMP_OUT"
+                    fi
                 fi
-            fi
-            # delete apply-sql-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/apply-sql.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "apply-sql-scripts: error deleting job" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_json INFO "apply-sql-scripts: successfully deleted job" < "$TMP_OUT"
-            fi
+                # delete apply-sql-job
+                "$PROJECT_PATH/bin/template_engine.sh" \
+                    "$PROJECT_PATH/templates/apply-sql.yml.template" \
+                    "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "apply-sql-scripts: error deleting job" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "apply-sql-scripts: successfully deleted job" < "$TMP_OUT"
+                fi
 
-            # it's easier for the user to detect an error, if the last message
-            # is giving this information
-            if [ "$SUCCESS" != 'true' ]; then
-                log_json ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
+                # it's easier for the user to detect an error, if the last message
+                # is giving this information
+                if [ "$SUCCESS" != 'true' ]; then
+                    log_json ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
+                fi
             fi
         fi
     fi
@@ -2488,64 +2800,69 @@ apply-sql-scripts() {
 apply-sql-config() {
     SUCCESS=true
 
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "apply-sql-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-sql-config: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "apply-sql-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
 
-    if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
-        # start sqlconfig-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/sqlconfig.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "apply-sql-config: error starting job" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_json INFO "apply-sql-config: job successfully started" < "$TMP_OUT"
-            
-            # wait for job to finish
-            if ! kube_job_wait sqlconfig-job $TIMEOUT; then
-                log_json ERROR "apply-sql-config: timeout of $TIMEOUT seconds reached" < /dev/null
-                SUCCESS=false
-            fi
-            # get logs of job
-            POD=$(kubectl get pods --namespace $EnvId -l job-name=sqlconfig-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
-            if [ -z "$POD" ]; then
-                log_json ERROR "apply-sql-config: error getting pod name" < "$TMP_ERR"
+        if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+            # start sqlconfig-job
+            "$PROJECT_PATH/bin/template_engine.sh" \
+                "$PROJECT_PATH/templates/sqlconfig.yml.template" \
+                "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "apply-sql-config: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
-                if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-sql-config: error getting logs of job" < "$TMP_ERR"
+                log_json INFO "apply-sql-config: job successfully started" < "$TMP_OUT"
+
+                # wait for job to finish
+                if ! kube_job_wait sqlconfig-job $TIMEOUT; then
+                    log_json ERROR "apply-sql-config: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                fi
+                # get logs of job
+                POD=$(kubectl get pods --namespace $EnvId -l job-name=sqlconfig-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
+                if [ -z "$POD" ]; then
+                    log_json ERROR "apply-sql-config: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    # logs of job are already in json format
-                    cat "$TMP_OUT"
+                    kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
+                    if [ $? -ne 0 ]; then
+                        log_json ERROR "apply-sql-config: error getting logs of job" < "$TMP_ERR"
+                        SUCCESS=false
+                    else
+                        # logs of job are already in json format
+                        cat "$TMP_OUT"
+                    fi
+                fi
+                # delete sqlconfig-job
+                "$PROJECT_PATH/bin/template_engine.sh" \
+                    "$PROJECT_PATH/templates/sqlconfig.yml.template" \
+                    "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "apply-sql-config: error deleting job" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "apply-sql-config: successfully deleted job" < "$TMP_OUT"
+                fi
+
+                # it's easier for the user to detect an error, if the last message
+                # is giving this information
+                if [ "$SUCCESS" != 'true' ]; then
+                    log_json ERROR "apply-sql-config: job ended with ERROR" < /dev/null
                 fi
             fi
-            # delete sqlconfig-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/sqlconfig.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "apply-sql-config: error deleting job" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_json INFO "apply-sql-config: successfully deleted job" < "$TMP_OUT"
-            fi
-
-            # it's easier for the user to detect an error, if the last message
-            # is giving this information
-            if [ "$SUCCESS" != 'true' ]; then
-                log_json ERROR "apply-sql-config: job ended with ERROR" < /dev/null
-            fi
+        else
+            log_json INFO "apply-sql-config: config variable CUSTOM_SQLCONF_DIR not set, no sql-config applied" < /dev/null
         fi
-    else
-        log_json INFO "apply-sql-config: config variable CUSTOM_SQLCONF_DIR not set, no sql-config applied" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2559,65 +2876,70 @@ apply-sql-config() {
 apply-json-config() {
     SUCCESS=true
 
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "apply-json-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-json-config: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "apply-json-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
 
-    if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
-        # start jsonconfig-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/jsonconfig.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "apply-json-config: error starting job" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_json INFO "apply-json-config: job successfully started" < "$TMP_OUT"
-
-            # wait for job to finish
-            if ! kube_job_wait jsonconfig-job $TIMEOUT; then
-                log_json ERROR "apply-json-config: timeout of $TIMEOUT seconds reached" < /dev/null
-                SUCCESS=false
-            fi
-            # get logs of job
-            POD=$(kubectl get pods --namespace $EnvId -l job-name=jsonconfig-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
-            if [ -z "$POD" ]; then
-                log_json ERROR "apply-json-config: error getting pod name" < "$TMP_ERR"
+        if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+            # start jsonconfig-job
+            "$PROJECT_PATH/bin/template_engine.sh" \
+                "$PROJECT_PATH/templates/jsonconfig.yml.template" \
+                "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "apply-json-config: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
-                if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-json-config: error getting logs of job" < "$TMP_ERR"
+                log_json INFO "apply-json-config: job successfully started" < "$TMP_OUT"
+
+                # wait for job to finish
+                if ! kube_job_wait jsonconfig-job $TIMEOUT; then
+                    log_json ERROR "apply-json-config: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                fi
+                # get logs of job
+                POD=$(kubectl get pods --namespace $EnvId -l job-name=jsonconfig-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
+                if [ -z "$POD" ]; then
+                    log_json ERROR "apply-json-config: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    # logs of job are already in json format
-                    cat "$TMP_OUT"
+                    kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
+                    if [ $? -ne 0 ]; then
+                        log_json ERROR "apply-json-config: error getting logs of job" < "$TMP_ERR"
+                        SUCCESS=false
+                    else
+                        # logs of job are already in json format
+                        cat "$TMP_OUT"
+                    fi
+                fi
+
+                # delete jsonconfig-job
+                "$PROJECT_PATH/bin/template_engine.sh" \
+                    "$PROJECT_PATH/templates/jsonconfig.yml.template" \
+                    "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "apply-json-config: error deleting job" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "apply-json-config: successfully deleted job" < "$TMP_OUT"
+                fi
+
+                # it's easier for the user to detect an error, if the last message
+                # is giving this information
+                if [ "$SUCCESS" != 'true' ]; then
+                    log_json ERROR "apply-json-config: job ended with ERROR" < /dev/null
                 fi
             fi
-            
-            # delete jsonconfig-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/jsonconfig.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "apply-json-config: error deleting job" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_json INFO "apply-json-config: successfully deleted job" < "$TMP_OUT"
-            fi
-
-            # it's easier for the user to detect an error, if the last message
-            # is giving this information
-            if [ "$SUCCESS" != 'true' ]; then
-                log_json ERROR "apply-json-config: job ended with ERROR" < /dev/null
-            fi
+        else
+            log_json INFO "apply-json-config: config variable CUSTOM_JSONCONF_DIR not set, no json-config applied" < /dev/null
         fi
-    else
-        log_json INFO "apply-json-config: config variable CUSTOM_JSONCONF_DIR not set, no json-config applied" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2631,64 +2953,69 @@ apply-json-config() {
 apply-dbmigrate() {
     SUCCESS=true
 
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "apply-dbmigrate: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "apply-dbmigrate: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "apply-dbmigrate: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
 
-    if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
-        # start dbmigrate-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/dbmigrate.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "apply-dbmigrate: error starting job" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_json INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
-
-            # wait for job to finish
-            if ! kube_job_wait dbmigrate_job $TIMEOUT; then
-                log_json ERRO "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
-                SUCCESS=false
-            fi
-            # get logs of job
-            POD=$(kubectl get pods --namespace $EnvId -l job-name=dbmigrate-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
-            if [ -z "$POD" ]; then
-                log_json ERROR "apply-dbmigrate: error getting pod name" < "$TMP_ERR"
+        if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+            # start dbmigrate-job
+            "$PROJECT_PATH/bin/template_engine.sh" \
+                "$PROJECT_PATH/templates/dbmigrate.yml.template" \
+                "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "apply-dbmigrate: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
-                if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-dbmigrate: error getting logs of job" < "$TMP_ERR"
+                log_json INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
+
+                # wait for job to finish
+                if ! kube_job_wait dbmigrate_job $TIMEOUT; then
+                    log_json ERRO "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                fi
+                # get logs of job
+                POD=$(kubectl get pods --namespace $EnvId -l job-name=dbmigrate-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
+                if [ -z "$POD" ]; then
+                    log_json ERROR "apply-dbmigrate: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    # logs are already in json format
-                    cat "$TMP_OUT"
+                    kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
+                    if [ $? -ne 0 ]; then
+                        log_json ERROR "apply-dbmigrate: error getting logs of job" < "$TMP_ERR"
+                        SUCCESS=false
+                    else
+                        # logs are already in json format
+                        cat "$TMP_OUT"
+                    fi
+                fi
+                # delete dbmigrate-job
+                "$PROJECT_PATH/bin/template_engine.sh" \
+                    "$PROJECT_PATH/templates/dbmigrate.yml.template" \
+                    "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "apply-dbmigrate: error deleting job" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "apply-dbmigrate: successfully deleted job" < "$TMP_OUT"
+                fi
+
+                # it's easier for the user to detect an error, if the last message
+                # is giving this information
+                if [ "$SUCCESS" != 'true' ]; then
+                    log_json ERROR "apply-dbmigrate: job ended with ERROR" < /dev/null
                 fi
             fi
-            # delete dbmigrate-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/dbmigrate.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "apply-dbmigrate: error deleting job" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_json INFO "apply-dbmigrate: successfully deleted job" < "$TMP_OUT"
-            fi
-
-            # it's easier for the user to detect an error, if the last message
-            # is giving this information
-            if [ "$SUCCESS" != 'true' ]; then
-                log_json ERROR "apply-dbmigrate: job ended with ERROR" < /dev/null
-            fi
+        else
+            log_json INFO "apply-dbmigrate: config variable CUSTOM_DBMIGRATE_DIR not set, db-migrate not applied" < /dev/null
         fi
-    else
-        log_json INFO "apply-dbmigrate: config variable CUSTOM_DBMIGRATE_DIR not set, db-migrate not applied" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2704,8 +3031,11 @@ apply-dbmigrate() {
 #-------------------------------------------------------------------------------
 dump-load() {
     SUCCESS=true
-    
-    if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "dump-load: no config-file given!" < /dev/null
+        SUCCESS=false
+    elif [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
         if [ -z "$PGHOST" ]; then
             # delete iom & postgres
             if ! delete-iom; then
@@ -2753,65 +3083,70 @@ dump-load() {
 dump-create() {
     SUCCESS=true
 
-    # check and set timeout
-    TIMEOUT=60
-    if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-        log_json WARN "dump-create: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-    elif [ ! -z "$1" ]; then
-        TIMEOUT=$1
-    fi
-    
-    if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
-        # start dump-job
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/dump.yml.template" \
-            "${ENV_DIR}/${CONFIG_FILE}" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "dump-create: error starting job" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_json INFO "dump-create: job successfully started" < "$TMP_OUT"
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "dump-create: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        # check and set timeout
+        TIMEOUT=60
+        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
+            log_json WARN "dump-create: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+        elif [ ! -z "$1" ]; then
+            TIMEOUT=$1
+        fi
 
-            # wait for job to finish
-            if ! kube_job_wait dump-job $TIMEOUT; then
-                log_json ERROR "dump-create: timeout of $TIMEOUT seconds reached" < /dev/null
-                SUCCESS=false
-            fi
-
-            # get logs of job
-            POD=$(kubectl get pods --namespace $EnvId -l job-name=dump-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
-            if [ -z "$POD" ]; then
-                log_json ERROR "dump-create: error getting pod name" < "$TMP_ERR"
+        if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
+            # start dump-job
+            "$PROJECT_PATH/bin/template_engine.sh" \
+                "$PROJECT_PATH/templates/dump.yml.template" \
+                "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "dump-create: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
-                if [ $? -ne 0 ]; then
-                    log_json ERROR "dump-create: error getting logs of job" < "$TMP_ERR"
+                log_json INFO "dump-create: job successfully started" < "$TMP_OUT"
+
+                # wait for job to finish
+                if ! kube_job_wait dump-job $TIMEOUT; then
+                    log_json ERROR "dump-create: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                fi
+
+                # get logs of job
+                POD=$(kubectl get pods --namespace $EnvId -l job-name=dump-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
+                if [ -z "$POD" ]; then
+                    log_json ERROR "dump-create: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    # logs are already in json format
-                    cat "$TMP_OUT"
+                    kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
+                    if [ $? -ne 0 ]; then
+                        log_json ERROR "dump-create: error getting logs of job" < "$TMP_ERR"
+                        SUCCESS=false
+                    else
+                        # logs are already in json format
+                        cat "$TMP_OUT"
+                    fi
+                fi
+                # delete dump-job
+                "$PROJECT_PATH/bin/template_engine.sh" \
+                    "$PROJECT_PATH/templates/dump.yml.template" \
+                    "$CONFIG_FILE" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_json ERROR "dump-create: error deleting job" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_json INFO "dump-create: successfully deleted job" < "$TMP_OUT"
+                fi
+
+                # it's easier for the user to detect an error, if the last message
+                # is giving this information
+                if [ "$SUCCESS" != 'true' ]; then
+                    log_json ERROR "dump-create: job ended with ERROR" < /dev/null
                 fi
             fi
-            # delete dump-job
-            "${PROJECT_PATH}/scripts/template_engine.sh" \
-                "${PROJECT_PATH}/templates/dump.yml.template" \
-                "${ENV_DIR}/${CONFIG_FILE}" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_json ERROR "dump-create: error deleting job" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_json INFO "dump-create: successfully deleted job" < "$TMP_OUT"
-            fi
-
-            # it's easier for the user to detect an error, if the last message
-            # is giving this information
-            if [ "$SUCCESS" != 'true' ]; then
-                log_json ERROR "dump-create: job ended with ERROR" < /dev/null
-            fi
+        else
+            log_json INFO "dump-create: config variable CUSTOM_DUMPS_DIR not set, skipped creation of dump" < /dev/null
         fi
-    else
-        log_json INFO "dump-create: config variable CUSTOM_DUMPS_DIR not set, skipped creation of dump" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2822,25 +3157,50 @@ dump-create() {
 ################################################################################
 
 #-------------------------------------------------------------------------------
-# update config file
+# get configuration
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
-update-config() {
+get-config() {
     SUCCESS=true
-    BAK="bak_$(date '+%Y-%m-%d.%H.%M.%S')"
 
-    if ! cp "${ENV_DIR}/${CONFIG_FILE}" "${ENV_DIR}/${CONFIG_FILE}.$BAK" 2> "$TMP_ERR"; then
-        log_json ERROR "update-config: error creating backup copy" < "$TMP_ERR"
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json WARN "get-config: no configuration given, using default values instead." < /dev/null
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/config.properties.template" 2> "$TMP_ERR"
+    else
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/config.properties.template" \
+            "$CONFIG_FILE" 2> "$TMP_ERR"
+    fi
+    if [ $? -ne 0 ]; then
+        log_json ERROR "get-config: error writing configuration." < "$TMP_ERR"
         SUCCESS=false
     else
-        "${PROJECT_PATH}/scripts/template_engine.sh" \
-            "${PROJECT_PATH}/templates/config.properties.template" \
-            "${ENV_DIR}/${CONFIG_FILE}.$BAK" > "${ENV_DIR}/${CONFIG_FILE}" 2> "$TMP_ERR"
+        log_json INFO "get-config: configuration successfully written." < /dev/null
+    fi
+
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
+}
+
+#-------------------------------------------------------------------------------
+# get ws.properties
+#-------------------------------------------------------------------------------
+get-ws-props() {
+    SUCCESS=true
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "get-ws-props: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/ws.properties.template" \
+            "$CONFIG_FILE" 2> "$TMP_ERR"
         if [ $? -ne 0 ]; then
-            log_json ERROR "update-config: error updating config file. Please analyze the problem, restore the config file from ${CONFIG_FILE}.$BAK and retry." < "$TMP_ERR"
+            log_json ERROR "get-ws-props: error writing ws.properties." < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "update-config: successfully updated config file" < /dev/null
+            log_json INFO "get-ws-props: ws.properties successfully written." < /dev/null
         fi
     fi
     rm -f "$TMP_ERR"
@@ -2848,83 +3208,51 @@ update-config() {
 }
 
 #-------------------------------------------------------------------------------
-# update html documentation
-# ->  true|false indicating success
+# get geb.properties
 #-------------------------------------------------------------------------------
-update-doc() {
+get-geb-props() {
     SUCCESS=true
 
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/index.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/index.html" 2> "$TMP_ERR"
-    if [ $? -ne 0 ]; then
-        log_json ERROR "update-doc: error updating HTML docu." < "$TMP_ERR"
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "get-geb-props: no config-file given!" < /dev/null
         SUCCESS=false
     else
-        log_json INFO "update-doc: successfully updated HTML docu" < /dev/null
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/geb.properties.template" \
+            "$CONFIG_FILE" 2> "$TMP_ERR"
+        if [ $? -ne 0 ]; then
+            log_json ERROR "get-geb-props: error writing geb.properties." < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_json INFO "get-geb-props: geb.properties successfully written" < /dev/null
+        fi
     fi
     rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
 }
 
 #-------------------------------------------------------------------------------
-# update ws.properties
+# get soap.properties
 #-------------------------------------------------------------------------------
-update-ws-props() {
+get-soap-props() {
     SUCCESS=true
 
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/ws.properties.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/ws.properties" 2> "$TMP_ERR"
-    if [ $? -ne 0 ]; then
-        log_json ERROR "update-ws-props: error updating ws.properties." < "$TMP_ERR"
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "get-soap-props: no config-file given!" < /dev/null
         SUCCESS=false
     else
-        log_json INFO "update-ws-props: successfully updated ws.properties" < /dev/null
+        "$PROJECT_PATH/bin/template_engine.sh" \
+            "$PROJECT_PATH/templates/soap.properties.template" \
+            "$CONFIG_FILE" 2> "$TMP_ERR"
+        if [ $? -ne 0 ]; then
+            log_json ERROR "get-soap-props: error writing soap.properties." < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_json INFO "get-soap-props: soap.properties successfully written" < /dev/null
+        fi
     fi
     rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
-}
-
-#-------------------------------------------------------------------------------
-# update geb.properties
-#-------------------------------------------------------------------------------
-update-geb-props() {
-    SUCCESS=true
-
-    "${PROJECT_PATH}/scripts/template_engine.sh" \
-        "${PROJECT_PATH}/templates/geb.properties.template" \
-        "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/geb.properties" 2> "$TMP_ERR"
-    if [ $? -ne 0 ]; then
-        log_json ERROR "update-geb-props: error updating geb.properties." < "$TMP_ERR"
-        SUCCESS=false
-    else
-        log_json INFO "update-geb-props: successfully updated geb.properties" < /dev/null
-    fi
-    rm -f "$TMP_ERR"
-    [ "$SUCCESS" = 'true' ]
-}
-
-#-------------------------------------------------------------------------------
-# update command line interface
-#-------------------------------------------------------------------------------
-update-cli() {
-    exec "${PROJECT_PATH}/scripts/template_engine.sh" \
-         "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
-         "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/devenv-cli.sh" 2> /dev/null
-}
-
-#-------------------------------------------------------------------------------
-# update all
-#-------------------------------------------------------------------------------
-update-all() {
-    update-config &&
-        update-doc &&
-        update-ws-props &&
-        update-geb-props &&
-        exec "${PROJECT_PATH}/scripts/template_engine.sh" \
-             "${PROJECT_PATH}/templates/devenv-cli.sh.template" \
-             "${ENV_DIR}/${CONFIG_FILE}" > "${ENV_DIR}/devenv-cli.sh" 2> /dev/null
 }
 
 ################################################################################
@@ -2941,13 +3269,14 @@ is_in_array() {
     VALUE="$1"
     shift
     ARRAY=( $@ )
+    IS_IN_ARRAY=false
     for ENTRY in "${ARRAY[@]}"; do
         if [ "$ENTRY" = "$VALUE" ]; then
-            true
+            IS_IN_ARRAY=true
             break
         fi
-        false
     done
+    [ "$IS_IN_ARRAY" = 'true' ]
 }
 
 #-------------------------------------------------------------------------------
@@ -3010,8 +3339,11 @@ log-dbaccount() (
         LEVEL="$1"
     fi
 
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "log-dbaccount: no config-file given!" < /dev/null
+        SUCCESS=false
     # check value of LEVEL
-    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+    elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
@@ -3022,7 +3354,7 @@ log-dbaccount() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3030,7 +3362,7 @@ log-dbaccount() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            
+
             POD="$(kube_get_pod iom)"
             if [ ! -z "$POD" ]; then
                 # make sure to get info about failed kubectl call
@@ -3074,15 +3406,18 @@ log-config() (
         LEVEL="$2"
     elif [ "$1" = '-f' ]; then
         FOLLOW=true
-    elif [ "$1" = '-f' ]; then
+    elif [ "$2" = '-f' ]; then
         FOLLOW=true
         LEVEL="$1"
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
-    fi   
-    
+    fi
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "log-config: no config-file given!" < /dev/null
+        SUCCESS=false
     # check value of LEVEL
-    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+    elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
@@ -3093,7 +3428,7 @@ log-config() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3106,7 +3441,7 @@ log-config() (
             if [ ! -z "$POD" ]; then
                 # make sure to get info about failed kubectl call
                 set -o pipefail
-                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c dbinit 2> "$TMP_ERR" |
+                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c config 2> "$TMP_ERR" |
                     $JQ -R 'fromjson? | select(type == "object")' |
                     $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
                 RESULT=$?
@@ -3151,9 +3486,12 @@ log-app() (
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
     fi
-    
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "log-app: no config-file given!" < /dev/null
+        SUCCESS=false
     # check value of LEVEL
-    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+    elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
@@ -3164,7 +3502,7 @@ log-app() (
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3172,7 +3510,7 @@ log-app() (
             else
                 COMPACT_FLAG='--compact-output'
             fi
-            
+
             POD="$(kube_get_pod iom)"
             if [ ! -z "$POD" ]; then
                 # make sure to get info about failed kubectl call
@@ -3222,26 +3560,29 @@ log-access() (
     elif [ ! -z "$1" ]; then
         LEVEL="$1"
     fi
-    
+
+    if [ -z "$CONFIG_FILE" ]; then
+        log_json ERROR "log-access: no config-file given!" < /dev/null
+        SUCCESS=false
     # check value of level
-    if is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+    elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
-            log_json ERROR "log-app: jq not found" < /dev/null
+            log_json ERROR "log-access: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
             else
                 FOLLOW_FLAG=''
             fi
-            
+
             if [ "$LEVEL" = 'ERROR' ]; then
                 FILTER='and (.responseCode >= 400)'
             else
                 FILTER=''
             fi
-        
+
             # avoid formatting if output is written to pipe. This makes it much easier,
             # to process the results
             if [ -t 1 ]; then
@@ -3279,15 +3620,55 @@ log-access() (
 # read configuration
 ################################################################################
 
-# read current config
-if ! ( set -e; . "${ENV_DIR}/${CONFIG_FILE}" ); then
-    echo "error reading '${ENV_DIR}/${CONFIG_FILE}'" 1>&2
-    exit 1
+# will be overwritten by CONFIG_FILE later
+OMS_LOGLEVEL_DEVENV=WARN
+
+#-------------------------------------------------------------------------------
+# if $1 is a file, it's assumed to be the config-file
+CONFIG_READ=0
+if [ ! -z "$1" -a -f "$1" ]; then
+    # try to read config
+    if ! ( set -e; . "$1" ) 2> /dev/null; then
+        log_json WARN "error reading config file '$1'" < /dev/null
+    else
+        . "$1"
+        CONFIG_FILE="$1"
+        CONFIG_READ=1
+        shift
+    fi
 fi
-. "${ENV_DIR}/${CONFIG_FILE}"
+    
+if [ "$CONFIG_READ" = '0' -a ! -z "$DEVENV4IOM_CONFIG" -a -f "$DEVENV4IOM_CONFIG" ]; then
+    # try to read config
+    if ! ( set -e; . "$DEVENV4IOM_CONFIG" ) 2> /dev/null; then
+        log_json ERROR "error reading config file '$DEVENV4IOM_CONFIG'" < /dev/null
+        exit 1
+    else
+        . "$DEVENV4IOM_CONFIG"
+        CONFIG_FILE="$DEVENV4IOM_CONFIG"
+    fi
+fi
+
+#-------------------------------------------------------------------------------
+if [ ! -z "$CONFIG_FILE" ]; then
+    if [ -z "$ID" ]; then
+        # reject config file with empty ID
+        # this is the initial state after creation of file
+        log_json ERROR "ID in file '$CONFIG_FILE' must not be empty!" < /dev/null
+        exit 1
+    elif echo "$ID" | grep -qi '^default' || echo "$ID" | grep -qi '^docker' || echo "$ID" | grep -qi '^kube'; then
+        # reject config file with ID starting with one of the reserved words,
+        # which are used by namespaces of Docker-Destop
+        log_json ERROR "ID in file '$CONFIG_FILE' must not start with one of the reserverd words 'default', 'docker', 'kube'" < /dev/null
+        exit 1
+    fi
+fi
+
+# determine PROJECT_PATH
+PROJECT_PATH="$(dirname "$(dirname "$BASH_SOURCE")")"
 
 # get template variables
-. ${PROJECT_PATH}/scripts/template-variables
+. $PROJECT_PATH/bin/template-variables
 
 ################################################################################
 # read command line arguments
@@ -3314,8 +3695,8 @@ case $1 in
     du*)
         LEVEL0=dump
         ;;
-    u*)
-        LEVEL0=update
+    g*)
+        LEVEL0=get
         ;;
     l*)
         LEVEL0=log
@@ -3516,16 +3897,10 @@ elif [ "$LEVEL0" = "dump" ]; then
             exit 1
             ;;
     esac
-elif [ "$LEVEL0" = 'update' ]; then
+elif [ "$LEVEL0" = 'get' ]; then
     case $1 in
         co*)
             LEVEL1=config
-            ;;
-        d*)
-            LEVEL1=doc
-            ;;
-        cl*)
-            LEVEL1=cli
             ;;
         g*)
             LEVEL1=geb-props
@@ -3533,19 +3908,19 @@ elif [ "$LEVEL0" = 'update' ]; then
         w*)
             LEVEL1=ws-props
             ;;
-        a*)
-            LEVEL1=all
+        s*)
+            LEVEL1=soap-props
             ;;
         --help)
-            help-update
+            help-get
             exit 0
             ;;
         -h)
-            help-update
+            help-get
             exit 0
             ;;
         *)
-            syntax_error update
+            syntax_error get
             exit 1
             ;;
     esac
@@ -3635,7 +4010,7 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
 # handle commands, accepting two arguments
 elif [ "$LEVEL0" = 'log' ]; then
     eval $LEVEL0-$LEVEL1 "$ARG1" "$ARG2" || exit 1
-    
+
 # handle commands, not accepting any argument
 else
     if [ ! -z "$ARG1" ]; then

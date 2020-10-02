@@ -133,21 +133,6 @@ elif [ ! -z "$CONFIG_FILE" ]; then
 
 fi
 
-# starting at this point, CONFIG_FILE becomes a new meaning as template variable
-# this template variable contains the name of the file only, without directory part.
-# The directory is provided by template variable ENV_DIR, which contains the absolute
-# path of CONFIG_FILE.
-
-if [ ! -z "$CONFIG_FILE" ]; then
-    if echo "$CONFIG_FILE" | grep -q '^/'; then
-        ENV_DIR="$(dirname "$CONFIG_FILE")"
-    else
-        ENV_DIR="$(dirname "$(pwd)/$CONFIG_FILE")"
-    fi
-    ENV_BASE_DIR="$(realpath "$ENV_DIR/..")"
-    CONFIG_FILE="$(basename "$CONFIG_FILE")"
-fi
-
 # check template-variables file
 if [ -z "$TEMPLATE_VAR_FILE" -o ! -f "$TEMPLATE_VAR_FILE" ]; then
     echo "template-variables file missing!" 1>&2

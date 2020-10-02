@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: sqlconfig
-        image: ${IOM_DBINIT_IMAGE}
+        image: ${IOM_CONFIG_IMAGE}
         imagePullPolicy: ${IMAGE_PULL_POLICY}
         env:
           - name: TENANT
@@ -25,6 +25,8 @@ spec:
             value: '${OMS_DB_USER}'
           - name: OMS_DB_PASS
             value: '${OMS_DB_PASS}'
+          - name: OMS_DB_USER_CONNECTION_SUFFIX
+            value: '${PGUSER_CONNECTION_SUFFIX}'
           - name: OMS_LOGLEVEL_SCRIPTS
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME

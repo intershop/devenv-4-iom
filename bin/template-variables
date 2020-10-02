@@ -14,8 +14,8 @@ PORT_OFFSET="${PORT_OFFSET:-10}"
 # environment specific configuration defaults to 'ci'
 CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
 
-# skip import of test-data
-CAAS_SKIP_TEST_DATA_IMPORT="${CAAS_SKIP_TEST_DATA_IMPORT:-false}"
+# import of test-data
+CAAS_IMPORT_TEST_DATA="${CAAS_IMPORT_TEST_DATA:-true}"
 
 # check for 'false' only, to enable health-checks in any other case
 PERFORM_HEALTH_CHECKS="${PERFORM_HEALTH_CHECKS:-true}"
@@ -24,6 +24,10 @@ if [ "$PERFORM_HEALTH_CHECKS" = "false" ]; then
 else
     HealthCheckYml_=''
 fi
+
+JBOSS_JAVA_OPTS="${JBOSS_JAVA_OPTS:--Xms1024M -Xmx2048M}"
+JBOSS_XA_POOLSIZE_MIN="${JBOSS_XA_POOLSIZE_MIN:-10}"
+JBOSS_XA_POOLSIZE_MAX="${JBOSS_XA_POOLSIZE_MAX:-50}"
 
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
@@ -171,44 +175,8 @@ else
     ShareDirYml____='#'
 fi
 
-# directory to be used as log directory
-# has to be empty on default, in order to become able to make the distinction
-# whether the user wants to use a custom log directory or not.
-CUSTOM_LOG_DIR="${CUSTOM_LOG_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_LOG_DIR" ]; then
-    CUSTOM_LOG_DIR=$(cygpath -u "$CUSTOM_LOG_DIR")
-fi
-# create yaml code depending on CUSTOM_LOG_DIR
-if [ ! -z "$CUSTOM_LOG_DIR" ]; then
-    LogDirYml______=''
-else
-    LogDirYml______='#'
-fi
-
 # used as identifier for an IOM environment e.g. as Kubernetes namespace name 
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
-
-CustomShareDirDefault="$ENV_DIR/share"
-CustomLogDirDefault="$ENV_DIR/logs"
-
-# set directory defaults depending on OS
-# directory of the environment
-if [ $(OS) = "Msys" ]; then
-    CustomShareDirDefault=$(cygpath -w "${CustomShareDirDefault}")
-    CustomLogDirDefault=$(cygpath -w "${CustomLogDirDefault}")
-fi
-
-# set IOM_APP_SRC_DIR depending on OS
-IOM_APP_SRC_DIR="${IOM_APP_SRC_DIR:-D:\\svn\\oms\\trunk}"
-if [ $(OS) = "Msys" -a ! -z "$IOM_APP_SRC_DIR" ]; then
-    IOM_APP_SRC_DIR=$(cygpath -u "${IOM_APP_SRC_DIR}")
-fi
-
-# set CAAS_SRC_DIR depending on OS
-CAAS_SRC_DIR="${CAAS_SRC_DIR:-D:\\svn\\caas\\trunk}"
-if [ $(OS) = "Msys" -a ! -z "$CAAS_SRC_DIR" ]; then
-    CAAS_SRC_DIR=$(cygpath -u "${CAAS_SRC_DIR}")
-fi
 
 # development host
 HOST_IOM="${HOST_IOM:-$(hostname)}"
@@ -258,6 +226,7 @@ PGHOST=${PGHOST}
 if [ "$PGHOST" = "postgres-service" ]; then
     PGHOST=
 fi
+PGUSER_CONNECTION_SUFFIX="${PGUSER_CONNECTION_SUFFIX}"
 
 # define variables to access database externally and internally. 
 # externally means from outside of Kubernetes
@@ -300,11 +269,11 @@ UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
-DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:11}"
+DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:12}"
 MAILHOG_IMAGE="${MAILHOG_IMAGE:-mailhog/mailhog}"
-IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbaccount:1.0.0.0-SNAPSHOT}"
-IOM_DBINIT_IMAGE="${IOM_DBINIT_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-dbinit:2.17.0.0-SNAPSHOT}"
-IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker-build.rnd.intershop.de/intershop/iom-app:2.17.0.0-SNAPSHOT}"
+IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.intershop.de/intershop/iom-dbaccount:1.1.0.0}"
+IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE:-docker.intershop.de/intershop/iom-config:3.0.0.0}"
+IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker.intershop.de/intershop/iom-app:3.0.0.0}"
 
 # this variable is used to pass information to the apply-sql-job.
 # A file or directory can be passed. It's necessary to split SQL_SRC into directory-
@@ -317,11 +286,11 @@ else
     sqlDir=$(dirname "$SQL_SRC")
 fi
 
-OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE:-ERROR}
-OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM:-ERROR}
-OMS_LOGLEVEL_HIBERNATE=${OMS_LOGLEVEL_HIBERNATE:-ERROR}
-OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ:-ERROR}
-OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION:-ERROR}
+OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE:-WARN}
+OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM:-WARN}
+OMS_LOGLEVEL_HIBERNATE=${OMS_LOGLEVEL_HIBERNATE:-WARN}
+OMS_LOGLEVEL_QUARTZ=${OMS_LOGLEVEL_QUARTZ:-WARN}
+OMS_LOGLEVEL_ACTIVEMQ=${OMS_LOGLEVEL_ACTIVEMQ:-WARN}
+OMS_LOGLEVEL_CUSTOMIZATION=${OMS_LOGLEVEL_CUSTOMIZATION:-WARN}
 OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS:-INFO}
 OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV:-INFO}
-
