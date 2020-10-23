@@ -32,6 +32,7 @@ JBOSS_XA_POOLSIZE_MAX="${JBOSS_XA_POOLSIZE_MAX:-50}"
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
+IMAGE_PULL_SECRET="${IMAGE_PULL_SECRET}"
 
 # initialize POSTGRES_ARGS
 if [ ${#POSTGRES_ARGS[@]} -eq 0 ]; then

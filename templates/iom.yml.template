@@ -42,6 +42,8 @@ ${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
 ${DumpsDirYml____}      - name: dumps
 ${DumpsDirYml____}        hostPath:
 ${DumpsDirYml____}          path: ${CUSTOM_DUMPS_DIR}
+      imagePullSecrets:
+      - name: ${IMAGE_PULL_SECRET}
       containers:
       - name: iom
         image: ${IOM_APP_IMAGE}

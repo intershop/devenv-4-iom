@@ -336,6 +336,8 @@ CONFIG
     IOM_CONFIG_IMAGE - defines the config image to be used
     IOM_APP_IMAGE - defines the IOM application image to be used
     IMAGE_PULL_POLICY - defines when to pull images from origin
+    IMAGE_PULL_SECRET - name of the secret to be used when pulling images from 
+      origin.
 
 SEE
     $ME [CONFIG-FILE] delete iom
@@ -1983,7 +1985,7 @@ $(kubectl get pods --namespace=$EnvId -l app=iom)
 Usefull commands:
 =================
 
-Login into Pod:             kubectl exec --namespace $EnvId $POD -it bash
+Login into Pod:             kubectl exec --namespace $EnvId $POD -it -- bash
 jboss-cli:                  kubectl exec --namespace $EnvId $POD -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
@@ -2053,7 +2055,7 @@ $(kubectl get pods --namespace=$EnvId -l app=postgres)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
-Login into Pod:             kubectl exec --namespace $EnvId $POD -it bash
+Login into Pod:             kubectl exec --namespace $EnvId $POD -it -- bash
 psql into root-db:          kubectl exec --namespace $EnvId $POD -it -- bash -c "PGUSER=$PGUSER PGDATABASE=$PGDATABASE psql"
 psql into IOM-db:           kubectl exec --namespace $EnvId $POD -it -- bash -c "PGUSER=$OMS_DB_USER PGDATABASE=$OMS_DB_NAME psql"
 
@@ -2101,7 +2103,7 @@ $(kubectl get pods --namespace=$EnvId -l app=mailhog)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
-Login into Pod:             kubectl exec --namespace $EnvId $POD -it sh
+Login into Pod:             kubectl exec --namespace $EnvId $POD -it -- sh
 Currently used yaml:        kubectl get pod -l app=mailhog -o yaml --namespace=$EnvId
 --------------------------------------------------------------------------------
 EOF
@@ -2323,14 +2325,28 @@ create-iom() {
         log_json ERROR "create-iom: no config-file given!" < /dev/null
         SUCCESS=false
     else
-        "$PROJECT_PATH/bin/template_engine.sh" \
-            "$PROJECT_PATH/templates/iom.yml.template" \
-            "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_json ERROR "create-iom: error creating iom" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_json INFO "create-iom: successfully created iom" < "$TMP_OUT"
+        # copy secret from default namespace to namespace of IOM
+        if [ ! -z "$IMAGE_PULL_SECRET" ]; then
+            kubectl get secret "$IMAGE_PULL_SECRET" --namespace default -oyaml 2> "$TMP_ERR" |
+                grep -v 'namespace:\|resourceVersion:\|selfLink:\|uid:' |
+                kubectl apply --namespace $EnvId -f - 2>> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "create-iom: error copying secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_ERR"
+                SUCCESS=false
+            else
+                log_json INFO "create-iom: successfully copied secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_OUT"
+            fi
+        fi
+        if [ "$SUCCESS" = 'true' ]; then
+            "$PROJECT_PATH/bin/template_engine.sh" \
+                "$PROJECT_PATH/templates/iom.yml.template" \
+                "$CONFIG_FILE" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_json ERROR "create-iom: error creating iom" < "$TMP_ERR"
+                SUCCESS=false
+            else
+                log_json INFO "create-iom: successfully created iom" < "$TMP_OUT"
+            fi
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"

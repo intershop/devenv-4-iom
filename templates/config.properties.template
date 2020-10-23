@@ -35,6 +35,14 @@ ID=${ID}
 # See https://kubernetes.io/docs/concepts/configuration/overview/#container-images
 IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 
+# Name of Kubernetes secret to be used, if authentication at a private Docker
+# registry is required. The secret has to be created manually in default
+# namespace.
+# More information about pull secrets can be found at:
+# - https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+# - https://docs.microsoft.com/de-de/azure/container-registry/container-registry-auth-kubernetes
+IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
+
 # postgres image (name:tag)
 # example:                  postgres:9.5
 DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE}
