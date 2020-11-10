@@ -3124,7 +3124,7 @@ dump-create() {
 
                 # wait for job to finish
                 if ! kube_job_wait dump-job $TIMEOUT; then
-                    log_json ERROR "dump-create: timeout of $TIMEOUT seconds reached" < /dev/null
+                    log_json ERROR "dump-create: job failed or timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 fi
 
