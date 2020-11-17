@@ -44,7 +44,7 @@ IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
 
 # postgres image (name:tag)
-# example:                  postgres:9.5
+# example:                  postgres:11
 DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE}
 
 # mailhog image (name:tag)
@@ -53,24 +53,24 @@ MAILHOG_IMAGE=${MAILHOG_IMAGE}
 
 # iom dbaccount image (name:tag)
 # examples:
-# locally built image:              iom-dbaccount:1.2.0.0-SNAPSHOT
-# release from ISH Docker registry: docker.intershop.de/intershop/iom-dbaccount:1.1.0.0
+# locally built image:              iom-dbaccount:1.3.0.0-SNAPSHOT
+# release from ISH Docker registry: docker.intershop.de/intershop/iom-dbaccount:1.2.0.0
 IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom config image (name:tag)
 # examples:
-# locally built IOM image:          iom-config:3.1.0.0-SNAPSHOT
-# locally built CI image:           ci-iom-config:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
-# IOM relase from ISH registry:     docker.intershop.de/intershop/iom-config:3.0.0.0
-# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-config:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# locally built IOM image:          iom-config:3.2.0.0-SNAPSHOT
+# locally built CI image:           ci-iom-config:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# IOM relase from ISH registry:     docker.intershop.de/intershop/iom-config:3.1.0.0
+# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-config:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
 IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 
 # iom app image (name:tag)
 # examples:
-# locally built IOM image:          iom-app:3.1.0.0-SNAPSHOT
-# locally built CI image:           ci-iom-app:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
-# IOM release from ISH registry:    docker.intershop.de/intershop/iom-app:3.0.0.0
-# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-app:3.1.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# locally built IOM image:          iom-app:3.2.0.0-SNAPSHOT
+# locally built CI image:           ci-iom-app:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# IOM release from ISH registry:    docker.intershop.de/intershop/iom-app:3.1.0.0
+# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-app:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
 IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
 ################################################################################

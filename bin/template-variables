@@ -1,4 +1,4 @@
-DEVENV4IOM_VERSION=1.1.0.0-SNAPSHOT
+DEVENV4IOM_VERSION=1.1.0.0
 
 ################################################################################
 # Defaults
@@ -272,9 +272,9 @@ TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 # images
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:12}"
 MAILHOG_IMAGE="${MAILHOG_IMAGE:-mailhog/mailhog}"
-IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.intershop.de/intershop/iom-dbaccount:1.1.0.0}"
-IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE:-docker.intershop.de/intershop/iom-config:3.0.0.0}"
-IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker.intershop.de/intershop/iom-app:3.0.0.0}"
+IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.intershop.de/intershop/iom-dbaccount:1.2.0.0}"
+IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE:-docker.intershop.de/intershop/iom-config:3.1.0.0}"
+IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker.intershop.de/intershop/iom-app:3.1.0.0}"
 
 # this variable is used to pass information to the apply-sql-job.
 # A file or directory can be passed. It's necessary to split SQL_SRC into directory-
