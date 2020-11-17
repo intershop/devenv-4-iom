@@ -1663,13 +1663,20 @@ log_json() (
             ;;
     esac
 
+    # following commands require gnu sed
+    # prefer gsed over sed, if available
+    SED=$(which gsed)
+    if [ -z "$SED" ]; then
+        SED=sed
+    fi
+    
     # quote MSG
-    MSG="$(echo $MSG | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037')"
+    MSG="$(echo $MSG | "$SED" 's/\\/\\\\/g' | "$SED" 's/"/\\"/g' | "$SED" ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037')"
 
     # quote additional info
     cat > "$ADD_INFO_IN"
     if [ -s "$ADD_INFO_IN" ]; then
-        { echo -n '"'; cat "$ADD_INFO_IN" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037'; echo -n '"'; } > "$ADD_INFO"
+        { echo -n '"'; cat "$ADD_INFO_IN" | "$SED" 's/\\/\\\\/g' | "$SED" 's/"/\\"/g' | "$SED" ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037'; echo -n '"'; } > "$ADD_INFO"
     fi
 
     # write json message if REQUESTED_LEVEL <= ALLOWED_LEVEL
