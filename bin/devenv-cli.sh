@@ -1665,7 +1665,7 @@ log_json() (
 
     # following commands require gnu sed
     # prefer gsed over sed, if available
-    SED=$(which gsed)
+    SED=$(which gsed 2> /dev/null)
     if [ -z "$SED" ]; then
         SED=sed
     fi
