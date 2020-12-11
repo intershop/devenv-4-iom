@@ -109,6 +109,8 @@ ${ShareDirYml____}          mountPath: /var/opt/share
             value: '${CAAS_ENV_NAME}'
           - name: CAAS_IMPORT_TEST_DATA
             value: '${CAAS_IMPORT_TEST_DATA}'
+          - name: CAAS_IMPORT_TEST_DATA_TIMEOUT
+            value: '${CAAS_IMPORT_TEST_DATA_TIMEOUT}'
           - name: JBOSS_OPTS
             value: "--debug *:8787"
           - name: JBOSS_JAVA_OPTS
