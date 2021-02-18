@@ -1,4 +1,4 @@
-DEVENV4IOM_VERSION=1.1.0.0
+DEVENV4IOM_VERSION=1.1.1.0
 
 ################################################################################
 # Defaults
@@ -16,6 +16,7 @@ CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
 
 # import of test-data
 CAAS_IMPORT_TEST_DATA="${CAAS_IMPORT_TEST_DATA:-true}"
+CAAS_IMPORT_TEST_DATA_TIMEOUT="${CAAS_IMPORT_TEST_DATA_TIMEOUT:-300}"
 
 # check for 'false' only, to enable health-checks in any other case
 PERFORM_HEALTH_CHECKS="${PERFORM_HEALTH_CHECKS:-true}"

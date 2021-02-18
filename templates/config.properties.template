@@ -112,8 +112,10 @@ OMS_DB_NAME="${OMS_DB_NAME}"
 CAAS_ENV_NAME=${CAAS_ENV_NAME}
 
 # CaaS projects may contain test data which are automatically imported when
-# starting IOM if this propertie is set to 'true'.
+# starting IOM if this propertie is set to 'true'. If import is not finished
+# before reaching timeout, the container will end with an error.
 CAAS_IMPORT_TEST_DATA=${CAAS_IMPORT_TEST_DATA}
+CAAS_IMPORT_TEST_DATA_TIMEOUT=${CAAS_IMPORT_TEST_DATA_TIMEOUT}
 
 # Hostname to be used for the OMS_PUBLIC_URL
 # If left empty, HOST_IOM defaults to ${HOST_IOM}
