@@ -21,7 +21,9 @@ Bash is part of Mac OS X, there is nothing to do.
 ## Docker-Desktop
 ### Windows
 To install [Docker Desktop](https://www.docker.com/products/docker-desktop), perform the following steps:
-
+ **Optional** -Define an alternate installation location to spare place on C. e.g. (cmd as Admin) mklink /J "C:\Program Files\Docker" "D:\myssdalternateprogramlocation\Docker"
+    - (see https://forums.docker.com/t/docker-installation-directory/32773/7)
+    - troubelshooting, deinstallation: https://github.com/docker/for-win/issues/1544
 > **Caution:** While installing you will be signed-out without further acknowledgements and your PC will probably be restarted. So save everything before installing.
 
 1. Start _Docker Desktop_ by clicking the _Docker Desktop_ shortcut.
