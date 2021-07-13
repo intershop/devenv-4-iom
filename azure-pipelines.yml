@@ -93,7 +93,7 @@ jobs:
   - script: |
       mvn deploy:deploy-file \
         -DrepositoryId=$MAVEN_REPO \
-        -Dfile="$PIPELINE_WORKSPACE/deven4iom-$DEVENV4IOM_VERSION.tgz" \
+        -Dfile="$PIPELINE_WORKSPACE/devenv4iom-$DEVENV4IOM_VERSION.tgz" \
         -DgroupId=com.intershop.oms \
         -DartifactId=devenv4iom \
         -Dversion=$DEVENV4IOM_VERSION \
