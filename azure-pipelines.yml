@@ -85,7 +85,7 @@ jobs:
 
   - task: MavenAuthenticate@0
     inputs:
-      artifactsFeeads: "$(MAVEN_REPO)"
+      artifactsFeeds: "$(MAVEN_REPO)"
     timeoutInMinutes: 1
     displayName: Authenticate at maven repo
     #enabled: false
