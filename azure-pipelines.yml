@@ -77,7 +77,7 @@ jobs:
         exit 1
       fi
 
-      echo '##[debug] create package'
+      echo "##[debug] create package $PIPELINE_WORKSPACE/devenv4iom-$DEVENV4IOM_VERSION.tgz"
       tar --exclude '.*' --exclude '*~' -cvzf "$PIPELINE_WORKSPACE/devenv4iom-$DEVENV4IOM_VERSION.tgz" *
     timeoutInMinutes: 5
     displayName: "Create release package"
