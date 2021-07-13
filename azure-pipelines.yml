@@ -1,7 +1,5 @@
 # For reference, see https://aka.ms/yaml
 
-variables:
-  
 trigger:
   tags:
     include:
