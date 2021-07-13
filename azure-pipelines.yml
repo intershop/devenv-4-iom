@@ -1,5 +1,6 @@
 # For reference, see https://aka.ms/yaml
 
+
 trigger:
   tags:
     include:
@@ -20,9 +21,10 @@ jobs:
   timeoutInMinutes: 30
   workspace:
     clean: all
+  variables:
+    TRIGGERED_BY_TAG: false
+    DEVENV4IOM_VERSION: ''
 
-  # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
-  
   steps:
 
   - script: |
@@ -37,6 +39,66 @@ jobs:
     #enabled: false
 
   - script: |
-      echo "branch: $BUILD_SOURCEBRANCH"
-    
+      # stop on any error
+      set -e
+      set -x
+      # BUILD_SOURCEBRANCH differs depending on trigger, see
+      # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+      #   refs/tags/<tag name>
+      #   refs/heads/<branch name>
+      echo '##[debug] check Build.SourceBranch'
+      if echo "$BUILD_SOURCEBRANCH" | grep -q '^refs/tags/'; then
+        echo "##vso[task.setvariable variable=TRIGGERED_BY_TAG;]true"
+        echo "##vso[task.setvariable variable=MAVEN_REPO;]order-iom-releases"
+      else
+        echo "##vso[task.setvariable variable=TRIGGERED_BY_TAG;]false"
+        echo "##vso[task.setvariable variable=MAVEN_REPO;]order-iom-snapshots"
+      fi
 
+      eval $(grep '^DEVENV4IOM_VERSION' bin/template-variables)
+      echo "##vso[task.setvariable variable=DEVENV4IOM_VERSION;]$DEVENV4IOM_VERSION"
+    timeoutInMinutes: 1
+    displayName: Fill control vars"
+    #enabled: false
+    
+  - script: |
+      # stop on any error
+      set -e
+      set -x
+      echo '##[debug] check conditions'
+      if [ "$TRIGGERED_BY_TAG" = 'true' ]; then
+        TAG=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/tags/||g')
+        if [ "$TAG" != "$DEVENV4IOM_VERSION" ]; then
+          echo "##vso[task.logissue type=error] tag ($TAG) and version ($DEVENV4IOM_VERSION) are not identical"
+          exit 1
+        fi
+      elif ! echo "$DEVENV4IOM_VERSION" | grep -q '-SNAPSHOT$'; then
+        echo "##vso[task.logissue type=error] found an invalid version ($DEVENV4IOM_VERSION)"
+        exit 1
+      fi
+
+      echo '##[debug] create package'
+      tar --exclude '.*' --exclude '*~' -cvzf "$PIPELINE_WORKSPACE/devenv4iom-$DEVENV4IOM_VERSION.tgz"
+    timeoutInMinutes: 5
+    displayName: "Create release package"
+    #enabled: false
+
+  - task: MavenAuthenticate@0
+    inputs:
+      artifactsFeeads: "$(MAVEN_REPO)"
+    timeoutInMinutes: 1
+    displayName: Authenticate at maven repo
+    #enabled: false
+
+  - script: |
+      echo mvn deploy:deploy-file \
+        -DrepositoryId=$MAVEN_REPO \
+        -Dfile="$PIPELINE_WORKSPACE/deven4iom-$DEVENV4IOM_VERSION.tgz" \
+        -DgroupId=com.intershop.oms \
+        -DartifactId=devenv4iom \
+        -Dversion=$DEVENV4IOM_VERSION \
+        -Durl=https://pkgs.dev.azure.com/intershop-com/Products/_packaging/$MAVEN_REPO/maven/v1 \
+        -Dpackaging=tgz
+    timeoutInMinutes: 5
+    displayName: Push to maven repo
+    #enabled: false
