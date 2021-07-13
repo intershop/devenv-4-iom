@@ -72,7 +72,7 @@ jobs:
           echo "##vso[task.logissue type=error] tag ($TAG) and version ($DEVENV4IOM_VERSION) are not identical"
           exit 1
         fi
-      elif ! echo "$DEVENV4IOM_VERSION" | grep -q '-SNAPSHOT$'; then
+      elif ! echo "$DEVENV4IOM_VERSION" | grep -q -- '-SNAPSHOT$'; then
         echo "##vso[task.logissue type=error] found an invalid version ($DEVENV4IOM_VERSION)"
         exit 1
       fi
