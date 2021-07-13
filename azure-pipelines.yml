@@ -41,7 +41,7 @@ jobs:
   - script: |
       # stop on any error
       set -e
-      set -x
+
       # BUILD_SOURCEBRANCH differs depending on trigger, see
       # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
       #   refs/tags/<tag name>
@@ -64,7 +64,7 @@ jobs:
   - script: |
       # stop on any error
       set -e
-      set -x
+
       echo '##[debug] check conditions'
       if [ "$TRIGGERED_BY_TAG" = 'true' ]; then
         TAG=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/tags/||g')
@@ -91,7 +91,7 @@ jobs:
     #enabled: false
 
   - script: |
-      echo mvn deploy:deploy-file \
+      mvn deploy:deploy-file \
         -DrepositoryId=$MAVEN_REPO \
         -Dfile="$PIPELINE_WORKSPACE/deven4iom-$DEVENV4IOM_VERSION.tgz" \
         -DgroupId=com.intershop.oms \
