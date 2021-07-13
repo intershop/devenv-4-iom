@@ -1,0 +1,44 @@
+# For reference, see https://aka.ms/yaml
+
+variables:
+  
+trigger:
+  tags:
+    include:
+    - '*'
+    #exclude:
+    #- '*'
+  branches:
+    #exclude:
+    #  - '*'
+    include:
+      - develop
+
+jobs:
+
+- job: Devenv4IOM
+  pool: 'ubuntu-20.4-DS2_v2-adopt-jdk'
+  continueOnError: false
+  timeoutInMinutes: 30
+  workspace:
+    clean: all
+
+  # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+  
+  steps:
+
+  - script: |
+      # stop on any error
+      set -e
+
+      echo '##[debug] install tools'
+      sudo apt update
+      sudo apt install -y maven
+    timeoutInMinutes: 3
+    displayName: "Install tools"
+    #enabled: false
+
+  - script: |
+      echo "branch: $BUILD_SOURCEBRANCH"
+    
+
