@@ -20,8 +20,10 @@ Bash is part of Mac OS X, there is nothing to do.
 
 ## Docker-Desktop
 ### Windows
-To install [Docker Desktop](https://www.docker.com/products/docker-desktop), perform the following steps:
-
+To install [Docker Desktop](https://www.docker.com/products/docker-desktop), perform the following steps:  
+ **Optional** -Define an alternate installation location to spare place on C. e.g. (cmd as Admin) mklink /J "C:\Program Files\Docker" "D:\myssdalternateprogramlocation\Docker"  
+    - (see https://forums.docker.com/t/docker-installation-directory/32773/7)  
+    - troubelshooting, deinstallation: https://github.com/docker/for-win/issues/1544  
 > **Caution:** While installing you will be signed-out without further acknowledgements and your PC will probably be restarted. So save everything before installing.
 
 1. Start _Docker Desktop_ by clicking the _Docker Desktop_ shortcut.
@@ -32,14 +34,14 @@ To install [Docker Desktop](https://www.docker.com/products/docker-desktop), per
 
 
 4. Adjust the following settings:
-    - _Settings > Advanced_
+    - _Settings > Resources > Advanced_
        - CPUs: 3
        - Memory: 8192
        - _**Apply**_
     - _Settings > Kubernetes_
        - _Enable Kubernetes_
        - _**Apply**_
-    - _Settings > Shared Drives_
+    - _Settings > Resources > File Sharing_
        - Share drives that should be available for Kubernetes. You should share the drive, that is holding the IOM sources, as well as the drive with the configurations of _devenv-4-iom_.
        - _**Apply**_
 5. **Optional** - Move your _Docker Desktop VM_ to the desired device:
@@ -114,7 +116,7 @@ git clone https://bitbucket.intershop.de/scm/iom/devenv-4-iom.git
 Add _devenv-cli.sh_ to the PATH variable if you want to be able to call it from everywhere. There are two ways to do this:
    - In your shell call: 
     ```sh
-    echo "export PATH=\"\$PATH:/d/git/devenv-4-iom\"" >> ~/.profile
+    echo "export PATH=\"\$PATH:/d/git/oms/devenv-4-iom\"" >> ~/.profile
     ```
     (your profile file might vary if you are using bash).
    - Edit your whole windows system to search also in the directory your _devenv-cli.sh_ is checked out to. This way also removes variances with the mount points of your windows drive paths.

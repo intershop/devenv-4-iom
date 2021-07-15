@@ -1735,8 +1735,9 @@ OS() {
 # wait for job to complete
 # $1: job name
 # $2: timeout [s]
-# ->: true - if job was successfully completed before timeout
-#     false - else
+# ->: 0 if job was successfully completed before timeout
+#     1 timed out
+#     2 Job not Succeeded
 #-------------------------------------------------------------------------------
 kube_job_wait() (
     JOB_NAME=$1
@@ -1747,7 +1748,13 @@ kube_job_wait() (
         sleep 5
         PHASE=$(kubectl get pods --namespace $EnvId -l job-name=$JOB_NAME -o jsonpath='{.items[0].status.phase}' 2> /dev/null)
     done
-    [ \( "$PHASE" = 'Succeeded' \) ]
+    if [ "$PHASE" = 'Succeeded' ]; then
+        exit 0
+    elif [ $(date '+%s') -ge $(expr "$START_TIME" + "$TIMEOUT") ]; then
+        exit 1
+    else
+        exit 2
+    fi
 )
 
 #-------------------------------------------------------------------------------
@@ -2773,8 +2780,13 @@ apply-sql-scripts() {
                 log_json INFO "apply-sql-scripts: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
-                if ! kube_job_wait apply-sql-job $TIMEOUT; then
+                kube_job_wait apply-sql-job $TIMEOUT
+                KUBE_JOB_STATUS=$?
+                if [ "$KUBE_JOB_STATUS" = '1' ]; then
                     log_json ERROR "apply-sql-scripts: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                elif [ "$KUBE_JOB_STATUS" = '2' ]; then
+                    log_json ERROR "apply-sql-scripts: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
@@ -2847,8 +2859,13 @@ apply-sql-config() {
                 log_json INFO "apply-sql-config: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
-                if ! kube_job_wait sqlconfig-job $TIMEOUT; then
+                kube_job_wait sqlconfig-job $TIMEOUT
+                KUBE_JOB_STATUS=$?
+                if [ "$KUBE_JOB_STATUS" = '1' ]; then
                     log_json ERROR "apply-sql-config: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                elif [ "$KUBE_JOB_STATUS" = '2' ]; then
+                    log_json ERROR "apply-sql-config: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
@@ -2923,8 +2940,13 @@ apply-json-config() {
                 log_json INFO "apply-json-config: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
-                if ! kube_job_wait jsonconfig-job $TIMEOUT; then
+                kube_job_wait jsonconfig-job $TIMEOUT
+                KUBE_JOB_STATUS=$?
+                if [ "$KUBE_JOB_STATUS" = '1' ]; then
                     log_json ERROR "apply-json-config: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                elif [ "$KUBE_JOB_STATUS" = '2' ]; then
+                    log_json ERROR "apply-json-config: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
@@ -3000,8 +3022,13 @@ apply-dbmigrate() {
                 log_json INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
-                if ! kube_job_wait dbmigrate_job $TIMEOUT; then
-                    log_json ERRO "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
+                kube_job_wait dbmigrate_job $TIMEOUT
+                KUBE_JOB_STATUS=$?
+                if [ "$KUBE_JOB_STATUS" = '1' ]; then
+                    log_json ERROR "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                elif [ "$KUBE_JOB_STATUS" = '2' ]; then
+                    log_json ERROR "apply-dbmigrate: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
@@ -3130,8 +3157,13 @@ dump-create() {
                 log_json INFO "dump-create: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
-                if ! kube_job_wait dump-job $TIMEOUT; then
+                kube_job_wait dump-job $TIMEOUT
+                KUBE_JOB_STATUS=$?
+                if [ "$KUBE_JOB_STATUS" = '1' ]; then
                     log_json ERROR "dump-create: job failed or timeout of $TIMEOUT seconds reached" < /dev/null
+                    SUCCESS=false
+                elif [ "$KUBE_JOB_STATUS" = '2' ]; then
+                    log_json ERROR "dump-create: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
 
