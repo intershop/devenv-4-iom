@@ -105,6 +105,8 @@ ${ShareDirYml____}          mountPath: /var/opt/share
             value: '${OMS_LOGLEVEL_CUSTOMIZATION}'
           - name: OMS_LOGLEVEL_SCRIPTS
             value: '${OMS_LOGLEVEL_SCRIPTS}'
+          - name: OMS_DEBUG_REST_URLS
+            value: '${OMS_DEBUG_REST_URLS}'
           - name: CAAS_ENV_NAME
             value: '${CAAS_ENV_NAME}'
           - name: CAAS_IMPORT_TEST_DATA

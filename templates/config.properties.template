@@ -169,6 +169,11 @@ OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
 
+# comma separated list of strings
+# if a string matches a sub-string search in a REST url, request and response
+# of according REST calls are logged in a DEBUG message
+OMS_DEBUG_REST_URLS=${OMS_DEBUG_REST_URLS}
+
 ################################################################################
 # Development settings
 ################################################################################
