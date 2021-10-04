@@ -13,12 +13,13 @@
 #
 ################################################################################
 
-# The ID is used to create unique names for docker instances.
-# This ID is initially assigned when creating the configuration file. Please
-# never change the ID afterwards.
-# Since the ID is also used to derive the Kubernetes namespace to be used for
-# IOM, the ID must not collide with namespaces used by Docker-Desktop. Forbidden
-# are all values beginning with:
+# This ID has to be defined before using this configuration the first time. All
+# your devenv4iom configurations have to use unique IDs, since the IDs are needed
+# to isolate devenv4iom instances from each other on Docker and on Kubernetes
+# level. Once used, you must not change the ID again, otherwise it might be
+# difficult to remove according Docker-/Kubernetes-resources afterwards.
+# In order to avoid name clashes with standard namespaces, ID must not beginn
+# with one of the following strings:
 # - default
 # - docker
 # - kube
@@ -168,6 +169,11 @@ OMS_LOGLEVEL_SCRIPTS=${OMS_LOGLEVEL_SCRIPTS}
 # Log level of devenv-cli.sh itself. Supported levels are:
 #   ERROR, WARN, INFO, DEBUG
 OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
+
+# comma separated list of operationIDs
+# for any operationID listed here, according REST requests/responses are
+# logged into a debug message.
+OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 
 ################################################################################
 # Development settings
