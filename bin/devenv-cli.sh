@@ -19,9 +19,14 @@ SYNOPSIS
     $ME [CONFIG-FILE] COMMAND
 
 CONFIG-FILE
-    Name of the configuration file to be used. If not set, the environment
-    variable DEVENV4IOM_CONFIG will be checked. If no configuration file can be
-    found, $ME ends with an error, with one exception: 'get config'.
+    Name of the configuration file to be used. If not set, the file 
+    devenv.user.properties in current directory will be used instead.
+    If no configuration file can be found, $ME ends with an error, with one 
+    exception: 'get config'.
+    At the same location as the user-specific configuration, the file 
+    devenv.project.properties is loaded, if it exists. Properties defined in 
+    this file have lower precedence than those defined inside the user-specific
+    configuration file.
 
 COMMANDS
     get|g*             get devenv4iom specific resource
