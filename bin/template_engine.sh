@@ -7,7 +7,7 @@ $ME
     expands template file
 
 SYNOPSIS
-    $(basename $0) --template=<template-file> [ --config=<config-file>,... ]" [-h]
+    $(basename $0) --template=<template-file> --project-dir=<project-dir> [ --config=<config-file>,... ]" [-h]
 
 DESCRIPTION
     This is a very simple templating system to render environment varibales
@@ -18,6 +18,10 @@ DESCRIPTION
 
     --template=<template-file>
       Name of the template file to be used.
+
+    --project-dir=<project-dir>
+      Value of project-dir is required by some variables (CUSTOM_*_DIR) to be expanded
+      to absolute paths.
 
     --config=<config-file>,...
       Optional parameter. One or more config files, defining variables, to be expanded
@@ -62,11 +66,16 @@ TEMPLATE_VAR_FILE="$(dirname $0)/template-variables"
 
 TEMPLATE_FILE=
 CONFIG_FILES=
+PROJECT_DIR=
 
 for OPT in "$@"; do
     case $OPT in
         --template=*)
             TEMPLATE_FILE="${OPT#*=}"
+            shift
+            ;;
+        --project-dir=*)
+            PROJECT_DIR="${OPT#*=}"
             shift
             ;;
         --config=*)
@@ -88,6 +97,14 @@ done
 # check template-file
 if [ -z "$TEMPLATE_FILE" -o ! -f "$TEMPLATE_FILE" ]; then
     echo "template-file missing!" 1>&2
+    echo 1>&2
+    usage 1>&2
+    exit 1
+fi
+
+# check project-dir
+if [ -z "$PROJECT_DIR" -o ! -d "$PROJECT_DIR" ]; then
+    echo "project-dir is missing!" 1>&2
     echo 1>&2
     usage 1>&2
     exit 1
@@ -115,6 +132,8 @@ echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
 done || exit 1
 
 # read content of config files
+# . notation cannot be used, since variables would be defined inside a
+# subshell only.
 CONFIG=$(echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
              cat "$CONFIG_FILE"
              echo # just for the case, a newline is missing at the end of file
@@ -138,5 +157,10 @@ fi
 . $TEMPLATE_VAR_FILE
 
 # render template with variables from CONFIG
+ORIGINAL_PROJECT_DIR="$PROJECT_DIR"
 eval "$CONFIG"
+if [ "$ORIGINAL_PROJECT_DIR" != "$PROJECT_DIR" ]; then
+    echo "overwriting PROJECT_DIR is not supported!" 1>&2
+    exit 1
+fi
 render "$TEMPLATE_FILE"

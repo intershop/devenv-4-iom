@@ -69,8 +69,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
-  CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
+# define variable containing the according absolute path
+CustomAppsDirAbs=
+if [ ! -z "$CUSTOM_APPS_DIR" ]; then
+    if echo "$CUSTOM_APPS_DIR" | grep -q '^/'; then
+        CustomAppsDirAbs="$CUSTOM_APPS_DIR"
+    else
+        CustomAppsDirAbs="$PROJECT_DIR/$CUSTOM_APPS_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
@@ -83,8 +89,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom templates or not.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
-    CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
+# define variable containing the according absolute path
+CustomTemplatesDirAbs=
+if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+    if echo "$CUSTOM_TEMPLATES_DIR" | grep -q '^/'; then
+        CustomTemplatesDirAbs="$CUSTOM_TEMPLATES_DIR"
+    else
+        CustomTemplatesDirAbs="$PROJECT_DIR/$CUSTOM_TEMPLATES_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
@@ -97,8 +109,14 @@ fi
 # variable has to be empty on default, in order to become able to make the
 # distinction whether the user wants to use custom dumps or not.
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DUMPS_DIR" ]; then
-    CUSTOM_DUMPS_DIR=$(cygpath -u "$CUSTOM_DUMPS_DIR")
+# define variable containing the according absolute path
+CustomDumpsDirAbs=
+if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
+    if echo "$CUSTOM_DUMPS_DIR" | grep -q '^/'; then
+        CustomDumpsDirAbs="$CUSTOM_DUMPS_DIR"
+    else
+        CustomDumpsDirAbs="$PROJECT_DIR/$CUSTOM_DUMPS_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_DUMPS_DIR
 if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
@@ -111,8 +129,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
-    CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
+# define variable containing the according absolute path
+CustomXsltDirAbs=
+if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
+    if echo "$CUSTOM_XSLT_DIR" | grep -q '^/'; then
+        CustomXsltDirAbs="$CUSTOM_XSLT_DIR"
+    else
+        CustomXsltDirAbs="$PROJECT_DIR/$CUSTOM_XSLT_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
@@ -125,8 +149,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom dbmigrate scripts or not.
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
-    CUSTOM_DBMIGRATE_DIR=$(cygpath -u "$CUSTOM_DBMIGRATE_DIR")
+# define variable containing the according absolute path
+CustomDbmigrateDirAbs=
+if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+    if echo "$CUSTOM_DBMIGRATE_DIR" | grep -q '^/'; then
+        CustomDbmigrateDirAbs="$CUSTOM_DBMIGRATE_DIR"
+    else
+        CustomDbmigrateDirAbs="$PROJECT_DIR/$CUSTOM_DBMIGRATE_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_DBMIGRATE_DIR
 if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
@@ -139,8 +169,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom sql-config or not.
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SQLCONF_DIR" ]; then
-    CUSTOM_SQLCONF_DIR=$(cygpath -u "$CUSTOM_SQLCONF_DIR")
+# define variable containing the according absolute path
+CustomSqlconfDirAbs=
+if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+    if echo "$CUSTOM_SQLCONF_DIR" | grep -q '^/'; then
+        CustomSqlconfDirAbs="$CUSTOM_SQLCONF_DIR"
+    else
+        CustomSqlconfDirAbs="$PROJECT_DIR/$CUSTOM_SQLCONF_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_SQLCONF_DIR
 if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
@@ -153,8 +189,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom json-config or not.
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_JSONCONF_DIR" ]; then
-    CUSTOM_JSONCONF_DIR=$(cygpath -u "$CUSTOM_JSONCONF_DIR")
+# define variable containing the according absolute path
+CustomJsonconfDirAbs=
+if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+    if echo "$CUSTOM_JSONCONF_DIR" | grep -q '^/'; then
+        CustomJsonconfDirAbs="$CUSTOM_JSONCONF_DIR"
+    else
+        CustomJsonconfDirAbs="$PROJECT_DIR/$CUSTOM_JSONCONF_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_JSONCONF_DIR
 if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
@@ -167,8 +209,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom share or not.
 CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
-    CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
+# define variable containing the according absolute path
+CustomShareDirAbs=
+if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
+    if echo "$CUSTOM_SHARE_DIR" | grep -q '^/'; then
+        CustomShareDirAbs="$CUSTOM_SHARE_DIR"
+    else
+        CustomShareDirAbs="$PROJECT_DIR/$CUSTOM_SHARE_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
@@ -263,10 +311,6 @@ OMS_DB_SEARCHPATH="${OMS_DB_SEARCHPATH:-customer, oms, omt, product, admin, bizc
 OMS_DB_USER="${OMS_DB_USER:-oms_user}"
 OMS_DB_PASS="${OMS_DB_PASS:-oms_pw}"
 OMS_DB_NAME="${OMS_DB_NAME:-oms_db}"
-
-# paths
-PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
-UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
 
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
