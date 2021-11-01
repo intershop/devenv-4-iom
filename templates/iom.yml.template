@@ -17,31 +17,31 @@ spec:
       volumes:
 ${AppsDirYml_____}      - name: application-dev
 ${AppsDirYml_____}        hostPath:
-${AppsDirYml_____}          path: ${CUSTOM_APPS_DIR}
+${AppsDirYml_____}          path: ${CustomAppsDirAbs}
 ${TemplatesDirYml}      - name: templates-dev
 ${TemplatesDirYml}        hostPath:
-${TemplatesDirYml}          path: ${CUSTOM_TEMPLATES_DIR}
+${TemplatesDirYml}          path: ${CustomTemplatesDirAbs}
 ${XsltDirYml_____}      - name: xslt-dev
 ${XsltDirYml_____}        hostPath:
-${XsltDirYml_____}          path: ${CUSTOM_XSLT_DIR}
+${XsltDirYml_____}          path: ${CustomXsltDirAbs}
 ${ShareDirYml____}      - name: share-dev
 ${ShareDirYml____}        hostPath:
-${ShareDirYml____}          path: ${CUSTOM_SHARE_DIR}
+${ShareDirYml____}          path: ${CustomShareDirAbs}
 ${DbmigrateDirYml}      - name: dbmigrate-sps
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/stored_procedures
+${DbmigrateDirYml}          path: ${CustomDbmigrateDirAbs}/stored_procedures
 ${DbmigrateDirYml}      - name: dbmigrate-scripts
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/migrations
+${DbmigrateDirYml}          path: ${CustomDbmigrateDirAbs}/migrations
 ${SqlconfDirYml__}      - name: sqlconf
 ${SqlconfDirYml__}        hostPath:
-${SqlconfDirYml__}          path: ${CUSTOM_SQLCONF_DIR}
+${SqlconfDirYml__}          path: ${CustomSqlconfDirAbs}
 ${JsonconfDirYml_}      - name: jsonconf
 ${JsonconfDirYml_}        hostPath:
-${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
+${JsonconfDirYml_}          path: ${CustomJsonconfDirAbs}
 ${DumpsDirYml____}      - name: dumps
 ${DumpsDirYml____}        hostPath:
-${DumpsDirYml____}          path: ${CUSTOM_DUMPS_DIR}
+${DumpsDirYml____}          path: ${CustomDumpsDirAbs}
       imagePullSecrets:
       - name: ${IMAGE_PULL_SECRET}
       containers:

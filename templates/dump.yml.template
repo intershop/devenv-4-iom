@@ -41,5 +41,5 @@ ${DumpsDirYml____}          mountPath: /opt/dumps
       volumes:
 ${DumpsDirYml____}      - name: dumps
 ${DumpsDirYml____}        hostPath:
-${DumpsDirYml____}          path: "${CUSTOM_DUMPS_DIR}"
+${DumpsDirYml____}          path: "${CustomDumpsDirAbs}"
   backoffLimit: 0

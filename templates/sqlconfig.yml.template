@@ -39,5 +39,5 @@ ${SqlconfDirYml__}          mountPath: /opt/caas-config/sql-config
       volumes:
 ${SqlconfDirYml__}      - name: sqlconf
 ${SqlconfDirYml__}        hostPath:
-${SqlconfDirYml__}          path: ${CUSTOM_SQLCONF_DIR}
+${SqlconfDirYml__}          path: ${CustomSqlconfDirAbs}
   backoffLimit: 0

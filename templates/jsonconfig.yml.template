@@ -41,5 +41,5 @@ ${JsonconfDirYml_}          mountPath: /opt/caas-config/json-config
       volumes:
 ${JsonconfDirYml_}      - name: jsonconf
 ${JsonconfDirYml_}        hostPath:
-${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
+${JsonconfDirYml_}          path: ${CustomJsonconfDirAbs}
   backoffLimit: 0
