@@ -9,16 +9,51 @@ trap "rm -f $TMP_ERR $TMP_OUT" EXIT SIGTERM
 ################################################################################
 
 #-------------------------------------------------------------------------------
+# helper method to indent text
+# $1 - required. Number of spaces to indent content
+indent() {
+    while read LINE; do
+	I=$1
+	while [ "$I" -gt 0 ]; do
+	    echo -n ' '
+	    I=$(expr $I - 1)
+	done
+	    echo $LINE
+    done
+}
+
+#-------------------------------------------------------------------------------
 # helper method to provide message about CONFIG-FILE
+# $1 - optional. Number of spaces to indent content
 msg_config_file() {
-    cat <<EOF
-    Name of configuration file to be used. If not set, the file 
-    devenv.user.properties in current directory will be used instead.
-    The directory holding CONFIG-FILE or devenv.user.properties is searched
-    for another config file devenv.project.properties. If it exists, properties 
-    defined in this file are loaded with lower precedence.
-    If no configuration file can be found at all, $ME ends with an error, 
-    with one exception: 'get config'.
+    INDENT="${1:-0}"
+    indent $INDENT <<EOF
+Name of configuration file to be used. If not set, the file 
+devenv.user.properties in current directory will be used instead.
+The directory holding CONFIG-FILE or devenv.user.properties is searched
+for another config file devenv.project.properties. If it exists, properties 
+defined in this file are loaded with lower precedence.
+If no configuration file can be found at all, $ME ends with an error, 
+with one exception: 'get config'.
+EOF
+}
+
+#-------------------------------------------------------------------------------
+# helper method, giving information about handling of CUSTOM_*_DIR properties
+# $1 - required. Fills the * in CUSTOM_*_DIR with the real value.
+# $2 - optional. Number of spaces to indent content
+msg_custom_dir() {
+    FACET="${1:-*}"
+    INDENT="${2:-0}"
+    indent $INDENT <<EOF
+CUSTOM_${FACET}_DIR can be defined as an absolute or relative path. If a
+relative path is configured, the according absolute path is determined at
+runtime. If a project specific configuration file exists 
+(devenv.project.properties), the directory holding this configuration file
+will be used as base directory for the relative path.
+If no project specific configuration file exists at all, a relative path
+defined in CUSTOM_${FACET}_DIR will be expanded relative to the current
+working directory.
 EOF
 }
 
@@ -33,7 +68,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] COMMAND
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 COMMANDS
     get|g*             get devenv4iom specific resource
@@ -59,7 +94,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info RESOURCE
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 RESOURCE
     iom|i*             view information about IOM
@@ -83,7 +118,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info iom
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -97,7 +132,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info postgres
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -111,7 +146,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info mailserver
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -125,7 +160,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info storage
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -139,7 +174,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info cluster
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -153,7 +188,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] info config
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -167,7 +202,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] create RESOURCE
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 RESOURCE
     storage|s*         create persistant local Docker storage
@@ -196,7 +231,7 @@ OVERVIEW
     volume has to be created before starting postgres.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     KEEP_DATABASE_DATA - only when set to true, the Docker volume will be
@@ -228,7 +263,7 @@ OVERVIEW
     each other.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the name of namespace is derived from the ID of the current configuration.
@@ -254,7 +289,7 @@ OVERVIEW
     Creates a mail server and according service.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     MAILHOG_IMAGE - defines the image of the mailserver to be used
@@ -288,7 +323,7 @@ OVERVIEW
     set to true, the Docker volume has to be created in advance.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     DOCKER_DB_IMAGE - docker image to be used
@@ -336,7 +371,7 @@ OVERVIEW
     Creates IOM server and according service.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
@@ -374,7 +409,7 @@ OVERVIEW
     different commands only.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 SEE
     $ME [CONFIG-FILE] create storage
@@ -395,7 +430,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] delete RESOURCE
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 RESOURCE
     storage|s*         delete persistant local Docker storage
@@ -424,7 +459,7 @@ OVERVIEW
     Before deleting storage, you have to delete Postgres.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the name of the Docker volume will be derived from the ID.
@@ -454,7 +489,7 @@ OVERVIEW
     used for persistent storage of database data.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the name of the namespace is derived from the ID of the current configuration.
@@ -480,7 +515,7 @@ OVERVIEW
     Deletes the mail server and the according service.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the namespace where the mail server is deleted is derived from ID
@@ -511,7 +546,7 @@ OVERVIEW
     Deletes Postgres server and according service.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the namespace where Postgres is deleted from is derived from ID
@@ -552,7 +587,7 @@ OVERVIEW
     Deletes IOM and the according service.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the namespace where IOM is deleted from is derived from ID
@@ -588,7 +623,7 @@ OVERVIEW
     to survive the deletion of postgres.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 SEE
     $ME [CONFIG-FILE] delete iom
@@ -610,7 +645,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] wait RESOURCE
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 RESOURCE
     mailserver|m*      wait for mail server
@@ -639,7 +674,7 @@ OVERVIEW
     the mail server.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -661,7 +696,7 @@ OVERVIEW
     the postgres server.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -682,7 +717,7 @@ OVERVIEW
     used in scripts, which rely on the availability of the IOM server.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 EOF
 }
 
@@ -696,7 +731,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] apply RESOURCE
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 RESOURCE
     deployment|de*     apply custom deployment artifacts
@@ -741,15 +776,15 @@ OVERVIEW
     - After changing CUSTOM_APPS_DIR, IOM needs to be restarted.
     Once you have configured your developer VM this way, your custom built
     artifacts are deployed right at the start of IOM.
-
     Alternatively you can use Wildfly Console for deployments too.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_APPS_DIR - directory, where your custom built artifacts are located.
       Make sure, the directory is shared with Docker Desktop.
+$(msg_custom_dir APPS 6)
     ID - the namespace used is derived from ID
 
 SEE
@@ -789,11 +824,12 @@ OVERVIEW
     starting IOM.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_TEMPLATES_DIR - directory, where your custom mail templates are
       located. Make sure, the directory is shared with Docker Desktop.
+$(msg_custom_dir TEMPLATES 6)
     ID - the namespace used is derived from ID
 
 SEE
@@ -829,11 +865,12 @@ OVERVIEW
     starting IOM.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_XSLT_DIR - directory, where your custom XSL templates are located.
       Make sure, the directory is shared with Docker Desktop.
+$(msg_custom_dir XSLT 6)
     ID - the namespace used is derived from ID.
 
 SEE
@@ -878,7 +915,7 @@ OVERVIEW
     configuration variable OMS_LOGLEVEL_SCRIPTS.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     ID - the namespace used is derived from ID
@@ -942,11 +979,12 @@ OVERVIEW
     applied when starting IOM.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_SQLCONF_DIR - directory where your custom SQL configuration is
       located.
+$(msg_custom_dir SQLCONF 6)
     CAAS_ENV_NAME - environment name; controls which parts of the SQL
     configuration will be applied and which not.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying SQL
@@ -1002,11 +1040,12 @@ OVERVIEW
     also applied when starting IOM.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_JSONCONF_DIR - directory where your custom JSON confguration is
       located.
+$(msg_custom_dir JSONCONF 6)
     IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
@@ -1071,12 +1110,13 @@ OVERVIEW
     applied when starting IOM.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_DBMIGRATE_DIR - directory where your custom dbmigrate scripts are
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
+$(msg_custom_dir DBMIGRATE 6)
     IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
@@ -1117,7 +1157,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] dump OPERATION
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 OPERATION
     create|c*          create dump
@@ -1153,11 +1193,12 @@ OVERVIEW
     can be found in overview of '$ME dump load'.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_DUMPS_DIR - directory where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
+$(msg_custom_dir DUMPS 6)
     IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
@@ -1228,10 +1269,11 @@ OVERVIEW
     Devenv4iom is not able to control an external PostgreSQL server.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     CUSTOM_DUMPS_DIR - the directory in which custom dumps must be located.
+$(msg_custom_dir DUMPS 6)
 
     As 'dump load' is only a shortcut for a couple of others commands, you
     can learn more about CONFIG by requesting help of these commands.
@@ -1256,7 +1298,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] get RESOURCE
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 RESOURCE
     config|co*         get configuration file
@@ -1275,7 +1317,12 @@ help-get-config() {
 writes configuration to stdout
 
 SYNOPSIS
-    $ME [CONFIG-FILE] get config
+    $ME [CONFIG-FILE] get config [-r]
+
+ARGUMENTS
+    -r - optional. If set, $ME ignores any existing configuration. This way it
+      is possible to create a clean configuration with all values reseted to
+      factory defaults.
 
 OVERVIEW
     Devenv4iom provides a template for configuration files. With every new
@@ -1289,7 +1336,7 @@ OVERVIEW
     default values is written to stdout.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 SEE
     "$CONFIG_FILES"
@@ -1316,7 +1363,7 @@ OVERVIEW
     managed IOM installation.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
@@ -1340,7 +1387,7 @@ OVERVIEW
     the managed IOM installation.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
@@ -1364,7 +1411,7 @@ OVERVIEW
     the managed IOM installation.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
@@ -1384,7 +1431,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] log WHAT
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 WHAT
     dbaccount|d*       get message logs of dbaccount init-container
@@ -1423,7 +1470,7 @@ OVERVIEW
     easier to use the output for further processing.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages
@@ -1461,7 +1508,7 @@ OVERVIEW
     easier to use the output for further processing.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written. Messages
@@ -1502,7 +1549,7 @@ OVERVIEW
     easier to use the output for further processing.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by
@@ -1549,7 +1596,7 @@ OVERVIEW
     easier to use the output for further processing.
 
 CONFIG-FILE
-$(msg_config_file)
+$(msg_config_file 4)
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -2182,13 +2229,13 @@ project-specific config-file: $CONFIG_FILE_PROJECT
 --------------------------------------------------------------------------------
 Predifined variables:
 =====================
-PROJECT_DIR:
+PROJECT_DIR:                  $PROJECT_DIR
 --------------------------------------------------------------------------------
 Properties:
 ===========
 $($DEVENV_DIR/bin/template_engine.sh \
     --template="$DEVENV_DIR/templates/config.properties.template" \
-    --config="$CONFIG_FILES" \\
+    --config="$CONFIG_FILES" \
     --project-dir="$PROJECT_DIR" | grep -v '^[ \t]*#' | grep -v '^[ \t]*$')
 --------------------------------------------------------------------------------
 EOF
@@ -3223,27 +3270,38 @@ dump-create() {
 
 #-------------------------------------------------------------------------------
 # get configuration
+# $1: [-r] if set, any existing configuration will be ignored
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 get-config() {
     SUCCESS=true
 
-    if [ -z "$CONFIG_FILES" ]; then
-        log_json WARN "get-config: no configuration given, using default values instead." < /dev/null
-        "$DEVENV_DIR/bin/template_engine.sh" \
-            --project-dir="$PROJECT_DIR" \
-            --template="$DEVENV_DIR/templates/config.properties.template" 2> "$TMP_ERR"
-    else
-        "$DEVENV_DIR/bin/template_engine.sh" \
-            --template="$DEVENV_DIR/templates/config.properties.template" \
-            --config="$CONFIG_FILES" \
-            --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
-    fi
-    if [ $? -ne 0 ]; then
-        log_json ERROR "get-config: error writing configuration." < "$TMP_ERR"
+    # handle optional parameter
+    if [ ! -z "$1" -a "$1" != '-r' ]; then
+        log_json ERROR "get-config: unknown parameter '$1'." < /dev/null
         SUCCESS=false
-    else
-        log_json INFO "get-config: configuration successfully written." < /dev/null
+    elif [ ! -z "$1" -a "$1" = '-r' ]; then
+        CONFIG_FILES=
+    fi
+
+    if [ "$SUCCESS" = 'true' ]; then
+        if [ -z "$CONFIG_FILES" ]; then
+            log_json WARN "get-config: no configuration given, using default values instead." < /dev/null
+            "$DEVENV_DIR/bin/template_engine.sh" \
+                --project-dir="$PROJECT_DIR" \
+                --template="$DEVENV_DIR/templates/config.properties.template" 2> "$TMP_ERR"
+        else
+            "$DEVENV_DIR/bin/template_engine.sh" \
+                --template="$DEVENV_DIR/templates/config.properties.template" \
+                --config="$CONFIG_FILES" \
+                --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
+        fi
+        if [ $? -ne 0 ]; then
+            log_json ERROR "get-config: error writing configuration." < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_json INFO "get-config: configuration successfully written." < /dev/null
+        fi
     fi
 
     rm -f "$TMP_ERR"
@@ -3806,7 +3864,7 @@ if [ ! -z "$CONFIG_FILES" ]; then
 fi
 
 # determine DEVENV_DIR
-DEVENV_DIR="$(realpath "$(dirname "$BASH_SOURCE")")"
+DEVENV_DIR="$(realpath "$(dirname "$BASH_SOURCE")/..")"
 
 # get template variables
 . $DEVENV_DIR/bin/template-variables
@@ -4142,6 +4200,7 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'json-config' \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'dbmigrate'   \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'deployment'  \) -o \
+          \( "$LEVEL0" = 'get'   -a "$LEVEL1" = 'config'      \) -o \
           \( "$LEVEL0" = 'wait'                               \) -o \
           \( "$LEVEL0" = 'dump'  -a "$LEVEL1" = 'create'      \) ]; then
     if [ ! -z "$ARG2" ]; then

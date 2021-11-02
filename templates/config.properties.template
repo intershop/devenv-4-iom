@@ -6,10 +6,7 @@
 #
 # This file is generated from a template. With each update of devenv-4-iom it
 # has to be updated. Only the settings are taken over during this process. All
-# additional comments you may have added to the file will be lost. Of course,
-# a backup of the old file will be created. If you want to add custom comments,
-# you have to manually migrate them from the backup after each update of
-# devenv-4-iom.
+# additional comments you may have added to the file will be lost.
 #
 ################################################################################
 
@@ -41,7 +38,7 @@ IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
 # namespace.
 # More information about pull secrets can be found at:
 # - https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-# - https://docs.microsoft.com/de-de/azure/container-registry/container-registry-auth-kubernetes
+# - https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-kubernetes
 IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
 
 # postgres image (name:tag)
@@ -54,24 +51,22 @@ MAILHOG_IMAGE=${MAILHOG_IMAGE}
 
 # iom dbaccount image (name:tag)
 # examples:
-# locally built image:              iom-dbaccount:1.3.0.0-SNAPSHOT
-# release from ISH Docker registry: docker.intershop.de/intershop/iom-dbaccount:1.2.0.0
+# local image:                      iom-dbaccount:1.3.0.0
+# release from ISH Docker registry: docker.intershop.de/intershophub/iom-dbaccount:1.3.0.0
 IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom config image (name:tag)
 # examples:
-# locally built IOM image:          iom-config:3.2.0.0-SNAPSHOT
-# locally built CI image:           ci-iom-config:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
-# IOM relase from ISH registry:     docker.intershop.de/intershop/iom-config:3.1.0.0
-# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-config:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# local image:                      iom-config:3.6.0.0
+# locally built project image:      prj-iom-config:3.6.0.0-1.2.0.0-SNAPSHOT
+# IOM release from ISH registry:    docker.intershop.de/intershophub/iom-config:3.6.0.0
 IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 
 # iom app image (name:tag)
 # examples:
-# locally built IOM image:          iom-app:3.2.0.0-SNAPSHOT
-# locally built CI image:           ci-iom-app:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
-# IOM release from ISH registry:    docker.intershop.de/intershop/iom-app:3.1.0.0
-# CI from ISH registry:             docker-build.rnd.intershop.de/intershop/ci-iom-app:3.2.0.0-SNAPSHOT-1.2.0.0-SNAPSHOT
+# local image:                      iom-app:3.6.0.0
+# locally built project image:      prj-iom-app:3.6.0.0-1.2.0.0-SNAPSHOT
+# IOM release from ISH registry:    docker.intershop.de/intershophub/iom-app:3.6.0.0
 IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
 ################################################################################
@@ -176,6 +171,16 @@ OMS_LOGLEVEL_DEVENV=${OMS_LOGLEVEL_DEVENV}
 OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 
 ################################################################################
+# Windows subsystem for Linux settings
+################################################################################
+
+# Depending on the current version of Windows subsystem for Linux it might be
+# necessary to define a MOUNT_PREFIX, that is used when mounting file-systems
+# to Docker containers.
+
+MOUNT_PREFIX="${MOUNT_PREFIX}"
+
+################################################################################
 # Development settings
 ################################################################################
 
@@ -184,49 +189,41 @@ OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 # location of custom files that should be used by the developer VM.
 # You must ensure that the referenced directories are shared with the
 # Docker Desktop.
+# Each of these config variables can be defined with an absolute or relative
+# path. If a relative path is configured, the according absolute path is
+# determined at runtime. If a project specific configuration file exists
+# (devenv.project.properties), the directory holding this configuration file
+# will be used as base directory for the relative path.
+# If no project specific configuration file exists at all, a relative path
+# will be expanded relative to the current working directory.
 
 # Deployment of custom artifacts
 # see: devenv-cli.sh apply deployment --help
-# Recommended value when doing IOM product development:
-# Absolute path to "/applications" in IOM sources.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 
 # Development of custom mail templates
 # See: devenv-cli.sh apply mail-templates --help
-# Recommended value when doing IOM product development:
-# Absolute path to "/kubernetes.deployment/var/templates" in IOM sources.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 
 # Development of custom XSL templates
 # See: devenv-cli.sh apply xsl-templates --help
-# Recommended value when doing IOM product development:
-# Absolute path to "/bakery.transform/transform-core/src/main/resources/document/xslt"
-# in IOM sources.
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 
 # Development of migration scripts
 # See: devenv-cli.sh apply dbmigrate --help
-# Recommended value, when doing IOM product development:
-# Absolute path to "/postgres" in IOM sources.
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 
 # Load/create custom dumps
 # See: devenv-cli.sh dump load --help
 # See: devenv-cli.sh dump create --help
-# Recommended value when doing IOM product development:
-# Absolute path to "/postgres/dumps" in IOM sources.
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 
 # Development of custom sql-config
 # See: devenv-cli.sh apply sql-config --help
-# Recommended value when doing IOM project development:
-# Absolute path to "/configuration/src/sql-config" in project sources.
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 
 # Development of custom json-config
 # See: devenv-cli.sh apply json-config --help
-# Recommended value when doing IOM project development:
-# Absolute path to "/configuration/src/json-config" in project sources.
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 
 ################################################################################
@@ -238,8 +235,14 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 # If you want to access the shared file system of IOM, you have to define a
 # directory which should be used for this purpose. If you want to use this
 # feature, you have to make sure that this directory is shared with Docker
-# Desktop. It is recommended to use a directory within the config directory
-# structure.
+# Desktop.
+# CUSTOM_SHARE_DIR can be defined with an absolute or relative path. If a
+# relative path is configured, the according absolute path is determined at
+# runtime. If a project specific configuration file exists
+# (devenv.project.properties), the directory holding this configuration file
+# will be used as base directory for the relative path.
+# If no project specific configuration file exists at all, a relative path
+# will be expanded relative to the current working directory.
 CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 
 ################################################################################

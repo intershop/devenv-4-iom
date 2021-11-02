@@ -110,34 +110,28 @@ if [ -z "$PROJECT_DIR" -o ! -d "$PROJECT_DIR" ]; then
     exit 1
 fi
 
-# check config-files parameter
-if [ -z "$CONFIG_FILES" ]; then
-    echo "config-file(s) are missing!" 1>&2
-    echo 1>&2
-    usage 1>&2
-    exit 1
+if [ ! -z "$CONFIG_FILES" ]; then
+    # check status and syntax of config files
+    echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
+        if [ ! -f "$CONFIG_FILE" ]; then
+            echo "passed config-file '$CONFIG_FILE' does not exist!" 1>&2
+            echo 1>&2
+            usage 1>&2
+            exit 1
+        elif ! ( set -e; . $CONFIG_FILE ); then
+            echo "error reading '$CONFIG_FILE'" 1>&2
+            exit 1
+        fi
+    done || exit 1
+
+    # read content of config files
+    # . notation cannot be used, since variables would be defined inside a
+    # subshell only.
+    CONFIG=$(echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
+                 cat "$CONFIG_FILE"
+                 echo # just for the case, a newline is missing at the end of file
+             done)
 fi
-
-# check status and syntax of config files
-echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
-    if [ ! -f "$CONFIG_FILE" ]; then
-        echo "passed config-file '$CONFIG_FILE' does not exist!" 1>&2
-        echo 1>&2
-        usage 1>&2
-        exit 1
-    elif ! ( set -e; . $CONFIG_FILE ); then
-        echo "error reading '$CONFIG_FILE'" 1>&2
-        exit 1
-    fi
-done || exit 1
-
-# read content of config files
-# . notation cannot be used, since variables would be defined inside a
-# subshell only.
-CONFIG=$(echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
-             cat "$CONFIG_FILE"
-             echo # just for the case, a newline is missing at the end of file
-         done)
 
 # check template-variables file
 if [ -z "$TEMPLATE_VAR_FILE" -o ! -f "$TEMPLATE_VAR_FILE" ]; then
@@ -153,12 +147,14 @@ if ! ( set -e; . "$TEMPLATE_VAR_FILE" ); then
     exit 1
 fi
 
+# render template with variables from CONFIG
+ORIGINAL_PROJECT_DIR="$PROJECT_DIR"
+if [ ! -z "$CONFIG_FILES" ]; then
+    eval "$CONFIG"
+fi
 # read $TEMPLATE_VAR_FILE
 . $TEMPLATE_VAR_FILE
 
-# render template with variables from CONFIG
-ORIGINAL_PROJECT_DIR="$PROJECT_DIR"
-eval "$CONFIG"
 if [ "$ORIGINAL_PROJECT_DIR" != "$PROJECT_DIR" ]; then
     echo "overwriting PROJECT_DIR is not supported!" 1>&2
     exit 1

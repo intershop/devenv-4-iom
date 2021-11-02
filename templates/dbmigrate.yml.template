@@ -41,5 +41,5 @@ ${DbmigrateDirYml}          mountPath: /tmp/dbmigrate-volume
       volumes:
 ${DbmigrateDirYml}      - name: dbmigrate-volume
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: "${CustomDbmigrateDirAbs}"
+${DbmigrateDirYml}          path: "${MOUNT_PREFIX}${CustomDbmigrateDirAbs}"
   backoffLimit: 0

@@ -17,31 +17,31 @@ spec:
       volumes:
 ${AppsDirYml_____}      - name: application-dev
 ${AppsDirYml_____}        hostPath:
-${AppsDirYml_____}          path: ${CustomAppsDirAbs}
+${AppsDirYml_____}          path: "${MOUNT_PREFIX}${CustomAppsDirAbs}"
 ${TemplatesDirYml}      - name: templates-dev
 ${TemplatesDirYml}        hostPath:
-${TemplatesDirYml}          path: ${CustomTemplatesDirAbs}
+${TemplatesDirYml}          path: "${MOUNT_PREFIX}${CustomTemplatesDirAbs}"
 ${XsltDirYml_____}      - name: xslt-dev
 ${XsltDirYml_____}        hostPath:
-${XsltDirYml_____}          path: ${CustomXsltDirAbs}
+${XsltDirYml_____}          path: "${MOUNT_PREFIX}${CustomXsltDirAbs}"
 ${ShareDirYml____}      - name: share-dev
 ${ShareDirYml____}        hostPath:
-${ShareDirYml____}          path: ${CustomShareDirAbs}
+${ShareDirYml____}          path: "${MOUNT_PREFIX}${CustomShareDirAbs}"
 ${DbmigrateDirYml}      - name: dbmigrate-sps
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: ${CustomDbmigrateDirAbs}/stored_procedures
+${DbmigrateDirYml}          path: "${MOUNT_PREFIX}${CustomDbmigrateDirAbs}/stored_procedures"
 ${DbmigrateDirYml}      - name: dbmigrate-scripts
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: ${CustomDbmigrateDirAbs}/migrations
+${DbmigrateDirYml}          path: "${MOUNT_PREFIX}${CustomDbmigrateDirAbs}/migrations"
 ${SqlconfDirYml__}      - name: sqlconf
 ${SqlconfDirYml__}        hostPath:
-${SqlconfDirYml__}          path: ${CustomSqlconfDirAbs}
+${SqlconfDirYml__}          path: "${MOUNT_PREFIX}${CustomSqlconfDirAbs}"
 ${JsonconfDirYml_}      - name: jsonconf
 ${JsonconfDirYml_}        hostPath:
-${JsonconfDirYml_}          path: ${CustomJsonconfDirAbs}
+${JsonconfDirYml_}          path: "${MOUNT_PREFIX}${CustomJsonconfDirAbs}"
 ${DumpsDirYml____}      - name: dumps
 ${DumpsDirYml____}        hostPath:
-${DumpsDirYml____}          path: ${CustomDumpsDirAbs}
+${DumpsDirYml____}          path: "${MOUNT_PREFIX}${CustomDumpsDirAbs}"
       imagePullSecrets:
       - name: ${IMAGE_PULL_SECRET}
       containers:
