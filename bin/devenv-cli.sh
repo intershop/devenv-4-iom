@@ -1614,23 +1614,24 @@ EOF
 #-------------------------------------------------------------------------------
 syntax_error() (
     ME="$(basename "$0")"
-    log_json ERROR "Syntax error. Please call '$ME $1 $2 --help' to get more information." < /dev/null
+    log_msg ERROR "Syntax error. Please call '$ME $1 $2 --help' to get more information." < /dev/null
 )
 
 #-------------------------------------------------------------------------------
-# logs message in json format to stdout
+# logs messages
 # $1:    log-level (ERROR|WARN|INFO|DEBUG)
 # $2:    log-message
 # stdin: additional info (error output of programs, etc.)
 #-------------------------------------------------------------------------------
-# does not use jq, in order to reduce installation efforts and dependencies
-log_json() (
-    LEVEL=$1
-    MSG=$2
-    ADD_INFO_IN="$(mktemp)"
+log_msg() (
+    LEVEL="$1"
+    MSG="$2"
     ADD_INFO="$(mktemp)"
-    trap "rm -f $ADD_INFO_IN $ADD_INFO" EXIT SIGTERM
+    trap "rm -f $ADD_INFO" EXIT SIGTERM
 
+    # store additional info
+    cat > "$ADD_INFO"
+    
     # get REQUESTED_LEVEL
     case $LEVEL in
         ERROR)
@@ -1646,8 +1647,7 @@ log_json() (
             REQUESTED_LEVEL=3
             ;;
         *)
-            echo "log_json: unknown LEVEL '$LEVEL'" 1>&2
-            rm -f "$ADD_INFO_IN" "$ADD_INFO"
+            echo "log_msg: unknown LEVEL '$LEVEL'" 1>&2
             exit 1
             ;;
     esac
@@ -1666,64 +1666,22 @@ log_json() (
             ALLOWED_LEVEL=3
             ;;
         *)
-            echo "log_json: config variable OMS_LOGLEVEL_DEVENV contains invalid value '$OMS_LOGLEVEL_DEVENV'" 1>&2
-            rm -f "$ADD_INFO_IN" "$ADD_INFO"
+            echo "log_msg: config variable OMS_LOGLEVEL_DEVENV contains invalid value '$OMS_LOGLEVEL_DEVENV'" 1>&2
             exit 1
             ;;
     esac
 
-    # following commands require gnu sed
-    # prefer gsed over sed, if available
-    SED=$(which gsed 2> /dev/null)
-    if [ -z "$SED" ]; then
-        SED=sed
-    fi
-    
-    # quote MSG
-    MSG="$(echo $MSG | "$SED" 's/\\/\\\\/g' | "$SED" 's/"/\\"/g' | "$SED" ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037')"
-
-    # quote additional info
-    cat > "$ADD_INFO_IN"
-    if [ -s "$ADD_INFO_IN" ]; then
-        { echo -n '"'; cat "$ADD_INFO_IN" | "$SED" 's/\\/\\\\/g' | "$SED" 's/"/\\"/g' | "$SED" ':a;N;$!ba;s/\n/\\n/g' | tr -d '\000-\037'; echo -n '"'; } > "$ADD_INFO"
-    fi
-
-    # write json message if REQUESTED_LEVEL <= ALLOWED_LEVEL
+    # write message if REQUESTED_LEVEL <= ALLOWED_LEVEL
     if [ $REQUESTED_LEVEL -le $ALLOWED_LEVEL ]; then
-        if [ -s "$ADD_INFO_IN" ]; then
-            echo "{ \
-\"tenant\":\"Intershop\", \
-\"environment\":\"devenv4iom\", \
-\"logHost\":\"$(hostname)\", \
-\"logVersion\":\"1.0\", \
-\"appName\":\"devenv4iom\", \
-\"appVersion\":\"$DEVENV4IOM_VERSION\", \
-\"logType\":\"script\", \
-\"timestamp\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\", \
-\"level\":\"$LEVEL\", \
-\"message\":\"$MSG\", \
-\"processName\":\"$(basename $0)\", \
-\"additionalInfo\":$(cat $ADD_INFO), \
-\"configName\":\"$CAAS_ENV_NAME\" \
-}" 1>&2
-        else
-            echo "{ \
-\"tenant\":\"Intershop\", \
-\"environment\":\"devenv4iom\", \
-\"logHost\":\"$(hostname)\", \
-\"logVersion\":\"1.0\", \
-\"appName\":\"devenv4iom\", \
-\"appVersion\":\"$DEVENV4IOM_VERSION\", \
-\"logType\":\"script\", \
-\"timestamp\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\", \
-\"level\":\"$LEVEL\", \
-\"message\":\"$MSG\", \
-\"processName\":\"$(basename $0)\", \
-\"configName\":\"$CAAS_ENV_NAME\" \
-}" 1>&2
-        fi
+	cat 1>&2 <<EOF
+$(date -u +"%Y-%m-%dT%H:%M:%SZ") $LEVEL
+  $MSG
+EOF
+	if [ -s "$ADD_INFO" ]; then
+	    indent 2 1>&2 < "$ADD_INFO"
+	fi
     fi
-    rm -f "$ADD_INFO_IN" "$ADD_INFO"
+    rm -f "$ADD_INFO"
 )
 
 #-------------------------------------------------------------------------------
@@ -1937,7 +1895,7 @@ kube_get_pod() (
 #-------------------------------------------------------------------------------
 info-iom() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "info-iom: no config-file given!" < /dev/null
+        log_msg ERROR "info-iom: no config-file given!" < /dev/null
         false
     else
         cat <<EOF
@@ -2031,7 +1989,7 @@ EOF
 #-------------------------------------------------------------------------------
 info-postgres() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "info-postgres: no config-file given!" < /dev/null
+        log_msg ERROR "info-postgres: no config-file given!" < /dev/null
         false
     else
         cat <<EOF
@@ -2096,7 +2054,7 @@ EOF
 #-------------------------------------------------------------------------------
 info-mailserver() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "info-mailserver: no config-file given!" < /dev/null
+        log_msg ERROR "info-mailserver: no config-file given!" < /dev/null
         false
     else
         cat <<EOF
@@ -2137,7 +2095,7 @@ EOF
 #-------------------------------------------------------------------------------
 info-storage() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "info-storage: no config-file given!" < /dev/null
+        log_msg ERROR "info-storage: no config-file given!" < /dev/null
         false
     else
         cat <<EOF
@@ -2191,7 +2149,7 @@ EOF
 #-------------------------------------------------------------------------------
 info-cluster() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "info-cluster: no config-file given!" < /dev/null
+        log_msg ERROR "info-cluster: no config-file given!" < /dev/null
         false
     else
         cat <<EOF
@@ -2215,7 +2173,7 @@ EOF
 #-------------------------------------------------------------------------------
 info-config() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "info-cluster: no config-file given!" < /dev/null
+        log_msg ERROR "info-cluster: no config-file given!" < /dev/null
         false
     else
         cat <<EOF
@@ -2253,18 +2211,18 @@ EOF
 create-storage() {
     SUCCESS=true
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "create-storage: no config-file given!" < /dev/null
+        log_msg ERROR "create-storage: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ "$KEEP_DATABASE_DATA" = 'true' ] && ! docker_volume_exists pgdata; then
         docker volume create --name=$EnvId-pgdata -d local 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "create-storage: error creating docker volume $EnvId-pgdata" < "$TMP_ERR"
+            log_msg ERROR "create-storage: error creating docker volume $EnvId-pgdata" < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "create-storage: docker volume $EnvId-pgdata was successfully created" < "$TMP_OUT"
+            log_msg INFO "create-storage: docker volume $EnvId-pgdata was successfully created" < "$TMP_OUT"
         fi
     else
-        log_json INFO "create-storage: nothing to do" < /dev/null
+        log_msg INFO "create-storage: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2277,18 +2235,18 @@ create-storage() {
 create-namespace() {
     SUCCESS=true
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "create-namespace: no config-file given!" < /dev/null
+        log_msg ERROR "create-namespace: no config-file given!" < /dev/null
         SUCCESS=false
     elif ! kube_namespace_exists; then
         kubectl create namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "create-namespace: error creating namespace '$EnvId'" < "$TMP_ERR"
+            log_msg ERROR "create-namespace: error creating namespace '$EnvId'" < "$TMP_ERR"
             SUCCESS=true
         else
-            log_json INFO "create-namespace: namespace '$EnvId' was successfully created" < "$TMP_OUT"
+            log_msg INFO "create-namespace: namespace '$EnvId' was successfully created" < "$TMP_OUT"
         fi
     else
-        log_json INFO "create-namespace: nothing to do" < /dev/null
+        log_msg INFO "create-namespace: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2301,7 +2259,7 @@ create-namespace() {
 create-mailserver() {
     SUCCESS=true
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "create-mailserver: no config-file given!" < /dev/null
+        log_msg ERROR "create-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
     else
         "$DEVENV_DIR/bin/template_engine.sh" \
@@ -2309,10 +2267,10 @@ create-mailserver() {
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
+            log_msg ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "create-mailserver: mailserver successfully created" < "$TMP_OUT"
+            log_msg INFO "create-mailserver: mailserver successfully created" < "$TMP_OUT"
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -2327,7 +2285,7 @@ create-postgres() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "create-postgres: no config-file given!" < /dev/null
+        log_msg ERROR "create-postgres: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ -z "$PGHOST" ]; then
         # link Docker volume to database storage
@@ -2338,13 +2296,13 @@ create-postgres() {
                         --config="$CONFIG_FILES" \
                         --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "create-postgres: error linking docker volume to database storage" < "$TMP_ERR"
+                log_msg ERROR "create-postgres: error linking docker volume to database storage" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "create-postgres: successfully linked docker volume to database storage" < "$TMP_OUT"
+                log_msg INFO "create-postgres: successfully linked docker volume to database storage" < "$TMP_OUT"
             fi
         else
-            log_json INFO "create-postges: no need to link docker volume to dabase storage" < /dev/null
+            log_msg INFO "create-postges: no need to link docker volume to dabase storage" < /dev/null
         fi
         if [ "$SUCCESS" = 'true' ]; then
             if ! kube_resource_exists pods postgres || ! kube_resource_exists services postgres-service; then
@@ -2354,17 +2312,17 @@ create-postgres() {
                     --config="$CONFIG_FILES" \
                     --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
-                    log_json ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
+                    log_msg ERROR "create-postgres: error creating postgres" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    log_json INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
+                    log_msg INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
                 fi
             else
-                log_json INFO "create-postgres: pod and service already exist" < /dev/null
+                log_msg INFO "create-postgres: pod and service already exist" < /dev/null
             fi
         fi
     else
-        log_json INFO "create-postgres: nothing to do, external database configured (config variable PGHOST is set)" < /dev/null
+        log_msg INFO "create-postgres: nothing to do, external database configured (config variable PGHOST is set)" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2378,7 +2336,7 @@ create-iom() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "create-iom: no config-file given!" < /dev/null
+        log_msg ERROR "create-iom: no config-file given!" < /dev/null
         SUCCESS=false
     else
         # copy secret from default namespace to namespace of IOM
@@ -2387,10 +2345,10 @@ create-iom() {
                 grep -v 'namespace:\|resourceVersion:\|selfLink:\|uid:' |
                 kubectl apply --namespace $EnvId -f - 2>> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "create-iom: error copying secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_ERR"
+                log_msg ERROR "create-iom: error copying secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "create-iom: successfully copied secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_OUT"
+                log_msg INFO "create-iom: successfully copied secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_OUT"
             fi
         fi
         if [ "$SUCCESS" = 'true' ]; then
@@ -2399,10 +2357,10 @@ create-iom() {
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "create-iom: error creating iom" < "$TMP_ERR"
+                log_msg ERROR "create-iom: error creating iom" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "create-iom: successfully created iom" < "$TMP_OUT"
+                log_msg INFO "create-iom: successfully created iom" < "$TMP_OUT"
             fi
         fi
     fi
@@ -2434,18 +2392,18 @@ delete-storage() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "delete-storage: no config-file given!" < /dev/null
+        log_msg ERROR "delete-storage: no config-file given!" < /dev/null
         SUCCESS=false
     elif docker_volume_exists pgdata; then
         docker volume rm $EnvId-pgdata 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "delete-storage: error deleting volume $EnvId-pgdata" < "$TMP_ERR"
+            log_msg ERROR "delete-storage: error deleting volume $EnvId-pgdata" < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "delete-storage: successfully deleted volume $EnvId-pgdata" < "$TMP_OUT"
+            log_msg INFO "delete-storage: successfully deleted volume $EnvId-pgdata" < "$TMP_OUT"
         fi
     else
-        log_json INFO "delete-storage: nothing to do" < /dev/null
+        log_msg INFO "delete-storage: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2459,18 +2417,18 @@ delete-namespace() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "delete-namespace: no config-file given!" < /dev/null
+        log_msg ERROR "delete-namespace: no config-file given!" < /dev/null
         SUCCESS=false
     elif kube_namespace_exists; then
         kubectl delete namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "delete-namespace: error deleting namespace '$EnvId'" < "$TMP_ERR"
+            log_msg ERROR "delete-namespace: error deleting namespace '$EnvId'" < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "delete-namespace: successfully deleted namespace '$EnvId'" < "$TMP_OUT"
+            log_msg INFO "delete-namespace: successfully deleted namespace '$EnvId'" < "$TMP_OUT"
         fi
     else
-        log_json INFO "delete-namespace: nothing to do" < /dev/null
+        log_msg INFO "delete-namespace: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2484,7 +2442,7 @@ delete-mailserver() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "delete-mailserver: no config-file given!" < /dev/null
+        log_msg ERROR "delete-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
     elif kube_resource_exists pods mailhog || kube_resource_exists services mailhog-service; then
         "$DEVENV_DIR/bin/template_engine.sh" \
@@ -2492,13 +2450,13 @@ delete-mailserver() {
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "delete-mailserver: error deleting mail-server" < "$TMP_ERR"
+            log_msg ERROR "delete-mailserver: error deleting mail-server" < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "delete-mailserver: successfully deleted mail-server" < "$TMP_OUT"
+            log_msg INFO "delete-mailserver: successfully deleted mail-server" < "$TMP_OUT"
         fi
     else
-        log_json INFO "delete-mailserver: nothing to do" < /dev/null
+        log_msg INFO "delete-mailserver: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2512,7 +2470,7 @@ delete-postgres() {
     SUCCESS_VL=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "delete-postgres: no config-file given!" < /dev/null
+        log_msg ERROR "delete-postgres: no config-file given!" < /dev/null
         SUCCESS_PG=false
         SUCCESS_VL=false
     else
@@ -2522,13 +2480,13 @@ delete-postgres() {
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "delete-postgres: error deleting postgres" < "$TMP_ERR"
+                log_msg ERROR "delete-postgres: error deleting postgres" < "$TMP_ERR"
                 SUCCESS_PG=false
             else
-                log_json INFO "delete-postgres: successfully deleted postgres" < "$TMP_OUT"
+                log_msg INFO "delete-postgres: successfully deleted postgres" < "$TMP_OUT"
             fi
         else
-            log_json INFO "delete-postgres: nothing to do, to delete postgres" < /dev/null
+            log_msg INFO "delete-postgres: nothing to do, to delete postgres" < /dev/null
         fi
         # unlink Docker volume from database storage
         if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
@@ -2538,13 +2496,13 @@ delete-postgres() {
                         --config="$CONFIG_FILES" \
                         --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "delete-postgres: error unlinking Docker volume from database storage" < "$TMP_ERR"
+                log_msg ERROR "delete-postgres: error unlinking Docker volume from database storage" < "$TMP_ERR"
                 SUCCESS_VL=false
             else
-                log_json INFO "delete-postgres: successfully unlinked Docker volume from database storage" < "$TMP_OUT"
+                log_msg INFO "delete-postgres: successfully unlinked Docker volume from database storage" < "$TMP_OUT"
             fi
         else
-            log_json INFO "delete-postgres: nothing to do, to unlink Docker volume from database storage" < /dev/null
+            log_msg INFO "delete-postgres: nothing to do, to unlink Docker volume from database storage" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -2558,7 +2516,7 @@ delete-iom() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "delete-iom: no config-file given!" < /dev/null
+        log_msg ERROR "delete-iom: no config-file given!" < /dev/null
         SUCCESS=false
     elif kube_resource_exists pods iom || kube_resource_exists services iom-service; then
         "$DEVENV_DIR/bin/template_engine.sh" \
@@ -2566,13 +2524,13 @@ delete-iom() {
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
-            log_json ERROR "delete-iom: error deleting iom" < "$TMP_ERR"
+            log_msg ERROR "delete-iom: error deleting iom" < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "delete-iom: successfully deleted iom" < "$TMP_OUT"
+            log_msg INFO "delete-iom: successfully deleted iom" < "$TMP_OUT"
         fi
     else
-        log_json INFO "delete-iom: nothing to do" < /dev/null
+        log_msg INFO "delete-iom: nothing to do" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2599,19 +2557,19 @@ delete-cluster() {
 #-------------------------------------------------------------------------------
 wait-mailserver() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "wait-mailserver: no config-file given!" < /dev/null
+        log_msg ERROR "wait-mailserver: no config-file given!" < /dev/null
         false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "wait-mailserver: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "wait-mailserver: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
         kube_pod_wait mailhog $TIMEOUT
         if [ $? -ne 0 ]; then
-            log_json ERROR "wait-mailserver: timeout of $TIMEOUT s reached." < /dev/null
+            log_msg ERROR "wait-mailserver: timeout of $TIMEOUT s reached." < /dev/null
             false
         else
             true
@@ -2626,19 +2584,19 @@ wait-mailserver() {
 #-------------------------------------------------------------------------------
 wait-postgres() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "wait-postgres: no config-file given!" < /dev/null
+        log_msg ERROR "wait-postgres: no config-file given!" < /dev/null
         false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "wait-postgres: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "wait-postgres: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
         kube_pod_wait postgres $TIMEOUT
         if [ $? -ne 0 ]; then
-            log_json ERROR "wait-postgres: timeout of $TIMEOUT s reached." < /dev/null
+            log_msg ERROR "wait-postgres: timeout of $TIMEOUT s reached." < /dev/null
             false
         else
             true
@@ -2653,19 +2611,19 @@ wait-postgres() {
 #-------------------------------------------------------------------------------
 wait-iom() {
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "wait-iom: no config-file given!" < /dev/null
+        log_msg ERROR "wait-iom: no config-file given!" < /dev/null
         false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "wait-iom: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "wait-iom: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
         kube_pod_wait iom $TIMEOUT
         if [ $? -ne 0 ]; then
-            log_json ERROR "wait-iom: timeout of $TIMEOUT s reached." < /dev/null
+            log_msg ERROR "wait-iom: timeout of $TIMEOUT s reached." < /dev/null
             false
         else
             true
@@ -2687,12 +2645,12 @@ apply-deployment() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-deployment: no config-file given!" < /dev/null
+        log_msg ERROR "apply-deployment: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ ! -z "$CUSTOM_APPS_DIR" ]; then
         POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
-            log_json ERROR "apply-deployment: error getting pod name" < "$TMP_ERR"
+            log_msg ERROR "apply-deployment: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
         else
             if [ -z "$PATTERN" ]; then
@@ -2702,16 +2660,16 @@ apply-deployment() {
                 kubectl exec $POD --namespace $EnvId -- bash -ic "/opt/oms/bin/forced-redeploy.sh --pattern=$PATTERN || true" 2> "$TMP_ERR" > "$TMP_OUT"
             fi
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-deployment: error applying deployments" < "$TMP_ERR"
+                log_msg ERROR "apply-deployment: error applying deployments" < "$TMP_ERR"
                 SUCCESS=false
             else
                 # output is already in json format
                 cat "$TMP_OUT"
-                log_json INFO "apply-deployment: successfully applied deployments" < /dev/null
+                log_msg INFO "apply-deployment: successfully applied deployments" < /dev/null
             fi
         fi
     else
-        log_json INFO "apply-deployment: config variable CUSTOM_APPS_DIR not set, deployment skipped" < /dev/null
+        log_msg INFO "apply-deployment: config variable CUSTOM_APPS_DIR not set, deployment skipped" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2725,24 +2683,24 @@ apply-mail-templates() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-mail-templates: no config-file given!" < /dev/null
+        log_msg ERROR "apply-mail-templates: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
         POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
-            log_json ERROR "apply-mail-templates: error getting pod name" < "$TMP_ERR"
+            log_msg ERROR "apply-mail-templates: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
         else
             kubectl exec $POD --namespace $EnvId -- bash -ic apply-templates 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-mail-templates: error applying mail templates" < "$TMP_ERR"
+                log_msg ERROR "apply-mail-templates: error applying mail templates" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "apply-mail-templates: successfully applied mail templates" < "$TMP_OUT"
+                log_msg INFO "apply-mail-templates: successfully applied mail templates" < "$TMP_OUT"
             fi
         fi
     else
-        log_json INFO "apply-mail-templates: config variable CUSTOM_TEMPLATES_DIR not set, skipped applying mail templates" < /dev/null
+        log_msg INFO "apply-mail-templates: config variable CUSTOM_TEMPLATES_DIR not set, skipped applying mail templates" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2756,24 +2714,24 @@ apply-xsl-templates() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-xsl-templates: no config-file given!" < /dev/null
+        log_msg ERROR "apply-xsl-templates: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ ! -z "$CUSTOM_XSLT_DIR" ]; then
         POD=$(kube_get_pod iom 2> "$TMP_ERR")
         if [ -z "$POD" ]; then
-            log_json ERROR "apply-xsl-templates: error getting pod name" < "$TMP_ERR"
+            log_msg ERROR "apply-xsl-templates: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
         else
             kubectl exec $POD --namespace $EnvId -- bash -ic apply-xslt 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-xsl-templates: error applying xsl templates" < "$TMP_ERR"
+                log_msg ERROR "apply-xsl-templates: error applying xsl templates" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "apply-xsl-templates: successfully applied xsl templates" < "$TMP_OUT"
+                log_msg INFO "apply-xsl-templates: successfully applied xsl templates" < "$TMP_OUT"
             fi
         fi
     else
-        log_json INFO "apply-xsl-templates: config variable CUSTOM_XSLT_DIR not set, skipped applying xsl templates" < /dev/null
+        log_msg INFO "apply-xsl-templates: config variable CUSTOM_XSLT_DIR not set, skipped applying xsl templates" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
@@ -2789,12 +2747,12 @@ apply-sql-scripts() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-sql-scripts: no config-file given!" < /dev/null
+        log_msg ERROR "apply-sql-scripts: no config-file given!" < /dev/null
         SUCCESS=false
     else
         # check and convert to absolute path
         if [ ! -d "$1" -a ! -f "$1" ]; then
-            log_json ERROR "apply-sql-scripts: '$1' is nor a file or directory" < /dev/null
+            log_msg ERROR "apply-sql-scripts: '$1' is nor a file or directory" < /dev/null
             SUCCESS=false
         else
             case "$1" in
@@ -2809,7 +2767,7 @@ apply-sql-scripts() {
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$2" ] && ! ( echo "$2" | grep -q '^[0-9]*$'); then
-            log_json WARN "apply-sql-scripts: invalid value passed for timeout ($2). Default value will be used" < /dev/null
+            log_msg WARN "apply-sql-scripts: invalid value passed for timeout ($2). Default value will be used" < /dev/null
         elif [ ! -z "$2" ]; then
             TIMEOUT=$2
         fi
@@ -2822,30 +2780,30 @@ apply-sql-scripts() {
                      --config="$CONFIG_FILES" \
                      --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-sql-scripts: error starting job" < "$TMP_ERR"
+                log_msg ERROR "apply-sql-scripts: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "apply-sql-scripts: job successfully started" < "$TMP_OUT"
+                log_msg INFO "apply-sql-scripts: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
                 kube_job_wait apply-sql-job $TIMEOUT
                 KUBE_JOB_STATUS=$?
                 if [ "$KUBE_JOB_STATUS" = '1' ]; then
-                    log_json ERROR "apply-sql-scripts: timeout of $TIMEOUT seconds reached" < /dev/null
+                    log_msg ERROR "apply-sql-scripts: timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 elif [ "$KUBE_JOB_STATUS" = '2' ]; then
-                    log_json ERROR "apply-sql-scripts: job execution failed" < /dev/null
+                    log_msg ERROR "apply-sql-scripts: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
                 POD=$(kubectl get pods --namespace $EnvId -l job-name=apply-sql-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
                 if [ -z "$POD" ]; then
-                    log_json ERROR "apply-sql-scripts: error getting pod name" < "$TMP_ERR"
+                    log_msg ERROR "apply-sql-scripts: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
                     kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
                     if [ $? -ne 0 ]; then
-                        log_json ERROR "apply-sql-scripts: error getting logs of job" < "$TMP_ERR"
+                        log_msg ERROR "apply-sql-scripts: error getting logs of job" < "$TMP_ERR"
                         SUCCESS=false
                     else
                         # logs of job are already in json format
@@ -2858,16 +2816,16 @@ apply-sql-scripts() {
                     --config="$CONFIG_FILES" \
                     --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-sql-scripts: error deleting job" < "$TMP_ERR"
+                    log_msg ERROR "apply-sql-scripts: error deleting job" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    log_json INFO "apply-sql-scripts: successfully deleted job" < "$TMP_OUT"
+                    log_msg INFO "apply-sql-scripts: successfully deleted job" < "$TMP_OUT"
                 fi
 
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
-                    log_json ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
+                    log_msg ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
                 fi
             fi
         fi
@@ -2885,13 +2843,13 @@ apply-sql-config() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-sql-config: no config-file given!" < /dev/null
+        log_msg ERROR "apply-sql-config: no config-file given!" < /dev/null
         SUCCESS=false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "apply-sql-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "apply-sql-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
@@ -2903,30 +2861,30 @@ apply-sql-config() {
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-sql-config: error starting job" < "$TMP_ERR"
+                log_msg ERROR "apply-sql-config: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "apply-sql-config: job successfully started" < "$TMP_OUT"
+                log_msg INFO "apply-sql-config: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
                 kube_job_wait sqlconfig-job $TIMEOUT
                 KUBE_JOB_STATUS=$?
                 if [ "$KUBE_JOB_STATUS" = '1' ]; then
-                    log_json ERROR "apply-sql-config: timeout of $TIMEOUT seconds reached" < /dev/null
+                    log_msg ERROR "apply-sql-config: timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 elif [ "$KUBE_JOB_STATUS" = '2' ]; then
-                    log_json ERROR "apply-sql-config: job execution failed" < /dev/null
+                    log_msg ERROR "apply-sql-config: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
                 POD=$(kubectl get pods --namespace $EnvId -l job-name=sqlconfig-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
                 if [ -z "$POD" ]; then
-                    log_json ERROR "apply-sql-config: error getting pod name" < "$TMP_ERR"
+                    log_msg ERROR "apply-sql-config: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
                     kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
                     if [ $? -ne 0 ]; then
-                        log_json ERROR "apply-sql-config: error getting logs of job" < "$TMP_ERR"
+                        log_msg ERROR "apply-sql-config: error getting logs of job" < "$TMP_ERR"
                         SUCCESS=false
                     else
                         # logs of job are already in json format
@@ -2939,20 +2897,20 @@ apply-sql-config() {
                     --config="$CONFIG_FILES" \
                     --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-sql-config: error deleting job" < "$TMP_ERR"
+                    log_msg ERROR "apply-sql-config: error deleting job" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    log_json INFO "apply-sql-config: successfully deleted job" < "$TMP_OUT"
+                    log_msg INFO "apply-sql-config: successfully deleted job" < "$TMP_OUT"
                 fi
 
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
-                    log_json ERROR "apply-sql-config: job ended with ERROR" < /dev/null
+                    log_msg ERROR "apply-sql-config: job ended with ERROR" < /dev/null
                 fi
             fi
         else
-            log_json INFO "apply-sql-config: config variable CUSTOM_SQLCONF_DIR not set, no sql-config applied" < /dev/null
+            log_msg INFO "apply-sql-config: config variable CUSTOM_SQLCONF_DIR not set, no sql-config applied" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -2968,13 +2926,13 @@ apply-json-config() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-json-config: no config-file given!" < /dev/null
+        log_msg ERROR "apply-json-config: no config-file given!" < /dev/null
         SUCCESS=false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "apply-json-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "apply-json-config: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
@@ -2986,30 +2944,30 @@ apply-json-config() {
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-json-config: error starting job" < "$TMP_ERR"
+                log_msg ERROR "apply-json-config: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "apply-json-config: job successfully started" < "$TMP_OUT"
+                log_msg INFO "apply-json-config: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
                 kube_job_wait jsonconfig-job $TIMEOUT
                 KUBE_JOB_STATUS=$?
                 if [ "$KUBE_JOB_STATUS" = '1' ]; then
-                    log_json ERROR "apply-json-config: timeout of $TIMEOUT seconds reached" < /dev/null
+                    log_msg ERROR "apply-json-config: timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 elif [ "$KUBE_JOB_STATUS" = '2' ]; then
-                    log_json ERROR "apply-json-config: job execution failed" < /dev/null
+                    log_msg ERROR "apply-json-config: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
                 POD=$(kubectl get pods --namespace $EnvId -l job-name=jsonconfig-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
                 if [ -z "$POD" ]; then
-                    log_json ERROR "apply-json-config: error getting pod name" < "$TMP_ERR"
+                    log_msg ERROR "apply-json-config: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
                     kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
                     if [ $? -ne 0 ]; then
-                        log_json ERROR "apply-json-config: error getting logs of job" < "$TMP_ERR"
+                        log_msg ERROR "apply-json-config: error getting logs of job" < "$TMP_ERR"
                         SUCCESS=false
                     else
                         # logs of job are already in json format
@@ -3023,20 +2981,20 @@ apply-json-config() {
                     --config="$CONFIG_FILES" \
                     --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-json-config: error deleting job" < "$TMP_ERR"
+                    log_msg ERROR "apply-json-config: error deleting job" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    log_json INFO "apply-json-config: successfully deleted job" < "$TMP_OUT"
+                    log_msg INFO "apply-json-config: successfully deleted job" < "$TMP_OUT"
                 fi
 
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
-                    log_json ERROR "apply-json-config: job ended with ERROR" < /dev/null
+                    log_msg ERROR "apply-json-config: job ended with ERROR" < /dev/null
                 fi
             fi
         else
-            log_json INFO "apply-json-config: config variable CUSTOM_JSONCONF_DIR not set, no json-config applied" < /dev/null
+            log_msg INFO "apply-json-config: config variable CUSTOM_JSONCONF_DIR not set, no json-config applied" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -3052,13 +3010,13 @@ apply-dbmigrate() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "apply-dbmigrate: no config-file given!" < /dev/null
+        log_msg ERROR "apply-dbmigrate: no config-file given!" < /dev/null
         SUCCESS=false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "apply-dbmigrate: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "apply-dbmigrate: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
@@ -3070,30 +3028,30 @@ apply-dbmigrate() {
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "apply-dbmigrate: error starting job" < "$TMP_ERR"
+                log_msg ERROR "apply-dbmigrate: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
+                log_msg INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
                 kube_job_wait dbmigrate_job $TIMEOUT
                 KUBE_JOB_STATUS=$?
                 if [ "$KUBE_JOB_STATUS" = '1' ]; then
-                    log_json ERROR "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
+                    log_msg ERROR "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 elif [ "$KUBE_JOB_STATUS" = '2' ]; then
-                    log_json ERROR "apply-dbmigrate: job execution failed" < /dev/null
+                    log_msg ERROR "apply-dbmigrate: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
                 # get logs of job
                 POD=$(kubectl get pods --namespace $EnvId -l job-name=dbmigrate-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
                 if [ -z "$POD" ]; then
-                    log_json ERROR "apply-dbmigrate: error getting pod name" < "$TMP_ERR"
+                    log_msg ERROR "apply-dbmigrate: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
                     kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
                     if [ $? -ne 0 ]; then
-                        log_json ERROR "apply-dbmigrate: error getting logs of job" < "$TMP_ERR"
+                        log_msg ERROR "apply-dbmigrate: error getting logs of job" < "$TMP_ERR"
                         SUCCESS=false
                     else
                         # logs are already in json format
@@ -3106,20 +3064,20 @@ apply-dbmigrate() {
                     --config="$CONFIG_FILES" \
                     --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
-                    log_json ERROR "apply-dbmigrate: error deleting job" < "$TMP_ERR"
+                    log_msg ERROR "apply-dbmigrate: error deleting job" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    log_json INFO "apply-dbmigrate: successfully deleted job" < "$TMP_OUT"
+                    log_msg INFO "apply-dbmigrate: successfully deleted job" < "$TMP_OUT"
                 fi
 
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
-                    log_json ERROR "apply-dbmigrate: job ended with ERROR" < /dev/null
+                    log_msg ERROR "apply-dbmigrate: job ended with ERROR" < /dev/null
                 fi
             fi
         else
-            log_json INFO "apply-dbmigrate: config variable CUSTOM_DBMIGRATE_DIR not set, db-migrate not applied" < /dev/null
+            log_msg INFO "apply-dbmigrate: config variable CUSTOM_DBMIGRATE_DIR not set, db-migrate not applied" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -3138,7 +3096,7 @@ dump-load() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "dump-load: no config-file given!" < /dev/null
+        log_msg ERROR "dump-load: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
         if [ -z "$PGHOST" ]; then
@@ -3163,7 +3121,7 @@ dump-load() {
                 SUCCESS=false
             fi
             if [ "$SUCCESS" = 'true' ] && ! kube_pod_wait postgres 300; then
-                log_json ERROR "dump-load: error waiting for postgres to get running" < /dev/null
+                log_msg ERROR "dump-load: error waiting for postgres to get running" < /dev/null
                 SUCCESS=false
             fi
             if [ "$SUCCESS" = 'true' ]; then
@@ -3172,10 +3130,10 @@ dump-load() {
                 fi
             fi
         else
-            log_json INFO "dump-load: external database configured, cannot load dump" < /dev/null
+            log_msg INFO "dump-load: external database configured, cannot load dump" < /dev/null
         fi
     else
-        log_json INFO "dump-load: config variable CUSTOM_DUMPS_DIR not set, skipped loading dump" < /dev/null
+        log_msg INFO "dump-load: config variable CUSTOM_DUMPS_DIR not set, skipped loading dump" < /dev/null
     fi
     [ "$SUCCESS" = 'true' ]
 }
@@ -3189,13 +3147,13 @@ dump-create() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "dump-create: no config-file given!" < /dev/null
+        log_msg ERROR "dump-create: no config-file given!" < /dev/null
         SUCCESS=false
     else
         # check and set timeout
         TIMEOUT=60
         if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_json WARN "dump-create: invalid value passed for timeout ($1). Default value will be used" < /dev/null
+            log_msg WARN "dump-create: invalid value passed for timeout ($1). Default value will be used" < /dev/null
         elif [ ! -z "$1" ]; then
             TIMEOUT=$1
         fi
@@ -3207,31 +3165,31 @@ dump-create() {
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
-                log_json ERROR "dump-create: error starting job" < "$TMP_ERR"
+                log_msg ERROR "dump-create: error starting job" < "$TMP_ERR"
                 SUCCESS=false
             else
-                log_json INFO "dump-create: job successfully started" < "$TMP_OUT"
+                log_msg INFO "dump-create: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
                 kube_job_wait dump-job $TIMEOUT
                 KUBE_JOB_STATUS=$?
                 if [ "$KUBE_JOB_STATUS" = '1' ]; then
-                    log_json ERROR "dump-create: job failed or timeout of $TIMEOUT seconds reached" < /dev/null
+                    log_msg ERROR "dump-create: job failed or timeout of $TIMEOUT seconds reached" < /dev/null
                     SUCCESS=false
                 elif [ "$KUBE_JOB_STATUS" = '2' ]; then
-                    log_json ERROR "dump-create: job execution failed" < /dev/null
+                    log_msg ERROR "dump-create: job execution failed" < /dev/null
                     SUCCESS=false
                 fi
 
                 # get logs of job
                 POD=$(kubectl get pods --namespace $EnvId -l job-name=dump-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
                 if [ -z "$POD" ]; then
-                    log_json ERROR "dump-create: error getting pod name" < "$TMP_ERR"
+                    log_msg ERROR "dump-create: error getting pod name" < "$TMP_ERR"
                     SUCCESS=false
                 else
                     kubectl logs $POD --namespace $EnvId 2> "$TMP_ERR" > "$TMP_OUT"
                     if [ $? -ne 0 ]; then
-                        log_json ERROR "dump-create: error getting logs of job" < "$TMP_ERR"
+                        log_msg ERROR "dump-create: error getting logs of job" < "$TMP_ERR"
                         SUCCESS=false
                     else
                         # logs are already in json format
@@ -3244,20 +3202,20 @@ dump-create() {
                     --config="$CONFIG_FILES" \
                     --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
                 if [ $? -ne 0 ]; then
-                    log_json ERROR "dump-create: error deleting job" < "$TMP_ERR"
+                    log_msg ERROR "dump-create: error deleting job" < "$TMP_ERR"
                     SUCCESS=false
                 else
-                    log_json INFO "dump-create: successfully deleted job" < "$TMP_OUT"
+                    log_msg INFO "dump-create: successfully deleted job" < "$TMP_OUT"
                 fi
 
                 # it's easier for the user to detect an error, if the last message
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
-                    log_json ERROR "dump-create: job ended with ERROR" < /dev/null
+                    log_msg ERROR "dump-create: job ended with ERROR" < /dev/null
                 fi
             fi
         else
-            log_json INFO "dump-create: config variable CUSTOM_DUMPS_DIR not set, skipped creation of dump" < /dev/null
+            log_msg INFO "dump-create: config variable CUSTOM_DUMPS_DIR not set, skipped creation of dump" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -3278,7 +3236,7 @@ get-config() {
 
     # handle optional parameter
     if [ ! -z "$1" -a "$1" != '-r' ]; then
-        log_json ERROR "get-config: unknown parameter '$1'." < /dev/null
+        log_msg ERROR "get-config: unknown parameter '$1'." < /dev/null
         SUCCESS=false
     elif [ ! -z "$1" -a "$1" = '-r' ]; then
         CONFIG_FILES=
@@ -3286,7 +3244,7 @@ get-config() {
 
     if [ "$SUCCESS" = 'true' ]; then
         if [ -z "$CONFIG_FILES" ]; then
-            log_json WARN "get-config: no configuration given, using default values instead." < /dev/null
+            log_msg WARN "get-config: no configuration given, using default values instead." < /dev/null
             "$DEVENV_DIR/bin/template_engine.sh" \
                 --project-dir="$PROJECT_DIR" \
                 --template="$DEVENV_DIR/templates/config.properties.template" 2> "$TMP_ERR"
@@ -3297,10 +3255,10 @@ get-config() {
                 --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
         fi
         if [ $? -ne 0 ]; then
-            log_json ERROR "get-config: error writing configuration." < "$TMP_ERR"
+            log_msg ERROR "get-config: error writing configuration." < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "get-config: configuration successfully written." < /dev/null
+            log_msg INFO "get-config: configuration successfully written." < /dev/null
         fi
     fi
 
@@ -3315,7 +3273,7 @@ get-ws-props() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "get-ws-props: no config-file given!" < /dev/null
+        log_msg ERROR "get-ws-props: no config-file given!" < /dev/null
         SUCCESS=false
     else
         "$DEVENV_DIR/bin/template_engine.sh" \
@@ -3323,10 +3281,10 @@ get-ws-props() {
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
         if [ $? -ne 0 ]; then
-            log_json ERROR "get-ws-props: error writing ws.properties." < "$TMP_ERR"
+            log_msg ERROR "get-ws-props: error writing ws.properties." < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "get-ws-props: ws.properties successfully written." < /dev/null
+            log_msg INFO "get-ws-props: ws.properties successfully written." < /dev/null
         fi
     fi
     rm -f "$TMP_ERR"
@@ -3340,7 +3298,7 @@ get-geb-props() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "get-geb-props: no config-file given!" < /dev/null
+        log_msg ERROR "get-geb-props: no config-file given!" < /dev/null
         SUCCESS=false
     else
         "$DEVENV_DIR/bin/template_engine.sh" \
@@ -3348,10 +3306,10 @@ get-geb-props() {
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
         if [ $? -ne 0 ]; then
-            log_json ERROR "get-geb-props: error writing geb.properties." < "$TMP_ERR"
+            log_msg ERROR "get-geb-props: error writing geb.properties." < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "get-geb-props: geb.properties successfully written" < /dev/null
+            log_msg INFO "get-geb-props: geb.properties successfully written" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR"
@@ -3365,7 +3323,7 @@ get-soap-props() {
     SUCCESS=true
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "get-soap-props: no config-file given!" < /dev/null
+        log_msg ERROR "get-soap-props: no config-file given!" < /dev/null
         SUCCESS=false
     else
         "$DEVENV_DIR/bin/template_engine.sh" \
@@ -3373,10 +3331,10 @@ get-soap-props() {
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
         if [ $? -ne 0 ]; then
-            log_json ERROR "get-soap-props: error writing soap.properties." < "$TMP_ERR"
+            log_msg ERROR "get-soap-props: error writing soap.properties." < "$TMP_ERR"
             SUCCESS=false
         else
-            log_json INFO "get-soap-props: soap.properties successfully written" < /dev/null
+            log_msg INFO "get-soap-props: soap.properties successfully written" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR"
@@ -3468,14 +3426,14 @@ log-dbaccount() (
     fi
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "log-dbaccount: no config-file given!" < /dev/null
+        log_msg ERROR "log-dbaccount: no config-file given!" < /dev/null
         SUCCESS=false
     # check value of LEVEL
     elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
-            log_json ERROR "log-dbaccount: jq not found" < /dev/null
+            log_msg ERROR "log-dbaccount: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG="--tail=1 -f"
@@ -3501,16 +3459,16 @@ log-dbaccount() (
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
-                    log_json ERROR "log_dbaccount: error getting logs" < "$TMP_ERR"
+                    log_msg ERROR "log_dbaccount: error getting logs" < "$TMP_ERR"
                 else
                     SUCCESS=true
                 fi
             else
-                log_json ERROR "log_dbaccount: no pod available" < /dev/null
+                log_msg ERROR "log_dbaccount: no pod available" < /dev/null
             fi
         fi
     else
-        log_json ERROR "log-dbaccount: '$LEVEL' is not a valid log-level" < /dev/null
+        log_msg ERROR "log-dbaccount: '$LEVEL' is not a valid log-level" < /dev/null
     fi
     rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
@@ -3542,14 +3500,14 @@ log-config() (
     fi
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "log-config: no config-file given!" < /dev/null
+        log_msg ERROR "log-config: no config-file given!" < /dev/null
         SUCCESS=false
     # check value of LEVEL
     elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
-            log_json ERROR "log-config: jq not found" < /dev/null
+            log_msg ERROR "log-config: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3575,16 +3533,16 @@ log-config() (
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
-                    log_json ERROR "log-config: error getting logs" < "$TMP_ERR"
+                    log_msg ERROR "log-config: error getting logs" < "$TMP_ERR"
                 else
                     SUCCESS=true
                 fi
             else
-                log_json ERROR "log-config: no pod available" < /dev/null
+                log_msg ERROR "log-config: no pod available" < /dev/null
             fi
         fi
     else
-        log_json ERROR "log-config: '$LEVEL' is not a valid log-level." < /dev/null
+        log_msg ERROR "log-config: '$LEVEL' is not a valid log-level." < /dev/null
     fi
     rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
@@ -3616,14 +3574,14 @@ log-app() (
     fi
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "log-app: no config-file given!" < /dev/null
+        log_msg ERROR "log-app: no config-file given!" < /dev/null
         SUCCESS=false
     # check value of LEVEL
     elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
-            log_json ERROR "log-app: jq not found" < /dev/null
+            log_msg ERROR "log-app: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3649,16 +3607,16 @@ log-app() (
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
-                    log_json ERROR "log-app: error getting logs" < "$TMP_ERR"
+                    log_msg ERROR "log-app: error getting logs" < "$TMP_ERR"
                 else
                     SUCCESS=true
                 fi
             else
-                log_json ERROR "log-app: no pod available" < /dev/null
+                log_msg ERROR "log-app: no pod available" < /dev/null
             fi
         fi
     else
-        log_json ERROR "log-app: '$LEVEL' is not a valid log-level." < /dev/null
+        log_msg ERROR "log-app: '$LEVEL' is not a valid log-level." < /dev/null
     fi
     rm -r "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
@@ -3690,14 +3648,14 @@ log-access() (
     fi
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_json ERROR "log-access: no config-file given!" < /dev/null
+        log_msg ERROR "log-access: no config-file given!" < /dev/null
         SUCCESS=false
     # check value of level
     elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
-            log_json ERROR "log-access: jq not found" < /dev/null
+            log_msg ERROR "log-access: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3729,16 +3687,16 @@ log-access() (
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
-                    log_json ERROR "log_access: error getting logs" < "$TMP_ERR"
+                    log_msg ERROR "log_access: error getting logs" < "$TMP_ERR"
                 else
                     SUCCESS=true
                 fi
             else
-                log_json ERROR "log-access: no pod available" < /dev/null
+                log_msg ERROR "log-access: no pod available" < /dev/null
             fi
         fi
     else
-        log_json ERROR "log-access: '$LEVEL' is not a valid log-level." < /dev/null
+        log_msg ERROR "log-access: '$LEVEL' is not a valid log-level." < /dev/null
     fi
     rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
@@ -3754,7 +3712,7 @@ OMS_LOGLEVEL_DEVENV=WARN
 
 # TODO can be removed sometimes later
 if [ ! -z "$DEVENV4IOM_CONFIG" ]; then
-    log_json ERROR "Usage of environment variable DEVENV4IOM_CONFIG is not supported any longer. Please remove this variable and inform you about current configuration options by running '$(basename $0) --help'" < /dev/null
+    log_msg ERROR "Usage of environment variable DEVENV4IOM_CONFIG is not supported any longer. Please remove this variable and inform you about current configuration options by running '$(basename $0) --help'" < /dev/null
     exit 1
 fi
 
@@ -3776,7 +3734,7 @@ CONFIG_FILES=
 if [ ! -z "$1" -a -f "$1" ]; then
     # try to read config
     if ! ( set -e; . "$1" ) 2> /dev/null; then
-        log_json ERROR "error reading config file '$1'" < /dev/null
+        log_msg ERROR "error reading config file '$1'" < /dev/null
         exit 1
     else
         CONFIG_FILE_USER="$1"
@@ -3788,7 +3746,7 @@ fi
 if [ -z "$CONFIG_FILE_USER" -a -f "$CONFIG_FILE_USER_PREDEFINED" ]; then
     # try to read config
     if ! ( det -e; . "$CONFIG_FILE_USER_PREDEFINED" ) 2> /dev/null; then
-        log_json ERROR "error reading config file '$CONFIG_FILE_USER_PREDEFINED'" < /dev/null
+        log_msg ERROR "error reading config file '$CONFIG_FILE_USER_PREDEFINED'" < /dev/null
         exit 1
     else
         CONFIG_FILE_USER="$CONFIG_FILE_USER_PREDEFINED"
@@ -3801,7 +3759,7 @@ fi
 if [ ! -z "$CONFIG_FILE_USER" -a -f "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
     # try to read config
     if ! ( set -e; . "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ) 2> /dev/null; then
-        log_json ERROR "error reading config file '$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
+        log_msg ERROR "error reading config file '$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
         exit 1
     else
         CONFIG_FILE_PROJECT="$(realpath "$(dirname "$CONFIG_FILE_USER")")/$CONFIG_FILE_PROJECT_PREDEFINED"
@@ -3809,7 +3767,7 @@ if [ ! -z "$CONFIG_FILE_USER" -a -f "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE
 elif [ -f "$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
     # try to read config
     if ! ( set -e; . "$CONFIG_FILE_PROJECT_PREDEFINED" ) 2> /dev/null; then
-        log_json ERROR "error reading config file '$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
+        log_msg ERROR "error reading config file '$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
         exit 1
     else
         CONFIG_FILE_PROJECT="$CONFIG_FILE_PROJECT_PREDEFINED"
@@ -3853,12 +3811,12 @@ if [ ! -z "$CONFIG_FILES" ]; then
     if [ -z "$ID" ]; then
         # reject config file with empty ID
         # this is the initial state after creation of file
-        log_json ERROR "property ID must not be empty!" < /dev/null
+        log_msg ERROR "property ID must not be empty!" < /dev/null
         exit 1
     elif echo "$ID" | grep -qi '^default' || echo "$ID" | grep -qi '^docker' || echo "$ID" | grep -qi '^kube'; then
         # reject config file with ID starting with one of the reserved words,
         # which are used by namespaces of Docker-Destop
-        log_json ERROR "property ID must not start with one of the reserverd words 'default', 'docker', 'kube'" < /dev/null
+        log_msg ERROR "property ID must not start with one of the reserverd words 'default', 'docker', 'kube'" < /dev/null
         exit 1
     fi
 fi
