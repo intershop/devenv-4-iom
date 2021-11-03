@@ -50,7 +50,7 @@ Changing a value in the configuration file does not automatically change the acc
 
 # Reset Configuration Partially
 
-If you want to reset the whole configuration, simply create a new one and set the `ID` within the properties file to the old value (see Create an New Configuration).
+If you want to reset the whole configuration, simply create a new one and set the `ID` within the properties file to the old value (see section _Create an New Configuration_).
 
 To reset only parts of the configuration, just delete the according entries from your configuration file. Now create a new configuration file, but make sure the old configuration is used during this process. In this case, only the missing/empty properties of the old configuration are filled with default values in the new configuration file.
 
@@ -66,13 +66,13 @@ To reset only parts of the configuration, just delete the according entries from
 
 Running different IOM installations within _devenv-4-iom_ is no problem as long as they are not running simultaneously. Just run _delete cluster_ on one installation before running _create cluster_ on another.
 
-Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. Precondition is the usage of unique `ID`s in configurations (see Create an New Configuration). However, when it comes to the operating system level of your host machine, the ports required to access the IOM installation from the outside collide.
+Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. Precondition is the usage of unique `ID`s in configurations (see section _Create an New Configuration_). However, when it comes to the operating system level of your host machine, the ports required to access the IOM installation from the outside collide.
 
-_devenv-4-iom_ provides a simple mechanism to avoid port collisions. The configuration variable `INDEX` controls the port usage when providing services at OS level. Just make sure that every IOM configuration uses a different value for `INDEX`. After each change of `INDEX` you have to delete and create the cluster (see Change Configuration Values).
+_devenv-4-iom_ provides a simple mechanism to avoid port collisions. The configuration variable `INDEX` controls the port usage when providing services at OS level. Just make sure that every IOM configuration uses a different value for `INDEX`. After each change of `INDEX` you have to delete and create the cluster (see section _Change Configuration Values_).
 
 # Migrate a Configuration After Update of _devenv-4-iom_
 
-After updating _devenv-4-iom_, the content of the current configuration file has to be updated too. The new version of _devenv-4-iom_ might bring a new template for configuration files, which may contain new properties or improved comments. You have to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new configuration file, but make sure your current configuration is used during this process (see Reset Configuration Partially).
+After updating _devenv-4-iom_, the content of the current configuration file has to be updated too. The new version of _devenv-4-iom_ might bring a new template for configuration files, which may contain new properties or improved comments. You have to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new configuration file, but make sure your current configuration is used during this process (see section _Reset Configuration Partially_).
 
     # Create a new configuration file based on the old one
     devenv-cli.sh config.properties get config > migrated-config.properties
@@ -99,4 +99,4 @@ Before deleting a configuration file, you must ensure that all associated Kubern
     # Clean up unused Docker images (cleans up all unused images, not only the ones related to the current configuration)
     docker system prune -a -f
 
-If you have accidentally removed a configuration file before deleting the according Kubernetes and Docker resources, you have to cleanup these resources manually. Section Manual Cleanup describes this process in detail.
+If you have accidentally removed a configuration file before deleting the according Kubernetes and Docker resources, you have to cleanup these resources manually. Section _Manual Cleanup_ in [Troubleshooting](06_troubleshooting.md) describes this process in detail.
