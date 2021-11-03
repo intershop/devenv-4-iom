@@ -6,12 +6,13 @@ _devenv-4-iom_ uses a very simple concept to manage developer instances of IOM. 
 2. Set `ID` in the newly created configuration file to a unique value.
 3. Adapt all other entries in the configuration file according your requirements.
 
+
     # Make sure no other configuration file is currently used.
     export DEVENV4IOM_CONFIG=
     
     # Create a new configuration file that contains default values only.
     devenv-cli.sh get config > config.properties
-
+    
     # Set ID to a unique value and adapt other values according your needs.
     vi config.properties
     
