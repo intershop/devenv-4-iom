@@ -3,9 +3,10 @@
 _devenv-4-iom_ uses a very simple concept to manage developer instances of IOM. One configuration file holds all the information required to run one instance of IOM. Along the many configuration values required to control the behavior of IOM, there is one property which is required to mark Kubernetes and Docker resources as being associated with a certain configuration. This property is the `ID`. Each configuration has to have its own unique `ID`. Hence, the creation of a new configuration file consists of these steps:
 
 1. Create a new configuration file based on the template provided by _devenv-4-iom_. Make sure that there is currently no other configuration file used.
-2. Set `ID` in the newly created configuration file to a unique value.
-3. Adapt all other entries in the configuration file according your requirements.
+1. Set `ID` in the newly created configuration file to a unique value.
+1. Adapt all other entries in the configuration file according your requirements.
 
+TODO: code cannot follow a list
 
     # Make sure no other configuration file is currently used.
     export DEVENV4IOM_CONFIG=
@@ -15,7 +16,7 @@ _devenv-4-iom_ uses a very simple concept to manage developer instances of IOM. 
     
     # Set ID to a unique value and adapt other values according your needs.
     vi config.properties
-    
+
 # Link Configuration to `devenv-cli.sh`
 
 `devenv-cli.sh` is used to control your IOM developer instances. Therefore the configuration has to be passed on each call of this script. There are two different ways to link `devenv-cli.sh` to a certain configuration:
