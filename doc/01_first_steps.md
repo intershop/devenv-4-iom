@@ -26,11 +26,11 @@ There is one value in `config.properties`, that has to be set manually: `ID`. Ev
     # set ID in config.properties to "first-steps"
     vi config.properties
     
-The other values of the new configuration file are filled with default settings defined by _devenv-4-iom_. The most important settings are the `\*\_IMAGE` properties, since they define what will be executed by _devenv-4-iom_. By defining the images, you can control, for example, that a specific project, a standard IOM product without any customizations, an IOM product which is currently in development or even containers of the IOM product or project you have created yourself will run on your local computer.
+The other values of the new configuration file are filled with default settings defined by _devenv-4-iom_. The most important settings are the `*_IMAGE` properties, since they define what will be executed by _devenv-4-iom_. By defining the images, you can control, for example, that a specific project, a standard IOM product without any customizations, an IOM product which is currently in development or even containers of the IOM product or project you have created yourself will run on your local computer.
 
 The default settings use the pure IOM product. It is not necessary to change any of these settings for the first steps. The Docker registry used by default settings requires a login. Hence you have to log in to the registry. Additionally you should check if you are able to access the Docker images specified in the configuration file. To do so, try to pull the images manually in a shell.
 
-Open the newly created config-file `config.properties` and copy the values of the `\*\_IMAGE` properties and use them to pull the Docker images manually, just as shown in the box below.
+Open the newly created config-file `config.properties` and copy the values of the `*_IMAGE` properties and use them to pull the Docker images manually, just as shown in the box below.
 
     # login into Docker registry
     docker login docker.intershop.de
@@ -45,9 +45,9 @@ Open the newly created config-file `config.properties` and copy the values of th
 Before using `devenv-cli.sh` to manage our IOM developer instance, we need to have a look at how configuration files are passed to the script. There are two different ways:
 
 1. Set the configuration file as first command line parameter of `devenv-cli.sh`.
-2. Define the configuration file as value for the environment variable `DEVENV4IOM\_CONFIG`.
+2. Define the configuration file as value for the environment variable `DEVENV4IOM_CONFIG`.
 
-For this guide, we will use the second variant. It is recommended to store the absolute name of the configuration file in `DEVENV4IOM\_CONFIG`, otherwise `devenv-cli.sh` would find the file only if it is called in the same directory as the configuration file resides.
+For this guide, we will use the second variant. It is recommended to store the absolute name of the configuration file in `DEVENV4IOM_CONFIG`, otherwise `devenv-cli.sh` would find the file only if it is called in the same directory as the configuration file resides.
 
     export DEVENV4IOM_CONFIG="$(pwd)/config.properties"
 
@@ -246,7 +246,7 @@ Unlike the cluster creation step, which included the creation of the persistent 
     devenv-cli.sh delete cluster
     devenv-cli.sh delete storage
     
-After deleting all resources belonging to our IOM developer instance, it is also save to delete the configuration file. Do not forget to unset `DEVENV4IOM\_CONFIG` as well.
+After deleting all resources belonging to our IOM developer instance, it is also save to delete the configuration file. Do not forget to unset `DEVENV4IOM_CONFIG` as well.
 
     rm config.properties
     export DEVENV4IOM_CONFIG=
