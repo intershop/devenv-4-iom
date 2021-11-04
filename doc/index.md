@@ -56,7 +56,7 @@ _caas2docker_ is a small package consisting of a shell script and configuration,
 
 # [Operations](03_operations.md)
 
-# [Development Process](04_development_process)
+# [Development Process](04_development_process.md)
 
 # [Log Messages](05_log_messages.md)
 
