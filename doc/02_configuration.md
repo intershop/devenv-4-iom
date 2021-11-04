@@ -80,7 +80,7 @@ After updating _devenv-4-iom_, the content of the current configuration file has
     # Check the migrated configuration file for new properties and change them according to your requirements.
     vi migrated-config.properties
 
-# Delete a Configuration
+# <a name="delete_config"/>Delete a Configuration
 
 Before deleting a configuration file, you must ensure that all associated Kubernetes and Docker resources are deleted as well. You will not be able to delete them using `devenv-cli.sh` afterwards. Executing _delete cluster_ and _delete storage_ will remove all resources assigned to a configuration. Additionally, it is recommended to delete unused Docker images as well.
 
