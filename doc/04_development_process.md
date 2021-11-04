@@ -5,10 +5,10 @@ It is recommended to start with a very simple version of the new custom built ar
 
 Before it can be deployed, the file `deployment.cluster.properties` within the running application container has to be adapted. To do so, you have to process the following steps:
 
-* Set variable `CUSTOM_APPS_DIR` in your configuration file to the directory, holding your custom deployment artifact. Make sure that the directory is shared in Docker Desktop.
+* Set variable `CUSTOM_APPS_DIR` in your configuration file to the directory, holding your custom deployment artifact. Make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 * After changing `CUSTOM_APPS_DIR`, the IOM application server must restarted:
-  1. Delete IOM
-  1. Create IOM
+  1. [Delete IOM](03_operations.md#delete_iom)
+  1. [Create IOM](03_operations.md#create_iom)
 
 When you have made these changes, you have to log in to the app container, add the new artifact to `deployment.cluster.properties` and finally try to redeploy all artifacts.
 
