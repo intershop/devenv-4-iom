@@ -108,11 +108,11 @@ ${ShareDirYml____}          mountPath: /var/opt/share
           - name: OMS_LOG_REST_IDS
             value: '${OMS_LOG_REST_IDS}'
           - name: CAAS_ENV_NAME
-            value: '${CAAS_ENV_NAME}'
+            value: '${PROJECT_ENV_NAME}'
           - name: CAAS_IMPORT_TEST_DATA
-            value: '${CAAS_IMPORT_TEST_DATA}'
+            value: '${PROJECT_IMPORT_TEST_DATA}'
           - name: CAAS_IMPORT_TEST_DATA_TIMEOUT
-            value: '${CAAS_IMPORT_TEST_DATA_TIMEOUT}'
+            value: '${PROJECT_IMPORT_TEST_DATA_TIMEOUT}'
           - name: JBOSS_OPTS
             value: "--debug *:8787"
           - name: JBOSS_JAVA_OPTS
@@ -208,7 +208,7 @@ ${DumpsDirYml____}            mountPath: /opt/dumps
             - name: OMS_DB_SQLHASH
               value: 'false'
             - name: CAAS_ENV_NAME
-              value: '${CAAS_ENV_NAME}'
+              value: '${PROJECT_ENV_NAME}'
 ---
 kind: Service
 apiVersion: v1

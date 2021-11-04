@@ -32,7 +32,7 @@ spec:
           - name: OMS_LOGLEVEL_SCRIPTS
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
-            value: '${CAAS_ENV_NAME}'
+            value: '${PROJECT_ENV_NAME}'
         command: [ '/opt/apply_sql.sh', '--src=/tmp/sql-dir-volume/${sqlFile}' ]
         volumeMounts:
         - name: sql-dir-volume

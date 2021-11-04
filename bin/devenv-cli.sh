@@ -962,7 +962,7 @@ SYNOPSIS
 OVERVIEW
     Scripts for SQL configuration are simple SQL scripts, which can be easily
     developed and tested using the developer task "apply sql-scripts".
-    However, SQL configuration in a CaaS project context is more complex. E.g.
+    However, SQL configuration in a project context is more complex. E.g.
     the scripts are executed depending on the currently activated environment.
     In order to enable you to test SQL configuration scripts exactly in the same
     context as in real IOM installations, the developer task "apply sql-config"
@@ -970,7 +970,7 @@ OVERVIEW
     To be able to roll out complete SQL configurations, you have to:
     - Set variable CUSTOM_SQLCONF_DIR in your configuration file and make sure,
       that the directory is shared in Docker Desktop.
-    - Set variable CAAS_ENV_NAME in your configuratoin file to the environment
+    - Set variable PROJECT_ENV_NAME in your configuratoin file to the environment
       you want to test.
     You should have an eye on the logs created by the configuration process.
     These logs are printed in JSON format. Verbosity can be controlled by the
@@ -985,7 +985,7 @@ CONFIG
     CUSTOM_SQLCONF_DIR - directory where your custom SQL configuration is
       located.
 $(msg_custom_dir SQLCONF 6)
-    CAAS_ENV_NAME - environment name; controls which parts of the SQL
+    PROJECT_ENV_NAME - environment name; controls which parts of the SQL
     configuration will be applied and which not.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying SQL
       configuration.
@@ -1027,7 +1027,7 @@ OVERVIEW
     JSON configuration of IOM is not publicly available. There is no task to
     support development of single JSON configuration scripts. Additionally the
     current implementation of JSON configuration does not use the concept of
-    environments (configuration variable CAAS_ENV_NAME). The current developer
+    environments (configuration variable PROJECT_ENV_NAME). The current developer
     task "apply json-config" allows to apply complete JSON configurations
     exactly in the same context as in a real IOM installation.
     To be able to roll out JSON configurations, you have to:
@@ -1912,7 +1912,7 @@ Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console/
 Development:
 ============
 Debug-Port:                 $PORT_DEBUG_SERVICE
-CAAS_ENV_NAME:              $CAAS_ENV_NAME
+PROJECT_ENV_NAME:           $PROJECT_ENV_NAME
 PROJECT_DIR:                $PROJECT_DIR
 CUSTOM_APPS_DIR:            $CUSTOM_APPS_DIR
 CUSTOM_TEMPLATES_DIR:       $CUSTOM_TEMPLATES_DIR
@@ -1928,8 +1928,8 @@ CUSTOM_SHARE_DIR:           $CUSTOM_SHARE_DIR
 --------------------------------------------------------------------------------
 Runtime:
 ========
-CAAS_ENV_NAME:              $CAAS_ENV_NAME
-CAAS_IMPORT_TEST_DATA:      $CAAS_IMPORT_TEST_DATA
+PROJECT_ENV_NAME:           $PROJECT_ENV_NAME
+PROJECT_IMPORT_TEST_DATA:   $PROJECT_IMPORT_TEST_DATA
 PERFORM_HEALTH_CHECKS:      $PERFORM_HEALTH_CHECKS
 JBOSS_JAVA_OPTS:            $JBOSS_JAVA_OPTS
 JBOSS_XA_POOLSIZE_MIN:      $JBOSS_XA_POOLSIZE_MIN
