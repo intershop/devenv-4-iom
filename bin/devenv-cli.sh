@@ -1338,9 +1338,6 @@ OVERVIEW
 CONFIG-FILE
 $(msg_config_file 4)
 
-SEE
-    "$CONFIG_FILES"
-
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
         --template="$DEVENV_DIR/templates/config.properties.template" \\
@@ -3756,7 +3753,9 @@ fi
 # lookup project config
 # search within the directory where user-specific properties were located
 # search within current directory otherwise
-if [ ! -z "$CONFIG_FILE_USER" -a -f "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
+# files with size 0 are ignored. They are created by redirecting output just before
+# this code is executed!
+if [ ! -z "$CONFIG_FILE_USER" -a -s "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
     # try to read config
     if ! ( set -e; . "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ) 2> /dev/null; then
         log_msg ERROR "error reading config file '$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
@@ -3764,7 +3763,7 @@ if [ ! -z "$CONFIG_FILE_USER" -a -f "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE
     else
         CONFIG_FILE_PROJECT="$(realpath "$(dirname "$CONFIG_FILE_USER")")/$CONFIG_FILE_PROJECT_PREDEFINED"
     fi
-elif [ -f "$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
+elif [ -s "$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
     # try to read config
     if ! ( set -e; . "$CONFIG_FILE_PROJECT_PREDEFINED" ) 2> /dev/null; then
         log_msg ERROR "error reading config file '$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
