@@ -4,17 +4,29 @@ usage() {
     ME=$(basename $0)
     cat <<EOF
 $ME
-    redeploys OMS artifacts
+    expands template file
 
 SYNOPSIS
-    $(basename $0) <template-file> [ <config-file> ]" [-h]
+    $(basename $0) --template=<template-file> --project-dir=<project-dir> [ --config=<config-file>,... ]" [-h]
 
 DESCRIPTION
     This is a very simple templating system to render environment varibales
-    or variables of a given <config-file> in a given <template-file> by using
+    or variables of given <config-file>(s) in a given <template-file> by using
     the given pre-defined template-variables file.
 
-    Other options:
+    Options:
+
+    --template=<template-file>
+      Name of the template file to be used.
+
+    --project-dir=<project-dir>
+      Value of project-dir is required by some variables (CUSTOM_*_DIR) to be expanded
+      to absolute paths.
+
+    --config=<config-file>,...
+      Optional parameter. One or more config files, defining variables, to be expanded
+      within the template. The first config-file within the list has the lowest precedence.
+      This way, it's possible to provide an overwrite mechanism for variables.
 
     -h
       Display this help and exit.
@@ -22,45 +34,12 @@ DESCRIPTION
 EXAMPLES
 
     VAR1=Something VAR2=1.2.3 ${ME} ../templates/index.template
-    ${ME} ../templates/index.template variables.sample
-    VAR1=Something VAR2=1.2.3 ${ME} ../templates/index.template variables.sample > index.html
-    ${ME} ../templates/index.template variables.sample > index.html"
+    ${ME} --template=../templates/index.template --config=variables.sample
+    VAR1=Something VAR2=1.2.3 ${ME} --template=../templates/index.template --config=variables.sample
+    ${ME} --template=../templates/index.template --config=variables.sample
 
 EOF
 }
-
-# checks if version 1 is greater than version 2
-version_gt() {
-    test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
-}
-
-# checks if version 1 is greater than or equal to version 2
-version_ge() {
-    test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1";
-}
-
-# checks if version 1 is less than or equal to version 2
-version_le() {
-    test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" == "$1";
-}
-
-# checks if version 1 is less than  version 2
-version_lt() {
-    test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" != "$1";
-}
-
-# returns operation system
-# unfortunately uname implementations are not compatible on all platforms
-# function is available for other IOM scripts too. E.g. configure_jms_load_balancing.sh
-# is using it. Please be carefull when changing the method.
-OS() {
-    if ! uname -o > /dev/null 2>&1; then
-        uname -s
-    else
-        uname -o
-    fi
-}
-
 
 # renders the template and replace the variables
 render(){
@@ -85,15 +64,24 @@ render(){
 # name of template-variables file
 TEMPLATE_VAR_FILE="$(dirname $0)/template-variables"
 
-# $1 is name of the template-file
-TEMPLATE_FILE=$1
-# $2 is name of the config-file
-CONFIG_FILE=$2
-shift
-shift
+TEMPLATE_FILE=
+CONFIG_FILES=
+PROJECT_DIR=
 
 for OPT in "$@"; do
     case $OPT in
+        --template=*)
+            TEMPLATE_FILE="${OPT#*=}"
+            shift
+            ;;
+        --project-dir=*)
+            PROJECT_DIR="${OPT#*=}"
+            shift
+            ;;
+        --config=*)
+            CONFIG_FILES="${OPT#*=}"
+            shift
+            ;;
         -h)
             usage
             exit
@@ -114,23 +102,35 @@ if [ -z "$TEMPLATE_FILE" -o ! -f "$TEMPLATE_FILE" ]; then
     exit 1
 fi
 
-# check and read config-file
-if [ ! -z "$CONFIG_FILE" -a ! -f "$CONFIG_FILE" ]; then
-    echo "passed config-file '$CONFIG_FILE' does not exist!" 1>&2
+# check project-dir
+if [ -z "$PROJECT_DIR" -o ! -d "$PROJECT_DIR" ]; then
+    echo "project-dir is missing!" 1>&2
     echo 1>&2
     usage 1>&2
     exit 1
-elif [ ! -z "$CONFIG_FILE" ]; then
+fi
 
-    # check syntax of $CONFIG_FILE
-    if ! ( set -e; . $CONFIG_FILE ); then
-        echo "error reading '$CONFIG_FILE'" 1>&2
-        exit 1
-    fi
+if [ ! -z "$CONFIG_FILES" ]; then
+    # check status and syntax of config files
+    echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
+        if [ ! -f "$CONFIG_FILE" ]; then
+            echo "passed config-file '$CONFIG_FILE' does not exist!" 1>&2
+            echo 1>&2
+            usage 1>&2
+            exit 1
+        elif ! ( set -e; . $CONFIG_FILE ); then
+            echo "error reading '$CONFIG_FILE'" 1>&2
+            exit 1
+        fi
+    done || exit 1
 
-    # read $CONFIG_FILE
-    . $CONFIG_FILE
-
+    # read content of config files
+    # . notation cannot be used, since variables would be defined inside a
+    # subshell only.
+    CONFIG=$(echo "$CONFIG_FILES" | tr ',' '\n' | while read CONFIG_FILE; do
+                 cat "$CONFIG_FILE"
+                 echo # just for the case, a newline is missing at the end of file
+             done)
 fi
 
 # check template-variables file
@@ -147,7 +147,16 @@ if ! ( set -e; . "$TEMPLATE_VAR_FILE" ); then
     exit 1
 fi
 
+# render template with variables from CONFIG
+ORIGINAL_PROJECT_DIR="$PROJECT_DIR"
+if [ ! -z "$CONFIG_FILES" ]; then
+    eval "$CONFIG"
+fi
 # read $TEMPLATE_VAR_FILE
 . $TEMPLATE_VAR_FILE
 
+if [ "$ORIGINAL_PROJECT_DIR" != "$PROJECT_DIR" ]; then
+    echo "overwriting PROJECT_DIR is not supported!" 1>&2
+    exit 1
+fi
 render "$TEMPLATE_FILE"

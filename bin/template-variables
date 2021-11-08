@@ -12,11 +12,22 @@ INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
 # environment specific configuration defaults to 'ci'
-CAAS_ENV_NAME="${CAAS_ENV_NAME:-ci}"
+# TODO remove if-block after deprecation period
+if [ -z "$PROJECT_ENV_NAME" -a ! -z "$CAAS_ENV_NAME" ]; then
+    PROJECT_ENV_NAME="$CAAS_ENV_NAME"
+fi
+PROJECT_ENV_NAME="${PROJECT_ENV_NAME:-ci}"
 
 # import of test-data
-CAAS_IMPORT_TEST_DATA="${CAAS_IMPORT_TEST_DATA:-true}"
-CAAS_IMPORT_TEST_DATA_TIMEOUT="${CAAS_IMPORT_TEST_DATA_TIMEOUT:-300}"
+# TODO remove if-blocks after deprecation period
+if [ -z "$PROJECT_IMPORT_TEST_DATA" -a ! -z "$CAAS_IMPORT_TEST_DATA" ]; then
+    PROJECT_IMPORT_TEST_DATA="$CAAS_IMPORT_TEST_DATA"
+fi
+if [ -z "$PROJECT_IMPORT_TEST_DATA_TIMEOUT" -a ! -z "$CAAS_IMPORT_TEST_DATA_TIMEOUT" ]; then
+    PROJECT_IMPORT_TEST_DATA_TIMEOUT="$CAAS_IMPORT_TEST_DATA_TIMEOUT"
+fi
+PROJECT_IMPORT_TEST_DATA="${PROJECT_IMPORT_TEST_DATA:-true}"
+PROJECT_IMPORT_TEST_DATA_TIMEOUT="${PROJECT_IMPORT_TEST_DATA_TIMEOUT:-300}"
 
 # check for 'false' only, to enable health-checks in any other case
 PERFORM_HEALTH_CHECKS="${PERFORM_HEALTH_CHECKS:-true}"
@@ -65,12 +76,25 @@ else
     KeepDatabaseSh='#'
 fi
 
+# remove trailing slash
+if echo "$MOUNT_PREFIX" | grep -q '/$'; then
+    MOUNT_PREFIX="$(echo "$MOUNT_PREFIX" | sed 's|/*$||g')"
+else
+    MOUNT_PREFIX="${MOUNT_PREFIX}"
+fi
+
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
 CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_APPS_DIR" ]; then
-  CUSTOM_APPS_DIR=$(cygpath -u "$CUSTOM_APPS_DIR")
+# define variable containing the according absolute path
+CustomAppsDirAbs=
+if [ ! -z "$CUSTOM_APPS_DIR" ]; then
+    if echo "$CUSTOM_APPS_DIR" | grep -q '^/'; then
+        CustomAppsDirAbs="$CUSTOM_APPS_DIR"
+    else
+        CustomAppsDirAbs="$PROJECT_DIR/$CUSTOM_APPS_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
@@ -83,8 +107,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom templates or not.
 CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
-    CUSTOM_TEMPLATES_DIR=$(cygpath -u "$CUSTOM_TEMPLATES_DIR")
+# define variable containing the according absolute path
+CustomTemplatesDirAbs=
+if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
+    if echo "$CUSTOM_TEMPLATES_DIR" | grep -q '^/'; then
+        CustomTemplatesDirAbs="$CUSTOM_TEMPLATES_DIR"
+    else
+        CustomTemplatesDirAbs="$PROJECT_DIR/$CUSTOM_TEMPLATES_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
@@ -97,8 +127,14 @@ fi
 # variable has to be empty on default, in order to become able to make the
 # distinction whether the user wants to use custom dumps or not.
 CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DUMPS_DIR" ]; then
-    CUSTOM_DUMPS_DIR=$(cygpath -u "$CUSTOM_DUMPS_DIR")
+# define variable containing the according absolute path
+CustomDumpsDirAbs=
+if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
+    if echo "$CUSTOM_DUMPS_DIR" | grep -q '^/'; then
+        CustomDumpsDirAbs="$CUSTOM_DUMPS_DIR"
+    else
+        CustomDumpsDirAbs="$PROJECT_DIR/$CUSTOM_DUMPS_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_DUMPS_DIR
 if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
@@ -111,8 +147,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to test custom xsl templates or not.
 CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_XSLT_DIR" ]; then
-    CUSTOM_XSLT_DIR=$(cygpath -u "$CUSTOM_XSLT_DIR")
+# define variable containing the according absolute path
+CustomXsltDirAbs=
+if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
+    if echo "$CUSTOM_XSLT_DIR" | grep -q '^/'; then
+        CustomXsltDirAbs="$CUSTOM_XSLT_DIR"
+    else
+        CustomXsltDirAbs="$PROJECT_DIR/$CUSTOM_XSLT_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
@@ -125,8 +167,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom dbmigrate scripts or not.
 CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
-    CUSTOM_DBMIGRATE_DIR=$(cygpath -u "$CUSTOM_DBMIGRATE_DIR")
+# define variable containing the according absolute path
+CustomDbmigrateDirAbs=
+if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
+    if echo "$CUSTOM_DBMIGRATE_DIR" | grep -q '^/'; then
+        CustomDbmigrateDirAbs="$CUSTOM_DBMIGRATE_DIR"
+    else
+        CustomDbmigrateDirAbs="$PROJECT_DIR/$CUSTOM_DBMIGRATE_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_DBMIGRATE_DIR
 if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
@@ -139,8 +187,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom sql-config or not.
 CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SQLCONF_DIR" ]; then
-    CUSTOM_SQLCONF_DIR=$(cygpath -u "$CUSTOM_SQLCONF_DIR")
+# define variable containing the according absolute path
+CustomSqlconfDirAbs=
+if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
+    if echo "$CUSTOM_SQLCONF_DIR" | grep -q '^/'; then
+        CustomSqlconfDirAbs="$CUSTOM_SQLCONF_DIR"
+    else
+        CustomSqlconfDirAbs="$PROJECT_DIR/$CUSTOM_SQLCONF_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_SQLCONF_DIR
 if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
@@ -153,8 +207,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use custom json-config or not.
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_JSONCONF_DIR" ]; then
-    CUSTOM_JSONCONF_DIR=$(cygpath -u "$CUSTOM_JSONCONF_DIR")
+# define variable containing the according absolute path
+CustomJsonconfDirAbs=
+if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
+    if echo "$CUSTOM_JSONCONF_DIR" | grep -q '^/'; then
+        CustomJsonconfDirAbs="$CUSTOM_JSONCONF_DIR"
+    else
+        CustomJsonconfDirAbs="$PROJECT_DIR/$CUSTOM_JSONCONF_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_JSONCONF_DIR
 if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
@@ -167,8 +227,14 @@ fi
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to use a custom share or not.
 CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
-if [ $(OS) = "Msys" -a ! -z "$CUSTOM_SHARE_DIR" ]; then
-    CUSTOM_SHARE_DIR=$(cygpath -u "$CUSTOM_SHARE_DIR")
+# define variable containing the according absolute path
+CustomShareDirAbs=
+if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
+    if echo "$CUSTOM_SHARE_DIR" | grep -q '^/'; then
+        CustomShareDirAbs="$CUSTOM_SHARE_DIR"
+    else
+        CustomShareDirAbs="$PROJECT_DIR/$CUSTOM_SHARE_DIR"
+    fi
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
@@ -181,7 +247,13 @@ fi
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
 # development host
-HOST_IOM="${HOST_IOM:-$(hostname)}"
+HOST_IOM="${HOST_IOM}"
+if [ -z "$HOST_IOM" ]; then
+    HostIom="$(hostname)"
+else
+    HostIom="$HOST_IOM"
+fi
+
 
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
@@ -240,7 +312,7 @@ if [ ! -z "$PGHOST" ]; then
     PgHostIntern=$PGHOST
     PgPortIntern=$PGPORT
 else
-    PgHostExtern=$HOST_IOM
+    PgHostExtern=$HostIom
     PgPortExtern=$PORT_DB_SERVICE
     
     PgHostIntern="postgres-service"
@@ -264,18 +336,14 @@ OMS_DB_USER="${OMS_DB_USER:-oms_user}"
 OMS_DB_PASS="${OMS_DB_PASS:-oms_pw}"
 OMS_DB_NAME="${OMS_DB_NAME:-oms_db}"
 
-# paths
-PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
-UNIX_PROJECT_PATH="${UNIX_PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
-
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
 DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:12}"
 MAILHOG_IMAGE="${MAILHOG_IMAGE:-mailhog/mailhog}"
-IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.intershop.de/intershop/iom-dbaccount:1.2.0.0}"
-IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE:-docker.intershop.de/intershop/iom-config:3.1.0.0}"
-IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker.intershop.de/intershop/iom-app:3.1.0.0}"
+IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.intershop.de/intershophub/iom-dbaccount:1.3.0.0}"
+IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE:-docker.intershop.de/intershophub/iom-config:3.6.0.0}"
+IOM_APP_IMAGE="${IOM_APP_IMAGE:-docker.intershop.de/intershophub/iom-app:3.6.0.0}"
 
 # this variable is used to pass information to the apply-sql-job.
 # A file or directory can be passed. It's necessary to split SQL_SRC into directory-

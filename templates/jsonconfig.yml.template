@@ -32,7 +32,7 @@ spec:
           - name: OMS_LOGLEVEL_SCRIPTS
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
-            value: '${CAAS_ENV_NAME}'
+            value: '${PROJECT_ENV_NAME}'
         command: [ '/opt/apply_json_config.sh', '--dir=/opt/caas-config/json-config' ]
         volumeMounts:
 ${JsonconfDirYml_}        - name: jsonconf
@@ -41,5 +41,5 @@ ${JsonconfDirYml_}          mountPath: /opt/caas-config/json-config
       volumes:
 ${JsonconfDirYml_}      - name: jsonconf
 ${JsonconfDirYml_}        hostPath:
-${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
+${JsonconfDirYml_}          path: "${MOUNT_PREFIX}${CustomJsonconfDirAbs}"
   backoffLimit: 0

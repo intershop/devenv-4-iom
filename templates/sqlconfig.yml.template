@@ -30,7 +30,7 @@ spec:
           - name: OMS_LOGLEVEL_SCRIPTS
             value: '${OMS_LOGLEVEL_SCRIPTS}'
           - name: CAAS_ENV_NAME
-            value: '${CAAS_ENV_NAME}'
+            value: '${PROJECT_ENV_NAME}'
         command: [ '/opt/apply_sql_config.sh', '--dir=/opt/caas-config/sql-config' ]
         volumeMounts:
 ${SqlconfDirYml__}        - name: sqlconf
@@ -39,5 +39,5 @@ ${SqlconfDirYml__}          mountPath: /opt/caas-config/sql-config
       volumes:
 ${SqlconfDirYml__}      - name: sqlconf
 ${SqlconfDirYml__}        hostPath:
-${SqlconfDirYml__}          path: ${CUSTOM_SQLCONF_DIR}
+${SqlconfDirYml__}          path: "${MOUNT_PREFIX}${CustomSqlconfDirAbs}"
   backoffLimit: 0

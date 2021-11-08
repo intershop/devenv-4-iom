@@ -17,31 +17,31 @@ spec:
       volumes:
 ${AppsDirYml_____}      - name: application-dev
 ${AppsDirYml_____}        hostPath:
-${AppsDirYml_____}          path: ${CUSTOM_APPS_DIR}
+${AppsDirYml_____}          path: "${MOUNT_PREFIX}${CustomAppsDirAbs}"
 ${TemplatesDirYml}      - name: templates-dev
 ${TemplatesDirYml}        hostPath:
-${TemplatesDirYml}          path: ${CUSTOM_TEMPLATES_DIR}
+${TemplatesDirYml}          path: "${MOUNT_PREFIX}${CustomTemplatesDirAbs}"
 ${XsltDirYml_____}      - name: xslt-dev
 ${XsltDirYml_____}        hostPath:
-${XsltDirYml_____}          path: ${CUSTOM_XSLT_DIR}
+${XsltDirYml_____}          path: "${MOUNT_PREFIX}${CustomXsltDirAbs}"
 ${ShareDirYml____}      - name: share-dev
 ${ShareDirYml____}        hostPath:
-${ShareDirYml____}          path: ${CUSTOM_SHARE_DIR}
+${ShareDirYml____}          path: "${MOUNT_PREFIX}${CustomShareDirAbs}"
 ${DbmigrateDirYml}      - name: dbmigrate-sps
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/stored_procedures
+${DbmigrateDirYml}          path: "${MOUNT_PREFIX}${CustomDbmigrateDirAbs}/stored_procedures"
 ${DbmigrateDirYml}      - name: dbmigrate-scripts
 ${DbmigrateDirYml}        hostPath:
-${DbmigrateDirYml}          path: ${CUSTOM_DBMIGRATE_DIR}/migrations
+${DbmigrateDirYml}          path: "${MOUNT_PREFIX}${CustomDbmigrateDirAbs}/migrations"
 ${SqlconfDirYml__}      - name: sqlconf
 ${SqlconfDirYml__}        hostPath:
-${SqlconfDirYml__}          path: ${CUSTOM_SQLCONF_DIR}
+${SqlconfDirYml__}          path: "${MOUNT_PREFIX}${CustomSqlconfDirAbs}"
 ${JsonconfDirYml_}      - name: jsonconf
 ${JsonconfDirYml_}        hostPath:
-${JsonconfDirYml_}          path: ${CUSTOM_JSONCONF_DIR}
+${JsonconfDirYml_}          path: "${MOUNT_PREFIX}${CustomJsonconfDirAbs}"
 ${DumpsDirYml____}      - name: dumps
 ${DumpsDirYml____}        hostPath:
-${DumpsDirYml____}          path: ${CUSTOM_DUMPS_DIR}
+${DumpsDirYml____}          path: "${MOUNT_PREFIX}${CustomDumpsDirAbs}"
       imagePullSecrets:
       - name: ${IMAGE_PULL_SECRET}
       containers:
@@ -108,11 +108,11 @@ ${ShareDirYml____}          mountPath: /var/opt/share
           - name: OMS_LOG_REST_IDS
             value: '${OMS_LOG_REST_IDS}'
           - name: CAAS_ENV_NAME
-            value: '${CAAS_ENV_NAME}'
+            value: '${PROJECT_ENV_NAME}'
           - name: CAAS_IMPORT_TEST_DATA
-            value: '${CAAS_IMPORT_TEST_DATA}'
+            value: '${PROJECT_IMPORT_TEST_DATA}'
           - name: CAAS_IMPORT_TEST_DATA_TIMEOUT
-            value: '${CAAS_IMPORT_TEST_DATA_TIMEOUT}'
+            value: '${PROJECT_IMPORT_TEST_DATA_TIMEOUT}'
           - name: JBOSS_OPTS
             value: "--debug *:8787"
           - name: JBOSS_JAVA_OPTS
@@ -124,7 +124,7 @@ ${ShareDirYml____}          mountPath: /var/opt/share
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL
-            value: 'http://${HOST_IOM}:${PORT_IOM_SERVICE}'
+            value: 'http://${HostIom}:${PORT_IOM_SERVICE}'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
           - name: OMS_SHARE
@@ -208,7 +208,7 @@ ${DumpsDirYml____}            mountPath: /opt/dumps
             - name: OMS_DB_SQLHASH
               value: 'false'
             - name: CAAS_ENV_NAME
-              value: '${CAAS_ENV_NAME}'
+              value: '${PROJECT_ENV_NAME}'
 ---
 kind: Service
 apiVersion: v1
