@@ -76,7 +76,12 @@ else
     KeepDatabaseSh='#'
 fi
 
-MOUNT_PREFIX="${MOUNT_PREFIX}"
+# remove trailing slash
+if echo "$MOUNT_PREFIX" | grep -q '/$'; then
+    MOUNT_PREFIX="$(echo "$MOUNT_PREFIX" | sed 's|/*$||g')"
+else
+    MOUNT_PREFIX="${MOUNT_PREFIX}"
+fi
 
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
