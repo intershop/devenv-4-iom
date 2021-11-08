@@ -124,7 +124,7 @@ ${ShareDirYml____}          mountPath: /var/opt/share
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL
-            value: 'http://${HOST_IOM}:${PORT_IOM_SERVICE}'
+            value: 'http://${HostIom}:${PORT_IOM_SERVICE}'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
           - name: OMS_SHARE

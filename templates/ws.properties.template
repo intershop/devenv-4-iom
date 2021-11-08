@@ -11,7 +11,7 @@
 ################################################################################
 
 # web app
-is.oms.app.host       = ${HOST_IOM}
+is.oms.app.host       = ${HostIom}
 is.oms.app.http.port  = ${PORT_IOM_SERVICE}
 is.oms.app.https.port = 443
 
