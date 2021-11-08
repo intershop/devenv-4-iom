@@ -114,7 +114,7 @@ PROJECT_IMPORT_TEST_DATA=${PROJECT_IMPORT_TEST_DATA}
 PROJECT_IMPORT_TEST_DATA_TIMEOUT=${PROJECT_IMPORT_TEST_DATA_TIMEOUT}
 
 # Hostname to be used for the OMS_PUBLIC_URL
-# If left empty, HOST_IOM defaults to ${HOST_IOM}
+# If left empty, HOST_IOM defaults to output of "hostname" command.
 HOST_IOM=${HOST_IOM}
 
 # For some developer tasks, the execution of health checks might be a problem,

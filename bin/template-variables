@@ -242,7 +242,13 @@ fi
 EnvId=$(echo $ID | sed "s/[^A-Za-z0-9]*//g" | tr "[:upper:]" "[:lower:]")
 
 # development host
-HOST_IOM="${HOST_IOM:-$(hostname)}"
+HOST_IOM="${HOST_IOM}"
+if [ -z "$HOST_IOM" ]; then
+    HostIom="$(hostname)"
+else
+    HostIom="$HOST_IOM"
+fi
+
 
 # paths
 PROJECT_PATH="${PROJECT_PATH:-$(realpath $(dirname $(dirname $0)))}"
@@ -301,7 +307,7 @@ if [ ! -z "$PGHOST" ]; then
     PgHostIntern=$PGHOST
     PgPortIntern=$PGPORT
 else
-    PgHostExtern=$HOST_IOM
+    PgHostExtern=$HostIom
     PgPortExtern=$PORT_DB_SERVICE
     
     PgHostIntern="postgres-service"

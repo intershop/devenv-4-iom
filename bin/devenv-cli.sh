@@ -1901,10 +1901,10 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-OMT:                        http://$HOST_IOM:$PORT_IOM_SERVICE/omt/
-Online help:                http://$HOST_IOM:$PORT_IOM_SERVICE/omt-help/
-DBDoc:                      http://$HOST_IOM:$PORT_IOM_SERVICE/dbdoc/
-Wildfly (admin:admin):      http://$HOST_IOM:$PORT_WILDFLY_SERVICE/console/
+OMT:                        http://$HostIom:$PORT_IOM_SERVICE/omt/
+Online help:                http://$HostIom:$PORT_IOM_SERVICE/omt-help/
+DBDoc:                      http://$HostIom:$PORT_IOM_SERVICE/dbdoc/
+Wildfly (admin:admin):      http://$HostIom:$PORT_WILDFLY_SERVICE/console/
 --------------------------------------------------------------------------------
 Development:
 ============
@@ -2060,8 +2060,8 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-Web-UI:                     http://$HOST_IOM:$PORT_MAILHOG_UI_SERVICE
-REST:                       http://$HOST_IOM:$PORT_MAILHOG_UI_SERVICE/api/v2/messages
+Web-UI:                     http://$HostIom:$PORT_MAILHOG_UI_SERVICE
+REST:                       http://$HostIom:$PORT_MAILHOG_UI_SERVICE/api/v2/messages
 --------------------------------------------------------------------------------
 Docker:
 =======
