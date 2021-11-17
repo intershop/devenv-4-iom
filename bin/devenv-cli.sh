@@ -13,12 +13,12 @@ trap "rm -f $TMP_ERR $TMP_OUT" EXIT SIGTERM
 # $1 - required. Number of spaces to indent content
 indent() {
     while read LINE; do
-	I=$1
-	while [ "$I" -gt 0 ]; do
-	    echo -n ' '
-	    I=$(expr $I - 1)
-	done
-	    echo $LINE
+        I=$1
+        while [ "$I" -gt 0 ]; do
+            echo -n ' '
+            I=$(expr $I - 1)
+        done
+            echo $LINE
     done
 }
 
@@ -1674,13 +1674,13 @@ log_msg() (
 
     # write message if REQUESTED_LEVEL <= ALLOWED_LEVEL
     if [ $REQUESTED_LEVEL -le $ALLOWED_LEVEL ]; then
-	cat 1>&2 <<EOF
+        cat 1>&2 <<EOF
 $(date -u +"%Y-%m-%dT%H:%M:%SZ") $LEVEL
   $MSG
 EOF
-	if [ -s "$ADD_INFO" ]; then
-	    indent 2 1>&2 < "$ADD_INFO"
-	fi
+        if [ -s "$ADD_INFO" ]; then
+            indent 2 1>&2 < "$ADD_INFO"
+        fi
     fi
     rm -f "$ADD_INFO"
 )
@@ -3829,7 +3829,7 @@ fi
 DEVENV_DIR="$(realpath "$(dirname "$BASH_SOURCE")/..")"
 
 # get template variables
-. $DEVENV_DIR/bin/template-variables
+. $DEVENV_DIR/bin/template-variables || exit 1
 
 ################################################################################
 # read command line arguments

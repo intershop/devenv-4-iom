@@ -91,9 +91,9 @@ CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 CustomAppsDirAbs=
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
     if echo "$CUSTOM_APPS_DIR" | grep -q '^/'; then
-        CustomAppsDirAbs="$CUSTOM_APPS_DIR"
+        CustomAppsDirAbs="$(realpath "$CUSTOM_APPS_DIR")"
     else
-        CustomAppsDirAbs="$PROJECT_DIR/$CUSTOM_APPS_DIR"
+        CustomAppsDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_APPS_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
@@ -111,9 +111,9 @@ CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 CustomTemplatesDirAbs=
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
     if echo "$CUSTOM_TEMPLATES_DIR" | grep -q '^/'; then
-        CustomTemplatesDirAbs="$CUSTOM_TEMPLATES_DIR"
+        CustomTemplatesDirAbs="$(realpath "$CUSTOM_TEMPLATES_DIR")"
     else
-        CustomTemplatesDirAbs="$PROJECT_DIR/$CUSTOM_TEMPLATES_DIR"
+        CustomTemplatesDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_TEMPLATES_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
@@ -131,9 +131,9 @@ CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 CustomDumpsDirAbs=
 if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
     if echo "$CUSTOM_DUMPS_DIR" | grep -q '^/'; then
-        CustomDumpsDirAbs="$CUSTOM_DUMPS_DIR"
+        CustomDumpsDirAbs="$(realpath "$CUSTOM_DUMPS_DIR")"
     else
-        CustomDumpsDirAbs="$PROJECT_DIR/$CUSTOM_DUMPS_DIR"
+        CustomDumpsDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_DUMPS_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_DUMPS_DIR
@@ -151,9 +151,9 @@ CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 CustomXsltDirAbs=
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
     if echo "$CUSTOM_XSLT_DIR" | grep -q '^/'; then
-        CustomXsltDirAbs="$CUSTOM_XSLT_DIR"
+        CustomXsltDirAbs="$(realpath "$CUSTOM_XSLT_DIR")"
     else
-        CustomXsltDirAbs="$PROJECT_DIR/$CUSTOM_XSLT_DIR"
+        CustomXsltDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_XSLT_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
@@ -171,9 +171,9 @@ CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 CustomDbmigrateDirAbs=
 if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
     if echo "$CUSTOM_DBMIGRATE_DIR" | grep -q '^/'; then
-        CustomDbmigrateDirAbs="$CUSTOM_DBMIGRATE_DIR"
+        CustomDbmigrateDirAbs="$(realpath "$CUSTOM_DBMIGRATE_DIR")"
     else
-        CustomDbmigrateDirAbs="$PROJECT_DIR/$CUSTOM_DBMIGRATE_DIR"
+        CustomDbmigrateDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_DBMIGRATE_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_DBMIGRATE_DIR
@@ -191,9 +191,9 @@ CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 CustomSqlconfDirAbs=
 if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
     if echo "$CUSTOM_SQLCONF_DIR" | grep -q '^/'; then
-        CustomSqlconfDirAbs="$CUSTOM_SQLCONF_DIR"
+        CustomSqlconfDirAbs="$(realpath "$CUSTOM_SQLCONF_DIR")"
     else
-        CustomSqlconfDirAbs="$PROJECT_DIR/$CUSTOM_SQLCONF_DIR"
+        CustomSqlconfDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_SQLCONF_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_SQLCONF_DIR
@@ -211,9 +211,9 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 CustomJsonconfDirAbs=
 if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
     if echo "$CUSTOM_JSONCONF_DIR" | grep -q '^/'; then
-        CustomJsonconfDirAbs="$CUSTOM_JSONCONF_DIR"
+        CustomJsonconfDirAbs="$(realpath "$CUSTOM_JSONCONF_DIR")"
     else
-        CustomJsonconfDirAbs="$PROJECT_DIR/$CUSTOM_JSONCONF_DIR"
+        CustomJsonconfDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_JSONCONF_DIR")"
     fi
 fi
 # create yaml code depending on CUSTOM_JSONCONF_DIR
@@ -235,6 +235,15 @@ if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
     else
         CustomShareDirAbs="$PROJECT_DIR/$CUSTOM_SHARE_DIR"
     fi
+fi
+# realpath can only be used, if the according directory exists.
+# hence, create the shared directory, if it does not exist
+if [ ! -z "$CustomShareDirAbs" -a ! -d "$CustomShareDirAbs" ]; then
+    mkdir -p "$CustomShareDirAbs" > /dev/null || exit 1
+fi
+# finally use realpath to remove dots from path
+if [ ! -z "$CustomShareDirAbs" ]; then
+    CustomShareDirAbs="$(realpath "$CustomShareDirAbs")"
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
