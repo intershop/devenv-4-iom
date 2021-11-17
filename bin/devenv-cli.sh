@@ -375,8 +375,9 @@ $(msg_config_file 4)
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
-    IOM_CONFIG_IMAGE - defines the config image to be used
-    IOM_APP_IMAGE - defines the IOM application image to be used
+    IOM_CONFIG_IMAGE - defines the config image to be used (IOM < v.4)
+    IOM_APP_IMAGE - defines the IOM application image to be used (IOM < v.4)
+    IOM_IMAGE - defined the IOM image to be used (IOM >= v.4)
     IMAGE_PULL_POLICY - defines when to pull images from origin
     IMAGE_PULL_SECRET - name of the secret to be used when pulling images from 
       origin.
@@ -387,7 +388,7 @@ SEE
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
-        --template="$DEVENV_DIR/templates/iom.yml.template" \\
+        --template="$DEVENV_DIR/templates/$IomTemplate" \\
         --config="$CONFIG_FILES" \\
         --project-dir="$PROJECT_DIR" |
       kubectl apply --namespace $EnvId -f -
@@ -599,7 +600,7 @@ SEE
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
-        --template="$DEVENV_DIR/templates/iom.yml.template" \\
+        --template="$DEVENV_DIR/templates/$IomTemplate" \\
         --config="$CONFIG_FILES" \\
         --project-dir="$PROJECT_DIR" |
       kubectl delete --namespace $EnvId -f -
@@ -898,10 +899,10 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    The docker-image defined by IOM_CONFIG_IMAGE contains all the necessary
-    tools to apply SQL scripts to the IOM database. Devenv4iom enables you to
-    use these tools as easily as possible. Therefore it provides a Kubernetes
-    job (apply-sql-job), that applies SQL file(s) to the IOM database.
+    The docker-image defined by IOM_CONFIG_IMAGE/IOM_IMAGE contains all the 
+    necessary tools to apply SQL scripts to the IOM database. Devenv4iom enables 
+    you to use these tools as easily as possible. Therefore it provides a 
+    Kubernetes job (apply-sql-job), that applies SQL file(s) to the IOM database.
 
     There are two different modes that can be used.
 
@@ -1046,7 +1047,8 @@ CONFIG
     CUSTOM_JSONCONF_DIR - directory where your custom JSON confguration is
       located.
 $(msg_custom_dir JSONCONF 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
+    IOM_IMAGE - defines the image to be used when executing the job (IOM >= v.4).
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
       configuration.
@@ -1096,11 +1098,11 @@ OVERVIEW
     is controlled by the names of sub-directories within migrations and the
     naming of the migration scripts itself (numerically sorted, smallest first).
 
-    The IOM_CONFIG_IMAGE contains a shell script, that applies the migration
-    scripts which are delivered along with the Docker image. The developer task
-    "apply dbmigrate" enables you to use this dbmigrate script along with the
-    migration scripts located at CUSTOM_DBMIGRATE_DIR. Hence, if you want to
-    roll out custom dbmigrate scripts, you have to:
+    The IOM_CONFIG_IMAGE/IOM_IMAGE contains a shell script, that applies the 
+    migration scripts which are delivered along with the Docker image. The 
+    developer task "apply dbmigrate" enables you to use this dbmigrate script 
+    along with the migration scripts located at CUSTOM_DBMIGRATE_DIR. Hence, if 
+    you want to roll out custom dbmigrate scripts, you have to:
     - Set the variable CUSTOM_DBMIGRATE_DIR in your configuration file and make
       sure, that the directory is shared in Docker Desktop.
     You can and should have an eye on the logs created by the migration process.
@@ -1117,7 +1119,8 @@ CONFIG
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
 $(msg_custom_dir DBMIGRATE 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
+    IOM_IMAGE - defines the image to be used when executing the job (IOM >= v.4).
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
       the db-migration.
@@ -1199,7 +1202,8 @@ CONFIG
     CUSTOM_DUMPS_DIR - directory where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
 $(msg_custom_dir DUMPS 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job.
+    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
+    IOM_IMAGE - defined the image to be used when executing the job (IOM >= v.4).
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
     ID - the namespace used is derived from ID.
@@ -1947,6 +1951,7 @@ Docker:
 IOM_DBACCOUNT_IMAGE:        $IOM_DBACCOUNT_IMAGE
 IOM_CONFIG_IMAGE:           $IOM_CONFIG_IMAGE
 IOM_APP_IMAGE:              $IOM_APP_IMAGE
+IOM_IMAGE:                  $IOM_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
@@ -2349,16 +2354,16 @@ create-iom() {
             fi
         fi
         if [ "$SUCCESS" = 'true' ]; then
-            "$DEVENV_DIR/bin/template_engine.sh" \
-                --template="$DEVENV_DIR/templates/iom.yml.template" \
+	    "$DEVENV_DIR/bin/template_engine.sh" \
+                --template="$DEVENV_DIR/templates/$IomTemplate" \
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
+	    if [ $? -ne 0 ]; then
                 log_msg ERROR "create-iom: error creating iom" < "$TMP_ERR"
                 SUCCESS=false
-            else
+	    else
                 log_msg INFO "create-iom: successfully created iom" < "$TMP_OUT"
-            fi
+	    fi
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -2517,7 +2522,7 @@ delete-iom() {
         SUCCESS=false
     elif kube_resource_exists pods iom || kube_resource_exists services iom-service; then
         "$DEVENV_DIR/bin/template_engine.sh" \
-            --template="$DEVENV_DIR/templates/iom.yml.template" \
+            --template="$DEVENV_DIR/templates/$IomTemplate" \
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then

@@ -10,7 +10,7 @@ spec:
       - name: ${IMAGE_PULL_SECRET}
       containers:
       - name: apply-sql
-        image: ${IOM_CONFIG_IMAGE}
+        image: ${IomJobImage}
         imagePullPolicy: ${IMAGE_PULL_POLICY}
         env:
           - name: TENANT
