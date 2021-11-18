@@ -1746,27 +1746,6 @@ kube_pod_wait() (
 )
 
 #-------------------------------------------------------------------------------
-# wait for initContainer to be terminated
-# $1: app name (iom)
-# $2: name of init-container (e.g. dbaccount, config)
-# $3: timeout [s]
-# ->  true - if init-container is terminated before timeout
-#     false - else
-#-------------------------------------------------------------------------------
-kube_init_wait() (
-    APP_NAME=$1
-    INIT_NAME=$2
-    TIMEOUT=$3
-    TERMINATED=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[*].status.initContainerStatuses[?(@.name=="'$INIT_NAME'")].state.terminated}' 2> /dev/null)
-    START_TIME=$(date '+%s')
-    while [ -z "$TERMINATED" -a \( $(date '+%s') -lt $(expr "$START_TIME" + "$TIMEOUT") \) ]; do
-        sleep 5
-        TERMINATED=$(kubectl get pods --namespace $EnvId -l app=$APP_NAME -o jsonpath='{.items[*].status.initContainerStatuses[?(@.name=="'$INIT_NAME'")].state.terminated}' 2> /dev/null)
-    done
-    [ ! -z "$TERMINATED" ]
-)
-
-#-------------------------------------------------------------------------------
 # kubernetes namespace exists
 # ->: true|false
 #-------------------------------------------------------------------------------
@@ -1976,8 +1955,14 @@ Describe iom service        kubectl describe --namespace $EnvId service iom-serv
 
 Get dbaccount logs:         kubectl logs $POD --namespace $EnvId -c dbaccount
 Follow dbaccount logs:      kubectl logs --tail=1 -f $POD --namespace $EnvId -c dbaccount
-Get config logs:            kubectl logs $POD --namespace $EnvId -c config
-Follow config logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c config
+EOF
+            if [ "$IsIomSingleDist" = 'false' ]; then
+                cat <<EOF
+Get config logs:            kubectl logs $POD --namespace $EnvId -c config)
+Follow config logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c config)
+EOF
+            fi
+            cat <<EOF
 Get iom logs:               kubectl logs $POD --namespace $EnvId -c iom
 Follow iom logs:            kubectl logs --tail=1 -f $POD --namespace $EnvId -c iom
 --------------------------------------------------------------------------------
@@ -2354,16 +2339,16 @@ create-iom() {
             fi
         fi
         if [ "$SUCCESS" = 'true' ]; then
-	    "$DEVENV_DIR/bin/template_engine.sh" \
+            "$DEVENV_DIR/bin/template_engine.sh" \
                 --template="$DEVENV_DIR/templates/$IomTemplate" \
                 --config="$CONFIG_FILES" \
                 --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId -f - 2> "$TMP_ERR" > "$TMP_OUT"
-	    if [ $? -ne 0 ]; then
+            if [ $? -ne 0 ]; then
                 log_msg ERROR "create-iom: error creating iom" < "$TMP_ERR"
                 SUCCESS=false
-	    else
+            else
                 log_msg INFO "create-iom: successfully created iom" < "$TMP_OUT"
-	    fi
+            fi
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -3036,7 +3021,7 @@ apply-dbmigrate() {
                 log_msg INFO "apply-dbmigrate: job successfully started" < "$TMP_OUT"
 
                 # wait for job to finish
-                kube_job_wait dbmigrate_job $TIMEOUT
+                kube_job_wait dbmigrate-job $TIMEOUT
                 KUBE_JOB_STATUS=$?
                 if [ "$KUBE_JOB_STATUS" = '1' ]; then
                     log_msg ERROR "apply-dbmigrate: timeout of $TIMEOUT seconds reached" < /dev/null
@@ -3488,65 +3473,68 @@ log-config() (
     LEVEL=WARN
     LEVELS=(FATAL ERROR WARN INFO DEBUG TRACE)
 
-    # decide how to interpret arguments
-    if [ "$1" = '-f' -a ! -z "$2" ]; then
-        FOLLOW=true
-        LEVEL="$2"
-    elif [ "$1" = '-f' ]; then
-        FOLLOW=true
-    elif [ "$2" = '-f' ]; then
-        FOLLOW=true
-        LEVEL="$1"
-    elif [ ! -z "$1" ]; then
-        LEVEL="$1"
-    fi
-
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "log-config: no config-file given!" < /dev/null
-        SUCCESS=false
-    # check value of LEVEL
-    elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
-        LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
-        JQ="$(jq_get)"
-        if [ -z "$JQ" ]; then
-            log_msg ERROR "log-config: jq not found" < /dev/null
-        else
-            if [ "$FOLLOW" = 'true' ]; then
-                FOLLOW_FLAG='--tail=1 -f'
-            else
-                FOLLOW_FLAG=''
-            fi
-
-            # avoid formatting if output is written to pipe. This makes it much easier,
-            # to process the results
-            if [ -t 1 ]; then
-                COMPACT_FLAG=''
-            else
-                COMPACT_FLAG='--compact-output'
-            fi
-
-            POD="$(kube_get_pod iom)"
-            if [ ! -z "$POD" ]; then
-                # make sure to get info about failed kubectl call
-                set -o pipefail
-                kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c config 2> "$TMP_ERR" |
-                    $JQ -R 'fromjson? | select(type == "object")' |
-                    $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
-                RESULT=$?
-                set +o pipefail
-                if [ $RESULT -ne 0 ]; then
-                    log_msg ERROR "log-config: error getting logs" < "$TMP_ERR"
-                else
-                    SUCCESS=true
-                fi
-            else
-                log_msg ERROR "log-config: no pod available" < /dev/null
-            fi
+    if [ "$IsIomSingleDist" = 'false' ]; then
+    
+        # decide how to interpret arguments
+        if [ "$1" = '-f' -a ! -z "$2" ]; then
+            FOLLOW=true
+            LEVEL="$2"
+        elif [ "$1" = '-f' ]; then
+            FOLLOW=true
+        elif [ "$2" = '-f' ]; then
+            FOLLOW=true
+            LEVEL="$1"
+        elif [ ! -z "$1" ]; then
+            LEVEL="$1"
         fi
-    else
-        log_msg ERROR "log-config: '$LEVEL' is not a valid log-level." < /dev/null
+        
+        if [ -z "$CONFIG_FILES" ]; then
+            log_msg ERROR "log-config: no config-file given!" < /dev/null
+            SUCCESS=false
+            # check value of LEVEL
+        elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
+            LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
+            JQ="$(jq_get)"
+            if [ -z "$JQ" ]; then
+                log_msg ERROR "log-config: jq not found" < /dev/null
+            else
+                if [ "$FOLLOW" = 'true' ]; then
+                    FOLLOW_FLAG='--tail=1 -f'
+                else
+                    FOLLOW_FLAG=''
+                fi
+                
+                # avoid formatting if output is written to pipe. This makes it much easier,
+                # to process the results
+                if [ -t 1 ]; then
+                    COMPACT_FLAG=''
+                else
+                    COMPACT_FLAG='--compact-output'
+                fi
+                
+                POD="$(kube_get_pod iom)"
+                if [ ! -z "$POD" ]; then
+                    # make sure to get info about failed kubectl call
+                    set -o pipefail
+                    kubectl logs $FOLLOW_FLAG $POD --namespace $EnvId -c config 2> "$TMP_ERR" |
+                        $JQ -R 'fromjson? | select(type == "object")' |
+                        $JQ $COMPACT_FLAG "select((.logType != \"access\") and ( $(level_filter $LEVEL ${LEVELS[@]}) ))"
+                    RESULT=$?
+                    set +o pipefail
+                    if [ $RESULT -ne 0 ]; then
+                        log_msg ERROR "log-config: error getting logs" < "$TMP_ERR"
+                    else
+                        SUCCESS=true
+                    fi
+                else
+                    log_msg ERROR "log-config: no pod available" < /dev/null
+                fi
+            fi
+        else
+            log_msg ERROR "log-config: '$LEVEL' is not a valid log-level." < /dev/null
+        fi
+        rm -f "$TMP_ERR"
     fi
-    rm -f "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
 )
 

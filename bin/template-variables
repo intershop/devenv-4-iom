@@ -355,20 +355,21 @@ IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE}"
 IOM_APP_IMAGE="${IOM_APP_IMAGE}"
 IOM_IMAGE="${IOM_IMAGE}"
 
-# job image
-# differs, depending on IOM version (single/double image distribution)
+# job image differs, depending on IOM version (single/double image distribution)
+# iom template differs, depending on IOM version (singe/double image distribution)
+# directory structure has changed, for files/directories that were moved into the app image
 if [ -z "$IOM_IMAGE" ]; then
     IomJobImage="$IOM_CONFIG_IMAGE"
+    IomTemplate="iom.yml.template"
+    ConfigBinDir=/opt
+    ConfigBaseDir=/opt
+    IsIomSingleDist='false'
 else
     IomJobImage="$IOM_IMAGE"
-fi
-
-# iom template
-# differs, depending on IOM version (singe/double image distribution)
-if [ -z "$IOM_IMAGE" ]; then
-    IomTemplate="iom.yml.template"
-else
     IomTemplate="iom-single.yml.template"
+    ConfigBinDir=/opt/oms/bin
+    ConfigBaseDir=/opt/oms
+    IsIomSingleDist='true'
 fi
 
 # this variable is used to pass information to the apply-sql-job.
