@@ -57,16 +57,16 @@ IOM_DBACCOUNT_IMAGE=${IOM_DBACCOUNT_IMAGE}
 
 # iom config image (name:tag)
 # examples:
-# local image:                      iom-config:3.6.0.0
-# locally built project image:      prj-iom-config:3.6.0.0-1.2.0.0-SNAPSHOT
-# IOM release from ISH registry:    docker.intershop.de/intershophub/iom-config:3.6.0.0
+# local image:                      iom-config:3.7.0.0
+# locally built project image:      prj-iom-config:3.7.0.0-1.2.0.0-SNAPSHOT
+# IOM release from ISH registry:    docker.intershop.de/intershophub/iom-config:3.7.0.0
 IOM_CONFIG_IMAGE=${IOM_CONFIG_IMAGE}
 
 # iom app image (name:tag)
 # examples:
-# local image:                      iom-app:3.6.0.0
-# locally built project image:      prj-iom-app:3.6.0.0-1.2.0.0-SNAPSHOT
-# IOM release from ISH registry:    docker.intershop.de/intershophub/iom-app:3.6.0.0
+# local image:                      iom-app:3.7.0.0
+# locally built project image:      prj-iom-app:3.7.0.0-1.2.0.0-SNAPSHOT
+# IOM release from ISH registry:    docker.intershop.de/intershophub/iom-app:3.7.0.0
 IOM_APP_IMAGE=${IOM_APP_IMAGE}
 
 # iom image (name:tag)

@@ -3733,10 +3733,11 @@ if [ ! -z "$1" -a -f "$1" ]; then
 fi
 
 # lookup default user config
-if [ -z "$CONFIG_FILE_USER" -a -f "$CONFIG_FILE_USER_PREDEFINED" ]; then
+if [ -z "$CONFIG_FILE_USER" -a -s "$CONFIG_FILE_USER_PREDEFINED" ]; then
     # try to read config
-    if ! ( det -e; . "$CONFIG_FILE_USER_PREDEFINED" ) 2> /dev/null; then
-        log_msg ERROR "error reading config file '$CONFIG_FILE_USER_PREDEFINED'" < /dev/null
+    if ! ( set -e; . "$CONFIG_FILE_USER_PREDEFINED" ) 2> "$TMP_ERR"; then
+        log_msg ERROR "error reading config file '$CONFIG_FILE_USER_PREDEFINED'" < "$TMP_ERR"
+        rm -f "$TMP_ERR"
         exit 1
     else
         CONFIG_FILE_USER="$CONFIG_FILE_USER_PREDEFINED"
@@ -3750,8 +3751,9 @@ fi
 # this code is executed!
 if [ ! -z "$CONFIG_FILE_USER" -a -s "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ]; then
     # try to read config
-    if ! ( set -e; . "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ) 2> /dev/null; then
-        log_msg ERROR "error reading config file '$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED'" < /dev/null
+    if ! ( set -e; . "$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED" ) 2> "$TMP_ERR"; then
+        log_msg ERROR "error reading config file '$(dirname "$CONFIG_FILE_USER")/$CONFIG_FILE_PROJECT_PREDEFINED'" < "$TMP_ERR"
+        rm -f "$TMP_ERR"
         exit 1
     else
         CONFIG_FILE_PROJECT="$(realpath "$(dirname "$CONFIG_FILE_USER")")/$CONFIG_FILE_PROJECT_PREDEFINED"
