@@ -1321,12 +1321,16 @@ help-get-config() {
 writes configuration to stdout
 
 SYNOPSIS
-    $ME [CONFIG-FILE] get config [-r]
+    $ME [CONFIG-FILE] get config [--skip-config|--skip-user-config]
 
 ARGUMENTS
-    -r - optional. If set, $ME ignores any existing configuration. This way it
-      is possible to create a clean configuration with all values reseted to
-      factory defaults.
+    --skip-config|--skip-user-config - optional. If --skip-config is set, $ME 
+      ignores any existing configuration. In case of --skip-user-config, only
+      the user specific configuration will be ignored. Using this options, it
+      is possible to create clean configurations for different use cases.
+      --skip-config is intended to be used, when creating new configurations
+      or to reset configurations to factory defaults. --skip-user-config
+      helps to maintain project specific configurations.
 
 OVERVIEW
     Devenv4iom provides a template for configuration files. With every new
@@ -3215,18 +3219,21 @@ dump-create() {
 
 #-------------------------------------------------------------------------------
 # get configuration
-# $1: [-r] if set, any existing configuration will be ignored
+# $1: [--skip-config|--skip-user-config] if set, whole configuration or user
+#     specific configuration will be ignored
 # ->  true|false indicating success
 #-------------------------------------------------------------------------------
 get-config() {
     SUCCESS=true
 
     # handle optional parameter
-    if [ ! -z "$1" -a "$1" != '-r' ]; then
+    if [ ! -z "$1" -a "$1" = '--skip-config' ]; then
+        CONFIG_FILES=
+    elif [ ! -z "$1" -a "$1" = '--skip-user-config' ]; then
+        CONFIG_FILES="$CONFIG_FILE_PROJECT"
+    elif [ ! -z "$1" ]; then
         log_msg ERROR "get-config: unknown parameter '$1'." < /dev/null
         SUCCESS=false
-    elif [ ! -z "$1" -a "$1" = '-r' ]; then
-        CONFIG_FILES=
     fi
 
     if [ "$SUCCESS" = 'true' ]; then
