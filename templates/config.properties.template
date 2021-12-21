@@ -189,6 +189,8 @@ OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 # Depending on the current version of Windows subsystem for Linux it might be
 # necessary to define a MOUNT_PREFIX, that is used when mounting file-systems
 # to Docker containers.
+# In case of WSL2 (and only in this particular case), MOUNT_PREFIX has to be
+# set to /run/desktop/mnt/host. In any other case, it must remain empty.
 
 MOUNT_PREFIX="${MOUNT_PREFIX}"
 
