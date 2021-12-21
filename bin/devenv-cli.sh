@@ -1949,8 +1949,8 @@ $(kubectl get pods --namespace=$EnvId -l app=iom)
 Usefull commands:
 =================
 
-Login into Pod:             kubectl exec --namespace $EnvId $POD -it -- bash
-jboss-cli:                  kubectl exec --namespace $EnvId $POD -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
+Login into Pod:             kubectl exec --namespace $EnvId $POD -c iom -it -- bash
+jboss-cli:                  kubectl exec --namespace $EnvId $POD -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId
 Describe iom pod:           kubectl describe --namespace $EnvId pod $POD
@@ -1962,8 +1962,8 @@ Follow dbaccount logs:      kubectl logs --tail=1 -f $POD --namespace $EnvId -c 
 EOF
             if [ "$IsIomSingleDist" = 'false' ]; then
                 cat <<EOF
-Get config logs:            kubectl logs $POD --namespace $EnvId -c config)
-Follow config logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c config)
+Get config logs:            kubectl logs $POD --namespace $EnvId -c config
+Follow config logs:         kubectl logs --tail=1 -f $POD --namespace $EnvId -c config
 EOF
             fi
             cat <<EOF
