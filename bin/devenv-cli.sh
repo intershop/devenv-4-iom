@@ -1439,10 +1439,21 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 WHAT
-    dbaccount|d*       get message logs of dbaccount init-container
-    config|c*          get message logs of iom-config init-container
+    dbaccount|d*       get logs of dbaccount init-container
+EOF
+    if [ "$IsIomSingleDist" = 'true' ]; then
+        cat <<EOF
+    iom|i*             get message logs of iom container
+    access|ac*         get access logs of iom container 
+EOF
+    else
+        cat <<EOF
+    config|c*          get logs of iom-config init-container
     app|ap*            get message logs of iom-app container
     access|ac*         get access logs of iom-app container
+EOF
+    fi
+    cat <<EOF
 
 Run '$ME [CONFIG-FILE] log WHAT --help|-h' for more information on command
 EOF
@@ -1452,7 +1463,7 @@ EOF
 help-log-dbaccount() {
     ME=$(basename "$0")
     cat <<EOF
-get messages of dbaccount init-container
+get logs of dbaccount init-container
 
 SYNOPSIS
     $ME [CONFIG-FILE] log dbaccount [LEVEL] [-f]
@@ -1526,12 +1537,20 @@ EOF
 
 #-------------------------------------------------------------------------------
 help-log-app() {
+    help-log-iom backwardCompatible
+}
+help-log-iom() {
+    SCOPE=iom
+    if [ "$1" = 'backwardCompatible' ]; then
+        SCOPE=app
+    fi
+    
     ME=$(basename "$0")
     cat <<EOF
-get messages of iom application-container
+get messages of iom container
 
 SYNOPSIS
-    $ME [CONFIG-FILE] log app [LEVEL] [-f]
+    $ME [CONFIG-FILE] log $SCOPE [LEVEL] [-f]
 
 ARGUMENTS
     LEVEL - optional. If set, it has to be one of
@@ -1543,8 +1562,8 @@ ARGUMENTS
 
 OVERVIEW
     Requires 'jq' to be installed!
-    Writes messages of the IOM application container and filters them according
-    the specified log level.
+    Writes messages of the IOM container and filters them according the 
+    specified log level.
     The Wildfly application server still writes some messages that are not in
     JSON format. Those messages can only be seen when accessing the output of
     the container directly.
@@ -1558,7 +1577,7 @@ $(msg_config_file 4)
 
 CONFIG
     OMS_LOGLEVEL_SCRIPTS - controls what type of messages are written by
-      scripts. Messages that are not written in the container cannot be seen.
+      scripts.
     OMS_LOGLEVEL_CONSOLE
     OMS_LOGLEVEL_IOM
     OMS_LOGLEVEL_HIBERNATE
@@ -1566,8 +1585,7 @@ CONFIG
     OMS_LOGLEVEL_ACTIVEMQ
     OMS_LOGLEVEL_CUSTOMIZATION - all these variables control what type of
       messages are written by Wildfly application server and the IOM
-      applications. Messages that are not written in the container cannot be
-      seen.
+      applications.
 
 SEE
     $ME [CONFIG-FILE] info iom
@@ -3551,7 +3569,10 @@ log-config() (
 # $1|2: [-f] if set, messages are printed in follow mode
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
-log-app() (
+log-app() {
+    log-iom "$1" "$2"
+}
+log-iom() (
     SUCCESS=false
     FOLLOW=false
     LEVEL=WARN
@@ -3571,14 +3592,14 @@ log-app() (
     fi
 
     if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "log-app: no config-file given!" < /dev/null
+        log_msg ERROR "log-iom: no config-file given!" < /dev/null
         SUCCESS=false
     # check value of LEVEL
     elif is_in_array "$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')" ${LEVELS[@]}; then
         LEVEL=$(echo "$LEVEL" | tr '[a-z]' '[A-Z]')
         JQ="$(jq_get)"
         if [ -z "$JQ" ]; then
-            log_msg ERROR "log-app: jq not found" < /dev/null
+            log_msg ERROR "log-iom: jq not found" < /dev/null
         else
             if [ "$FOLLOW" = 'true' ]; then
                 FOLLOW_FLAG='--tail=1 -f'
@@ -3604,16 +3625,16 @@ log-app() (
                 RESULT=$?
                 set +o pipefail
                 if [ $RESULT -ne 0 ]; then
-                    log_msg ERROR "log-app: error getting logs" < "$TMP_ERR"
+                    log_msg ERROR "log-iom: error getting logs" < "$TMP_ERR"
                 else
                     SUCCESS=true
                 fi
             else
-                log_msg ERROR "log-app: no pod available" < /dev/null
+                log_msg ERROR "log-iom: no pod available" < /dev/null
             fi
         fi
     else
-        log_msg ERROR "log-app: '$LEVEL' is not a valid log-level." < /dev/null
+        log_msg ERROR "log-iom: '$LEVEL' is not a valid log-level." < /dev/null
     fi
     rm -r "$TMP_ERR"
     [ "$SUCCESS" = 'true' ]
@@ -4092,6 +4113,9 @@ elif [ "$LEVEL0" = 'log' ]; then
             ;;
         c*)
             LEVEL1=config
+            ;;
+        i*)
+            LEVEL1=iom
             ;;
         ap*)
             LEVEL1=app

@@ -8,8 +8,8 @@ The most important features used in context of _devenv-4-iom_ are formatting and
     # Print raw JSON messages 
     cmd_producing_json 
     ...
-    {"tenant":"Intershop","environment":"first steps","logHost":"iom-5948d556fd-h8wq8","logVersion":"1.0","appName":"iom","appVersion":"3.8.0.0-SNAPSHOT@12345","logType":"script","timestamp":"2021-12-21T11:48:19+00:00","level":"INFO","processName":"dbmigrate-kubernetes.sh","message":"processing directory '/opt/oms/stored_procedures'","configName":null}
-    {"tenant":"Intershop","environment":"first steps","logHost":"iom-5948d556fd-h8wq8","logVersion":"1.0","appName":"iom","appVersion":"3.8.0.0-SNAPSHOT@12345","logType":"script","timestamp":"2021-12-21T11:48:19+00:00","level":"INFO","processName":"dbmigrate-kubernetes.sh","message":"processing file '/opt/oms/stored_procedures/./admin/add_communication_partner.sql'","configName":null}
+    {"tenant":"Intershop","environment":"first steps","logHost":"iom-5948d556fd-h8wq8","logVersion":"1.0","appName":"iom","appVersion":"4.0.0.0","logType":"script","timestamp":"2021-12-21T11:48:19+00:00","level":"INFO","processName":"dbmigrate-kubernetes.sh","message":"processing directory '/opt/oms/stored_procedures'","configName":null}
+    {"tenant":"Intershop","environment":"first steps","logHost":"iom-5948d556fd-h8wq8","logVersion":"1.0","appName":"iom","appVersion":"4.0.0.0","logType":"script","timestamp":"2021-12-21T11:48:19+00:00","level":"INFO","processName":"dbmigrate-kubernetes.sh","message":"processing file '/opt/oms/stored_procedures/./admin/add_communication_partner.sql'","configName":null}
     ...
     
     # Print formatted JSON messages
@@ -177,14 +177,14 @@ The `log *` commands facilitate accessing the logs of different IOM containers 
 
 The following box shows some examples on how to use the _log *_ commands.
 
-    # Show FATAL, ERROR and WARN messages of IOM's config container and format them 
-    devenv-cli.sh log config 
+    # Show FATAL, ERROR and WARN messages of IOM's dbaccount init container and format them 
+    devenv-cli.sh log dbaccount
     
-    # Show INFO messages of IOM's config container and format them 
-    devenv-cli.sh log config info 
+    # Show INFO messages of IOM's dbaccount init container and format them 
+    devenv-cli.sh log dbaccount info 
     
-    # Follow FATAL, ERROR and WARN messages of IOM's application container and format the messages 
-    devenv-cli.sh log app -f 
+    # Follow FATAL, ERROR and WARN messages of IOM pod and format the messages 
+    devenv-cli.sh log iom -f 
     
     # Follow all access log entries 
     # Do not format messages to be able to process output by a second jq stage that filters for response time > 100 ms 
