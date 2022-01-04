@@ -112,4 +112,4 @@ In order to use _devenv-4-iom_, you need a local copy on your computer. This cop
 In order to become able to use _devenv-cli.sh_ without the need to call it with its absolute path, you have to extend your PATH variable. Please edit `.profile` in your home-directory and add the according entry.
 
 ---
-[^ up](..) | [> next chapter](01_first_steps.md)
+[^ up](../README.md) | [> next chapter](01_first_steps.md)
