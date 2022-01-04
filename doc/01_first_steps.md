@@ -1,6 +1,6 @@
-# Overview
+# First Steps
 
-The section First Steps is intended to guide you through all main parts of _devenv-4-iom_ based on simple examples. You will learn how to:
+The _First Steps_ chapter is intended to guide you through all main parts of _devenv-4-iom_ based on simple examples. You will learn how to:
 
 * Set up an IOM for development,
 * Browse through the GUI of IOM,
@@ -10,16 +10,12 @@ The section First Steps is intended to guide you through all main parts of _deve
 
 Once you are able to set up IOM with _devenv-4-iom_ and have an insight into its main ideas, it should become easy for you to find out more by yourself and to solve the development tasks you have to solve.
 
-# Define Configuration
+## Define Configuration
 
-_devenv-4-iom_ uses property files to manage different developer instances of IOM. The whole concept of configuration is explained in [General Concept of Configuration](02_configuration.md#concept_config). For the moment a much simpler approach is fully sufficient.
+_devenv-4-iom_ uses property files to manage different developer instances of IOM. The whole concept of configuration is explained in [General Concept of Configuration](02_configuration.md#concept_config). For the moment a simplified approach is fully sufficient.
 
-One configuration file can hold all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script `devenv-cli.sh` has to be called with options `get config`. In order to get the following examples to work, you have to extend the `PATH` variable by the directory, containing `devenv-cli.sh`, or you can also call the script using its absolute path.
+One configuration file can hold all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script `devenv-cli.sh` has to be called with options `get config`. In order to get the following examples to work, you have to extend the `PATH` variable by the directory, containing `devenv-cli.sh` as described in [Setup devenv-4-iom](00_installation.md#setup_devenv).
 
-    # extend PATH variable
-    # PATH_TO_DEVENV_CLI has to be replaced by the real value.
-    export PATH="${PATH_TO_DEVENV_CLI}:$PATH"
-    
     # make sure, there is no existing property file
     mv -nv devenv.project.properties devenv.project.properties.bak
     mv -nv devenv.user.properties devenv.user.properties.bak
@@ -56,7 +52,7 @@ Open the newly created config-file `devenv.project.properties` and use the value
     
 Before using `devenv-cli.sh` to manage your IOM developer instance, you need to know how the configuration file will passed to the script. There are some different ways, which are explained in detail in [General Concept of Configuration](02_configuration.md#concept_config). For our _first steps_ example you will use the mechanism, that `devenv.project.properties` will automatically be used, if it is located at the current directory. Hence, you only have to take care, to run `devenv-cli.sh` always from the directory, which contains the properties file.
 
-# <a name="check_config"/>Check Configuration
+## <a name="check_config"/>Check Configuration
 
 Due to the quite complex [Concept of Configuration](02_configuration.md#concept_config) of _devenv-4-iom_, you should make sure, that you are using the right configuration values. To do so, execute the `info config` command.
 
@@ -89,7 +85,7 @@ Due to the quite complex [Concept of Configuration](02_configuration.md#concept_
  
 Please check that `project-specific config-file` points to the file, you had created before. `user-specific config-file` has to be empty. And finally check the values of all properties, you had modified before.
 
-# Create IOM Cluster
+## Create IOM Cluster
 
 For IOM to run in _devenv-4-iom_, several (sub-)systems are required:
 
@@ -147,7 +143,7 @@ The start of IOM takes much longer. You can use the `info iom` command to check 
     --------------------------------------------------------------------------------
     ...
     
-# Access IOM GUI
+## Access IOM GUI
 
 Once IOM is running, we can access its GUI. The `info iom` command provides the according information about the URL you have to use. The following box shows an example:
 
@@ -165,7 +161,7 @@ Once IOM is running, we can access its GUI. The `info iom` command provides the 
 
 Just copy the OMT link into your browser and open the page. You should now see the login screen. The combination of `admin:!InterShop00!` should give you access to OMT.
 
-# View Access Logs
+## View Access Logs
 
 IOM is now running and we are able to use it in the browser. It is time to learn how to access some log messages. Since we can browse OMT, the access-log messages will serve as a good example. The following command prints access-log entries and also waits for new entries.
 
@@ -240,7 +236,7 @@ IOM is now running and we are able to use it in the browser. It is time to learn
     }
     ...
     
-# Execute SQL File
+## Execute SQL File
 
 The execution of an SQL file is a very simple example of a development task. To execute this task, we have to create a SQL file first. Therefore just create a file with the extension _.sql_ and copy the following content into it:
 
@@ -295,7 +291,7 @@ As you can see, the method shown above is not intended to show the results of yo
        5 | CHF      | Schweizer Franken                       | SFr            | CH       | CHE      | 756        | Switzerland
     ...
     
-# Delete IOM Cluster
+## Delete IOM Cluster
 
 Now it is time to clean up the environment. To do so, we have to execute the following two steps:
 
