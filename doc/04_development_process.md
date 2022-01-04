@@ -308,4 +308,5 @@ To run all soap tests, use the following method:
     
     # Run all soap tests 
     mvn -Dhost=$(cat "${PATH_TO_SOAP_PROPERTIES}/soap.properties") clean test
-
+---
+[< previous chapter](03_operations.md) | [^ up](..) | [> next chapter](05_log_messages.md)

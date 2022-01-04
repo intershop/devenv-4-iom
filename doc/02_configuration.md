@@ -129,3 +129,5 @@ Before deleting a configuration file, you must ensure that all associated Kubern
     docker system prune -a -f
 
 If you have accidentally removed a configuration file before deleting the according Kubernetes and Docker resources, you have to cleanup these resources manually. Section [Manual Cleanup in Troubleshooting](06_troubleshooting.md#manual_cleanup) describes this process in detail.
+---
+[< previous chapter](01_first_steps.md) | [^ up](..) | [> next chapter](02_operations.md)

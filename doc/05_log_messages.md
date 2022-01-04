@@ -189,3 +189,5 @@ The following box shows some examples on how to use the _log *_ commands.
     # Follow all access log entries 
     # Do not format messages to be able to process output by a second jq stage that filters for response time > 100 ms 
     devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
+---
+[< previous chapter](04_development_process.md) | [^ up](..) | [> next chapter](06_troubleshooting.md)

@@ -312,3 +312,5 @@ After deleting all resources belonging to our IOM developer instance, it is also
     rm devenv.user.properties
 
 We have used `devenv-cli.sh` a lot in this example. If you want to explore all features of this program, just call it with _-h_ as argument.
+---
+[< previous chapter](00_installation.md) | [^ up](..) | [> next chapter](02_configuration.md)

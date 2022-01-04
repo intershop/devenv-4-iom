@@ -273,3 +273,5 @@ When you trying a docker login from a Linux like terminal on Windows such as _Gi
     
     # The trick here is to use:
     winpty docker login docker.intershop.de
+---
+[< previous chapter](05_log_messages.md) | [^ up](..)
