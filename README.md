@@ -1,4 +1,3 @@
-# Overview
 _devenv-4-iom_ provides all the tools that are required to configure and run an _IOM_ development instance in your local _Kubernetes_ cluster.
 
 The following chapters are providing a detailed view into different aspects of installation and usage of _devenv-4-iom_.
