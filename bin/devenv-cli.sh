@@ -75,7 +75,6 @@ COMMANDS
     info|i*            get information about Kubernetes resources
     create|c*          create Kubernetes/Docker resources
     delete|de*         delete Kubernetes/Docker resources
-    wait|w*            wait for Kubernetes resources to get ready
     apply|a*           apply customization
     dump|du*           create or load dump
     log|l*             simple access to log messages
@@ -633,92 +632,6 @@ SEE
     $ME [CONFIG-FILE] delete postgres
     $ME [CONFIG-FILE] delete namespace
     $ME [CONFIG-FILE] delete storage
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-wait() {
-    ME=$(basename "$0")
-    cat <<EOF
-wait for Kubernetes resource to get ready
-
-SYNOPSIS
-    $ME [CONFIG-FILE] wait RESOURCE
-
-CONFIG-FILE
-$(msg_config_file 4)
-
-RESOURCE
-    mailserver|m*      wait for mail server
-    postgres|p*        wait for postgres server
-    iom|i*             wait for iom server
-
-Run '$ME [CONFIG-FILE] wait RESOURCE --help|-h' for more information
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-wait-mailserver() {
-    ME=$(basename "$1")
-    cat <<EOF
-wait for mailserver to get ready
-
-SYNOPSIS
-    $ME [CONFIG-FILE] wait mailserver [TIMEOUT]
-
-ARGUMENTS
-    TIMEOUT in seconds. Defaults to 60.
-
-OVERVIEW
-    Waits for the mail server pod to get ready. The "wait mailserver" command
-    is intended to be used in scripts, which are relying on the availability of
-    the mail server.
-
-CONFIG-FILE
-$(msg_config_file 4)
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-wait-postgres() {
-    ME=$(basename "$1")
-    cat <<EOF
-wait for Postgres to get ready
-
-SYNOPSIS
-    $ME [CONFIG-FILE] wait postgres [TIMEOUT]
-
-ARGUMENTS
-    TIMEOUT in seconds. Defaults to 60.
-
-OVERVIEW
-    Waits for the Postgres pod to get ready. The "wait postgres" command
-    is intended to be used in scripts, which rely on the availability of
-    the postgres server.
-
-CONFIG-FILE
-$(msg_config_file 4)
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-wait-iom() {
-    ME=$(basename "$1")
-    cat <<EOF
-wait for IOM to get ready
-
-SYNOPSIS
-    $ME [CONFIG-FILE] wait iom [TIMEOUT]
-
-ARGUMENTS
-    TIMEOUT in seconds. Defaults to 60.
-
-OVERVIEW
-    Waits for the IOM pod to get ready. The "wait iom" command is intended to be
-    used in scripts, which rely on the availability of the IOM server.
-
-CONFIG-FILE
-$(msg_config_file 4)
 EOF
 }
 
@@ -2556,91 +2469,6 @@ delete-cluster() {
 }
 
 ################################################################################
-# functions, implementing the wait handler
-################################################################################
-
-#-------------------------------------------------------------------------------
-# wait for mailserver
-# $1: timeout [s] (optional)
-# ->  true|false indicating success
-#-------------------------------------------------------------------------------
-wait-mailserver() {
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "wait-mailserver: no config-file given!" < /dev/null
-        false
-    else
-        # check and set timeout
-        TIMEOUT=60
-        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_msg WARN "wait-mailserver: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-        elif [ ! -z "$1" ]; then
-            TIMEOUT=$1
-        fi
-        kube_pod_wait mailhog $TIMEOUT
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "wait-mailserver: timeout of $TIMEOUT s reached." < /dev/null
-            false
-        else
-            true
-        fi
-    fi
-}
-
-#-------------------------------------------------------------------------------
-# wait for postgres
-# $1: timeout [s] (optional)
-# ->  true|false indicating success
-#-------------------------------------------------------------------------------
-wait-postgres() {
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "wait-postgres: no config-file given!" < /dev/null
-        false
-    else
-        # check and set timeout
-        TIMEOUT=60
-        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_msg WARN "wait-postgres: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-        elif [ ! -z "$1" ]; then
-            TIMEOUT=$1
-        fi
-        kube_pod_wait postgres $TIMEOUT
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "wait-postgres: timeout of $TIMEOUT s reached." < /dev/null
-            false
-        else
-            true
-        fi
-    fi
-}
-
-#-------------------------------------------------------------------------------
-# wait for iom
-# $1: timeout [s] (optional)
-# ->  true|false indicating success
-#-------------------------------------------------------------------------------
-wait-iom() {
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "wait-iom: no config-file given!" < /dev/null
-        false
-    else
-        # check and set timeout
-        TIMEOUT=60
-        if [ ! -z "$1" ] && ! ( echo "$1" | grep -q '^[0-9]*$'); then
-            log_msg WARN "wait-iom: invalid value passed for timeout ($1). Default value will be used" < /dev/null
-        elif [ ! -z "$1" ]; then
-            TIMEOUT=$1
-        fi
-        kube_pod_wait iom $TIMEOUT
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "wait-iom: timeout of $TIMEOUT s reached." < /dev/null
-            false
-        else
-            true
-        fi
-    fi
-}
-
-################################################################################
 # functions, implementing the apply handler
 ################################################################################
 
@@ -3865,9 +3693,6 @@ case $1 in
     de*)
         LEVEL0=delete
         ;;
-    w*)
-        LEVEL0=wait
-        ;;
     a*)
         LEVEL0=apply
         ;;
@@ -3995,30 +3820,6 @@ elif [ "$LEVEL0" = "delete" ]; then
             ;;
         *)
             syntax_error delete
-            exit 1
-            ;;
-    esac
-elif [ "$LEVEL0" = "wait" ]; then
-    case $1 in
-        m*)
-            LEVEL1=mailserver
-            ;;
-        p*)
-            LEVEL1=postgres
-            ;;
-        i*)
-            LEVEL1=iom
-            ;;
-        --help)
-            help-wait
-            exit 0
-            ;;
-        -h)
-            help-wait
-            exit 0
-            ;;
-        *)
-            syntax_error wait
             exit 1
             ;;
     esac
@@ -4184,7 +3985,6 @@ elif [    \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'sql-config'  \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'dbmigrate'   \) -o \
           \( "$LEVEL0" = 'apply' -a "$LEVEL1" = 'deployment'  \) -o \
           \( "$LEVEL0" = 'get'   -a "$LEVEL1" = 'config'      \) -o \
-          \( "$LEVEL0" = 'wait'                               \) -o \
           \( "$LEVEL0" = 'dump'  -a "$LEVEL1" = 'create'      \) ]; then
     if [ ! -z "$ARG2" ]; then
         syntax_error $LEVEL0 $LEVEL1
