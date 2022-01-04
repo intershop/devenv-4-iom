@@ -6,7 +6,7 @@ In order to use _devenv-4-iom_ on your host machine, the installation of some ad
 **Windows**
 
 1. Install Git Bash (comes with [Git for Windows](https://gitforwindows.org/)).
-1. Use Git Bash in VS Code, see [Integrated Terminal](https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration) in the Visual Studio Code documentation. To enable Git Bash in VS Code, open settings in `C:\Users\myuser\AppData\Roaming\Code\User\seetings.json` and add the following line:
+1. It's recommended to use Git Bash in VS Code, see [Integrated Terminal](https://code.visualstudio.com/docs/editor/integrated-terminal#_configuration). To enable Git Bash in VS Code, open settings in `C:\Users\myuser\AppData\Roaming\Code\User\seetings.json` and add the following lines:
    ```json
    // enable Git Bash in Visual Studio Code
    "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe"
@@ -18,20 +18,20 @@ If you are not able to locate `settings.json`, see [User and Workspace Settings]
 Bash is part of Mac OS X, there is nothing to do. It's not required, that bash is your default shell.
 
 ### Docker-Desktop
-Usage of _Docker-Desktop_ is recommended. It provides a Docker environment and also Kubernetes functionality, which is required to use _devenv-4-iom_. Other Docker/Kubernetes implementations can be used along with _devenv-4-iom_ too, but all of them have restrictions, that makes their usage much more complicated.
+Usage of _Docker-Desktop_ is recommended. It provides a _Docker_ environment and also _Kubernetes_ functionality, which is required to use _devenv-4-iom_. Other _Docker/Kubernetes_ implementations can be used along with _devenv-4-iom_ too, but all of them have restrictions, that makes their usage much more complicated.
      
 > **Caution:** While installing _Docker-Desktop_ on **Windows** you will be signed-out without further acknowledgements and your PC will probably be restarted. So save everything before installing.
 
-1. Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop).
+1. Download and install [_Docker-Desktop_](https://www.docker.com/products/docker-desktop).
 2. Enable _Kubernetes in Docker Desktop_.
-    - To do so click _Docker Icon > Preferences > Kubernetes > Enable Kubernetes_.
+    - _Docker Icon > Preferences > Kubernetes > Enable Kubernetes_.
 3. Make sure, the directory holding IOM-project sources is shared.
-    - To do so click _Docker Icon > Preferences > Resources > File Sharing_.
-4. Set CPU and memory usage. When running a single IOM instance in Docker-Desktop you need to assign at least 2 CPUs and 8 GB of memory.
-    - To do so click _Docker Icon > Preferences > Resources > Advanced_.
+    - _Docker Icon > Preferences > Resources > File Sharing_.
+4. Set CPU and memory usage. When running a single IOM instance in _Docker-Desktop_ you need to assign at least 2 CPUs and 8 GB of memory.
+    - _Docker Icon > Preferences > Resources > Advanced_.
 
 ### jq - Command-Line JSON Processor
-_jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by _IOM_ are JSON messages, it is a very useful tool.
+_jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool.
 
 _jq_ is not included in _devenv-4-iom_ and _devenv-4-iom_ does not depend on it (except for the `log *` commands), but it is strongly recommended that you install _jq_ as well.
 
@@ -60,14 +60,14 @@ sudo port install jq
 ```
 
 ## Setup of _devenv-4-iom_
-In order to use _devenv-4-iom_, you need a local copy on your computer. This copy can simply created, by cloning the sources. The _main_ branch always contains the latest release-version.
+In order to use _devenv-4-iom_, you need a local copy of it on your computer. This copy can simply created, by cloning the sources. The _main_ branch always contains the latest release-version.
 
     # get devenv-4-iom
     git clone git@github.com:intershop/devenv-4-iom.git
     cd devenv-4-iom
     git checkout main
     
-In order to become able to use `devenv-cli.sh` without the need to call it with its absolute path, you have to extend your `PATH` variable. Please edit `$HOME/.profile` and add the following line (please adapt the directory name to the location where _devenv-4-iom_ was installed before):
+In order to become able to use `devenv-cli.sh` without the need to call it with its absolute path, you have to extend the `PATH` variable. Please edit `$HOME/.profile` and add the following line (please adapt the directory name to the location where _devenv-4-iom_ was installed before):
 ```sh
 export PATH="$PATH:/DirnameToBeAdapted/devenv-4-iom/bin"
 ```
