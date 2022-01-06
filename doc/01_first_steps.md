@@ -27,16 +27,16 @@ There are some values in `devenv.project.properties` that have to be set afterwa
 
 * `ID`. Every developer instance of IOM, hence every configuration file, needs to have a unique value for ID. Once you have set the `ID` and started the according IOM, you must not change it anymore. Otherwise you will loose the ability to access/control the resources associated with the IOM installation.
 * `IMAGE_PULL_POLICY`. The value of this property has to be set to `IfNotPresent`. This makes it easier to get through the _first steps_ example. The [_operations_ part of the documentation](03_operations.md) shows a more sustainable approach to [access a private Docker registry](03_operations.md#private_docker_registry).
-* `IOM_IMAGE`. You need to define the IOM image, that has to be used for the _first steps_ example. If you use IOM version 4.0.0, then the according image name is `docker.intershop.de/intershophub/iom:4.0.0`. The `IOM_IMAGE` property is one of the most important settings, since it defines what will be executed by _devenv-4-iom_. By defining the image, you can control that a specific project, a standard IOM product without any customizations or an image of the IOM project you have created locally will run in your development environment.
+* `IOM_IMAGE`. You need to define the IOM image, that has to be used for the _first steps_ example. If you use IOM version 4.0.0, then the according image name is `docker.intershop.de/intershophub/iom:4.0.0`. The `IOM_IMAGE` property is one of the most important settings, since it defines what will be executed by _devenv-4-iom_. By defining the image, you can control that a specific project, a standard IOM product without any customizations or an image of the IOM project, you have created locally, will run in your development environment.
 
 Now set the new values for `ID`, `IMAGE_PULL_POLICY` and `IOM_IMAGE`. Please take care, to NOT add any whitespaces around the '='!
 
     # set ID, IMAGE_PULL_POLICY and IOM_IMAGE in devenv.project.properties
     vi devenv.project.properties
     
-The other values of the new configuration file are filled with default settings defined by _devenv-4-iom_. It is not necessary to change any of these settings for the _first steps_ example. 
+The other values of the new configuration file are filled with default settings defined by _devenv-4-iom_. It is not necessary to change any of them for the _first steps_ example. 
 
-The Docker registry, we selected for our example, requires a login. Hence you have to log in to the registry. Additionally you need to download the images, in order to make them accessible for _devenv-4-iom_.
+The Docker registry, we selected for our example, requires authentication. Hence you have to log in to the registry. Additionally you need to download the images, in order to make them accessible for _devenv-4-iom_.
 
 Open the newly created config-file `devenv.project.properties` and use the values of the `*_IMAGE` properties to pull the Docker images manually, just as shown in the box below.
 
@@ -50,7 +50,7 @@ Open the newly created config-file `devenv.project.properties` and use the value
     docker pull docker.intershop.de/intershophub/iom-dbaccount:1.4.0
     docker pull docker.intershop.de/intershophub/iom:4.0.0
     
-Before using `devenv-cli.sh` to manage your IOM developer instance, you need to know how the configuration file will passed to the script. There are some different ways, which are explained in detail in [General Concept of Configuration](02_configuration.md#concept_config). For our _first steps_ example you will use the mechanism, that `devenv.project.properties` will automatically be used, if it is located at the current directory. Hence, you only have to take care, to run `devenv-cli.sh` always from the directory, which contains the properties file.
+Before using `devenv-cli.sh` to manage your IOM developer instance, you need to know, how the configuration file will be passed to the script. There are some different ways, which are explained in detail in [General Concept of Configuration](02_configuration.md#concept_config). For our _first steps_ example you will use the mechanism, that `devenv.project.properties` will be automatically used, if it is located at the current directory. Hence, you only have to take care, to run `devenv-cli.sh` always from the directory, which contains the properties file.
 
 ## <a name="check_config"/>Check Configuration
 
@@ -83,7 +83,7 @@ Due to the quite complex [Concept of Configuration](02_configuration.md#concept_
     ...
     --------------------------------------------------------------------------------
  
-Please check that `project-specific config-file` points to the file, you had created before. `user-specific config-file` has to be empty. And finally check the values of all properties, you had modified before.
+Please check that _project-specific config-file_ points to the file, you had created before. _user-specific config-file_ has to be empty. And finally check the values of all properties, you had modified before.
 
 ## Create IOM Cluster
 
@@ -125,7 +125,7 @@ Mail server and PostgreSQL server start very fast. The output of the according `
     namespace:                  firststeps
     KEEP_DATABASE_DATA:         true
     NAME       READY   STATUS    RESTARTS   AGE
-    postgres   1/1     Running   0          4m22s
+    postgres   1/1     Running   0          0m22s
     Kubernetes:
     --------------------------------------------------------------------------------
     ...
@@ -159,7 +159,7 @@ Once IOM is running, we can access its GUI. The `info iom` command provides the 
     --------------------------------------------------------------------------------
     ...
 
-Just copy the OMT link into your browser and open the page. You should now see the login screen. The combination of `admin:!InterShop00!` should give you access to OMT.
+Just copy the _OMT_ link into your browser and open the page. You should now see the login screen. The combination of `admin:!InterShop00!` should give you access to OMT.
 
 ## View Access Logs
 
@@ -274,13 +274,6 @@ As you can see, the method shown above is not intended to show the results of yo
     psql (12.9 (Debian 12.9-1.pgdg110+1))
     Type "help" for help.
 
-    oms_db=> 
-
-    
-    kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
-    psql (11.8 (Debian 11.8-1.pgdg90+1))
-    Type "help" for help.
-    
     oms_db=> select * from "CountryDefDO";
      id  | currency |              currencyName               | currencySymbol | isoCode2 | isoCode3 | isoNumeric |            name                 
     -----+----------+-----------------------------------------+----------------+----------+----------+------------+----------------------------
@@ -293,7 +286,7 @@ As you can see, the method shown above is not intended to show the results of yo
     
 ## Delete IOM Cluster
 
-Now it is time to clean up the environment. To do so, we have to execute the following two steps:
+Now it is time to clean up the environment. To do so, you have to execute the following two steps:
 
 * Delete IOM cluster
 * Delete persistent storage
@@ -303,10 +296,10 @@ Unlike the cluster creation step, which included the creation of the persistent 
     devenv-cli.sh delete cluster
     devenv-cli.sh delete storage
     
-After deleting all resources belonging to our IOM developer instance, it is also save to delete the configuration file.
+After deleting all resources belonging to the IOM developer instance, it is also save to delete the configuration file.
 
     rm devenv.user.properties
 
-We have used `devenv-cli.sh` a lot in this example. If you want to explore all features of this program, just call it with _-h_ as argument.
+`devenv-cli.sh` was used lot in this example. If you want to explore all features of this program, just call it with argument _-h_.
 ---
-[< previous chapter](00_installation.md) | [^ up](..) | [> next chapter](02_configuration.md)
+[< previous chapter](00_installation.md) | [^ up](../README.md) | [> next chapter](02_configuration.md)
