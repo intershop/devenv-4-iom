@@ -14,19 +14,19 @@ Once you are able to set up IOM with _devenv-4-iom_ and have an insight into its
 
 _devenv-4-iom_ uses property files to manage different developer instances of IOM. The whole concept of configuration is explained in [General Concept of Configuration](02_configuration.md#concept_config). For the moment a simplified approach is fully sufficient.
 
-One configuration file can hold all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script `devenv-cli.sh` has to be called with options `get config`. In order to get the following examples to work, you have to extend the `PATH` variable by the directory, containing `devenv-cli.sh` as described in [Setup devenv-4-iom](00_installation.md#setup_devenv).
+One configuration file can hold all the information required to run one instance of IOM. As first step, a new configuration file has to be created now. To do so, the script `devenv-cli.sh` has to be called with options `get config`. In order to get the following examples to work, you have to extend the `PATH` variable by the directory, containing `devenv-cli.sh` as described in [Setup _devenv-4-iom_](00_installation.md#setup_devenv).
 
     # make sure, there is no existing property file
     mv -nv devenv.project.properties devenv.project.properties.bak
     mv -nv devenv.user.properties devenv.user.properties.bak
     
     # create configuration file, filled with default values
-    devenv-cli.sh get config > devenv.project.properties
+    devenv-cli.sh get config --skip-config > devenv.project.properties
     
 There are some values in `devenv.project.properties` that have to be set afterwards. 
 
 * `ID`. Every developer instance of IOM, hence every configuration file, needs to have a unique value for ID. Once you have set the `ID` and started the according IOM, you must not change it anymore. Otherwise you will loose the ability to access/control the resources associated with the IOM installation.
-* `IMAGE_PULL_POLICY`. The value of this property has to be set to `IfNotPresent`. This makes it easier to get through the _first steps_ example. The _operations_ part of the documentation shows a more sustainable approach to [access a private Docker registry](03_operations.md#private_docker_registry).
+* `IMAGE_PULL_POLICY`. The value of this property has to be set to `IfNotPresent`. This makes it easier to get through the _first steps_ example. The [_operations_ part of the documentation](03_operations.md) shows a more sustainable approach to [access a private Docker registry](03_operations.md#private_docker_registry).
 * `IOM_IMAGE`. You need to define the IOM image, that has to be used for the _first steps_ example. If you use IOM version 4.0.0.0, then the according image name is `docker.intershop.de/intershophub/iom:4.0.0.0`. The `IOM_IMAGE` property is one of the most important settings, since it defines what will be executed by _devenv-4-iom_. By defining the image, you can control that a specific project, a standard IOM product without any customizations or an image of the IOM project you have created locally will run in your development environment.
 
 Now set the new values for `ID`, `IMAGE_PULL_POLICY` and `IOM_IMAGE`. Please take care, to NOT add any whitespaces around the '='!

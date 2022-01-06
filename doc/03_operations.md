@@ -1,5 +1,6 @@
 
-# <a name="private_docker_registry"/>Accessing a Private Docker Registry
+# Operations
+## <a name="private_docker_registry"/>Accessing a Private Docker Registry
 
 Private Docker registries are requiring authentication and sufficient rights to pull images from them. The according authentication data can be passed in a Kubernetes secret object. The configuration of _devenv-4-iom_ provides the variable `IMAGE_PULL_SECRET`, which has to hold the name of the Kubernetes secret object, if authentication is required.
 
@@ -18,7 +19,7 @@ If the secret is created and the variable `IMAGE_PULL_SECRET` is set in user spe
 
 When accessing a private Azure Container Registry (ACR), the same mechanism can be used. In this case the value of _service principal ID_ has to be set at `docker-username` and the value of _service principal password_ for `docker-password`.
 
-# <a name="create_cluster"/>Create Whole IOM Cluster
+## <a name="create_cluster"/>Create Whole IOM Cluster
 
 _Cluster_ in context of _devenv-4-iom_ does not mean anset of scalable IOM servers, instead of it, it means all the infrastructure and services that are required to a single IOM server for development purposes.
 
@@ -36,7 +37,7 @@ Depending on the Docker registry you are using, it might be required to set `IMA
     # Now create the cluster
     devenv-cli.sh create cluster
 
-# <a name="delete_cluster"/>Delete Whole IOM Cluster
+## <a name="delete_cluster"/>Delete Whole IOM Cluster
 
 Removing the whole IOM development environment consists of several steps. These are:
 
@@ -51,55 +52,55 @@ Please note that persistent storage will never be deleted by the `delete cluster
 
     devenv-cli.sh delete cluster
 
-# <a name="create_namespace"/>Create Namespace
+## <a name="create_namespace"/>Create Namespace
 
 Namespace is required to isolate the _devenv-4-iom_ instances from each other and from other Kubernetes resources. The following command creates a namespace based on the `ID` you have specified in your properties.
 
     devenv-cli.sh create namespace
 
-# <a name="delete_namespace"/>Delete Namespace
+## <a name="delete_namespace"/>Delete Namespace
 
 The following command deletes the namespace and all resources assigned to this namespace.
 
     devenv-cli.sh delete namespace
 
-# <a name="create_mailserver"/>Create Mail Server
+## <a name="create_mailserver"/>Create Mail Server
 
 The following command creates a mail server which is used to receive mails from IOM.
 
     devenv-cli.sh create mailserver
 
-# <a name="delete_mailserver"/>Delete Mail Server
+## <a name="delete_mailserver"/>Delete Mail Server
 
 The following command deletes the mail server.
 
     devenv-cli.sh delete mailserver
 
-# <a name="create_storage"/>Create Local Docker Volume
+## <a name="create_storage"/>Create Local Docker Volume
 
 The following command creates a local Docker volume to be used to keep database data. This command is only effective if `KEEP_DATABASE_DATA` is set to true.
 
     devenv-cli.sh create storage
     
-# <a name="delete_storage"/>Delete Local Docker Volume
+## <a name="delete_storage"/>Delete Local Docker Volume
 
 To remove the database data, you just have to remove the persistent database data volume with the following command. This command is only effective if a local Docker volume was created before (`KEEP_DATABASE_DATA` is set to `true`).
 
     devenv-cli.sh delete storage
 
-# <a name="create_postgres"/>Create Postgres Database
+## <a name="create_postgres"/>Create Postgres Database
 
 The following command creates the Postgres database server. This command is only effective if an internal database server is used (when `PGHOST` is not set).
 
     devenv-cli.sh create postgres
 
-# <a name="delete_postgres"/>Delete Postgres Database
+## <a name="delete_postgres"/>Delete Postgres Database
 
 The following command deletes the Postgres database server. This command is only effective if an internal database server was created before (when `PGHOST` is not set)
 
     devenv-cli.sh delete postgres
 
-# <a name="create_iom"/>Create IOM
+## <a name="create_iom"/>Create IOM
 
 The following command creates the IOM application server.
 
@@ -107,13 +108,13 @@ Depending on the Docker registry you are using, it might be required to set `IMA
 
     devenv-cli.sh create iom
 
-# <a name="delete_iom"/>Delete IOM
+## <a name="delete_iom"/>Delete IOM
 
 The following command deletes the IOM application server.
 
     devenv-cli.sh delete iom
 
-# Get Information About Components
+## Get Information About Components
 
 Each component (IOM, Postgres, mail server, storage, configuration) has a lot of information to provide, e.g.:
 
