@@ -210,16 +210,16 @@ According to section [Delete a Configuration](02_configuration.md#delete_config
 
 ## Search and Delete Orphaned Kubernetes Namespaces
 
-All Kubernetes resources belonging to a configuration are assigned to one Kubernetes namespace. The name of this namespace is derived from the `ID` defined in the configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from the `ID` and the remaining characters are transformed to lowercase. E.g., if you had used _CustomerProject IOM 4.0.0.0_ as `ID`, the derived name of the namespace is _customerprojectiom4000_.
+All Kubernetes resources belonging to a configuration are assigned to one Kubernetes namespace. The name of this namespace is derived from the `ID` defined in the configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from the `ID` and the remaining characters are transformed to lowercase. E.g., if you had used _CustomerProject IOM 4.0.0_ as `ID`, the derived name of the namespace is _customerprojectiom400_.
 
 Kubernetes uses namespaces for its own purposes. To avoid any conflict with these namespaces, _devenv-4-iom_ will not allow you to use an `ID` that starts with: _default_, _docker_ or _kube_. Hence, the orphaned Kubernetes namespace will never start with any of these three phrases.
 
-The following box shows how to list all existing namespaces. According to the naming rules of namespaces created by _devenv-4-iom_, only two entries in the list of results are of interest: _customerprojectiom4000_ and _oldprojectiom3000_. If you know the `ID`s of your currently existing configurations, you can find out the name of the orphaned namespace. In our example, _oldprojectiom3000_ is the one we have searched for.
+The following box shows how to list all existing namespaces. According to the naming rules of namespaces created by _devenv-4-iom_, only two entries in the list of results are of interest: _customerprojectiom400_ and _oldprojectiom3000_. If you know the `ID`s of your currently existing configurations, you can find out the name of the orphaned namespace. In our example, _oldprojectiom3000_ is the one we have searched for.
 
     # list all existing Kubernetes namespaces
     kubectl get namespace
     NAME                     STATUS   AGE
-    customerprojectiom4000   Active   40m
+    customerprojectiom400    Active   40m
     default                  Active   28d
     docker                   Active   28d
     kube-node-lease          Active   28d
@@ -240,7 +240,7 @@ Hence, if the orphaned Kubernetes namespaces is _oldprojectiom3000_, the accordi
     # list all existing Docker volumes
     docker volume ls -q
     008e5dc60890b954a68de526da1ba73113143b8dcb9edbf382db585cb7cf2736
-    customerprojectiom4000-pgdata
+    customerprojectiom400-pgdata
     oldprojectiom3000-pgdata
     
     # delete orphaned Docker volume

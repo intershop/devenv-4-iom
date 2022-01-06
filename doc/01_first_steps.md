@@ -27,7 +27,7 @@ There are some values in `devenv.project.properties` that have to be set afterwa
 
 * `ID`. Every developer instance of IOM, hence every configuration file, needs to have a unique value for ID. Once you have set the `ID` and started the according IOM, you must not change it anymore. Otherwise you will loose the ability to access/control the resources associated with the IOM installation.
 * `IMAGE_PULL_POLICY`. The value of this property has to be set to `IfNotPresent`. This makes it easier to get through the _first steps_ example. The [_operations_ part of the documentation](03_operations.md) shows a more sustainable approach to [access a private Docker registry](03_operations.md#private_docker_registry).
-* `IOM_IMAGE`. You need to define the IOM image, that has to be used for the _first steps_ example. If you use IOM version 4.0.0.0, then the according image name is `docker.intershop.de/intershophub/iom:4.0.0.0`. The `IOM_IMAGE` property is one of the most important settings, since it defines what will be executed by _devenv-4-iom_. By defining the image, you can control that a specific project, a standard IOM product without any customizations or an image of the IOM project you have created locally will run in your development environment.
+* `IOM_IMAGE`. You need to define the IOM image, that has to be used for the _first steps_ example. If you use IOM version 4.0.0, then the according image name is `docker.intershop.de/intershophub/iom:4.0.0`. The `IOM_IMAGE` property is one of the most important settings, since it defines what will be executed by _devenv-4-iom_. By defining the image, you can control that a specific project, a standard IOM product without any customizations or an image of the IOM project you have created locally will run in your development environment.
 
 Now set the new values for `ID`, `IMAGE_PULL_POLICY` and `IOM_IMAGE`. Please take care, to NOT add any whitespaces around the '='!
 
@@ -47,8 +47,8 @@ Open the newly created config-file `devenv.project.properties` and use the value
     # pull images from registry
     docker pull postgres:12
     docker pull mailhog/mailhog
-    docker pull docker.intershop.de/intershophub/iom-dbaccount:1.3.0.0
-    docker pull docker.intershop.de/intershophub/iom:4.0.0.0
+    docker pull docker.intershop.de/intershophub/iom-dbaccount:1.4.0
+    docker pull docker.intershop.de/intershophub/iom:4.0.0
     
 Before using `devenv-cli.sh` to manage your IOM developer instance, you need to know how the configuration file will passed to the script. There are some different ways, which are explained in detail in [General Concept of Configuration](02_configuration.md#concept_config). For our _first steps_ example you will use the mechanism, that `devenv.project.properties` will automatically be used, if it is located at the current directory. Hence, you only have to take care, to run `devenv-cli.sh` always from the directory, which contains the properties file.
 
@@ -76,10 +76,10 @@ Due to the quite complex [Concept of Configuration](02_configuration.md#concept_
     IMAGE_PULL_SECRET=
     DOCKER_DB_IMAGE=postgres:12
     MAILHOG_IMAGE=mailhog/mailhog
-    IOM_DBACCOUNT_IMAGE=docker.intershop.de/intershophub/iom-dbaccount:1.3.0.0
+    IOM_DBACCOUNT_IMAGE=docker.intershop.de/intershophub/iom-dbaccount:1.4.0
     IOM_CONFIG_IMAGE=
     IOM_APP_IMAGE=
-    IOM_IMAGE=docker.intershop.de/intershophub/iom:4.0.0.0
+    IOM_IMAGE=docker.intershop.de/intershophub/iom:4.0.0
     ...
     --------------------------------------------------------------------------------
  
@@ -175,7 +175,7 @@ IOM is now running and we are able to use it in the browser. It is time to learn
       "environment": "first steps",
       "logHost": "iom-567c64d69c-59jzd",
       "logVersion": "1.0",
-      "appVersion": "4.0.0.0",
+      "appVersion": "4.0.0",
       "appName": "iom",
       "logType": "access",
       "configName": "",
@@ -193,7 +193,7 @@ IOM is now running and we are able to use it in the browser. It is time to learn
       "requestHeaderX-Real-IP": null,
       "requestHeaderX-Forwarded-Host": null,
       "requestHeaderX-Forwarded-Proto": null,
-      "requestLine": "GET /omt/static/css/application-styles.css?version=4.0.0.0 HTTP/1.1",
+      "requestLine": "GET /omt/static/css/application-styles.css?version=4.0.0 HTTP/1.1",
       "requestProtocol": "HTTP/1.1",
       "requestScheme": "http",
       "responseCode": 304,
@@ -208,7 +208,7 @@ IOM is now running and we are able to use it in the browser. It is time to learn
       "environment": "first steps",
       "logHost": "iom-567c64d69c-59jzd",
       "logVersion": "1.0",
-      "appVersion": "4.0.0.0",
+      "appVersion": "4.0.0",
       "appName": "iom",
       "logType": "access",
       "configName": "",
@@ -250,9 +250,9 @@ The following box shows an example where the file is named `test.sql`. If you ha
     2021-12-20T10:49:57Z INFO
       apply-sql-scripts: job successfully started
       job.batch/apply-sql-job created
-    {"tenant":"Intershop","environment":"first steps","logHost":"apply-sql-job-sp8tr","logVersion":"1.0","appName":"iom","appVersion":"4.0.0.0","logType":"script","timestamp":"2021-12-20T10:49:57+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":null,"additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_USER_CONNECTION_SUFFIX=\nOMS_DB_CONNECT_TIMEOUT=10\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=first steps"}
-    {"tenant":"Intershop","environment":"first steps","logHost":"apply-sql-job-sp8tr","logVersion":"1.0","appName":"iom","appVersion":"4.0.0.0","logType":"script","timestamp":"2021-12-20T10:49:58+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":null}
-    {"tenant":"Intershop","environment":"first steps","logHost":"apply-sql-job-sp8tr","logVersion":"1.0","appName":"iom","appVersion":"4.0.0.0","logType":"script","timestamp":"2021-12-20T10:49:58+00:00","level":"INFO","processName":"apply_sql.sh","message":"success","configName":null}
+    {"tenant":"Intershop","environment":"first steps","logHost":"apply-sql-job-sp8tr","logVersion":"1.0","appName":"iom","appVersion":"4.0.0","logType":"script","timestamp":"2021-12-20T10:49:57+00:00","level":"INFO","processName":"apply_sql.sh","message":"Properties","configName":null,"additionalInfo":"--src=/tmp/sql-dir-volume/test.sql\nOMS_DB_HOST=postgres-service\nOMS_DB_PORT=5432\nOMS_DB_NAME=oms_db\nOMS_DB_USER=oms_user\nOMS_DB_USER_CONNECTION_SUFFIX=\nOMS_DB_CONNECT_TIMEOUT=10\nOMS_LOGLEVEL_SCRIPTS=INFO\nTENANT=Intershop\nENVIRONMENT=first steps"}
+    {"tenant":"Intershop","environment":"first steps","logHost":"apply-sql-job-sp8tr","logVersion":"1.0","appName":"iom","appVersion":"4.0.0","logType":"script","timestamp":"2021-12-20T10:49:58+00:00","level":"INFO","processName":"apply_sql.sh","message":"processing file '/tmp/sql-dir-volume/test.sql'","configName":null}
+    {"tenant":"Intershop","environment":"first steps","logHost":"apply-sql-job-sp8tr","logVersion":"1.0","appName":"iom","appVersion":"4.0.0","logType":"script","timestamp":"2021-12-20T10:49:58+00:00","level":"INFO","processName":"apply_sql.sh","message":"success","configName":null}
     2021-12-20T10:50:02Z INFO
       apply-sql-scripts: successfully deleted job
       job.batch "apply-sql-job" deleted

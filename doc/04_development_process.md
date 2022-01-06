@@ -152,20 +152,20 @@ Before creating a new project image, the properties and CLI scripts have to be t
     
     # test your CLI commands
     [standalone@localhost:9990 /] ls -l /deployment
-    bakery.base-app-3.0.0.0.ear
-    bakery.communication-app-3.0.0.0.ear
-    bakery.control-app-3.0.0.0.war
-    bakery.impex-app-3.0.0.0.war
-    bakery.omt-app-3.0.0.0.war
-    gdpr-app-3.0.0.0.war
-    oms.monitoring-app-3.0.0.0.war
-    oms.rest.communication-app-3.0.0.0.war
-    order-state-app-3.0.0.0.war
+    bakery.base-app-4.0.0.ear
+    bakery.communication-app-4.0.0.ear
+    bakery.control-app-4.0.0.war
+    bakery.impex-app-4.0.0.war
+    bakery.omt-app-4.0.0.war
+    gdpr-app-4.0.0.war
+    oms.monitoring-app-4.0.0.war
+    oms.rest.communication-app-4.0.0.war
+    order-state-app-4.0.0.war
     postgresql-jdbc4
-    process-app-3.0.0.0.ear
-    rma-app-3.0.0.0.war
-    schedule-app-3.0.0.0.war
-    transmission-app-3.0.0.0.war
+    process-app-4.0.0.ear
+    rma-app-4.0.0.war
+    schedule-app-4.0.0.war
+    transmission-app-4.0.0.war
 
 # <a name="load_dump"/>Load Custom Dump
 
