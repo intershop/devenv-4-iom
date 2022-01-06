@@ -132,4 +132,4 @@ Before deleting a configuration file, you must ensure that all associated Kubern
 If you have accidentally removed a configuration file before deleting the according Kubernetes and Docker resources, you have to cleanup these resources manually. Section [Manual Cleanup in Troubleshooting](06_troubleshooting.md#manual_cleanup) describes this process in detail.
 
 ---
-[< previous chapter](01_first_steps.md) | [^ up](../README.md) | [> next chapter](02_operations.md)
+[< First Steps](01_first_steps.md) | [^ Index](../README.md) | [> Operations](02_operations.md)
