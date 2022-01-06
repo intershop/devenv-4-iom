@@ -1,4 +1,5 @@
-# <a name="concept_config"/>General Concept of Configuration
+# Configuration
+## <a name="concept_config"/>General Concept of Configuration
 
 _devenv-4-iom_ uses property files for configuration. A configuration might be split into two property files or may be provided within a single file.
 
@@ -6,13 +7,13 @@ Splitting a configuration into two files is a measure to lower configuration eff
 
 Additionally, every project member should have the ability to adapt the configuration of _devenv-4-iom_, without the need to change the project wide settings. Therefore a second property file is required, which has higher precedence. In this file, a user can define all properties, that should overwrite project wide settings.
 
-## Lookup of user specific configuration
+### Lookup of user specific configuration
 
 There are two possibilities to set a user specific configuration file. First, the name of the property file might be passed as first parameter to `devenv-cli.sh`. In this case, the user specific configuration file might have any name.
 
 Second, there is an implicit lookup mechanism, that treats any file named `devenv.user.properties` in current directory as an user specific configuration of _deven-4-iom_.
 
-## Lookup of project specific configuration
+### Lookup of project specific configuration
 
 The project specific configuration file has always the fixed name `devenv.project.properties`. It is looked up on two positions in this order:
 1. It is searched within the same directory, where the user specific configuration file was found.
@@ -20,11 +21,11 @@ The project specific configuration file has always the fixed name `devenv.projec
 
 If no configuration file could be found at all, `devenv-cli.sh` ends with an error.
 
-## Check configuration
+### Check configuration
 
 Due to different configuration files with different lookup rules and different precedences, a mechanism is required to check the effective configuration, which will be used by _devenv-4-iom_. The command `info config` is intended to do such checks. We already used it when [checking the configuration in our _first steps_ example](01_first_steps.md#check_config).
 
-# <a name="create_project_config"/>Create an New Project Configuration
+## <a name="create_project_config"/>Create an New Project Configuration
 
 The creation of a new project configuration file consists of these steps:
 
@@ -41,7 +42,7 @@ The creation of a new project configuration file consists of these steps:
     # Set ID to a unique value and adapt other values according your needs.
     vi devenv.project.properties
 
-# Create a New User Configuration
+## Create a New User Configuration
 
 A user specific configuration of _devenv-4-iom_ should only be used to override some specific properties of the project wide configuration. For this reason, it should only contain these properties and nothing else. Otherwise the benefits of a centrally maintained project specific configuration of _devenv-4-iom_ would disappear. The user specific configuration would simply overrule any settings of the project specific configuration.
 
@@ -50,7 +51,7 @@ Therefore, user specific configurations of _devenv-4-iom_ should never be based 
     # define the properties, you want to override
     vi devenv.user.properties
 
-# <a name="change_config"/>Change Configuration Values
+## <a name="change_config"/>Change Configuration Values
 
 Changing a value in the configuration file does not automatically change the according developer instance of IOM. The only process guaranteeing that changes are applied is the complete recreation of the IOM installation.
 
@@ -63,7 +64,7 @@ Changing a value in the configuration file does not automatically change the acc
     # Create the IOM cluster
     devenv-cli.sh create cluster
 
-# <a name="reset_config_partially"/>Reset Project Configuration Partially
+## <a name="reset_config_partially"/>Reset Project Configuration Partially
 
 If you want to reset the whole configuration, simply create a new one and set the `ID` within the properties file to the old value (see section [Create an New Project Configuration](#create_project_config)).
 
@@ -87,7 +88,7 @@ It's impossible to redirect the updated configuration directly into the configur
     # Check the reseted entries and change them according to your requirements.
     vi devenv.project.properties
 
-# Parallel Instances of _devenv-4-iom_ Environments
+## Parallel Instances of _devenv-4-iom_ Environments
 
 Running different IOM installations within _devenv-4-iom_ is no problem as long as they are not running simultaneously. Just run `delete cluster` on one installation before running `create cluster` on another.
 
@@ -95,7 +96,7 @@ Different IOM installations are perfectly isolated by different namespaces on Ku
 
 _devenv-4-iom_ provides a simple mechanism to avoid port collisions. The configuration variable `INDEX` controls the port usage when providing services at OS level. Just make sure that every IOM configuration uses a different value for `INDEX`. After change of `INDEX` value, you have to delete and create the cluster (see section [Change Configuration Values](#change_config)).
 
-# Migrate a Configuration After Update of _devenv-4-iom_
+## Migrate a Configuration After Update of _devenv-4-iom_
 
 After updating _devenv-4-iom_, the content of the current configuration file has to be updated too. The new version of _devenv-4-iom_ might bring a new template for configuration files, which may contain new properties or improved comments. You have to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new project specific configuration file. Make sure your current project configuration is used during this process, but not your user specific confioguration (see section [Reset Project Configuration Partially](#reset_config_partially)).
 
@@ -112,7 +113,7 @@ After updating _devenv-4-iom_, the content of the current configuration file has
     # Finally, adapt your user specific configuration manually
     vi devenv.user.properties
     
-# <a name="delete_config"/>Delete a Configuration
+## <a name="delete_config"/>Delete a Configuration
 
 Before deleting a configuration file, you must ensure that all associated Kubernetes and Docker resources are deleted as well. You will not be able to delete them using `devenv-cli.sh` afterwards. Executing `delete cluster` and `delete storage` will remove all resources assigned to a configuration. Additionally, it is recommended to delete unused Docker images as well.
 
@@ -129,5 +130,6 @@ Before deleting a configuration file, you must ensure that all associated Kubern
     docker system prune -a -f
 
 If you have accidentally removed a configuration file before deleting the according Kubernetes and Docker resources, you have to cleanup these resources manually. Section [Manual Cleanup in Troubleshooting](06_troubleshooting.md#manual_cleanup) describes this process in detail.
+
 ---
-[< previous chapter](01_first_steps.md) | [^ up](..) | [> next chapter](02_operations.md)
+[< previous chapter](01_first_steps.md) | [^ up](../README.md) | [> next chapter](02_operations.md)
