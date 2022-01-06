@@ -1237,13 +1237,13 @@ SYNOPSIS
     $ME [CONFIG-FILE] get config [--skip-config|--skip-user-config]
 
 ARGUMENTS
-    --skip-config|--skip-user-config - optional. If --skip-config is set, $ME 
-      ignores any existing configuration. In case of --skip-user-config, only
-      the user specific configuration will be ignored. Using this options, it
-      is possible to create clean configurations for different use cases.
-      --skip-config is intended to be used, when creating new configurations
-      or to reset configurations to factory defaults. --skip-user-config
-      helps to maintain project specific configurations.
+    --skip-config|--skip-user-config - optional. If --skip-config is set, 
+      $ME ignores any existing configuration. In case of 
+      --skip-user-config, only the user specific configuration will be ignored. 
+      Using this options, it is possible to create clean configurations for 
+      different use cases. --skip-config is intended to be used, when creating 
+      new configurations or to reset configurations to factory defaults. 
+      --skip-user-config helps to maintain project specific configurations.
 
 OVERVIEW
     Devenv4iom provides a template for configuration files. With every new
