@@ -92,13 +92,13 @@ It's impossible to redirect the updated configuration directly into the configur
 
 Running different IOM installations within _devenv-4-iom_ is no problem as long as they are not running simultaneously. Just run `delete cluster` on one installation before running `create cluster` on another.
 
-Different IOM installations are perfectly isolated by different namespaces on _Kubernetes_ level. Precondition is the usage of unique `ID`s in each configuration (see section [Create an New Project Configuration](#create_project_config)). However, when it comes to the operating system level of your host machine, the ports required to access the IOM installation from the outside, collide.
+Different IOM installations are perfectly isolated by different namespaces on _Kubernetes_ level. Precondition is the usage of unique `ID`s in each configuration (see section [Create a New Project Configuration](#create_project_config)). However, when it comes to the operating system level of your host machine the ports collide, which are required to access the IOM installation from the outside.
 
 _devenv-4-iom_ provides a simple mechanism to avoid port collisions. The configuration variable `INDEX` controls the port usage when providing services at OS level. Just make sure that every IOM configuration uses a different value for `INDEX`. After change of `INDEX` value, you have to delete and create the cluster (see section [Change Configuration Values](#change_config)).
 
-## Migrate a Configuration After Update of _devenv-4-iom_
+## Migrate a Configuration After Updating _devenv-4-iom_
 
-After updating _devenv-4-iom_, the content of the current configuration file has to be updated too. The new version of _devenv-4-iom_ might bring a new template for configuration files, which may contain new properties or improved comments. You have to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new project specific configuration file. Make sure your current project configuration is used during this process, but not your user specific confioguration (see section [Reset Project Configuration Partially](#reset_config_partially)).
+After updating _devenv-4-iom_, the content of the current configuration file has to be updated too. The new version of _devenv-4-iom_ might bring a new template for configuration files, which may contain new properties or improved comments. You have to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new project specific configuration file. Make sure your current project configuration is used during this process, but not your user specific configuration (see section [Reset Project Configuration Partially](#reset_config_partially)).
 
     # Create a new configuration file based on the old one
     devenv-cli.sh get config --skip-user-config > migrated.devenv.project.properties
@@ -129,7 +129,7 @@ Before deleting a configuration file, you must ensure that all associated _Kuber
     # Clean up unused Docker images (cleans up all unused images, not only the ones related to the current configuration)
     docker system prune -a -f
 
-If you have accidentally removed a configuration file before deleting the according _Kubernetes_ and _Docker_ resources, you have to cleanup these resources manually. Section [Manual Cleanup in Troubleshooting](06_troubleshooting.md#manual_cleanup) describes this process in detail.
+If you have accidentally removed a configuration file before deleting the according _Kubernetes_ and _Docker_ resources, you have to cleanup these resources manually. Section [Manual Cleanup in chapter _Troubleshooting_](06_troubleshooting.md#manual_cleanup) describes this process in detail.
 
 ---
 [< First Steps](01_first_steps.md) | [^ Index](../README.md) | [> Operations](02_operations.md)

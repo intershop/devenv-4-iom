@@ -201,7 +201,7 @@ Unexpected errors may occur that are not handled properly. These errors cannot b
     ...
     --------------------------------------------------------------------------------
 
-# Manual Cleanup
+# <a name="manual_cleanup"/>Manual Cleanup
 
 According to section [Delete a Configuration](02_configuration.md#delete_config), a configuration must not be deleted as long as corresponding Kubernetes and Docker resources still exist. In a situation where the configuration file is deleted and resources belonging to this configuration were not cleaned up, you have to delete these resources manually. To do so, perform the following steps:
 
