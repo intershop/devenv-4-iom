@@ -7,5 +7,8 @@ The following chapters are providing a detailed view into different aspects of i
 - [Operation](doc/03_operations.md)
 - [Development process](doc/04_development_process.md)
 - [Log messages](doc/05_log_messages.md)
-- [Trouble shooting](doc/06_troubleshooting.md)
+- [Troubleshooting](doc/06_troubleshooting.md)
 
+If have already installed _devenv-4-iom_ and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`.
+
+    devenv-cli.sh -h
