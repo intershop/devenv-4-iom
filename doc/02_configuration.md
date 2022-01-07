@@ -1,9 +1,9 @@
 # Configuration
-## <a name="concept_config"/>General Concept of Configuration
+## <a name="concept_config"/>General Concept
 
 _devenv-4-iom_ uses property files for configuration. A configuration might be split into two property files or may be provided within a single file.
 
-Splitting a configuration into two files is a measure to lower configuration efforts and to centralize the management of configurations. This approach is intended to be used in context of projects. A global, project-specific property file should be part of the project. This file has to be managed centrally. Whenever the project changes in a way, that _devenv-4-iom_ is affected, the centrally managed property file has to reflect the according change. This way the project members (except the one, who is maintaining the project specific configuration) do not need to care about such changes.
+Splitting a configuration into two files is a measure to lower configuration efforts and to centralize the management of configurations. This approach is intended to be used in context of projects. A global, project-specific property file should be part of the project. This file has to be managed centrally. Whenever the project changes in a way, that _devenv-4-iom_ is affected too, the centrally managed property file has to reflect the according change. This way the project members (except the one, who is maintaining the project specific configuration) do not need to care about such changes.
 
 Additionally, every project member should have the ability to adapt the configuration of _devenv-4-iom_, without the need to change the project wide settings. Therefore a second property file is required, which has higher precedence. In this file, a user can define all properties, that should overwrite project wide settings.
 
@@ -11,7 +11,7 @@ Additionally, every project member should have the ability to adapt the configur
 
 There are two possibilities to set a user specific configuration file. First, the name of the property file might be passed as first parameter to `devenv-cli.sh`. In this case, the user specific configuration file might have any name.
 
-Second, there is an implicit lookup mechanism, that treats any file named `devenv.user.properties` in current directory as an user specific configuration of _deven-4-iom_.
+If no property file is given at the command line, `devenv.user.properties` in current directory is used as user specific configuration of _deven-4-iom_.
 
 ### Lookup of project specific configuration
 
@@ -23,9 +23,9 @@ If no configuration file could be found at all, `devenv-cli.sh` ends with an err
 
 ### Check configuration
 
-Due to different configuration files with different lookup rules and different precedences, a mechanism is required to check the effective configuration, which will be used by _devenv-4-iom_. The command `info config` is intended to do such checks. We already used it when [checking the configuration in our _first steps_ example](01_first_steps.md#check_config).
+Due to different configuration files with different lookup rules and different precedences, a mechanism is required to check the effective configuration, which will be used by _devenv-4-iom_. The command `info config` is intended to do such checks. It was already intorduced by the [check of configuration within the _first steps_ example](01_first_steps.md#check_config).
 
-## <a name="create_project_config"/>Create an New Project Configuration
+## <a name="create_project_config"/>Create a New Project Configuration
 
 The creation of a new project configuration file consists of these steps:
 
@@ -53,7 +53,7 @@ Therefore, user specific configurations of _devenv-4-iom_ should never be based 
 
 ## <a name="change_config"/>Change Configuration Values
 
-Changing a value in the configuration file does not automatically change the according developer instance of IOM. The only process guaranteeing that changes are applied is the complete recreation of the IOM installation.
+Changing a value in the configuration file does not automatically change the according developer instance of IOM. The only process guaranteeing that changes are applied, is the complete recreation of the IOM installation.
 
     # Change configuration file
     vi devenv.user.properties
@@ -66,9 +66,9 @@ Changing a value in the configuration file does not automatically change the acc
 
 ## <a name="reset_config_partially"/>Reset Project Configuration Partially
 
-If you want to reset the whole configuration, simply create a new one and set the `ID` within the properties file to the old value (see section [Create an New Project Configuration](#create_project_config)).
+If you want to reset the whole configuration, simply create a new one and set the `ID` within the properties file to the old value (see section [Create a New Project Configuration](#create_project_config)).
 
-To reset only parts of the configuration, just delete the according entries from your configuration. Now create a new one, but make sure the old project configuration is used during this process. In this case, only the missing/empty properties are filled with default values in the new configuration file.
+To reset only parts of the configuration, just delete the according entries from your properties file. Now create a new one, but make sure the old project configuration is used during this process. In this case, only the missing/empty properties are filled with default values in the new configuration file.
 
 Make sure, not to accidentally overwrite project specific values, that are redefined in your personal settings. To do so, option --skip-user-config has to be set.
 
