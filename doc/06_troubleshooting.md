@@ -1,5 +1,6 @@
 
-# `devenv-cli.sh` Help
+# Troubleshooting
+## `devenv-cli.sh` Help
 
 `devenv-cli.sh` has a simple system for its command line arguments. In general, each call to `devenv-cli.sh` requires two arguments. These could best be understood as topic and sub-topic. If you append _-h_ or _--help_ to the command line, you will get detailed help. This works even if no topic or sub-topic is passed on the command line. In this case, the provided help gives information about available topics or sub-topics.
 
@@ -31,13 +32,13 @@
     
     Run 'devenv-cli.sh [CONFIG-FILE] COMMAND --help|-h' for more information on a command.
 
-# IOM is not Working
+## IOM is not Working
 
 "IOM is not working" is a very unspecific description, but it is the most common. For a systematic search for the root cause, you have to know the different stages of starting IOM and how to get detailed information about each stage.
 
 The IOM development environment consists of three main components: database, mail server and IOM. If the mail server is not working properly, it will not affect the startup of IOM. Hence, in a situation where IOM is not working at all, we only have to take a look at the database and IOM itself.
 
-## Search for Problems of Postgres Database
+### Search for Problems of Postgres Database
 
 Before searching for a problem, the status of the Postgres database should be checked. The easiest way to do this is to use the `info postgres` command. The output of this command contains a section named _Kubernetes_, which shows the status of the Postgres pod. If the Postgres pod is working, the entry _READY_ should be _1/1_ and entry _STATUS_ should be _Running_, see example below:
 
@@ -105,7 +106,7 @@ The `info postgres` command of `devenv-cli.sh` provides you with the necessary c
     ' 2020-05-22 11:36:17.043 UTC   [26] 'LOG:  last completed transaction was at log time 2020-05-22 11:15:51.823575+00 
     ' 2020-05-22 11:36:17.071 UTC   [1] 'LOG:  database system is ready to accept connections ...
 
-## Search for Problems of IOM
+### Search for Problems of IOM
 
 The process of searching problems of IOM is in general identical to the one used for the Postgres database, with one slight addition: IOM has an init-container, which may cause problems too. Hence, the process of searching for errors consists of these steps:
 
@@ -201,14 +202,14 @@ Unexpected errors may occur that are not handled properly. These errors cannot b
     ...
     --------------------------------------------------------------------------------
 
-# <a name="manual_cleanup"/>Manual Cleanup
+## <a name="manual_cleanup"/>Manual Cleanup
 
 According to section [Delete a Configuration](02_configuration.md#delete_config), a configuration must not be deleted as long as corresponding Kubernetes and Docker resources still exist. In a situation where the configuration file is deleted and resources belonging to this configuration were not cleaned up, you have to delete these resources manually. To do so, perform the following steps:
 
 1. Search and delete orphaned Kubernetes namespaces.
 2. Delete orphaned Docker volumes.
 
-## Search and Delete Orphaned Kubernetes Namespaces
+### Search and Delete Orphaned Kubernetes Namespaces
 
 All Kubernetes resources belonging to a configuration are assigned to one Kubernetes namespace. The name of this namespace is derived from the `ID` defined in the configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from the `ID` and the remaining characters are transformed to lowercase. E.g., if you had used _CustomerProject IOM 4.0.0_ as `ID`, the derived name of the namespace is _customerprojectiom400_.
 
@@ -231,7 +232,7 @@ The following box shows how to list all existing namespaces. According to the na
     kubectl delete namespace oldprojectiom3000
     namespace "oldprojectiom3000" deleted
 
-## Delete Orphaned Docker Volumes
+### Delete Orphaned Docker Volumes
 
 Docker volumes are used to provide persistent storage for the PostgreSQL database server. Since the usage of persistent storage is optional, an orphaned Docker volume might not exist at all. Once you have found the name of an orphaned Kubernetes namespace, it is very simple to find out whether an according Docker volume exists or not. The name of the Docker volume is derived from `ID` too. The same rules are applied to the ID as described above, additionally the prefix _-pgdata_ is appended.
 
@@ -247,11 +248,11 @@ Hence, if the orphaned Kubernetes namespaces is _oldprojectiom3000_, the accordi
     docker volume rm oldprojectiom3000-pgdata
     oldprojectiom3000-pgdata
 
-# Shared Drives
+## Shared Drives
 
 After resetting your password you may experience problems with your shared drives. In those cases go to _Settings | Shared Drives | Reset credentials_.
 
-# Wrong Kubernetes Context
+## Wrong Kubernetes Context
 
 `kubectl` can interact with more than one Kubernetes cluster by setting the context. If `devenv-cli.sh` does not work properly, a wrong context might be the cause.
 
@@ -264,7 +265,7 @@ After resetting your password you may experience problems with your shared drive
 
 When using Docker Desktop, this setting can be easily changed using the _Kubernetes_ menu entry. It lists all existing contexts. You just have to select the right one: _docker-desktop_.
 
-# Non TTY device
+## Non TTY device
 
 When you trying a docker login from a Linux like terminal on Windows such as _Git bash_ or _Docker quickstart terminal_, you will get the following error.
 
