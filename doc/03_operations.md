@@ -1,21 +1,21 @@
 
 # Operations
-## <a name="private_docker_registry"/>Accessing a Private Docker Registry
+## <a name="private_docker_registry"/>Accessing a Private _Docker_ Registry
 
-Private Docker registries are requiring authentication and sufficient rights to pull images from them. The according authentication data can be passed in a Kubernetes secret object. The configuration of _devenv-4-iom_ provides the variable `IMAGE_PULL_SECRET`, which has to hold the name of the Kubernetes secret object, if authentication is required.
+Private _Docker_ registries are requiring authentication and sufficient rights to pull images from them. The according authentication data can be passed in a _Kubernetes_ secret object. The configuration of _devenv-4-iom_ provides the variable `IMAGE_PULL_SECRET`, which has to hold the name of the _Kubernetes_ secret object, if authentication is required.
 
-_devenv-4-iom_ does not manage the Kubernetes secret in any way. The user is fully responsible to create, update and delete the Kubernetes secret object. Kubernetes secret objects, which should be used by _devenv-4-iom_, always need to be created within default namespace. During [creation of IOM](#create_iom) the secret will be copied from the default namespace to the namespace used by IOM.
+_devenv-4-iom_ does not manage the _Kubernetes_ secret in any way. The user is fully responsible to create, update and delete the _Kubernetes_ secret object. _Kubernetes_ secret objects, which should be used by _devenv-4-iom_, always need to be created within default namespace. During [creation of IOM](#create_iom) the secret will be copied from the default namespace to the namespace used by IOM.
 
-The document [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) from Kubernetes documentation explains how to create Kubernetes secret objects in general, suitable to authenticate at a private Docker registry. [Pull images from an Azure container registry to a Kubernetes cluster](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-kubernetes) from Microsoft Azure documentation explains how to apply this concept to private Azure Container Registries.
+The document [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) from _Kubernetes_ documentation explains how to create _Kubernetes_ secret objects in general, suitable to authenticate at a private _Docker_ registry. [Pull images from an Azure container registry to a _Kubernetes_ cluster](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-kubernetes) from Microsoft Azure documentation explains how to apply this concept to private Azure Container Registries.
 
-The following box shows an example for how to create a Kubernetes secret within default namespace, to be used to access the private Docker Registry _docker.intershop.de_. The name of the newly created secret is `intershop-pull-secret`, which has to be set as value of variable `IMAGE_PULL_SECRET`.
+The following box shows an example for how to create a _Kubernetes_ secret within default namespace, to be used to access the private _Docker_ Registry _docker.intershop.de_. The name of the newly created secret is `intershop-pull-secret`, which has to be set as value of variable `IMAGE_PULL_SECRET`.
 
     kubectl create secret docker-registry intershop-pull-secret \
         --docker-server=docker.intershop.de \
         --docker-username='<user name>' \
         --docker-password='<password>'
 
-If the secret is created and the variable `IMAGE_PULL_SECRET` is set in user specific configuration file (see [General Concept of Configuration](02_configuration.md#concept_config), _devenv-4-iom_ can now authenticate at the Docker Registry _docker.intershop.de_.
+If the secret is created and the variable `IMAGE_PULL_SECRET` is set in user specific configuration file (see [General Concept of Configuration](02_configuration.md#concept_config), _devenv-4-iom_ can now authenticate at the _Docker_ Registry _docker.intershop.de_.
 
 When accessing a private Azure Container Registry (ACR), the same mechanism can be used. In this case the value of _service principal ID_ has to be set at `docker-username` and the value of _service principal password_ for `docker-password`.
 
@@ -25,14 +25,14 @@ _Cluster_ in context of _devenv-4-iom_ does not mean anset of scalable IOM serve
 
 The creation of a whole IOM cluster consists of these steps:
 
-1. [Create local Docker volume](#create_storage) (not required if `KEEP_DATABASE_DATA` is set to false)
+1. [Create local _Docker_ volume](#create_storage) (not required if `KEEP_DATABASE_DATA` is set to false)
 1. [Create namespace](#create_namespace)
 1. [Create mailserver](#create_mailserver)
 1. [Create postgres database](#create_postgres) (not required if an external database is used, which is the case if `PGHOST` is set)
 1. [Create IOM](#create_iom)
 The command line client provides all these commands separately, but it also provides the shortcut `create cluster`, which does all these steps at once.
 
-Depending on the Docker registry you are using, it might be required to set `IMAGE_PULL_SECRET` first.
+Depending on the _Docker_ registry you are using, it might be required to set `IMAGE_PULL_SECRET` first.
 
     # Now create the cluster
     devenv-cli.sh create cluster
@@ -54,7 +54,7 @@ Please note that persistent storage will never be deleted by the `delete cluster
 
 ## <a name="create_namespace"/>Create Namespace
 
-Namespace is required to isolate the _devenv-4-iom_ instances from each other and from other Kubernetes resources. The following command creates a namespace based on the `ID` you have specified in your properties.
+Namespace is required to isolate the _devenv-4-iom_ instances from each other and from other _Kubernetes_ resources. The following command creates a namespace based on the `ID` you have specified in your properties.
 
     devenv-cli.sh create namespace
 
@@ -76,15 +76,15 @@ The following command deletes the mail server.
 
     devenv-cli.sh delete mailserver
 
-## <a name="create_storage"/>Create Local Docker Volume
+## <a name="create_storage"/>Create Local _Docker_ Volume
 
-The following command creates a local Docker volume to be used to keep database data. This command is only effective if `KEEP_DATABASE_DATA` is set to true.
+The following command creates a local _Docker_ volume to be used to keep database data. This command is only effective if `KEEP_DATABASE_DATA` is set to true.
 
     devenv-cli.sh create storage
     
-## <a name="delete_storage"/>Delete Local Docker Volume
+## <a name="delete_storage"/>Delete Local _Docker_ Volume
 
-To remove the database data, you just have to remove the persistent database data volume with the following command. This command is only effective if a local Docker volume was created before (`KEEP_DATABASE_DATA` is set to `true`).
+To remove the database data, you just have to remove the persistent database data volume with the following command. This command is only effective if a local _Docker_ volume was created before (`KEEP_DATABASE_DATA` is set to `true`).
 
     devenv-cli.sh delete storage
 
@@ -104,7 +104,7 @@ The following command deletes the Postgres database server. This command is only
 
 The following command creates the IOM application server.
 
-Depending on the Docker registry you are using, it might be required to set `IMAGE_PULL_SECRET` first.
+Depending on the _Docker_ registry you are using, it might be required to set `IMAGE_PULL_SECRET` first.
 
     devenv-cli.sh create iom
 
