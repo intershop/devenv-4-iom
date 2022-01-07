@@ -161,30 +161,30 @@ The according `kubectl` command lines are provided by the `info iom` command.
 
 Hence, using `kubectl` to get log messages of IOM, will deliver everything mixed in one stream (script-, message- and access-log), exactly as defined by the current logging configuration. E.g., if a log-level is currently set to `INFO`, but you are interessed in `FATAL`, `ERROR` and `WARN` messages only, you have to write an according _jq_ command line by your own to receive only the requested messages (see [section _jq_](#jq)).
 
-## <a name="log_cmd"/>devenv-cli's _log *_ Commands
+## <a name="log_cmd"/>devenv-cli's `log *` Commands
 
 The [section before](#log_iom) showed how to get messages out of the IOM containers and how to further process them with the help of _jq_. This is a valid procedure if special requirements have to be met. However, there are some standard situations that should be easier to handle. For this reason `devenv-cli.sh` provides the `log *` commands.
 
 The `log *` commands facilitate accessing the logs of different IOM containers and different types of logs of IOM's application container. It is the only command that uses _jq_ internally to provide a basic filtering and formatting of messages. By using the `log *` commands you can do the following:
 
-* View log messages of _dbaccount_ or _iom_ pods:
-  * Filter them for the passed level and all higher levels. E.g. when level `WARN` is passed as argument to the log command, only messages of levels `FATAL`, `ERROR` and `WARN` will be printed.
+* View log messages of _dbaccount_ or _iom_ containers:
+  * Filter them for the passed level and all higher levels. E.g. when level `WARN` is passed as argument to the `log` command, only messages of levels `FATAL`, `ERROR` and `WARN` will be printed.
   * Show all messages or follow only new messages.
   * Format the messages or leave them unformatted for further processing with _jq_.
-* View access logs of iom pod:
+* View access logs of iom container:
   * Filter them for HTTP status code: show all or only those requests, that had an HTTP status code >= 400.
   * Show all access log entries or follow only new ones.
   * Format the access-log entries or leave them unformatted for further processing with _jq_.
 
-The following box shows some examples on how to use the _log *_ commands.
+The following box shows some examples on how to use the `log *` commands.
 
     # Show FATAL, ERROR and WARN messages of IOM's dbaccount init container and format them 
     devenv-cli.sh log dbaccount
     
-    # Show INFO messages of IOM's dbaccount init container and format them 
+    # Show INFO and higher level messages of IOM's dbaccount init container and format them 
     devenv-cli.sh log dbaccount info 
     
-    # Follow FATAL, ERROR and WARN messages of IOM pod and format the messages 
+    # Follow WARN and higher level messages of IOM pod and format the messages 
     devenv-cli.sh log iom -f 
     
     # Follow all access log entries 
