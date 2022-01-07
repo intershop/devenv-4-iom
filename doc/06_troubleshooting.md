@@ -112,11 +112,11 @@ The process of searching problems of IOM is in general identical to the one used
 
 1. Check IOM's status in _Kubernetes_.
 1. If _Kubernetes_ section is missing:
-  1. Check `devenv-cli.sh` commands used to create IOM for error messages.
+    1. Check `devenv-cli.sh` commands used to create IOM for error messages.
 1. If _Kubernetes_ section is present but IOM is not running or not ready:
-  1. Check output of `kubectl describe` command for errors.
-  1. Check log messages of account initialization for errors (dbaccount init-container).
-  1. Check log messages of IOM for errors.
+    1. Check output of `kubectl describe` command for errors.
+    1. Check log messages of account initialization for errors (dbaccount init-container).
+    1. Check log messages of IOM for errors.
 
 According to the checklist above, the first step gets the status of IOM. This can be easily done by using the `info iom` command. The _Kubernetes_ section in the output shows the current status. If everything is fine, _READY_ should be _1/1_ and _STATUS_ should be _Running_.
 
