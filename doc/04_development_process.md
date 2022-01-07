@@ -8,7 +8,7 @@ It's possible to set for each `CUSTOM_*_DIR` the according absolute path.
 
 But it's even better to define the `CUSTOM_*_DIR` properties in file `devenv.project.properties`, which is maintained centrally along with the project code. In this case, absolute paths cannot be used, since every developer has an individual local environment. `CUSTOM_*_DIR` properties have to hold relative paths instead, which are expanded at runtime to absolute paths. The base-directory for the relative paths is the directory, where `devenv.propject.properties` is located.
 
-Any directory, that is referenced by a `CUSTOM_*_DIR` property, has to be [shared with Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+Any directory, that is referenced by a `CUSTOM_*_DIR` property, has to be [shared with _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 
 Depending on the version of Windows Subsystem for Linux (WSL), the property `MOUNT_PREFIX` might come into play. When using WSL2 (and only in this particular case), `MOUNT_PREFIX ` has to be set to `/run/desktop/mnt/host`. In any other case, it must remain empty. 
 
@@ -16,7 +16,7 @@ Depending on the version of Windows Subsystem for Linux (WSL), the property `MOU
 
 If your project is based on [IOM project archetype](https://github.com/intershop/iom-project-archetype), the custom built artifact of the project is already integrated into _devenv-4-iom_.
 
-This is done by listing the custom built artifact in `src/deployment/customization/deployment.cluster.properties` and by providing this file and the according artifact inside the project Docker image.
+This is done by listing the custom built artifact in `src/deployment/customization/deployment.cluster.properties` and by providing this file and the according artifact inside the project _Docker_ image.
 
 ## <a name="deployment_wildfly"/>Deployment of Custom Built Artifacts Using the Wildfly Admin Console
 
@@ -45,7 +45,7 @@ The _Wildfly Admin Console_ has to be opened in a web browser. The according URL
 
 To deploy custom built artifacts using the command line interface, you have to:
 
-* Set the variable `CUSTOM_APPS_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+* Set the variable `CUSTOM_APPS_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 * After changing `CUSTOM_APPS_DIR`, the IOM application server needs to be restarted:
   1. [Delete IOM](03_operations.md#delete_iom)
   2. [Create IOM](03_operations.md#create_iom)
@@ -65,7 +65,7 @@ Of course you can combine both methods of deploying custom built artifacts to ge
 
 To roll out custom mail templates in a running _devenv-4-iom_ installation, you have to:
 
-* Set variable `CUSTOM_TEMPLATES_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+* Set variable `CUSTOM_TEMPLATES_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 * After changing `CUSTOM_TEMPLATES_DIR`, the IOM application server has to be restarted:
   1. [Delete IOM](03_operations.md#delete_iom)
   1. [Create IOM](03_operations.md#create_iom)
@@ -80,7 +80,7 @@ If `CUSTOM_TEMPLATES_DIR` is configured, the templates are also copied when star
 
 To roll out custom XSL templates in a running _devenv-4-iom_ installation, you have to:
 
-* Set the variable `CUSTOM_XSLT_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+* Set the variable `CUSTOM_XSLT_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 * After changing `CUSTOM_XSLT_DIR`, the IOM application server has to be restarted:
   1. [Delete IOM](03_operations.md#delete_iom)
   1. [Create IOM](03_operations.md#create_iom)
@@ -93,7 +93,7 @@ If `CUSTOM_XSLT_DIR` is configured, the templates are also copied when starting 
 
 ## <a name="apply_sql_scripts"/>Apply SQL Scripts
 
-The IOM docker image (defined by `IOM_IMAGE`) contains all the necessary tools to apply SQL scripts to the IOM database. _Devenv-4-iom_ enables you to use these tools as easily as possible. Therefore it provides a Kubernetes job (apply-sql-job) that applies SQL file(s) to the IOM database. Creation and deletion of job and access to logs is provided by the command `apply sql-scripts` of the command line interface.
+The IOM _Docker_ image (defined by `IOM_IMAGE`) contains all the necessary tools to apply SQL scripts to the IOM database. _Devenv-4-iom_ enables you to use these tools as easily as possible. Therefore it provides a _Kubernetes_ job (apply-sql-job) that applies SQL file(s) to the IOM database. Creation and deletion of job and access to logs is provided by the command `apply sql-scripts` of the command line interface.
 
 There are two different modes that can be used:
 
@@ -111,9 +111,9 @@ The logs created by the IOM pod are printed in JSON format. Verbosity can be con
 
 To develop and test a single or a couple of SQL scripts (which can be migration scripts too), the developer task [Apply SQL Scripts](#apply_sql_scripts) is the first choice. However, at some point of development, the _DBMigrate process_ as a whole has to be tested as well. The _DBMigrate process_ is somewhat more complex than simply applying SQL scripts from a directory. It first loads stored procedures from the `stored_procedures` directory and then applies the migrations scripts found in the `migrations` directory. The order of execution is controlled by the names of sub-directories within `migrations` and the naming of the migration scripts itself (numerically sorted, smallest first).
 
-The `IOM_IMAGE` contains a shell script that applies the migration scripts supplied with the Docker image. The developer task [Apply DBMigrate scripts](#apply_dbmigrate) enables you to use this DBMigrate script together with the migration scripts located at `CUSTOM_DBMIGRATE_DIR`. Hence, if you want to roll out custom DBMigrate scripts, you have to:
+The `IOM_IMAGE` contains a shell script that applies the migration scripts supplied with the _Docker_ image. The developer task [Apply DBMigrate scripts](#apply_dbmigrate) enables you to use this DBMigrate script together with the migration scripts located at `CUSTOM_DBMIGRATE_DIR`. Hence, if you want to roll out custom DBMigrate scripts, you have to:
 
-* Set the variable `CUSTOM_DBMIGRATE_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+* Set the variable `CUSTOM_DBMIGRATE_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 
 You can and should have an eye on the logs created by the migration process. These logs are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
@@ -127,7 +127,7 @@ Scripts for SQL configuration are simple SQL scripts that can be easily develope
 
 To be able to roll out complete SQL configurations, you have to:
 
-* Set the variable `CUSTOM_SQLCONF_DIR` in your configuration file and make sure that the directory is shared in Docker Desktop.
+* Set the variable `CUSTOM_SQLCONF_DIR` in your configuration file and make sure that the directory is shared in _Docker_ Desktop.
 * Set the variable `CAAS_ENV_NAME` in your configuration file to the environment you want to test.
 
 You should have an eye on the logs created by the configuration process. These logs are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
@@ -170,14 +170,14 @@ Before creating a new project image, the properties and CLI scripts have to be t
 
 ## <a name="load_dump"/>Load Custom Dump
 
-When starting IOM and the connected database is empty, the IOM pod loads the initial dump. _Devenv-4-iom_ allows you to load a custom dump during this process. This custom dump will be treated exactly as any other dump which is part of the docker image. If you want to load a custom dump, you have to:
+When starting IOM and the connected database is empty, the IOM pod loads the initial dump. _Devenv-4-iom_ allows you to load a custom dump during this process. This custom dump will be treated exactly as any other dump which is part of the _Docker_ image. If you want to load a custom dump, you have to:
 
-* Set the variable `CUSTOM_DUMPS_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/). The dump you want to load has to be located within this directory. To be recognized as a dump, it has to have the extension _.sql.gz_. If the directory contains more than one dump file, the script to load the dump selects the one with the numerically largest name. You can check this with the following command: `ls *.sql.gz | sort -nr | head -n 1`
+* Set the variable `CUSTOM_DUMPS_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/). The dump you want to load has to be located within this directory. To be recognized as a dump, it has to have the extension _.sql.gz_. If the directory contains more than one dump file, the script to load the dump selects the one with the numerically largest name. You can check this with the following command: `ls *.sql.gz | sort -nr | head -n 1`
 * The custom dump can only be loaded if the database is empty. The `dump load` command of the command line client executes all the necessary steps to restart IOM with an empty database.
   1. [Delete IOM](03_operations.md#delete_iom)
   1. [Delete Postgres database](03_operations.md#delete_postgres)
-  1. [Remove Local Docker Volume](03_operations.md#delete_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
-  1. [Create Local Docker Volume](03_operations.md#create_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
+  1. [Remove Local _Docker_ Volume](03_operations.md#delete_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
+  1. [Create Local _Docker_ Volume](03_operations.md#create_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
   1. [Create Postgres Database](03_operations.md#create_postgres)
   1. [Create IOM](03_operations.md#create_iom)
 * The custom dump can only be loaded if the database is empty. When you are using an external database (`PGHOST` is set), the steps listed above will not have any effect. You must take care of purging the external database and recreating the IOM installation yourself.
@@ -190,7 +190,7 @@ You should inspect the logs to know if the dump was actually loaded. The logs of
 
 _Devenv-4-iom_ provides a job to create a dump of the IOM database. This job uses the variable `CUSTOM_DUMPS_DIR` too. It writes the dump to this directory. The created dump uses the following naming pattern: `OmsDump.<year-month-day>.<hour.minute.second>-<hostname>.sql.gz`. To create a dump, you have to:
 
-* Set the variable `CUSTOM_DUMPS_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+* Set the variable `CUSTOM_DUMPS_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 
 You should check the output of the dump job. The logs of the job are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
@@ -214,7 +214,7 @@ To develop e-mail templates, to test whether e-mails are successfully sent by bu
 
 PDF documents are stored within shared file system of IOM. To get easy access to the content of shared file system, you have to:
 
-* Set the variable `CUSTOM_SHARE_DIR` in your configuration file and make sure that the [directory is shared in Docker Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+* Set the variable `CUSTOM_SHARE_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 * After changing `CUSTOM_SHARE_DIR`, the IOM application server has to be restarted:
   1. [Delete IOM](03_operations.md#delete_iom)
   1. [Create IOM](03_operations.md#create_iom)
