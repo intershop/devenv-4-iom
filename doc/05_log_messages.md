@@ -1,5 +1,6 @@
 
-# <a name="jq"/>_jq_ - Command Line JSON Processor
+# Log Messages
+## <a name="jq"/>_jq_ - Command Line JSON Processor
 
 _[jq](https://stedolan.github.io/jq/)_ is a command line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool. _jq_ is not included in _devenv-4-iom_. _devenv-4-iom_ does not depend on it (except for the `log *` commands), but it is strongly recommended to install _jq_ as well.
 
@@ -131,11 +132,11 @@ The most important features used in context of _devenv-4-iom_ are formatting and
     ...
 
 
-# Log Messages of devenv-cli.sh
+## Log Messages of devenv-cli.sh
 
 Logging of `devenv-cli.sh` is controlled by the configuration variable `OMS_LOGLEVEL_DEVENV`. Since every execution of `devenv-cli.sh` reads the configuration file, changes of this variable become effective immediately. In difference to log messages created by IOM, `devenv-cli.sh` uses a very simple line based log format. Log messages, directly created by `devenv-cli.sh` are always written to _stderr_, whereas log messages of IOM are printed to _stdout_.
 
-# <a name="log_iom"/>Log Messages of IOM Containers
+## <a name="log_iom"/>Log Messages of IOM Containers
 
 In addition to the IOM application container, one init container also belongs to IOM. All these containers write messages in JSON format to _stdout_. The log-levels of these messages are controlled by the following variables:
 
@@ -160,7 +161,7 @@ The according `kubectl` command lines are provided by the `info iom` command.
 
 Hence, if you use `kubectl` to get log messages of IOM, you will get everything mixed in one stream (script-, message- and access-log), exactly as defined by the current logging configuration. E.g., if a log-level is currently set to `INFO`, but you are interessed in `FATAL`, `ERROR` and `WARN` messages only, you have to write an according _jq_ command line by your own to receive only the requested messages (see [section _jq_](#jq)).
 
-# <a name="log_cmd"/>devenv-cli's _log *_ Commands
+## <a name="log_cmd"/>devenv-cli's _log *_ Commands
 
 The [section before](#log_iom) showed how to get messages out of the IOM containers and how to further process them with the help of _jq_. This is a valid procedure if special requirements have to be met. However, there are some standard situations that should be easier to handle. For this reason `devenv-cli.sh` provides the `log *` commands.
 
