@@ -33,7 +33,7 @@ The creation of a new project configuration file consists of these steps:
 1. Set `ID` in the newly created configuration file to an unique value.
 1. Adapt all other entries in the configuration file according your requirements.
 
-`ID` has no default value. It is required to mark Kubernetes and Docker resources as being associated with a certain configuration. Each configuration has to have its own unique `ID`. To avoid damages of existing developer installations of IOM, caused by use of a duplicated `ID`, this property is initially empty and has to be filled manually.
+`ID` has no default value. It is required to mark _Kubernetes_ and _Docker_ resources as being associated with a certain configuration. Each configuration has to have its own unique `ID`. To avoid damages of existing developer installations of IOM, caused by use of a duplicated `ID`, this property is initially empty and has to be filled manually.
 
     # Create a new configuration file that contains default values only.
     # --skip-config switch indicates, that any existing configuration has to be ignored.
@@ -72,7 +72,7 @@ To reset only parts of the configuration, just delete the according entries from
 
 Make sure, not to accidentally overwrite project specific values, that are redefined in your personal settings. To do so, option --skip-user-config has to be set.
 
-It's impossible to redirect the updated configuration directly into the configuration file, since the _redirect_ operator will empty the file before `devenv-cli.sh` is able to read it. This way, you would loose your old configuration, before it can be taken over into the new configuration.
+It's impossible to redirect the updated configuration directly into the configuration file, since the _redirect_ operator will empty the file before `devenv-cli.sh` is able to read it. This way, you would loose your old configuration, before it can be taken over into the new one.
 
     # Remove entries from the configuration file that should be filled with default values.
     vi devenv.project.properties
@@ -92,7 +92,7 @@ It's impossible to redirect the updated configuration directly into the configur
 
 Running different IOM installations within _devenv-4-iom_ is no problem as long as they are not running simultaneously. Just run `delete cluster` on one installation before running `create cluster` on another.
 
-Different IOM installations are perfectly isolated by different namespaces on Kubernetes level. Precondition is the usage of unique `ID`s in each configuration (see section [Create an New Project Configuration](#create_project_config)). However, when it comes to the operating system level of your host machine, the ports required to access the IOM installation from the outside, collide.
+Different IOM installations are perfectly isolated by different namespaces on _Kubernetes_ level. Precondition is the usage of unique `ID`s in each configuration (see section [Create an New Project Configuration](#create_project_config)). However, when it comes to the operating system level of your host machine, the ports required to access the IOM installation from the outside, collide.
 
 _devenv-4-iom_ provides a simple mechanism to avoid port collisions. The configuration variable `INDEX` controls the port usage when providing services at OS level. Just make sure that every IOM configuration uses a different value for `INDEX`. After change of `INDEX` value, you have to delete and create the cluster (see section [Change Configuration Values](#change_config)).
 
@@ -115,7 +115,7 @@ After updating _devenv-4-iom_, the content of the current configuration file has
     
 ## <a name="delete_config"/>Delete a Configuration
 
-Before deleting a configuration file, you must ensure that all associated Kubernetes and Docker resources are deleted as well. You will not be able to delete them using `devenv-cli.sh` afterwards. Executing `delete cluster` and `delete storage` will remove all resources assigned to a configuration. Additionally, it is recommended to delete unused Docker images as well.
+Before deleting a configuration file, you must ensure that all associated _Kubernetes_ and _Docker_ resources are deleted as well. You will not be able to delete them using `devenv-cli.sh` afterwards. Executing `delete cluster` and `delete storage` will remove all resources assigned to a configuration. Additionally, it is recommended to delete unused _Docker_ images as well.
 
     # Delete IOM cluster
     devenv-cli.sh delete cluster
@@ -129,7 +129,7 @@ Before deleting a configuration file, you must ensure that all associated Kubern
     # Clean up unused Docker images (cleans up all unused images, not only the ones related to the current configuration)
     docker system prune -a -f
 
-If you have accidentally removed a configuration file before deleting the according Kubernetes and Docker resources, you have to cleanup these resources manually. Section [Manual Cleanup in Troubleshooting](06_troubleshooting.md#manual_cleanup) describes this process in detail.
+If you have accidentally removed a configuration file before deleting the according _Kubernetes_ and _Docker_ resources, you have to cleanup these resources manually. Section [Manual Cleanup in Troubleshooting](06_troubleshooting.md#manual_cleanup) describes this process in detail.
 
 ---
 [< First Steps](01_first_steps.md) | [^ Index](../README.md) | [> Operations](02_operations.md)
