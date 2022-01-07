@@ -9,6 +9,6 @@ The following chapters are providing a detailed view into different aspects of i
 - [Log messages](doc/05_log_messages.md)
 - [Troubleshooting](doc/06_troubleshooting.md)
 
-If have already installed _devenv-4-iom_ and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`.
+If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`.
 
     devenv-cli.sh -h
