@@ -118,7 +118,7 @@ The process of searching problems of IOM is in general identical to the one used
     1. Check log messages of account initialization for errors (dbaccount init-container).
     1. Check log messages of IOM for errors.
 
-According to the checklist above, the first step gets the status of IOM. This can be easily done by using the `info iom` command. The _Kubernetes_ section in the output shows the current status. If everything is fine, _READY_ should be _1/1_ and _STATUS_ should be _Running_.
+According to the checklist above, the first step gets the status of IOM. This can be easily done by using the `info iom` command. The _Kubernetes_ section in the output shows the current status. If everything is fine, _READY_ is _1/1_ and _STATUS_ is _Running_.
 
     devenv-cli.sh info iom
     ...
@@ -137,7 +137,7 @@ If there is a _Kubernetes_ section but IOM is not running or not ready, the sta
 
 1. The _Kubernetes_ resource cannot be created for a certain reason (e.g. problem accessing the _Docker_ image).
 1. The dbaccount init-container has problems to be executed successfully (e.g. wrong credentials).
-1. The IOM server itself has problems to get in ready state (e.g. erroneous deployment artifact, missing database dump, etc.).
+1. The IOM server itself has problems to get in ready state (e.g. erroneous deployment artifact, missing database dump, erroneous configuration script, etc.).
 
 To get information about these different stages, according strategies have to be used:
 
@@ -211,7 +211,7 @@ According to section [Delete a Configuration](02_configuration.md#delete_config
 
 ### Search and Delete Orphaned _Kubernetes_ Namespaces
 
-All _Kubernetes_ resources belonging to a configuration are assigned to one _Kubernetes_ namespace. The name of this namespace is derived from the `ID` defined in the configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from the `ID` and the remaining characters are transformed to lowercase. E.g., if you had used _CustomerProject IOM 4.0.0_ as `ID`, the derived name of the namespace is _customerprojectiom400_.
+All _Kubernetes_ resources, belonging to a configuration, are assigned to one _Kubernetes_ namespace. The name of this namespace is derived from the `ID` defined in the configuration file. In order to create a valid name for namespace, all non-alphanumerical characters are stripped from the `ID` and the remaining characters are transformed to lowercase. E.g., if you had used _CustomerProject IOM 4.0.0_ as `ID`, the derived namespace is _customerprojectiom400_.
 
 _Kubernetes_ uses namespaces for its own purposes. To avoid any conflict with these namespaces, _devenv-4-iom_ will not allow you to use an `ID` that starts with: _default_, _docker_ or _kube_. Hence, the orphaned _Kubernetes_ namespace will never start with any of these three phrases.
 
@@ -234,7 +234,7 @@ The following box shows how to list all existing namespaces. According to the na
 
 ### Delete Orphaned _Docker_ Volumes
 
-_Docker_ volumes are used to provide persistent storage for the PostgreSQL database server. Since the usage of persistent storage is optional, an orphaned _Docker_ volume might not exist at all. Once you have found the name of an orphaned _Kubernetes_ namespace, it is very simple to find out whether an according _Docker_ volume exists or not. The name of the _Docker_ volume is derived from `ID` too. The same rules are applied to the ID as described above, additionally the prefix _-pgdata_ is appended.
+_Docker_ volumes are used to provide persistent storage for the PostgreSQL database server. Since the usage of persistent storage is optional, an orphaned _Docker_ volume might not exist at all. Once you have found the name of an orphaned _Kubernetes_ namespace, it is very simple to find out whether an according _Docker_ volume exists or not. The name of the _Docker_ volume is derived from `ID` too. The same rules are applied to the `ID` as described above, additionally the prefix _-pgdata_ is appended.
 
 Hence, if the orphaned _Kubernetes_ namespaces is _oldprojectiom3000_, the according _Docker_ volume is named _oldprojectiom3000-pgdata_. The following command lists all _Docker_ volumes and shows you how to delete the one _Docker_ volume you have identified before.
 
@@ -267,7 +267,7 @@ When using _Docker_ Desktop, this setting can be easily changed using the _Kuber
 
 ## Non TTY device
 
-When you trying a `docker login` from a Linux like terminal on Windows such as _Git bash_ or _Docker quickstart terminal_, you will get the following error.
+When trying a `docker login` from a Linux like terminal on Windows such as _Git bash_ or _Docker quickstart terminal_, you will get the following error.
 
     docker login docker.intershop.de
     > Error: Cannot perform an interactive login from a non TTY device
