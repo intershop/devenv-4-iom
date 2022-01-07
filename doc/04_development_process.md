@@ -10,13 +10,13 @@ But it's even better to define the `CUSTOM_*_DIR` properties in file `devenv.pro
 
 Any directory, that is referenced by a `CUSTOM_*_DIR` property, has to be [shared with _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 
-Depending on the version of Windows Subsystem for Linux (WSL), the property `MOUNT_PREFIX` might come into play. When using WSL2 (and only in this particular case), `MOUNT_PREFIX ` has to be set to `/run/desktop/mnt/host`. In any other case, it must remain empty. 
+Depending on the version of Windows Subsystem for Linux (WSL), the property `MOUNT_PREFIX` might come into play. When using WSL2 (and only in this particular case), `MOUNT_PREFIX` has to be set to `/run/desktop/mnt/host`. In any other case, it must remain empty. 
 
 ## Adding a New Custom Built Artifact
 
 If your project is based on [IOM project archetype](https://github.com/intershop/iom-project-archetype), the custom built artifact of the project is already integrated into _devenv-4-iom_.
 
-This is done by listing the custom built artifact in `src/deployment/customization/deployment.cluster.properties` and by providing this file and the according artifact inside the project _Docker_ image.
+This is done by listing the custom built artifact in `src/deployment/customization/deployment.cluster.properties` and by providing this file and the according artifact inside the projects _Docker_ image.
 
 ## <a name="deployment_wildfly"/>Deployment of Custom Built Artifacts Using the Wildfly Admin Console
 
@@ -24,7 +24,7 @@ Using the _Wildfly Admin Console_ is the easiest way to add or update deployment
 
 Unlike described in [Deployment of custom built artifacts using CLI](#deployment_cli), deployments added/updated this way, will not survive a restart of the IOM pod.
 
-The _Wildfly Admin Console_ has to be opened in a web browser. The according URL can be found in the output of the _info iom_ command.
+The _Wildfly Admin Console_ has to be opened in a web browser. The according URL can be found in the output of the `info iom` command.
 
     # Get information about IOM 
     devenv-cli.sh info iom 
@@ -43,7 +43,7 @@ The _Wildfly Admin Console_ has to be opened in a web browser. The according URL
 
 ## <a name="deployment_cli"/>Deployment of Custom Built Artifacts Using CLI
 
-To deploy custom built artifacts using the command line interface, you have to:
+To deploy custom built artifacts using `devenv-cli.sh`, you have to:
 
 * Set the variable `CUSTOM_APPS_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 * After changing `CUSTOM_APPS_DIR`, the IOM application server needs to be restarted:
@@ -52,7 +52,8 @@ To deploy custom built artifacts using the command line interface, you have to:
 
 Once you have configured _devenv-4-iom_ this way, your custom built artifacts are deployed right at the start of IOM. To update/add deployments in a running developer installation of IOM, you have the following options:
 
-    # Redeploy an artifact selectively by adding one more parameter: A regular-expression to select the artifact to be redeployed. 
+    # Redeploy an artifact selectively by adding one more parameter: A regular-expression 
+    # to select the artifact to be redeployed. 
     # The example shows how to redeploy the OMT application selectively.
     devenv-cli.sh apply deployment omt 
     
@@ -102,20 +103,20 @@ There are two different modes that can be used:
 
 The information about the SQL file or directory is passed as third parameter to the command line client. The box below shows an example that executes all SQL scripts found in `oms.tests/tc_stored_procedures` (of course, the directory has to exist in your current working directory).
 
-The logs created by the IOM pod are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
+The logs created by the IOM pod are provided in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
     # Adapt third parameter according your needs 
     devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
 
 ## <a name="apply_dbmigrate"/>Apply DBMigrate Scripts
 
-To develop and test a single or a couple of SQL scripts (which can be migration scripts too), the developer task [Apply SQL Scripts](#apply_sql_scripts) is the first choice. However, at some point of development, the _DBMigrate process_ as a whole has to be tested as well. The _DBMigrate process_ is somewhat more complex than simply applying SQL scripts from a directory. It first loads stored procedures from the `stored_procedures` directory and then applies the migrations scripts found in the `migrations` directory. The order of execution is controlled by the names of sub-directories within `migrations` and the naming of the migration scripts itself (numerically sorted, smallest first).
+To develop and test a single or a couple of SQL scripts (which can be migration scripts too), the developer task [Apply SQL Scripts](#apply_sql_scripts) is the first choice. However, at some point of development, the DBMigrate-process as a whole has to be tested as well. The DBMigrate-process is somewhat more complex than simply applying SQL scripts from a directory. It first loads stored procedures from the `stored_procedures` directory and then applies the migrations scripts found in the `migrations` directory. The order of execution is controlled by the names of sub-directories within `migrations` and the naming of the migration scripts itself (numerically sorted, smallest first).
 
 The `IOM_IMAGE` contains a shell script that applies the migration scripts supplied with the _Docker_ image. The developer task [Apply DBMigrate scripts](#apply_dbmigrate) enables you to use this DBMigrate script together with the migration scripts located at `CUSTOM_DBMIGRATE_DIR`. Hence, if you want to roll out custom DBMigrate scripts, you have to:
 
 * Set the variable `CUSTOM_DBMIGRATE_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 
-You can and should have an eye on the logs created by the migration process. These logs are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
+You can and should have an eye on the logs created by the migration process. These logs are provided in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
     devenv-cli.sh apply dbmigrate
 
@@ -128,28 +129,28 @@ Scripts for SQL configuration are simple SQL scripts that can be easily develope
 To be able to roll out complete SQL configurations, you have to:
 
 * Set the variable `CUSTOM_SQLCONF_DIR` in your configuration file and make sure that the directory is shared in _Docker_ Desktop.
-* Set the variable `CAAS_ENV_NAME` in your configuration file to the environment you want to test.
+* Set the variable `PROJECT_ENV_NAME` in your configuration file to the environment you want to test.
 
-You should have an eye on the logs created by the configuration process. These logs are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
+You should have an eye on the logs created by the configuration process. These logs are provided in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
     devenv-cli.sh apply sql-config
 
 If `CUSTOM_SQLCONFIG_DIR` is configured, the custom SQL configuration is also applied when starting IOM.
 
-## Execute Custom CLI Scripts
+## Execute Custom _Wildfly-CLI_ Scripts
 
-Project specific properties and CLI scripts are applied when building the project-image. If you use this image within _devenv-4-iom_, the changed settings are already applied when starting IOM.
+Project specific properties and _Wildfly-CLI_ scripts are applied when building the project-image. If you use this image within _devenv-4-iom_, the changed settings are already applied when starting IOM.
 
-Before creating a new project image, the properties and CLI scripts have to be tested within a running IOM. The following box shows how to execute a CLI script in _devenv-4-iom_:
+Before creating a new project image, the properties and _Wildfly-CLI_ scripts have to be tested within a running IOM. The following box shows how to execute a _Wildfly-CLI_ script in _devenv-4-iom_:
 
     # determine command, how to access jboss-cli.sh in running IOM pod
     devenv-cli.sh info iom
     ...
-    jboss-cli: kubectl exec --namespace customerprojectiom3000 iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
+    jboss-cli: kubectl exec --namespace customerprojectiom400 iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
     ...
     
     # execute jboss-cli.sh in running IOM pod
-    kubectl exec --namespace customerprojectiom3000 iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
+    kubectl exec --namespace customerprojectiom400 iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
     
     # test your CLI commands
     [standalone@localhost:9990 /] ls -l /deployment
@@ -176,13 +177,13 @@ When starting IOM and the connected database is empty, the IOM pod loads the ini
 * The custom dump can only be loaded if the database is empty. The `dump load` command of the command line client executes all the necessary steps to restart IOM with an empty database.
   1. [Delete IOM](03_operations.md#delete_iom)
   1. [Delete Postgres database](03_operations.md#delete_postgres)
-  1. [Remove Local _Docker_ Volume](03_operations.md#delete_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
+  1. [Delete Local _Docker_ Volume](03_operations.md#delete_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
   1. [Create Local _Docker_ Volume](03_operations.md#create_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
   1. [Create Postgres Database](03_operations.md#create_postgres)
   1. [Create IOM](03_operations.md#create_iom)
 * The custom dump can only be loaded if the database is empty. When you are using an external database (`PGHOST` is set), the steps listed above will not have any effect. You must take care of purging the external database and recreating the IOM installation yourself.
 
-You should inspect the logs to know if the dump was actually loaded. The logs of the initialization process are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
+You should inspect the logs to know if the dump was actually loaded. The logs of the initialization process are provided in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
     devenv-cli.sh dump load
 
@@ -192,7 +193,7 @@ _Devenv-4-iom_ provides a job to create a dump of the IOM database. This job use
 
 * Set the variable `CUSTOM_DUMPS_DIR` in your configuration file and make sure that the [directory is shared in _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
 
-You should check the output of the dump job. The logs of the job are printed in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
+You should check the output of the dump job. The logs of the job are provided in JSON format. Verbosity can be controlled by the configuration variable `OMS_LOGLEVEL_SCRIPTS`.
 
     devenv-cli.sh dump create
 
@@ -232,7 +233,7 @@ The tests and the test framework (in case of IOM this is _[Geb](https://gebish.o
 
 ### Apply Test-specific Stored Procedures
 
-To apply stored procedures, simply use the command `[apply sql-scripts](#apply_sql_scripts)` and set the parameter to the directory containing the stored procedures required for testing.
+To apply stored procedures, simply use the command [`apply sql-scripts`](#apply_sql_scripts) and set the parameter to the directory containing the stored procedures required for testing.
 
     # oms.tests has to exist in current working directory 
     devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
