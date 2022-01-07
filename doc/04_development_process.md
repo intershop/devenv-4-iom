@@ -1,5 +1,6 @@
 
-# Connecting IOM developer installation with local file-system
+# Development Process
+## Connecting IOM developer installation with local file-system
 
 Developers are editing and compiling files outside the IOM developer installation on their local file-system. To give _devenv-4-iom_ access to these files, the according `CUSTOM_*_DIR` properties have to be set.
 
@@ -11,13 +12,13 @@ Any directory, that is referenced by a `CUSTOM_*_DIR` property, has to be [share
 
 Depending on the version of Windows Subsystem for Linux (WSL), the property `MOUNT_PREFIX` might come into play. When using WSL2 (and only in this particular case), `MOUNT_PREFIX ` has to be set to `/run/desktop/mnt/host`. In any other case, it must remain empty. 
 
-# Adding a New Custom Built Artifact
+## Adding a New Custom Built Artifact
 
 If your project is based on [IOM project archetype](https://github.com/intershop/iom-project-archetype), the custom built artifact of the project is already integrated into _devenv-4-iom_.
 
 This is done by listing the custom built artifact in `src/deployment/customization/deployment.cluster.properties` and by providing this file and the according artifact inside the project Docker image.
 
-# <a name="deployment_wildfly"/>Deployment of Custom Built Artifacts Using the Wildfly Admin Console
+## <a name="deployment_wildfly"/>Deployment of Custom Built Artifacts Using the Wildfly Admin Console
 
 Using the _Wildfly Admin Console_ is the easiest way to add or update deployments. The deployment process is simply triggered by drag & drop.
 
@@ -40,7 +41,7 @@ The _Wildfly Admin Console_ has to be opened in a web browser. The according URL
     
     # Copy the 'Wildfly' link to your web browser.
 
-# <a name="deployment_cli"/>Deployment of Custom Built Artifacts Using CLI
+## <a name="deployment_cli"/>Deployment of Custom Built Artifacts Using CLI
 
 To deploy custom built artifacts using the command line interface, you have to:
 
@@ -60,7 +61,7 @@ Once you have configured _devenv-4-iom_ this way, your custom built artifacts ar
 
 Of course you can combine both methods of deploying custom built artifacts to get the best out of both methods. If you set `CUSTOM_APPS_DIR` and make sure that the according directory contains your custom built artifacts, your IOM developer installation will always use these artifacts, even right after IOM starts. Additionally you can use the _Wildfly Admin Console_ to update/add deployments during runtime.
 
-# Roll Out Custom Mail Templates
+## Roll Out Custom Mail Templates
 
 To roll out custom mail templates in a running _devenv-4-iom_ installation, you have to:
 
@@ -75,7 +76,7 @@ Once you have configured your IOM developer installation this way, you can apply
 
 If `CUSTOM_TEMPLATES_DIR` is configured, the templates are also copied when starting IOM.
 
-# Roll Out Custom XSL Templates
+## Roll Out Custom XSL Templates
 
 To roll out custom XSL templates in a running _devenv-4-iom_ installation, you have to:
 
@@ -90,7 +91,7 @@ Once you have configured your developer VM this way, you can apply custom XSL te
 
 If `CUSTOM_XSLT_DIR` is configured, the templates are also copied when starting IOM.
 
-# <a name="apply_sql_scripts"/>Apply SQL Scripts
+## <a name="apply_sql_scripts"/>Apply SQL Scripts
 
 The IOM docker image (defined by `IOM_IMAGE`) contains all the necessary tools to apply SQL scripts to the IOM database. _Devenv-4-iom_ enables you to use these tools as easily as possible. Therefore it provides a Kubernetes job (apply-sql-job) that applies SQL file(s) to the IOM database. Creation and deletion of job and access to logs is provided by the command `apply sql-scripts` of the command line interface.
 
@@ -106,7 +107,7 @@ The logs created by the IOM pod are printed in JSON format. Verbosity can be con
     # Adapt third parameter according your needs 
     devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
 
-# <a name="apply_dbmigrate"/>Apply DBMigrate Scripts
+## <a name="apply_dbmigrate"/>Apply DBMigrate Scripts
 
 To develop and test a single or a couple of SQL scripts (which can be migration scripts too), the developer task [Apply SQL Scripts](#apply_sql_scripts) is the first choice. However, at some point of development, the _DBMigrate process_ as a whole has to be tested as well. The _DBMigrate process_ is somewhat more complex than simply applying SQL scripts from a directory. It first loads stored procedures from the `stored_procedures` directory and then applies the migrations scripts found in the `migrations` directory. The order of execution is controlled by the names of sub-directories within `migrations` and the naming of the migration scripts itself (numerically sorted, smallest first).
 
@@ -120,7 +121,7 @@ You can and should have an eye on the logs created by the migration process. The
 
 If `CUSTOM_DBMIGRATE_DIR` is configured, the custom DBMigrate scripts are also applied when starting IOM.
 
-# <a name="apply_sql_config"/>Apply SQL Configuration Scripts
+## <a name="apply_sql_config"/>Apply SQL Configuration Scripts
 
 Scripts for SQL configuration are simple SQL scripts that can be easily developed and tested with the help of the developer task [Apply sql scripts](#apply_sql_scripts). However, SQL configuration in a project context is more complex. E.g. the scripts are executed depending on the currently activated environment. To be able to test SQL configuration scripts exactly in the same context as in a real IOM installation, the developer task [Apply SQL Configuration Scripts](#apply_sql_config) is provided.
 
@@ -135,7 +136,7 @@ You should have an eye on the logs created by the configuration process. These l
 
 If `CUSTOM_SQLCONFIG_DIR` is configured, the custom SQL configuration is also applied when starting IOM.
 
-# Execute Custom CLI Scripts
+## Execute Custom CLI Scripts
 
 Project specific properties and CLI scripts are applied when building the project-image. If you use this image within _devenv-4-iom_, the changed settings are already applied when starting IOM.
 
@@ -167,7 +168,7 @@ Before creating a new project image, the properties and CLI scripts have to be t
     schedule-app-4.0.0.war
     transmission-app-4.0.0.war
 
-# <a name="load_dump"/>Load Custom Dump
+## <a name="load_dump"/>Load Custom Dump
 
 When starting IOM and the connected database is empty, the IOM pod loads the initial dump. _Devenv-4-iom_ allows you to load a custom dump during this process. This custom dump will be treated exactly as any other dump which is part of the docker image. If you want to load a custom dump, you have to:
 
@@ -185,7 +186,7 @@ You should inspect the logs to know if the dump was actually loaded. The logs of
 
     devenv-cli.sh dump load
 
-# Create Dump
+## Create Dump
 
 _Devenv-4-iom_ provides a job to create a dump of the IOM database. This job uses the variable `CUSTOM_DUMPS_DIR` too. It writes the dump to this directory. The created dump uses the following naming pattern: `OmsDump.<year-month-day>.<hour.minute.second>-<hostname>.sql.gz`. To create a dump, you have to:
 
@@ -203,13 +204,13 @@ If `CUSTOM_DUMP_DIR` is configured, the latest custom dump is loaded when IOM is
 _You must not set `CUSTOM_DUMPS_DIR` to a directory, not containing any dump, when starting IOM with an uninitialized database. In this case the initialization of the database would fail, since no dump to be loaded can be found. Just set `CUSTOM_DUMPS_DIR` right before creating the dump and not before start of IOM._
 - - -
 
-# Access E-Mails
+## Access E-Mails
 
 To develop e-mail templates, to test whether e-mails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail server UI and REST interface is given by the command `info mailserver`, provided by the command line interface.
 
     devenv-cli.sh info mailserver
 
-# Access PDF Documents
+## Access PDF Documents
 
 PDF documents are stored within shared file system of IOM. To get easy access to the content of shared file system, you have to:
 
@@ -220,7 +221,7 @@ PDF documents are stored within shared file system of IOM. To get easy access to
 
 After that, you will have direct access to IOMs shared file system through the directory you have set for `CUSTOM_SHARE_DIR`.
 
-# Testing in context of IOM product development
+## Testing in context of IOM product development
 
 The processes described in this section are specific for IOM product development. Nevertheless, the concept can be adapted in context of projects as well. The tasks of _devenv-4-iom_ in context of testing are very simple:
 
@@ -229,14 +230,14 @@ The processes described in this section are specific for IOM product developmen
 
 The tests and the test framework (in case of IOM this is _[Geb](https://gebish.org/) / [Spock](http://spockframework.org/)_) are part of the IOM product sources. In context of projects, this has to be handled the same way. Tests and according framework have to be defined by the project. The tests can then use the property-files provided by _devenv-4-iom_ to access the IOM developer installation.
 
-## Apply Test-specific Stored Procedures
+### Apply Test-specific Stored Procedures
 
 To apply stored procedures, simply use the command `[apply sql-scripts](#apply_sql_scripts)` and set the parameter to the directory containing the stored procedures required for testing.
 
     # oms.tests has to exist in current working directory 
     devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
 
-## Run Single Geb Test or a Group of Geb Tests
+### Run Single Geb Test or a Group of Geb Tests
 
 To run a single test, use the the feature name or a substring of it. E.g:
 
@@ -253,7 +254,7 @@ To run a single test, use the the feature name or a substring of it. E.g:
     # Run a group of Geb tests 
     ./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
 
-## Run Single ws Tests or a Group of ws Tests
+### Run Single ws Tests or a Group of ws Tests
 
 To run a single test, use the the feature name or a substring of it. E.g:
 
@@ -270,7 +271,7 @@ To run a single test, use the the feature name or a substring of it. E.g:
     # Run a group of ws tests 
     ./gradlew wsTest -Pws.propFile=${PATH_TO_WS_PROPERTIES}/ws.properties --tests="*OrderService v1.2: Create an order with one position and billing address*"
 
-## Run all All Tests of a Specification
+### Run all All Tests of a Specification
 
 To run all tests of a specification, use the name of the specification. E.g:
 
@@ -284,7 +285,7 @@ To run all tests of a specification, use the name of the specification. E.g:
     # Run all tests of a ws test specification
     ./gradlew wsTest -Pws.propFile=${PATH_TO_WS_PROPERTIES}/ws.properties --tests="*ReverseServiceSpec*"
 
-## Run All Tests of a Group of Specifications (e.g. User Management, Role Management)
+### Run All Tests of a Group of Specifications (e.g. User Management, Role Management)
 
 To run all tests of a group of specifications, just use the name of the used package. E.g:
 
@@ -295,7 +296,7 @@ To run all tests of a group of specifications, just use the name of the used pac
     # Run all tests of a specification group 
     ./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
 
-## Run SOAP tests
+### Run SOAP tests
 
 To run all soap tests, use the following method:
 
