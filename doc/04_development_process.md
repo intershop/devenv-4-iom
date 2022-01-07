@@ -299,7 +299,7 @@ To run all tests of a group of specifications, just use the name of the used pac
 
 ### Run SOAP tests
 
-To run all soap tests, use the following method:
+To run all SOAP tests, use the following method:
 
     # Make sure that soap.properties reflects the latest version of configuration 
     devenv-cli.sh get soap-props > soap.properties 
@@ -308,7 +308,7 @@ To run all soap tests, use the following method:
     # PATH_TO_IOM_SOURCES an PATH_TO_SOAP_PROPERTIES have to be replaced by the real values. 
     cd ${PATH_TO_IOM_SOURCES}/oms.soap.tests 
     
-    # Run all soap tests 
+    # Run all SOAP tests 
     mvn -Dhost=$(cat "${PATH_TO_SOAP_PROPERTIES}/soap.properties") clean test
 
 ---
