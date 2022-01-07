@@ -119,7 +119,7 @@ The most important features used in context of _devenv-4-iom_ are formatting and
     cmd_producing_json | jq 'select(.level == "ERROR") | .timestamp,.message'
     ...
     "2021-12-21T14:13:03.49Z"
-    "noObjectFound: Object not found for given ID '100' while 'get user for management'."
+    "noObjectFound: Object not found for given ID '100' while 'get user for management'."
     ... 
     
     # Get only values "timestamp" and "message" in a new JSON structure, where key "level" has value "ERROR"
@@ -132,7 +132,7 @@ The most important features used in context of _devenv-4-iom_ are formatting and
     ...
 
 
-## Log Messages of devenv-cli.sh
+## Log Messages of `devenv-cli.sh`
 
 Logging of `devenv-cli.sh` is controlled by the configuration variable `OMS_LOGLEVEL_DEVENV`. Since every execution of `devenv-cli.sh` reads the configuration file, changes of this variable become effective immediately. In difference to log messages created by IOM, `devenv-cli.sh` uses a very simple line based log format. Log messages, directly created by `devenv-cli.sh` are always written to _stderr_, whereas log messages of IOM are printed to _stdout_.
 
