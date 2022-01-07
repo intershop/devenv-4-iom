@@ -31,11 +31,10 @@ The creation of a whole IOM cluster consists of these steps:
 1. [Create postgres database](#create_postgres) (not required if an external database is used, which is the case if `PGHOST` is set)
 1. [Create IOM](#create_iom)
 
-The command line client provides all these commands separately, but it also provides the shortcut `create cluster`, which does all these steps at once.
+`devenv-cli.sh` provides all these commands separately, but it also provides the shortcut `create cluster`, which does all these steps at once.
 
 Depending on the _Docker_ registry you are using, it might be required to set `IMAGE_PULL_SECRET` first.
 
-    # Now create the cluster
     devenv-cli.sh create cluster
 
 ## <a name="delete_cluster"/>Delete Whole IOM Cluster
@@ -47,7 +46,7 @@ Removing the whole IOM development environment consists of several steps. These 
 1. [Delete mailserver](#delete_mailserver)
 1. [Delete namespace](#delete_namespace)
 
-All these steps are provided as single commands by _devenv-4-iom_'s command line client. The command line client also provides the shortcut `delete cluster`, which performs all these operations at once.
+All these steps are provided as single commands by `devenv-cli.sh`. The command line client also provides the shortcut `delete cluster`, which performs all these operations at once.
 
 Please note that persistent storage will never be deleted by the `delete cluster` command. The storage has to be [deleted separately](#delete_storage).
 
@@ -55,7 +54,7 @@ Please note that persistent storage will never be deleted by the `delete cluster
 
 ## <a name="create_namespace"/>Create Namespace
 
-Namespace is required to isolate the _devenv-4-iom_ instances from each other and from other _Kubernetes_ resources. The following command creates a namespace based on the `ID` you have specified in your properties.
+Namespace is required to isolate the IOM development instances from each other and from other _Kubernetes_ resources. The following command creates a namespace based on the `ID`, you have specified in your properties.
 
     devenv-cli.sh create namespace
 
@@ -79,13 +78,13 @@ The following command deletes the mail server.
 
 ## <a name="create_storage"/>Create Local _Docker_ Volume
 
-The following command creates a local _Docker_ volume to be used to keep database data. This command is only effective if `KEEP_DATABASE_DATA` is set to true.
+The following command creates a local _Docker_ volume to be used to keep database data. This command is only effective if `KEEP_DATABASE_DATA` is set to `true`.
 
     devenv-cli.sh create storage
     
 ## <a name="delete_storage"/>Delete Local _Docker_ Volume
 
-To remove the database data, you just have to remove the persistent database data volume with the following command. This command is only effective if a local _Docker_ volume was created before (`KEEP_DATABASE_DATA` is set to `true`).
+To remove the database data, you just have to remove the persistent database data volume using the following command. This command is only effective if a local _Docker_ volume was created before (`KEEP_DATABASE_DATA` is set to `true`).
 
     devenv-cli.sh delete storage
 
@@ -124,7 +123,7 @@ Each component (IOM, Postgres, mail server, storage, configuration) has a lot of
 * Configuration settings
 * Useful commands, etc.
 
-The command line client of _devenv-4-iom_ provides a very simple interface to get these information:
+The `devenv-cli.sh` provides a very simple interface to get these information:
 
     # Get information about IOM 
     devenv-cli.sh info iom 
