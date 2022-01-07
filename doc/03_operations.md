@@ -21,7 +21,7 @@ When accessing a private Azure Container Registry (ACR), the same mechanism can 
 
 ## <a name="create_cluster"/>Create Whole IOM Cluster
 
-_Cluster_ in context of _devenv-4-iom_ does not mean anset of scalable IOM servers, instead of it, it means all the infrastructure and services that are required to a single IOM server for development purposes.
+_Cluster_ in context of _devenv-4-iom_ does not mean a set of scalable IOM servers. Instead of it, it means all the infrastructure and services that are required to run a single IOM server for development purposes.
 
 The creation of a whole IOM cluster consists of these steps:
 
@@ -30,6 +30,7 @@ The creation of a whole IOM cluster consists of these steps:
 1. [Create mailserver](#create_mailserver)
 1. [Create postgres database](#create_postgres) (not required if an external database is used, which is the case if `PGHOST` is set)
 1. [Create IOM](#create_iom)
+
 The command line client provides all these commands separately, but it also provides the shortcut `create cluster`, which does all these steps at once.
 
 Depending on the _Docker_ registry you are using, it might be required to set `IMAGE_PULL_SECRET` first.
