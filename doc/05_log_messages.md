@@ -191,4 +191,4 @@ The following box shows some examples on how to use the _log *_ commands.
     devenv-cli.sh log access all -f | jq 'select(.responseTime > 100)'
 
 ---
-[< Development Process](04_development_process.md) | [^ Index](../README.md) | [> Troubleshooting](06_troubleshooting.md)
+[< Development Process](04_development_process.md) | [^ Index](../README.md) | [Troubleshooting >](06_troubleshooting.md)

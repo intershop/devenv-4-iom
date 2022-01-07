@@ -73,4 +73,4 @@ export PATH="$PATH:/DirnameToBeAdapted/devenv-4-iom/bin"
 ```
 
 ---
-[^ Index](../README.md) | [> First Steps](01_first_steps.md)
+[^ Index](../README.md) | [First Steps >](01_first_steps.md)

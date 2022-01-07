@@ -303,4 +303,4 @@ After deleting all resources belonging to the IOM developer instance, it is also
 `devenv-cli.sh` was used lot in this example. If you want to explore all features of this program, just call it with argument _-h_.
 
 ---
-[< Installation](00_installation.md) | [^ Index](../README.md) | [> Configuration](02_configuration.md)
+[< Installation](00_installation.md) | [^ Index](../README.md) | [Configuration >](02_configuration.md)

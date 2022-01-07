@@ -141,4 +141,4 @@ The command line client of _devenv-4-iom_ provides a very simple interface to ge
     devenv-cli.sh info config
     
 ---
-[< Configuration](02_configuration.md) | [^ Index](../README.md) | [> Development Process](04_development_process.md)
+[< Configuration](02_configuration.md) | [^ Index](../README.md) | [Development Process >](04_development_process.md)
