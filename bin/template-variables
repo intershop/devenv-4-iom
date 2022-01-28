@@ -345,6 +345,8 @@ OMS_DB_USER="${OMS_DB_USER:-oms_user}"
 OMS_DB_PASS="${OMS_DB_PASS:-oms_pw}"
 OMS_DB_NAME="${OMS_DB_NAME:-oms_db}"
 
+OMS_DB_SQLHASH="${OMS_DB_SQLHASH:-false}"
+
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images

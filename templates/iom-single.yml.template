@@ -104,7 +104,7 @@ ${DumpsDirYml____}          mountPath: /opt/oms/dumps
           - name: OMS_DB_USER_CONNECTION_SUFFIX
             value: '${PGUSER_CONNECTION_SUFFIX}'
           - name: OMS_DB_SQLHASH
-            value: 'false'
+            value: '${OMS_DB_SQLHASH}'
           - name: OMS_SHAREDFS_HEALTHCHECK
             value: disabled
           - name: OMS_LOGLEVEL_CONSOLE
