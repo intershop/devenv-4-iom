@@ -146,11 +146,11 @@ Before creating a new project image, the properties and _Wildfly-CLI_ scripts ha
     # determine command, how to access jboss-cli.sh in running IOM pod
     devenv-cli.sh info iom
     ...
-    jboss-cli: kubectl exec --namespace customerprojectiom400 iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
+    jboss-cli: kubectl exec --namespace customerprojectiom400 --context="docker-desktop" iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
     ...
     
     # execute jboss-cli.sh in running IOM pod
-    kubectl exec --namespace customerprojectiom400 iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
+    kubectl exec --namespace customerprojectiom400 --context="docker-desktop" iom-7b99d8c9df-trctc -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
     
     # test your CLI commands
     [standalone@localhost:9990 /] ls -l /deployment

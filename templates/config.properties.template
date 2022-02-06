@@ -22,6 +22,9 @@
 # - kube
 ID="${ID}"
 
+# kubectl is able to work with different Kubernetes clusters. The Kubernetes
+# context determines, which cluster is controlled by kubectl. This configuration
+# variable defines the Kubernetes context to be used by devenv-4-iom.
 KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT}"
 
 ################################################################################

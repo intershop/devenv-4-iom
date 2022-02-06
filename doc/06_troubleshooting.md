@@ -76,13 +76,13 @@ The `info postgres` command of `devenv-cli.sh` provides you with the necessary c
     Useful commands: 
     ================= 
     ... 
-    Describe pod:              kubectl describe --namespace test pod postgres 
-    Get logs:                  kubectl logs postgres --namespace test 
+    Describe pod:              kubectl describe --namespace test --context="docker-desktop" pod postgres 
+    Get logs:                  kubectl logs postgres --namespace test --context="docker-desktop"
     ... 
     -------------------------------------------------------------------------------- 
     
     # Execute these commands for further investigation 
-    kubectl describe --namespace test pod postgres 
+    kubectl describe --namespace test --context="docker-desktop" pod postgres 
     ... 
     Events: 
       Type    Reason     Age        From                     Message 
@@ -93,7 +93,7 @@ The `info postgres` command of `devenv-cli.sh` provides you with the necessary c
       Normal  Created    9m7s       kubelet, docker-desktop  Created container postgres 
       Normal  Started    9m7s       kubelet, docker-desktop  Started container postgres 
     
-    kubectl logs postgres --namespace test 
+    kubectl logs postgres --namespace test --context="docker-desktop"
     ... 
     ' 2020-05-22 11:36:15.750 UTC   [1] 'LOG:  listening on IPv4 address "0.0.0.0", port 5432 
     ' 2020-05-22 11:36:15.750 UTC   [1] 'LOG:  listening on IPv6 address "::", port 5432 
@@ -154,13 +154,13 @@ The `info iom` command provides you the necessary command lines to investigate t
     Useful commands:
     =================
     ...
-    Describe iom pod:           kubectl describe --namespace test pod iom-849dcb5d88-6dnss
-    Describe iom deployment     kubectl describe --namespace test deployment iom
+    Describe iom pod:           kubectl describe --namespace test --context="docker-desktop" pod iom-849dcb5d88-6dnss
+    Describe iom deployment     kubectl describe --namespace test --context="docker-desktop" deployment iom
     ...
     --------------------------------------------------------------------------------
     
     # Execute these commands for further investigation
-    kubectl describe --namespace test pod iom-849dcb5d88-6dnss
+    kubectl describe --namespace test --context="docker-desktop" pod iom-849dcb5d88-6dnss
     ...
     QoS Class:       BestEffort
     Node-Selectors:  <none>
@@ -168,7 +168,7 @@ The `info iom` command provides you the necessary command lines to investigate t
                      node.kubernetes.io/unreachable:NoExecute for 300s
     Events:          <none>
     
-    kubectl describe --namespace test deployment iom
+    kubectl describe --namespace test --context="docker-desktop" deployment iom
     ...
     Conditions:
       Type           Status  Reason
@@ -197,8 +197,8 @@ Unexpected errors may occur that are not handled properly. These errors cannot b
     Useful commands:
     =================
     ...
-    Get dbaccount logs:         kubectl logs iom-849dcb5d88-6dnss --namespace test -c dbaccount
-    Get iom logs:               kubectl logs iom-849dcb5d88-6dnss --namespace test -c iom
+    Get dbaccount logs:         kubectl logs iom-849dcb5d88-6dnss --namespace test --context="docker-desktop" -c dbaccount
+    Get iom logs:               kubectl logs iom-849dcb5d88-6dnss --namespace test --context="docker-desktop" -c iom
     ...
     --------------------------------------------------------------------------------
 
@@ -218,7 +218,7 @@ _Kubernetes_ uses namespaces for its own purposes. To avoid any conflict with th
 The following box shows how to list all existing namespaces. According to the naming rules of namespaces created by _devenv-4-iom_, only two entries in the list of results are of interest: _customerprojectiom400_ and _oldprojectiom3000_. If you know the `ID`s of your currently existing configurations, you can find out the name of the orphaned namespace. In our example, _oldprojectiom3000_ is the one we have searched for.
 
     # list all existing Kubernetes namespaces
-    kubectl get namespace
+    kubectl get namespace --context="docker-desktop"
     NAME                     STATUS   AGE
     customerprojectiom400    Active   40m
     default                  Active   28d
@@ -229,7 +229,7 @@ The following box shows how to list all existing namespaces. According to the na
     oldprojectiom3000        Active   10d
     
     # delete orphaned Kubernetes namespace
-    kubectl delete namespace oldprojectiom3000
+    kubectl delete namespace oldprojectiom3000 --context="docker-desktop"
     namespace "oldprojectiom3000" deleted
 
 ### Delete Orphaned _Docker_ Volumes
@@ -250,16 +250,14 @@ Hence, if the orphaned _Kubernetes_ namespaces is _oldprojectiom3000_, the accor
 
 ## Wrong _Kubernetes_ Context
 
-`kubectl` can interact with more than one _Kubernetes_ cluster by setting the context. If `devenv-cli.sh` does not work properly, a wrong context might be the cause.
+`kubectl` can interact with more than one _Kubernetes_ cluster by setting the context. If `devenv-cli.sh` does not work as expected, a wrong context might be the cause.
 
     # List the existing contexts
-    # Look out for entry "current-context". It should be set to docker-desktop
+    # Look out for the context you want to use. Normally it is "docker-desktop".
     kubectl config view
     
-    # Change context to docker-desktop
-    kubectl config use-context docker-desktop
-
-When using _Docker_ Desktop, this setting can be easily changed using the _Kubernetes_ menu entry. It lists all existing contexts. You just have to select the right one: _docker-desktop_.
+    # Set variable KUBERNETES_CONTEXT to the right context
+    vi devenv.user.properties
 
 ## Non TTY device
 
