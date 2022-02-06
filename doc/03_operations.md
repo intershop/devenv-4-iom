@@ -11,6 +11,7 @@ The document [Pull an Image from a Private Registry](https://kubernetes.io/docs/
 The following box shows an example for how to create a _Kubernetes_ secret within default namespace, to be used to access the private _Docker_ Registry _docker.intershop.de_. The name of the newly created secret is `intershop-pull-secret`, which has to be set as value of variable `IMAGE_PULL_SECRET`.
 
     kubectl create secret docker-registry intershop-pull-secret \
+        --context="docker-desktop" \
         --docker-server=docker.intershop.de \
         --docker-username='<user name>' \
         --docker-password='<password>'
