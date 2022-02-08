@@ -243,8 +243,39 @@ OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 # to Docker containers.
 # In case of WSL2 (and only in this particular case), MOUNT_PREFIX has to be
 # set to /run/desktop/mnt/host. In any other case, it must remain empty.
-
 MOUNT_PREFIX="${MOUNT_PREFIX}"
+
+# When using WSL2 on Windows and you want to run devenv-4-iom directly within
+# the Linux Subsystem, a second modification has to be made to the mount path.
+# The first path-segment (/mnt) has to be removed from local directories.
+# If you don't use WSL2 and you are not running devenv-cli.sh inside the
+# Linux shell, the variable must remain empty.
+MOUNT_OFFSET="${MOUNT_OFFSET}"
+
+# An example will show, how MOUNT_PREFIX and MOUNT_OFFSET are working together.
+# Let's assume, that the application directory is defined relativly:
+#    CUSTOM_APPS_DIR=target
+# The devenv-4-iom properties files are located at /mnt/d/git/project
+# Different values of MOUNT_PREFIX and MOUNT_OFFSET are resulting in different
+# paths, that are used as values for hostPath in the deployment spec of IOM.
+#
+# MOUNT_PREFIX=
+# MOUNT_OFFSET=
+# resulting hostPath to mount custom applications: /mnt/d/git/project/target
+# This is the right configuration of MOUNT_PREFIX and MOUNT_OFFSET, when running
+# devenv-4-iom on Mac OS X or on Windows prior WSL2.
+#
+# MOUNT_PREFIX=/run/desktop/mnt/host
+# MOUNT_OFFSET=
+# resulting hostPath to mount custom applications: /run/desktop/mnt/host/mnt/d/git/project/target
+# This is the right configuration of MOUNT_PREFIX and MOUNT_OFFSET, when running
+# devenv-4-iom on Windows with WSL2 in a Bash executed directly in Windows (e.g. Git-Bash).
+#
+# MOUNT_PREFIX=/run/desktop/mnt/host
+# MOUNT_OFFSET=/mnt
+# resulting hostPath to mount custom applications: /run/desktop/mnt/host/d/git/project/target
+# This is the right configuration of MOUNT_PREFIX and MOUNT_OFFSET, when running
+# devenv-4-ion on Windows with WSL2 in a Bash executed directly in Linux subsystem.
 
 ################################################################################
 # Development settings

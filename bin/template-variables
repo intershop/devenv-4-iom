@@ -92,10 +92,13 @@ fi
 # remove trailing slash
 if echo "$MOUNT_PREFIX" | grep -q '/$'; then
     MOUNT_PREFIX="$(echo "$MOUNT_PREFIX" | sed 's|/*$||g')"
-else
-    MOUNT_PREFIX="${MOUNT_PREFIX}"
 fi
 
+# remove trailing slash
+if echo "$MOUNT_OFFSET" | grep -q '/$'; then
+    MOUNT_OFFSET="$(echo "$MOUNT_OFFSET" | sed 's|/*$||g')"
+fi
+    
 # directory containing custom built artifacts
 # has to be empty on default, in order to become able to make the distinction
 # whether the user wants to deploy custom built artifacts or not.
@@ -104,10 +107,13 @@ CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 CustomAppsDirAbs=
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
     if echo "$CUSTOM_APPS_DIR" | grep -q '^/'; then
-        #CustomAppsDirAbs="$(realpath "$CUSTOM_APPS_DIR")"
-        CustomAppsDirAbs="$CUSTOM_APPS_DIR"
+        CustomAppsDirAbs="$(realpath "$CUSTOM_APPS_DIR")"
     else
         CustomAppsDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_APPS_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomAppsDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomAppsDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomAppsDirAbs="$(echo "$CustomAppsDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_APPS_DIR
@@ -125,10 +131,13 @@ CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 CustomTemplatesDirAbs=
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
     if echo "$CUSTOM_TEMPLATES_DIR" | grep -q '^/'; then
-        #CustomTemplatesDirAbs="$(realpath "$CUSTOM_TEMPLATES_DIR")"
-        CustomTemplatesDirAbs="$CUSTOM_TEMPLATES_DIR"
+        CustomTemplatesDirAbs="$(realpath "$CUSTOM_TEMPLATES_DIR")"
     else
         CustomTemplatesDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_TEMPLATES_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomTemplatesDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomTemplatesDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomTemplatesDirAbs="$(echo "$CustomTemplatesDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_TEMPLATES_DIR
@@ -146,10 +155,13 @@ CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 CustomDumpsDirAbs=
 if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
     if echo "$CUSTOM_DUMPS_DIR" | grep -q '^/'; then
-        #CustomDumpsDirAbs="$(realpath "$CUSTOM_DUMPS_DIR")"
-        CustomDumpsDirAbs="$CUSTOM_DUMPS_DIR"
+        CustomDumpsDirAbs="$(realpath "$CUSTOM_DUMPS_DIR")"
     else
         CustomDumpsDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_DUMPS_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomDumpsDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomDumpsDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomDumpsDirAbs="$(echo "$CustomDumpsDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_DUMPS_DIR
@@ -167,10 +179,13 @@ CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 CustomXsltDirAbs=
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
     if echo "$CUSTOM_XSLT_DIR" | grep -q '^/'; then
-        #CustomXsltDirAbs="$(realpath "$CUSTOM_XSLT_DIR")"
-        CustomXsltDirAbs="$CUSTOM_XSLT_DIR"
+        CustomXsltDirAbs="$(realpath "$CUSTOM_XSLT_DIR")"
     else
         CustomXsltDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_XSLT_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomXsltDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomXsltDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomXsltDirAbs="$(echo "$CustomXsltDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_XSLT_DIR
@@ -188,10 +203,13 @@ CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 CustomDbmigrateDirAbs=
 if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
     if echo "$CUSTOM_DBMIGRATE_DIR" | grep -q '^/'; then
-        #CustomDbmigrateDirAbs="$(realpath "$CUSTOM_DBMIGRATE_DIR")"
-        CustomDbmigrateDirAbs="$CUSTOM_DBMIGRATE_DIR"
+        CustomDbmigrateDirAbs="$(realpath "$CUSTOM_DBMIGRATE_DIR")"
     else
         CustomDbmigrateDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_DBMIGRATE_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomDbmigrateDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomDbmigrateDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomDbmigrateDirAbs="$(echo "$CustomDbmigrateDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_DBMIGRATE_DIR
@@ -209,10 +227,13 @@ CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 CustomSqlconfDirAbs=
 if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
     if echo "$CUSTOM_SQLCONF_DIR" | grep -q '^/'; then
-        #CustomSqlconfDirAbs="$(realpath "$CUSTOM_SQLCONF_DIR")"
-        CustomSqlconfDirAbs="$CUSTOM_SQLCONF_DIR"
+        CustomSqlconfDirAbs="$(realpath "$CUSTOM_SQLCONF_DIR")"
     else
         CustomSqlconfDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_SQLCONF_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomSqlconfDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomSqlconfDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomSqlconfDirAbs="$(echo "$CustomSqlconfDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_SQLCONF_DIR
@@ -230,10 +251,13 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 CustomJsonconfDirAbs=
 if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
     if echo "$CUSTOM_JSONCONF_DIR" | grep -q '^/'; then
-        #CustomJsonconfDirAbs="$(realpath "$CUSTOM_JSONCONF_DIR")"
-        CustomJsonconfDirAbs="$CUSTOM_JSONCONF_DIR"
+        CustomJsonconfDirAbs="$(realpath "$CUSTOM_JSONCONF_DIR")"
     else
         CustomJsonconfDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_JSONCONF_DIR")"
+    fi
+    # remove MOUNT_OFFSET from CustomJsonconfDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomJsonconfDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomJsonconfDirAbs="$(echo "$CustomJsonconfDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
     fi
 fi
 # create yaml code depending on CUSTOM_JSONCONF_DIR
@@ -263,8 +287,12 @@ if [ ! -z "$CustomShareDirAbs" -a ! -d "$CustomShareDirAbs" ]; then
 fi
 # finally use realpath to remove dots from path
 if [ ! -z "$CustomShareDirAbs" ]; then
-    #CustomShareDirAbs="$(realpath "$CustomShareDirAbs")"
-    CustomShareDirAbs="$CustomShareDirAbs"
+    CustomShareDirAbs="$(realpath "$CustomShareDirAbs")"
+
+    # remove MOUNT_OFFSET from CustomShareDirAbs
+    if [ ! -z "$MOUNT_OFFSET" ] && echo "$CustomShareDirAbs" | grep -q "^$MOUNT_OFFSET"; then
+        CustomShareDirAbs="$(echo "$CustomShareDirAbs" | sed "s|^$MOUNT_OFFSET||g" )"
+    fi
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
