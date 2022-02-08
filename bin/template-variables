@@ -104,7 +104,8 @@ CUSTOM_APPS_DIR="${CUSTOM_APPS_DIR}"
 CustomAppsDirAbs=
 if [ ! -z "$CUSTOM_APPS_DIR" ]; then
     if echo "$CUSTOM_APPS_DIR" | grep -q '^/'; then
-        CustomAppsDirAbs="$(realpath "$CUSTOM_APPS_DIR")"
+        #CustomAppsDirAbs="$(realpath "$CUSTOM_APPS_DIR")"
+        CustomAppsDirAbs="$CUSTOM_APPS_DIR"
     else
         CustomAppsDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_APPS_DIR")"
     fi
@@ -124,7 +125,8 @@ CUSTOM_TEMPLATES_DIR="${CUSTOM_TEMPLATES_DIR}"
 CustomTemplatesDirAbs=
 if [ ! -z "$CUSTOM_TEMPLATES_DIR" ]; then
     if echo "$CUSTOM_TEMPLATES_DIR" | grep -q '^/'; then
-        CustomTemplatesDirAbs="$(realpath "$CUSTOM_TEMPLATES_DIR")"
+        #CustomTemplatesDirAbs="$(realpath "$CUSTOM_TEMPLATES_DIR")"
+        CustomTemplatesDirAbs="$CUSTOM_TEMPLATES_DIR"
     else
         CustomTemplatesDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_TEMPLATES_DIR")"
     fi
@@ -144,7 +146,8 @@ CUSTOM_DUMPS_DIR="${CUSTOM_DUMPS_DIR}"
 CustomDumpsDirAbs=
 if [ ! -z "$CUSTOM_DUMPS_DIR" ]; then
     if echo "$CUSTOM_DUMPS_DIR" | grep -q '^/'; then
-        CustomDumpsDirAbs="$(realpath "$CUSTOM_DUMPS_DIR")"
+        #CustomDumpsDirAbs="$(realpath "$CUSTOM_DUMPS_DIR")"
+        CustomDumpsDirAbs="$CUSTOM_DUMPS_DIR"
     else
         CustomDumpsDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_DUMPS_DIR")"
     fi
@@ -164,7 +167,8 @@ CUSTOM_XSLT_DIR="${CUSTOM_XSLT_DIR}"
 CustomXsltDirAbs=
 if [ ! -z "$CUSTOM_XSLT_DIR" ]; then
     if echo "$CUSTOM_XSLT_DIR" | grep -q '^/'; then
-        CustomXsltDirAbs="$(realpath "$CUSTOM_XSLT_DIR")"
+        #CustomXsltDirAbs="$(realpath "$CUSTOM_XSLT_DIR")"
+        CustomXsltDirAbs="$CUSTOM_XSLT_DIR"
     else
         CustomXsltDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_XSLT_DIR")"
     fi
@@ -184,7 +188,8 @@ CUSTOM_DBMIGRATE_DIR="${CUSTOM_DBMIGRATE_DIR}"
 CustomDbmigrateDirAbs=
 if [ ! -z "$CUSTOM_DBMIGRATE_DIR" ]; then
     if echo "$CUSTOM_DBMIGRATE_DIR" | grep -q '^/'; then
-        CustomDbmigrateDirAbs="$(realpath "$CUSTOM_DBMIGRATE_DIR")"
+        #CustomDbmigrateDirAbs="$(realpath "$CUSTOM_DBMIGRATE_DIR")"
+        CustomDbmigrateDirAbs="$CUSTOM_DBMIGRATE_DIR"
     else
         CustomDbmigrateDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_DBMIGRATE_DIR")"
     fi
@@ -204,7 +209,8 @@ CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 CustomSqlconfDirAbs=
 if [ ! -z "$CUSTOM_SQLCONF_DIR" ]; then
     if echo "$CUSTOM_SQLCONF_DIR" | grep -q '^/'; then
-        CustomSqlconfDirAbs="$(realpath "$CUSTOM_SQLCONF_DIR")"
+        #CustomSqlconfDirAbs="$(realpath "$CUSTOM_SQLCONF_DIR")"
+        CustomSqlconfDirAbs="$CUSTOM_SQLCONF_DIR"
     else
         CustomSqlconfDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_SQLCONF_DIR")"
     fi
@@ -224,7 +230,8 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 CustomJsonconfDirAbs=
 if [ ! -z "$CUSTOM_JSONCONF_DIR" ]; then
     if echo "$CUSTOM_JSONCONF_DIR" | grep -q '^/'; then
-        CustomJsonconfDirAbs="$(realpath "$CUSTOM_JSONCONF_DIR")"
+        #CustomJsonconfDirAbs="$(realpath "$CUSTOM_JSONCONF_DIR")"
+        CustomJsonconfDirAbs="$CUSTOM_JSONCONF_DIR"
     else
         CustomJsonconfDirAbs="$(realpath "$PROJECT_DIR/$CUSTOM_JSONCONF_DIR")"
     fi
@@ -256,7 +263,8 @@ if [ ! -z "$CustomShareDirAbs" -a ! -d "$CustomShareDirAbs" ]; then
 fi
 # finally use realpath to remove dots from path
 if [ ! -z "$CustomShareDirAbs" ]; then
-    CustomShareDirAbs="$(realpath "$CustomShareDirAbs")"
+    #CustomShareDirAbs="$(realpath "$CustomShareDirAbs")"
+    CustomShareDirAbs="$CustomShareDirAbs"
 fi
 # create yaml code depending on CUSTOM_SHARE_DIR
 if [ ! -z "$CUSTOM_SHARE_DIR" ]; then
