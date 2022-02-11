@@ -15,20 +15,18 @@ If you are not able to locate `settings.json`, see [User and Workspace Settings]
 
 **Mac OS X**
 
-Bash is part of Mac OS X, there is nothing to do. It's not required, that bash is your default shell.
+Bash is part of Mac OS X, there is nothing to do. It's not required that bash is your default shell.
 
 ### Docker-Desktop
-Usage of _Docker-Desktop_ is recommended. It provides a _Docker_ environment and also _Kubernetes_ functionality, which is required to use _devenv-4-iom_. Other _Docker/Kubernetes_ implementations can be used along with _devenv-4-iom_ too, but all of them have restrictions, that makes their usage much more complicated.
+Usage of _Docker-Desktop_ is recommended. It provides a _Docker_ environment and also _Kubernetes_ functionality, which is required to use _devenv-4-iom_. Other _Docker/Kubernetes_ implementations can be used along with _devenv-4-iom_ too, but all of them have restrictions that make their usage much more complicated.
      
-> **Caution:** While installing _Docker-Desktop_ on **Windows** you will be signed-out without further acknowledgements and your PC will probably be restarted. So save everything before installing.
+> **Caution:** While installing _Docker-Desktop_ on **Windows** you will be signed-out and your PC will probably be restarted. So save everything before installing.
 
-1. Download and install [_Docker-Desktop_](https://www.docker.com/products/docker-desktop).
-2. Enable _Kubernetes in Docker Desktop_.
+1. Install [WSL2] (https://docs.microsoft.com/en-us/windows/wsl/install)
+2. Download and install [_Docker-Desktop_](https://www.docker.com/products/docker-desktop).
+3. Enable _Kubernetes in Docker Desktop_.
     - _Docker Icon > Preferences > Kubernetes > Enable Kubernetes_.
-3. Make sure, the directory holding IOM-project sources is shared.
-    - _Docker Icon > Preferences > Resources > File Sharing_.
-4. Set CPU and memory usage. When running a single IOM instance in _Docker-Desktop_ you need to assign at least 2 CPUs and 8 GB of memory.
-    - _Docker Icon > Preferences > Resources > Advanced_.
+4. Optional: Docker provides a link with information on how to set resource usage (Settings > Resources).
 
 ### jq - Command-Line JSON Processor
 _jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool.
