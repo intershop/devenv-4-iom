@@ -248,10 +248,6 @@ Hence, if the orphaned _Kubernetes_ namespaces is _oldprojectiom3000_, the accor
     docker volume rm oldprojectiom3000-pgdata
     oldprojectiom3000-pgdata
 
-## Shared Drives
-
-After resetting your password you may experience problems with your shared drives. In those cases go to _Settings | Shared Drives | Reset credentials_.
-
 ## Wrong _Kubernetes_ Context
 
 `kubectl` can interact with more than one _Kubernetes_ cluster by setting the context. If `devenv-cli.sh` does not work properly, a wrong context might be the cause.
