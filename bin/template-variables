@@ -7,6 +7,9 @@ DEVENV4IOM_VERSION=2.0.0-SNAPSHOT
 # used with the template_engine.sh script.
 ################################################################################
 
+# Kubernetes context must never be empty.
+KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT:-docker-desktop}"
+
 # used for calculation of automatic port forwarding
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"

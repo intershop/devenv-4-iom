@@ -263,14 +263,14 @@ As you can see, the method shown above is not intended to show the results of yo
     ...
     Usefull commands:
     =================
-    Login into Pod:             kubectl exec --namespace firststeps postgres -it -- bash
-    psql into root-db:          kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=postgres PGDATABASE=postgres psql"
-    psql into IOM-db:           kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
+    Login into Pod:             kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash
+    psql into root-db:          kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash -c "PGUSER=postgres PGDATABASE=postgres psql"
+    psql into IOM-db:           kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
     ...
 
     # now use the command, listed for "psql into IOM-db" and
     # enter the select statement interactively
-    kubectl exec --namespace firststeps postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
+    kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash -c "PGUSER=oms_user PGDATABASE=oms_db psql"
     psql (12.9 (Debian 12.9-1.pgdg110+1))
     Type "help" for help.
 
