@@ -90,3 +90,5 @@ Documentation and release information are now part of the source repository. Cur
 
 ## Fixed Bugs
 
+* Error if `CUSTOM_*_DIR` contains .. <!-- 71396 -->
+* Error if `CUSTOM_SHARE_DIR` does not exist <!-- 71396 -->
