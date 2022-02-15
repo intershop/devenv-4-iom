@@ -2,7 +2,7 @@
 
 _devenv-4-iom_ provides all the tools that are required to configure and run an IOM development instance in your local _Kubernetes_ cluster.
 
-The following chapters are providing a detailed view into different aspects of installation and usage of _devenv-4-iom_.
+The following chapters provide a detailed view into different aspects of installation and usage of _devenv-4-iom_.
 - [Installation](doc/00_installation.md)
 - [First steps](doc/01_first_steps.md)
 - [Configuration](doc/02_configuration.md)
@@ -14,7 +14,7 @@ The following chapters are providing a detailed view into different aspects of i
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`.
 
     devenv-cli.sh -h
-    
+
 # Release information 2.0.0
 
 ## Compatibility
@@ -32,7 +32,7 @@ IOM 4.0 has changed the distribution model. Instead of providing IOM in form of 
 To define the (single) IOM image to be used, the new configuration variable `IOM_IMAGE` was added. The two configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` still exist and have to be used, when using _devenv-4-iom_ with IOM prior version 4.
 
 If `IOM_IMAGE` contains a value, the content of `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` will be ignored.
- 
+
 ### Configuration concept has changed for easier integration into projects <!-- 70641 -->
 
 The configuration of _devenv-4-iom_ is now split into two parts, a project-specific one and one for user related configurations. This makes it very easy to maintain the configuration of _devenv-4-iom_ centrally along with the project code. Users should only define configuration variables that they want to override.
@@ -49,7 +49,7 @@ From now on _devenv-4-iom_ uses the configured _Kubernetes_ context in any case.
 
 ### WSL2 is supported now <!-- 60376 -->
 
-WSL2 (Windows Subsystem for Linux 2) can now be used along with _devenv-4-iom_. To do so, the new configuration variable `MOUNT_PREFIX` was added, which has to be set to `/run/desktop/mnt/host` when using WSL2. 
+WSL2 (Windows Subsystem for Linux 2) can now be used along with _devenv-4-iom_. To do so, the new configuration variable `MOUNT_PREFIX` was added, which has to be set to `/run/desktop/mnt/host` when using WSL2.
 
 ### Usage of SQL-hashes is configurable now <!-- 73739 -->
 
