@@ -101,7 +101,7 @@ _devenv-4-iom_ provides an easy way to setup all these systems and make them wor
 
     devenv-cli.sh create cluster
 
-_Cluster_ in context of _devenv-4-iom_ does not mean a scalable and high available set of IOM servers. Instead, it refers to all the services and infrastructure that is required to run a single IOM server for development purposes.
+_Cluster_ in context of _devenv-4-iom_ does not mean a scalable and high available set of IOM servers. Instead, it refers to all the services and infrastructure that are required to run a single IOM server for development purposes.
 
 The process of cluster creation will take some minutes (between 2 and 10, depending on your hardware). During this time we should take a look at the statuses of the (sub-)systems.
 
