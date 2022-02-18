@@ -12,12 +12,12 @@
 # Prerequisites
 ## devenv-4-iom
 
-_Devenv-4-iom_ is a small package consisting of a shell script, configuration and templates, which helps to realize development tasks along with IOM docker images. This tool has an own life-cycle and does not follow the versioning of IOM. It can be downloaded from Intershops Maven repository by using the following coordinates:
+_Devenv-4-iom_ is a small package consisting of a shell script, configuration and templates, which helps to realize development tasks along with IOM docker images. This tool has an own life-cycle and does not follow the versioning of IOM. It can be downloaded from Intershop's Maven repository by using the following coordinates:
 
 * GroupID: com.intershop.oms
 * ArtifactID: devenv4iom
 * Packaging: tgz
-* Version: 1.1.0.0 (please check Release Notes for latest version of devenv-4-iom)
+* Version: 1.1.0.0 (please check Release Notes for the latest version of devenv-4-iom)
 
 Also see [Public Release Note - Devenv-4-iom 1.1](https://intershop.atlassian.net/wiki/spaces/ENFDEVDOC/pages/1922241153/Public+Release+Note+-+Devenv-4-iom+1.1).
 
@@ -43,7 +43,7 @@ Adapt the tag (version number), if you are using a newer version of IOM. For a f
 
 ## caas2docker
 
-_caas2docker_ is a small package consisting of a shell script and configuration, which helps to create customized IOM project-images. This tool is delivered and labeled with each IOM version. It can be downloaded from Intershops Maven repository by using the following coordinates:
+_caas2docker_ is a small package consisting of a shell script and configuration, which helps to create customized IOM project images. This tool is delivered and labeled with each IOM version. It can be downloaded from Intershop's Maven repository by using the following coordinates:
 
 * GroupID: com.intershop.oms
 * ArtifactID: caas2docker
@@ -61,4 +61,3 @@ _caas2docker_ is a small package consisting of a shell script and configuration,
 # [Log Messages](05_log_messages.md)
 
 # [Troubleshooting](06_troubleshooting.md)
-
