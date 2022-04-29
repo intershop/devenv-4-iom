@@ -29,7 +29,7 @@ At the time of writing, _devenv-4-iom 2.0.0_ is compatible with all IOM versions
 
 ### Support for Single Image Distribution of IOM <!-- 71327 -->
 
-IOM 4.0 has changed the distribution model. Instead of providing IOM in form of two _Docker_ images (_iom-app_, _iom-config_), IOM 4.0 now consists of a single image only (plus the _iom-dbaccout_ image, which is not directly part of the IOM release).
+IOM 4.0 has changed the distribution model. Instead of providing IOM in form of two _Docker_ images (_iom-app_, _iom-config_), IOM 4.0 now consists of a single image only (plus the _iom-dbaccount_ image, which is not directly part of the IOM release).
 
 To define the (single) IOM image to be used, the new configuration variable `IOM_IMAGE` was added. The two configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` still exist and must be used when using _devenv-4-iom_ with IOM prior version 4.
 
