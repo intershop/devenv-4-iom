@@ -3687,6 +3687,22 @@ DEVENV_DIR="$(realpath "$(dirname "$BASH_SOURCE")/..")"
 # get template variables
 . $DEVENV_DIR/bin/template-variables || exit 1
 
+#-------------------------------------------------------------------------------
+# Check master-label on node and add it, if not already present.
+# Do it all within a sub-shell, to not poison the environment with temporarily
+# used variables.
+(
+    MASTER_NODE=$(kubectl get nodes -lnode-role.kubernetes.io/master --context="$KUBERNETES_CONTEXT" -o jsonpath={.items[*].metadata.name})
+    if [ -z "$MASTER_NODE" ]; then
+        # get name of first node and apply the master label
+        NODE=$(kubectl get nodes --context="$KUBERNETES_CONTEXT" -o jsonpath={.items[0].metadata.name})
+        kubectl label nodes $NODE node-role.kubernetes.io/master=master --context="$KUBERNETES_CONTEXT"
+    fi
+) || {
+    log_msg ERROR "unable to apply master label on node" < /dev/null
+    exit 1
+}
+
 ################################################################################
 # read command line arguments
 ################################################################################
