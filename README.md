@@ -100,3 +100,5 @@ Documentation and release communication are now part of the source repository. C
 * Error if `CUSTOM_*_DIR` contains .. <!-- 71396 -->
 * Error if `CUSTOM_SHARE_DIR` does not exist <!-- 71396 -->
 * Error executing "apply sql-config" when IOM image is provided by a private Docker-registry <!-- 74659 -->
+* Error using persistent storage with current version of Docker-Desktop <!-- 77223 -->
+* Replaced outdated documentation references <!-- 77268 -->
