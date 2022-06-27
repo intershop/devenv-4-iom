@@ -105,7 +105,7 @@ It is possible to define aliases for existing top-level commands by setting the 
 * Aliases must consist of characters and '-' only. Any other characters are ignored.
 * If more then alias should be defined for a command, they have to be separated with ','.
 
-Please note, that the *ALIASES_\**-properties not displayed by common commands (*info config*, *get config*) if they are empty.
+Please note, that the *ALIASES_\**-properties are not displayed by common commands (*info config*, *get config*) if they are empty.
 
 ### Config properties to define aliases for top-level commands
 
