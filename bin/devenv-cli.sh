@@ -2125,7 +2125,9 @@ Properties:
 $($DEVENV_DIR/bin/template_engine.sh \
     --template="$DEVENV_DIR/templates/config.properties.template" \
     --config="$CONFIG_FILES" \
-    --project-dir="$PROJECT_DIR" | grep -v '^[ \t]*#' | grep -v '^[ \t]*$')
+    --project-dir="$PROJECT_DIR" | 
+  grep -v '^[ \t]*#' | grep -v '^[ \t]*$' |
+  grep -v '^ALIASES_[A-Z_]*=[ \t]*$')
 --------------------------------------------------------------------------------
 EOF
     fi
@@ -3092,16 +3094,19 @@ get-config() {
     fi
 
     if [ "$SUCCESS" = 'true' ]; then
+        set -o pipefail
         if [ -z "$CONFIG_FILES" ]; then
             log_msg WARN "get-config: no configuration given, using default values instead." < /dev/null
             "$DEVENV_DIR/bin/template_engine.sh" \
                 --project-dir="$PROJECT_DIR" \
-                --template="$DEVENV_DIR/templates/config.properties.template" 2> "$TMP_ERR"
+                --template="$DEVENV_DIR/templates/config.properties.template" 2> "$TMP_ERR" |
+                grep -v '^ALIASES_[A-Z_]*=[ \t]*$'
         else
             "$DEVENV_DIR/bin/template_engine.sh" \
                 --template="$DEVENV_DIR/templates/config.properties.template" \
                 --config="$CONFIG_FILES" \
-                --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
+                --project-dir="$PROJECT_DIR" 2> "$TMP_ERR" |
+                grep -v '^ALIASES_[A-Z_]*=[ \t]*$'
         fi
         if [ $? -ne 0 ]; then
             log_msg ERROR "get-config: error writing configuration." < "$TMP_ERR"
@@ -3109,6 +3114,7 @@ get-config() {
         else
             log_msg INFO "get-config: configuration successfully written." < /dev/null
         fi
+        set +o pipefail
     fi
 
     rm -f "$TMP_ERR"
@@ -3758,18 +3764,12 @@ shift
 # handle 2. level of command line arguments
 LEVEL1=
 if [ "$LEVEL0" = "info" ]; then
-    LEVEL1=$(isCommand "$1" i  iom                                ||
-             isCommand "$1" p  postgres                           ||
-             isCommand "$1" m  mailserver                         ||
-             isCommand "$1" s  storage                            ||
-             isCommand "$1" cl cluster                            ||
-             isCommand "$1" co config                             ||
-             isAlias   "$1" "$ALIASES_INFO_IOM"        iom        ||
-             isAlias   "$1" "$ALIASES_INFO_POSTGRES"   postgres   ||
-             isAlias   "$1" "$ALIASES_INFO_MAILSERVER" mailserver ||
-             isAlias   "$1" "$ALIASES_INFO_STORAGE"    storage    ||
-             isAlias   "$1" "$ALIASES_INFO_CLUSTER"    cluster    ||
-             isAlias   "$1" "$ALIASES_INFO_CONFIG"     config)    ||
+    LEVEL1=$(isCommand "$1" i  iom        ||
+             isCommand "$1" p  postgres   ||
+             isCommand "$1" m  mailserver ||
+             isCommand "$1" s  storage    ||
+             isCommand "$1" cl cluster    ||
+             isCommand "$1" co config)    ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-info
             exit 0
@@ -3778,18 +3778,12 @@ if [ "$LEVEL0" = "info" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = "create" ]; then
-    LEVEL1=$(isCommand "$1" s storage                               ||
-             isCommand "$1" n namespace                             ||
-             isCommand "$1" m mailserver                            ||
-             isCommand "$1" p postgres                              ||
-             isCommand "$1" i iom                                   ||
-             isCommand "$1" c cluster                               ||
-             isAlias   "$1" "$ALIASES_CREATE_STORAGE"    storage    ||
-             isAlias   "$1" "$ALIASES_CREATE_NAMESPACE"  namespace  ||
-             isAlias   "$1" "$ALIASES_CREATE_MAILSERVER" mailserver ||
-             isAlias   "$1" "$ALIASES_CREATE_POSTGRES"   postgres   ||
-             isAlias   "$1" "$ALIASES_CREATE_IOM"        iom        ||
-             isAlias   "$1" "$ALIASES_CREATE_CLUSTER"    cluster)   ||
+    LEVEL1=$(isCommand "$1" s storage    ||
+             isCommand "$1" n namespace  ||
+             isCommand "$1" m mailserver ||
+             isCommand "$1" p postgres   ||
+             isCommand "$1" i iom        ||
+             isCommand "$1" c cluster)   ||
         if [ "$1" = '--help' -o "--help" = '-h' ]; then
             help-create
             exit 0
@@ -3798,18 +3792,12 @@ elif [ "$LEVEL0" = "create" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = "delete" ]; then
-    LEVEL1=$(isCommand "$1" s storage                               ||
-             isCommand "$1" n namespace                             ||
-             isCommand "$1" m mailserver                            ||
-             isCommand "$1" p postgres                              ||
-             isCommand "$1" i iom                                   ||
-             isCommand "$1" c cluster                               ||
-             isAlias   "$1" "$ALIASES_DELETE_STORAGE"    storage    ||
-             isAlias   "$1" "$ALIASES_DELETE_NAMESPACE"  namespace  ||
-             isAlias   "$1" "$ALIASES_DELETE_MAILSERVER" mailserver ||
-             isAlias   "$1" "$ALIASES_DELETE_POSTGRES"   postgres   ||
-             isAlias   "$1" "$ALIASES_DELETE_IOM"        iom        ||
-             isAlias   "$1" "$ALIASES_DELETE_CLUSTER"    cluster)   ||
+    LEVEL1=$(isCommand "$1" s storage    ||
+             isCommand "$1" n namespace  ||
+             isCommand "$1" m mailserver ||
+             isCommand "$1" p postgres   ||
+             isCommand "$1" i iom        ||
+             isCommand "$1" c cluster)   ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-delete
             exit 0
@@ -3818,20 +3806,13 @@ elif [ "$LEVEL0" = "delete" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = "apply" ]; then
-    LEVEL1=$(isCommand "$1" de    deployment                              ||
-             isCommand "$1" m     mail-templates                          ||
-             isCommand "$1" x     xsl-templates                           ||
-             isCommand "$1" sql-s sql-scripts                             ||
-             isCommand "$1" sql-c sql-config                              ||
-             isCommand "$1" j     json-config                             ||
-             isCommand "$1" db    dbmigrate                               ||
-             isAlias   "$1" "$ALIASES_APPLY_DEPLOYMENT"    deployment     ||
-             isAlias   "$1" "$ALIASES_APPLY_MAILTEMPLATES" mail-templates ||
-             isAlias   "$1" "$ALIASES_APPLY_XSLTEMPLATES"  xsl-templates  ||
-             isAlias   "$1" "$ALIASES_APPLY_SQLSCRIPTS"    sql-scripts    ||
-             isAlias   "$1" "$ALIASES_APPLY_SQLCONFIG"     sql-config     ||
-             isAlias   "$1" "$ALIASES_APPLY_JSONCONFIG"    json-config    ||
-             isAlias   "$1" "$ALIASES_APPLY_DBMIGRATE"     dbmigrate)     ||
+    LEVEL1=$(isCommand "$1" de    deployment     ||
+             isCommand "$1" m     mail-templates ||
+             isCommand "$1" x     xsl-templates  ||
+             isCommand "$1" sql-s sql-scripts    ||
+             isCommand "$1" sql-c sql-config     ||
+             isCommand "$1" j     json-config    ||
+             isCommand "$1" db    dbmigrate)     ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-apply
             exit 0
@@ -3840,10 +3821,8 @@ elif [ "$LEVEL0" = "apply" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = "dump" ]; then
-    LEVEL1=$(isCommand "$1" c create                      ||
-             isCommand "$1" l load                        ||
-             isAlias   "$1" "$ALIASES_DUMP_CREATE" create ||
-             isAlias   "$1" "$ALIASES_DUMP_LOAD"   load)  || 
+    LEVEL1=$(isCommand "$1" c create ||
+             isCommand "$1" l load)  ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-dump
             exit 0
@@ -3852,14 +3831,10 @@ elif [ "$LEVEL0" = "dump" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = 'get' ]; then
-    LEVEL1=$(isCommand "$1" c config                             ||
-             isCommand "$1" g geb-props                          ||
-             isCommand "$1" w ws-props                           ||
-             isCommand "$1" s soap-props                         ||
-             isAlias   "$1" "$ALIASES_GET_CONFIG"    config      ||
-             isAlias   "$1" "$ALIASES_GET_GEBPROPS"  geb-props   ||
-             isAlias   "$1" "$ALIASES_GET_WSPROPS"   ws-props    ||
-             isAlias   "$1" "$ALIASES_GET_SOAPPROPS" soap-props) ||
+    LEVEL1=$(isCommand "$1" c  config      ||
+             isCommand "$1" g  geb-props   ||
+             isCommand "$1" w  ws-props    ||
+             isCommand "$1" s  soap-props) ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-get
             exit 0
@@ -3868,16 +3843,11 @@ elif [ "$LEVEL0" = 'get' ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = 'log' ]; then
-    LEVEL1=$(isCommand "$1" d  dbaccount                       ||
-             isCommand "$1" c  config                          ||
-             isCommand "$1" i  iom                             ||
-             isCommand "$1" ap app                             ||
-             isCommand "$1" ac access                          ||
-             isAlias   "$1" "$ALIASES_LOG_DBACCOUNT" dbaccount ||
-             isAlias   "$1" "$ALIASES_LOG_CONFIG"    config    ||
-             isAlias   "$1" "$ALIASES_LOG_IOM"       iom       ||
-             isAlias   "$1" "$ALIASES_LOG_APP"       app       ||
-             isAlias   "$1" "$ALIASES_LOG_ACCESS"    access)   ||
+    LEVEL1=$(isCommand "$1" d  dbaccount ||
+             isCommand "$1" c  config    ||
+             isCommand "$1" i  iom       ||
+             isCommand "$1" ap app       ||
+             isCommand "$1" ac access)   ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-log
             exit 0

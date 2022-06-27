@@ -96,6 +96,27 @@ Different IOM installations are perfectly isolated by different namespaces on _K
 
 _devenv-4-iom_ provides a simple mechanism to avoid port collisions. The configuration variable `INDEX` controls the port usage when providing services at OS level. Just make sure that every IOM configuration uses a different value for `INDEX`. After changing the `INDEX` value, you have to delete and create the cluster (see section [Change Configuration Values](#change_config)).
 
+## Define aliases for commands
+
+It is possible to define aliases for existing top-level commands by setting the configuration properties listed below. These aliases have to match some conditions and they also have some restrictions:
+
+* Aliases are evaluated only, if no command could be identified at all. Hence, it is impossible to redefine existing commands. The same is true, if you are defining aliases that are sharing the prefix with an existing command. Also in this case, the existing command will have precedence, if the user is entering the prefix only and not the full command.
+* If you define aliases, that share a common prefix, the first alias with this prefix will win. Order of aliases is the same as provided by the default properties file.
+* Aliases must consist of characters and '-' only. Any other characters are ignored.
+* If more then alias should be defined for a command, they have to be separated with ','.
+
+Please note, that the *ALIASES_\**-properties not displayed by common commands (*info config*, *get config*) if they are empty.
+
+### Config properties to define aliases for top-level commands
+
+* *ALIASES_INFO*
+* *ALIASES_CREATE*
+* *ALIASES_DELETE*
+* *ALIASES_APPLY*
+* *ALIASES_DUMP*
+* *ALIASES_GET*
+* *ALIASES_LOG*
+
 ## Migrate a Configuration After Updating _devenv-4-iom_
 
 After updating _devenv-4-iom_, the content of the current configuration file has to be updated too. The new version of _devenv-4-iom_ might bring a new template for configuration files, which may contain new properties or improved comments. You have to create a new configuration file based on this template, which is filled with your current configuration. To do so, just create a new project-specific configuration file. Make sure your current project configuration is used during this process, but not your user-specific configuration (see section [Reset Project Configuration Partially](#reset_config_partially)).
