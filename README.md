@@ -29,7 +29,7 @@ At the time of writing, _devenv-4-iom 2.1.0_ is compatible with all IOM versions
 
 ### Support for command aliases <!-- 77686 -->
 
-It is now possible to define custom aliases for each of the existing commands. After migration of existing properties file (see [Migrate a Configuration After Updating devenv-4-iom](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom), the new properties are available within the properties file along with a description of further conditions and restrictions.
+It is now possible to define custom aliases for each of the existing commands. After migration of existing properties file (see [Migrate a Configuration After Updating devenv-4-iom](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom)), the new *ALIASES_\**-properties are available within the properties file along with a description of further conditions and restrictions.
 
 # Release Information 2.0.5
 
