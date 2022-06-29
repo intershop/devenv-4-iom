@@ -155,7 +155,7 @@ _devenv_cli() {
                 COMPREPLY=( $(compgen -W 'storage namespace mailserver postgres iom cluster -h --help' -- $cur) )
                 ;;
             apply)
-                COMPREPLY=( $(compgen -W 'deployment mail-templates xsl-templates sql-scripts sql-config json-config dbmigrate -h --help' -- $cur))
+                COMPREPLY=( $(compgen -W 'deployment mail-templates xsl-templates sql-scripts sql-config json-config dbmigrate -h --help' -- $cur) )
                 ;;
             dump)
                 COMPREPLY=( $(compgen -W 'create load -h --help' -- $cur) )
