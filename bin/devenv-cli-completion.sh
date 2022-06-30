@@ -69,53 +69,54 @@ _devenv_cli() {
     if [ ! -z "$sub_cmd" ]; then
         case "$cmd" in
             info)
-                sub_cmd=$(_devenv_is_command $sub_cmd i     iom            ||
-                          _devenv_is_command $sub_cmd p     postgres       ||
-                          _devenv_is_command $sub_cmd m     mailserver     ||
-                          _devenv_is_command $sub_cmd s     storage        ||
-                          _devenv_is_command $sub_cmd cl    cluster        ||
+                sub_cmd=$(_devenv_is_command $sub_cmd i     iom              ||
+                          _devenv_is_command $sub_cmd p     postgres         ||
+                          _devenv_is_command $sub_cmd m     mailserver       ||
+                          _devenv_is_command $sub_cmd s     storage          ||
+                          _devenv_is_command $sub_cmd cl    cluster          ||
                           _devenv_is_command $sub_cmd co    config)
                 ;;
             create)
-                sub_cmd=$(_devenv_is_command $sub_cmd s     storage        ||
-                          _devenv_is_command $sub_cmd n     namespace      ||
-                          _devenv_is_command $sub_cmd m     mailserver     ||
-                          _devenv_is_command $sub_cmd p     postgres       ||
-                          _devenv_is_command $sub_cmd i     iom            ||
+                sub_cmd=$(_devenv_is_command $sub_cmd s     storage          ||
+                          _devenv_is_command $sub_cmd n     namespace        ||
+                          _devenv_is_command $sub_cmd m     mailserver       ||
+                          _devenv_is_command $sub_cmd p     postgres         ||
+                          _devenv_is_command $sub_cmd i     iom              ||
                           _devenv_is_command $sub_cmd c     cluster)
                 ;;
             delete)
-                sub_cmd=$(_devenv_is_command $sub_cmd s     storage        ||
-                          _devenv_is_command $sub_cmd n     namespace      ||
-                          _devenv_is_command $sub_cmd m     mailserver     ||
-                          _devenv_is_command $sub_cmd p     postgres       ||
-                          _devenv_is_command $sub_cmd i     iom            ||
+                sub_cmd=$(_devenv_is_command $sub_cmd s     storage          ||
+                          _devenv_is_command $sub_cmd n     namespace        ||
+                          _devenv_is_command $sub_cmd m     mailserver       ||
+                          _devenv_is_command $sub_cmd p     postgres         ||
+                          _devenv_is_command $sub_cmd i     iom              ||
                           _devenv_is_command $sub_cmd c     cluster)
                 ;;
             apply)
-                sub_cmd=$(_devenv_is_command $sub_cmd de    deployment     ||
-                          _devenv_is_command $sub_cmd m     mail-templates ||
-                          _devenv_is_command $sub_cmd x     xsl-templates  ||
-                          _devenv_is_command $sub_cmd sql-s sql-scripts    ||
-                          _devenv_is_command $sub_cmd sql-c sql-config     ||
-                          _devenv_is_command $sub_cmd j     json-config    ||
+                sub_cmd=$(_devenv_is_command $sub_cmd de    deployment       ||
+                          _devenv_is_command $sub_cmd m     mail-templates   ||
+                          _devenv_is_command $sub_cmd x     xsl-templates    ||
+                          _devenv_is_command $sub_cmd sql-s sql-scripts      ||
+                          _devenv_is_command $sub_cmd sql-c sql-config       ||
+                          _devenv_is_command $sub_cmd j     json-config      ||
                           _devenv_is_command $sub_cmd db    dbmigrate)
                 ;;
             dump)
-                sub_cmd=$(_devenv_is_command $sub_cmd c     create         ||
+                sub_cmd=$(_devenv_is_command $sub_cmd c     create           ||
                           _devenv_is_command $sub_cmd l     load)
                 ;;
             get)
-                sub_cmd=$(_devenv_is_command $sub_cmd c     config         ||
-                          _devenv_is_command $sub_cmd g     geb-props      ||
-                          _devenv_is_command $sub_cmd w     ws-props       ||
-                          _devenv_is_command $sub_cmd s     soap-props)
+                sub_cmd=$(_devenv_is_command $sub_cmd c     config           ||
+                          _devenv_is_command $sub_cmd g     geb-props        ||
+                          _devenv_is_command $sub_cmd w     ws-props         ||
+                          _devenv_is_command $sub_cmd s     soap-props       ||
+                          _devenv_is_command $sub_cmd b     bash-completion) 
                 ;;
             log)
-                sub_cmd=$(_devenv_is_command $sub_cmd d     dbaccount      ||
-                          _devenv_is_command $sub_cmd c     config         ||
-                          _devenv_is_command $sub_cmd i     iom            ||
-                          _devenv_is_command $sub_cmd ap    app            ||
+                sub_cmd=$(_devenv_is_command $sub_cmd d     dbaccount        ||
+                          _devenv_is_command $sub_cmd c     config           ||
+                          _devenv_is_command $sub_cmd i     iom              ||
+                          _devenv_is_command $sub_cmd ap    app              ||
                           _devenv_is_command $sub_cmd ac    access)
                 ;;
         esac
@@ -143,7 +144,7 @@ _devenv_cli() {
            \( "$COMP_CWORD" -eq 3 -a ! -z "$property_file" \) ]; then
         case "$cmd" in
             get)
-                COMPREPLY=( $(compgen -W 'config geb-probs ws-probs soap-probs -h --help' -- $cur) )
+                COMPREPLY=( $(compgen -W 'config geb-probs ws-probs soap-probs bash-completion -h --help' -- $cur) )
                 ;;
             info)
                 COMPREPLY=( $(compgen -W 'iom postgres mailserver storage cluster config -h --help' -- $cur) )
