@@ -1361,7 +1361,7 @@ OVERVIEW
     This method is not working on Mac OS X, alternatively the following
     command can be used:
 
-      eval "$($ME get bash-completion)"
+      eval "\$($ME get bash-completion)"
 
 CONFIG-FILE
 $(msg_config_file 4)
