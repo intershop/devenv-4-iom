@@ -77,7 +77,7 @@ source <(devenv-cli.sh get bash-completion)
 
 This method is not working on Mac OS X, alternatively the following command can be used:
 ```sh
-eval "$($ME get bash-completion)"
+eval "$(devenv-cli.sh get bash-completion)"
 ```
 
 ---

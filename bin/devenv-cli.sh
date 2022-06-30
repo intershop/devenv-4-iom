@@ -1352,7 +1352,7 @@ SYNOPSIS
 
 OVERVIEW
     Writes bash completion script to stdout. The intention of this command is
-    to provide an easy integration of bash completion for command and arguments
+    to provide an easy integration of bash completion for commands and arguments
     of $ME.
     To enable bash-completion, add the following line to ~/.bashrc:
 
