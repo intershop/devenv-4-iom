@@ -2282,6 +2282,7 @@ create-iom() {
                 log_msg INFO "create-iom: successfully copied secret $IMAGE_PULL_SECRET from default namespace" < "$TMP_OUT"
             fi
         fi
+        # create IOM deployment
         if [ "$SUCCESS" = 'true' ]; then
             "$DEVENV_DIR/bin/template_engine.sh" \
                 --template="$DEVENV_DIR/templates/$IomTemplate" \
@@ -2292,6 +2293,19 @@ create-iom() {
                 SUCCESS=false
             else
                 log_msg INFO "create-iom: successfully created iom" < "$TMP_OUT"
+            fi
+        fi
+        # create file testframework-config.user.yaml
+        if [ "$SUCCESS" = 'true' -a "$CREATE_TEST_CONFIG" = 'true' ]; then
+            "$DEVENV_DIR/bin/template_engine.sh" \
+                --template="$DEVENV_DIR/templates/testframework-config.user.yaml.template" \
+                --config="$CONFIG_FILES" \
+                --project-dir="$PROJECT_DIR" > "$PROJECT_DIR/testframework-config.user.yaml" 2> "$TMP_ERR"
+            if [ $? -ne 0 ]; then
+                log_msg ERROR "create-iom: error creating file $PROJECT_DIR/testframework-config.user.yaml" < "$TMP_ERROR"
+                SUCCESS=false
+            else
+                log_msg INFO "create-iom: successfully created file $PROJECT_DIR/testframework-config.user.yaml" < /dev/null
             fi
         fi
     fi
@@ -2463,7 +2477,7 @@ delete-iom() {
     else
         log_msg INFO "delete-iom: nothing to do" < /dev/null
     fi
-    rm -f "$TMP_ERR" "$TMP_OUT"
+    rm -f "$TMP_ERR" "$TMP_OUT" "$PROJECT_DIR/testframework-config.user.yaml"
     [ "$SUCCESS" = 'true' ]
 }
 

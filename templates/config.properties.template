@@ -255,6 +255,20 @@ CUSTOM_SQLCONF_DIR="${CUSTOM_SQLCONF_DIR}"
 CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 
 ################################################################################
+# Test related settings
+################################################################################
+
+# User name and password of the user that will be used by the testframework
+# to execute the tests.
+TEST_USER_NAME="${TEST_USER_NAME}"
+TEST_USER_PASSWORD="${TEST_USER_PASSWORD}"
+
+# When starting the IOM application server and this property is set to true,
+# a file testframework-config.user.yaml will be created in the directory holding
+# the current devenv configuration. 
+CREATE_TEST_CONFIG=true
+
+################################################################################
 # Access to developer VM
 ################################################################################
 
