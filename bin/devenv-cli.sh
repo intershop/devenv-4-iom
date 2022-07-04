@@ -1737,6 +1737,32 @@ kube_resource_exists() (
 )
 
 #-------------------------------------------------------------------------------
+# kubernetes pod is starting/running?
+# Terminating pods still have the state running. Terminating pods can be
+# identified by checking deletingTimestamp. If this field exists, it is
+# terminating.
+# $1: name
+# ->: true|false
+#-------------------------------------------------------------------------------
+kube_pod_started() (
+    APP_NAME=$1
+
+    PODS=( $(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l app=$APP_NAME -o jsonpath='{.items[*].metadata.name}' 2> /dev/null) )
+
+    for POD in ${PODS[@]}; do
+        # array with Phase at position 0 and deletionTimestamp at position 1
+        POD_STATUS=( $(kubectl get pod $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -o jsonpath='{.status.phase} {.metadata.deletionTimestamp}' 2> /dev/null) )
+        PHASE=${POD_STATUS[0]}
+        DELETION_TIMESTAMP=${POD_STATUS[1]}
+        if [ "$PHASE" = 'Running' -o "$PHASE" = 'Pending' ] && [ -z "$DELETION_TIMESTAMP" ]; then
+            STATUS='Started'
+            break
+        fi
+    done
+    [ "$STATUS" = 'Started' ]
+)
+
+#-------------------------------------------------------------------------------
 # $1: timestamp
 # ->  seconds
 #-------------------------------------------------------------------------------
@@ -2192,7 +2218,7 @@ create-mailserver() {
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "create-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
-    else
+    elif ! kube_pod_started mailhog; then
         "$DEVENV_DIR/bin/template_engine.sh" \
             --template="$DEVENV_DIR/templates/mailhog.yml.template" \
             --config="$CONFIG_FILES" \
@@ -2236,7 +2262,7 @@ create-postgres() {
             log_msg INFO "create-postges: no need to link docker volume to dabase storage" < /dev/null
         fi
         if [ "$SUCCESS" = 'true' ]; then
-            if ! kube_resource_exists pods postgres || ! kube_resource_exists services postgres-service; then
+            if ! kube_pod_started postgres; then
                 # start postgres pod/service
                 "$DEVENV_DIR/bin/template_engine.sh" \
                     --template="$DEVENV_DIR/templates/postgres.yml.template" \
@@ -2249,7 +2275,7 @@ create-postgres() {
                     log_msg INFO "create-postgres: successfully created postgres" < "$TMP_OUT"
                 fi
             else
-                log_msg INFO "create-postgres: pod and service already exist" < /dev/null
+                log_msg INFO "create-postgres: nothing to do" < /dev/null
             fi
         fi
     else
@@ -2284,15 +2310,19 @@ create-iom() {
         fi
         # create IOM deployment
         if [ "$SUCCESS" = 'true' ]; then
-            "$DEVENV_DIR/bin/template_engine.sh" \
-                --template="$DEVENV_DIR/templates/$IomTemplate" \
-                --config="$CONFIG_FILES" \
-                --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_msg ERROR "create-iom: error creating iom" < "$TMP_ERR"
-                SUCCESS=false
+            if ! kube_pod_started iom; then
+                "$DEVENV_DIR/bin/template_engine.sh" \
+                    --template="$DEVENV_DIR/templates/$IomTemplate" \
+                    --config="$CONFIG_FILES" \
+                    --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_msg ERROR "create-iom: error creating iom" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    log_msg INFO "create-iom: successfully created iom" < "$TMP_OUT"
+                fi
             else
-                log_msg INFO "create-iom: successfully created iom" < "$TMP_OUT"
+                log_msg INFO "create-iom: nothing to do" < /dev/null
             fi
         fi
         # create file testframework-config.user.yaml
