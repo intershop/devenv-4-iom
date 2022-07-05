@@ -30,6 +30,10 @@ At the time of writing, _devenv-4-iom 2.1.0_ is compatible with all IOM versions
 
 _devenv-4-iom_ now supports bash completion. In order to use this new feature, the according completion script has to be installed, see [documentation of installation](doc/00_installation.md).
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 99bb238 (feat: updated docu for test-framework integration (#75996))
 # Release Information 2.1.0
 
 ## Compatibility
