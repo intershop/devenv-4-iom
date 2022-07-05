@@ -1219,10 +1219,11 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 RESOURCE
-    config|co*         get configuration file
+    config|c*          get configuration file
     ws-props|w*        get ws properties
     geb-props|g*       get geb properties
     soap-props|s*      get soap properties
+    bash-completion|b* get bash completion script
 
 Run '$ME [CONFIG-FILE] get RESOURCE --help|-h' for more information on a command.
 EOF
@@ -1337,6 +1338,33 @@ BACKGROUND
       --template="$DEVENV_DIR/templates/soap.properties.template" \\
       --config="$CONFIG_FILES" \\
       --project-dir="$PROJECT_DIR"
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-get-bash-completion() {
+    ME=$(basename "$0")
+    cat <<EOF
+writes bash completion script to stdout
+
+SYNOPSIS
+    $ME [CONFIG-FILE] get bash-completion
+
+OVERVIEW
+    Writes bash completion script to stdout. The intention of this command is
+    to provide an easy integration of bash completion for commands and arguments
+    of $ME.
+    To enable bash-completion, add the following line to ~/.bashrc:
+
+      source <($ME get bash-completion)
+
+    This method is not working on Mac OS X, alternatively the following
+    command can be used:
+
+      eval "\$($ME get bash-completion)"
+
+CONFIG-FILE
+$(msg_config_file 4)
 EOF
 }
 
@@ -3234,6 +3262,13 @@ get-soap-props() {
     [ "$SUCCESS" = 'true' ]
 }
 
+#-------------------------------------------------------------------------------
+# get bash completion script
+#-------------------------------------------------------------------------------
+get-bash-completion() {
+    cat "$DEVENV_DIR/bin/devenv-cli-completion.sh"
+}
+
 ################################################################################
 # functions, implementing the log handler
 ################################################################################
@@ -3840,10 +3875,11 @@ elif [ "$LEVEL0" = "dump" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = 'get' ]; then
-    LEVEL1=$(isCommand "$1" co config      ||
-             isCommand "$1" g  geb-props   ||
-             isCommand "$1" w  ws-props    ||
-             isCommand "$1" s  soap-props) ||
+    LEVEL1=$(isCommand "$1" c config           ||
+             isCommand "$1" g geb-props        ||
+             isCommand "$1" w ws-props         ||
+             isCommand "$1" s soap-props       ||
+             isCommand "$1" b bash-completion) ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-get
             exit 0
