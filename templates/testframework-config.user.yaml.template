@@ -5,8 +5,6 @@ testframework:
       host: "${HostIom}"
       port: ${PORT_IOM_SERVICE}
       protocol: "http"
-    username: "${TEST_USER_NAME}"
-    password: "${TEST_USER_PASSWORD}"
   database:
     default:
       version: "V1"

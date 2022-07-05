@@ -33,10 +33,7 @@ _devenv-4-iom_ now supports bash completion. In order to use this new feature, t
 
 ### Support for IOM Test-Framework <!-- 75996 -->
 
-When starting the IOM application server (`create iom`), a file _testframework-config.user.yaml_ is created within the project root directory, containing all necessary information to run local tests based on [IOM Test-Framework](https://github.com/intershop/iom-test-framework). Along with support for this file, three new configuration properties were added:
-* _TEST_USER_NAME_ - Name of the user to execute tests.
-* _TEST_USER_PASSWORD_ - Password of user, that executes tests.
-* _CREATE_TEST_CONFIG_ - Enables/disables the creation of _testframework-config.user.yaml_.
+When starting the IOM application server (`create iom`), a file _testframework-config.user.yaml_ is created within the project root directory, containing all necessary information to run local tests based on [IOM Test-Framework](https://github.com/intershop/iom-test-framework). Along with support for this file, one new configuration properties was added: _CREATE_TEST_CONFIG_, which controls the creation of the configuration file.
 
 # Release Information 2.0.5
 
