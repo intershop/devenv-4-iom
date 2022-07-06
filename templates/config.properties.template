@@ -261,7 +261,7 @@ CUSTOM_JSONCONF_DIR="${CUSTOM_JSONCONF_DIR}"
 # When starting the IOM application server and this property is set to true,
 # a file testframework-config.user.yaml will be created in the directory holding
 # the current devenv configuration. 
-CREATE_TEST_CONFIG=true
+CREATE_TEST_CONFIG="${CREATE_TEST_CONFIG}"
 
 ################################################################################
 # Access to developer VM
