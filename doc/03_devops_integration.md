@@ -1,6 +1,6 @@
 # Azure DevOps Integration
 
-!(DevOps-Integration-Overview.png)
+![DevOps Integration Overview](DevOps-Integration-Overview.png)
 
 ---
 [< Configuration](02_configuration.md) | [^ Index](../README.md) | [Development Process >](04_operations.md)
