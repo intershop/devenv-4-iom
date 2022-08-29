@@ -4,6 +4,8 @@
 
 The figure below shows the relations between *devenv-4-iom*, an IOM-project and the *Azure DevOps Environment*, which is part of the *Intershop Commerce Platform*. The *Azure DevOps Environment* is providing build-artifacts (by *IOM Maven Repo*) and the IOM Docker-images (by *ISH Docker Repo*). Both are required to develop IOM-projects.
 
+Additionally, the *Azure DevOps Environment* provides project specific Docker imager (by *Project Docker Repo*), which are used by *devenv-4-iom* to run IOM project locally.
+
 ![DevOps Integration Overview](DevOps-Integration-Overview.png)
 
 ## Get Access to Maven Repository
