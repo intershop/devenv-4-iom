@@ -2,7 +2,7 @@
 
 ## Overview
 
-The figure below shows the relations between *devenv-4-iom*, an IOM-project and the *Azure DevOps Environment*, which is part of the *Intershop Commerce Platform*. The *Azure DevOps Environment* is providing build-artifacts and the IOM Docker-images. Both are required to develop IOM-projects.
+The figure below shows the relations between *devenv-4-iom*, an IOM-project and the *Azure DevOps Environment*, which is part of the *Intershop Commerce Platform*. The *Azure DevOps Environment* is providing build-artifacts (by *IOM Maven Repo*) and the IOM Docker-images (by *ISH Docker Repo*). Both are required to develop IOM-projects.
 
 ![DevOps Integration Overview](DevOps-Integration-Overview.png)
 
@@ -10,9 +10,9 @@ The figure below shows the relations between *devenv-4-iom*, an IOM-project and 
 
 When creating a new IOM-project, the project will be tied to a certain *Azure DevOps Environment* (see [Documentation of *IOM Project Archetype*](https://github.com/intershop/iom-project-archetype/blob/main/README.md)). 
 
-The URL of the *Maven Repository*, that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) is specific for each *Azure DevOps Environment*. In order to build the IOM-project locally, the local computer needs to have read-access to this Maven Repository.
+The URL of the *Maven Repository*, that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) is specific for each *Azure DevOps Environment*. In order to build the IOM-project locally, the local computer needs to have read-access to this Maven Repository too.
 
-To get access to this Maven Repository, a file *~/.m2/settings.xml* has to be created, which has to contain the credentials for the access to the repository. The *Azure DevOps Environment* provides all the necessary information, to setup *~/.m2/settings.xml*. Just follow these steps:
+To get access to this Maven Repository, a file *~/.m2/settings.xml* has to be created or modified. This file will contain the credentials for the access to the Maven Repository. The *Azure DevOps Environment* provides all the necessary information to setup *~/.m2/settings.xml*. Just follow these steps:
 
 1. Log in to *Azure DevOps Environment*
 2. Open *Artifacts* in menu on the left
@@ -64,21 +64,23 @@ Since the *Project Docker Repository* is a private Docker registry too, a second
 
 If there is no *service principal* at all, Azure Container Registries provide a simple admin-user access. The accoring credentials can be found in be found in *Azure*:
 1. Navigate to *Home*
-2. Open resource of ACR matching the naming pattern: <partner organization name without dash>acr.azurecr.io
+2. Open resource of ACR matching the naming pattern: \<partner organization name without dash\>acr.azurecr.io
 3. Open *Access keys*. Use these credentials for the creation of the new *image pull secret*.
 
 Now create the new Kubernetes secret *project-pull-secret*:
 
     kubectl create secret docker-registry project-pull-secret \
       --context="docker-desktop" \
-      --docker-server=docker.tools.intershop.com \
-      --docker-username='ID of service principal or username from Access keys' \
-      --docker-password='value of service principal of password from Access keys'
+      --docker-server='<partner organization name without dash>acr.azurecr.io' \
+      --docker-username='<ID of service principal or username from Access keys>' \
+      --docker-password='<value of service principal of password from Access keys>'
 
-The new Kubernetes secret has to be added to the property *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
+The new Kubernetes secret has also to be added to property *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
 
     # change into the root directory of IOM project
-    # append ,project-pull-secret to the line beginning with IMAGE_PULL_SECRET=
+    # append ',project-pull-secret' to the line beginning with IMAGE_PULL_SECRET=
+    # the whole line should look like:
+    # IMAGE_PULL_SECRET=intershop-pull-secret,project-pull-secret
     vi project.user.properties
 
 ---
