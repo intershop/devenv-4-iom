@@ -53,15 +53,33 @@ The following command shows how to create the Kubernetes secret *intershop-pull-
 Finally, the name of the newly created Kubernetes secret has to be passed to *devenv-4-iom*. To do so, set the key *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
 
     # change into the root directory of IOM project
-    echo IMAGE_PULL_SECRET=intershop-pull-secret
+    echo IMAGE_PULL_SECRET=intershop-pull-secret >> project.user.properties
 
 ## Get Access to *Project Docker Repository*
 
-When creating a new IOM-project, the project will be tied to a certain *Azure DevOps Environment* (see [Documentation of *IOM Project Archetype*](https://github.com/intershop/iom-project-archetype/blob/main/README.md)). The relation between IOM-project and the *Azure DevOps Environment* is defined by two values, which can be found in the projects *pom.xml*.
+The *Project Docker Repository* contains all project-specific Docker images, which have passed the CI process of the *Azure DevOps Environment*. The Docker images of this repository should be used by *devenv-4-iom* to run local customizations/configurations on top of them.
 
-These are the URL of the *Maven Repository*, that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) and the Name of the IOM Docker Repository (//properties/intershop.docker.repo in *pom.xml*).
+Since the *Project Docker Repository* is a private Docker registry too, a second *image pull secret* has to be created. If there exists an according
+*service principal*, the ID of the service principal can be used for *--docker-username* and the value of the *service principal* can be used for *--docker-password*, when creating the secret.
 
+If there is no *service principal* at all, Azure Container Registries provide a simple admin-user access. The accoring credentials can be found in be found in *Azure*:
+1. Navigate to *Home*
+2. Open resource of ACR matching the naming pattern: <partner organization name without dash>acr.azurecr.io
+3. Open *Access keys*. Use these credentials for the creation of the new *image pull secret*.
 
+Now create the new Kubernetes secret *project-pull-secret*:
+
+    kubectl create secret docker-registry project-pull-secret \
+      --context="docker-desktop" \
+      --docker-server=docker.tools.intershop.com \
+      --docker-username='ID of service principal or username from Access keys' \
+      --docker-password='value of service principal of password from Access keys'
+
+The new Kubernetes secret has to be added to the property *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
+
+    # change into the root directory of IOM project
+    # append ,project-pull-secret to the line beginning with IMAGE_PULL_SECRET=
+    vi project.user.properties
 
 ---
 [< Configuration](02_configuration.md) | [^ Index](../README.md) | [Development Process >](04_operations.md)
