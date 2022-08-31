@@ -61,21 +61,46 @@ Finally, the name of the newly created Kubernetes secret has to be passed to *de
 
 The *Project Docker Repository* contains all project-specific Docker images, which have passed the CI process of the *Azure DevOps Environment*. The Docker images of this repository should be used by *devenv-4-iom* to run local customizations/configurations on top of them.
 
-Since the *Project Docker Repository* is a private Docker registry too, a second *image pull secret* has to be created. If there exists an according
-*service principal*, the ID of the service principal can be used for *--docker-username* and the value of the *service principal* can be used for *--docker-password*, when creating the secret.
+Since the *Project Docker Repository* is a private Docker registry too, a second *image pull secret* has to be created. For this second *image pull secret* an access token is required. 
 
-If there is no *service principal* at all, Azure Container Registries provide a simple admin-user access. The accoring credentials can be found in *Azure*:
-1. Navigate to *Home*
-2. Open resource of ACR matching the naming pattern: \<partner organization name without dash\>acr.azurecr.io
-3. Open *Access keys*. Use these credentials for the creation of the new *image pull secret*.
+### Login into Azure
 
-Now create the new Kubernetes secret *project-pull-secret*:
+    # Use the azure-cli Docker image, to avoid local installation of Azure CLI tools.
+    # See https://docs.microsoft.com/en-us/cli/azure/run-azure-cli-docker
+    docker run -it mcr.microsoft.com/azure-cli
+
+    # Login with your Azure account and the Azure password.
+    az login --username <your Intershop Azure account> --password <your Intershop Azure password>
+
+### Get the name of the *Project Docker Repository* (ACR)
+
+The *Project Docker Repository* (ACR) is named after your (partner) organization, without any dashes. If you are not sure about the correct name of the ACR, you can get a list of all ACRs within your Azure Subscription. In this case, you need to know your Azure Subscription-ID.
+
+    # Execute the command within running azure-cli Docker image
+    # Look for a name, that is matching your (partner) organization. This name has to be
+    # used in subsequent commands.
+    az acr list --subscription <your Azure Subscription-ID> --out table
+
+### Get the access token for the ACR
+
+    # Execute the command within running azure-cli Docker image
+    # Get the token that's required to the Docker Registry of your project.
+    # The output provides also the name of the login-server, which is required by the
+    # following command too.
+    az acr login --name <name of the project's ACR> --expose-token
+
+    # end the azure-cli Docker image
+    exit
+
+### Create the Kubernetes secret *project-pull-secret*:
 
     kubectl create secret docker-registry project-pull-secret \
       --context="docker-desktop" \
-      --docker-server='<partner organization name without dash>acr.azurecr.io' \
-      --docker-username='<ID of service principal or username from Access keys>' \
-      --docker-password='<value of service principal of password from Access keys>'
+      --docker-server='<value of loginServer, see above>' \
+      --docker-username='00000000-0000-0000-0000-000000000000' \
+      --docker-password='<value of accessToken, see above>'
+
+### Add the pull-secret *project-pull-secret* to configuration of *devenv-4-iom*
 
 The new Kubernetes secret has also to be added to property *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
 
