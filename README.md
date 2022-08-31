@@ -17,6 +17,24 @@ If _devenv-4-iom_ is already installed and you are looking for a short overview 
 ```
     devenv-cli.sh -h
 ```
+# Release Information 2.3.0
+
+## Compatibility
+
+At the time of release of _devenv-4-iom_, it is compatible with the latest version of IOM. As long as there is no new release of _devenv-4-iom_, it is ensured, that new releases of IOM are compatible with _devenv-4-iom_. If a new version of IOM requires an update of _devenev-4-iom_, the release notes of IOM will contain an according statement.
+
+At the time of writing, _devenv-4-iom 2.3.0_ is compatible with all IOM versions between 3.0 and 4.1 (inclusive).
+
+## New Features
+
+### Support for multiple image pull secrets <!-- 79173 -->
+
+Property *IMAGE_PULL_SECRET* can now hold a list of image pull secrets. The different secrets have to be separated by comma.
+
+### Documentation of Azure DevOps Integration <!-- 78770 -->
+
+A new chapter was added to the documentation, that describes the integration of _devenv-4-iom_ into *Intershop DevOps Environment*.
+
 # Release Information 2.2.0
 
 ## Compatibility
