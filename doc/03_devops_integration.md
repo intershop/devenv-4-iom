@@ -73,12 +73,12 @@ Since the *Project Docker Repository* is a private Docker registry too, a second
     # See https://docs.microsoft.com/en-us/cli/azure/run-azure-cli-docker
     docker run -it mcr.microsoft.com/azure-cli
 
-    # Login with your Azure account and the Azure password.
+    # Login with your Azure account and your Azure password.
     az login --username <your Intershop Azure account> --password <your Intershop Azure password>
 
-### Get the name of the *Project Docker Repository* (ACR)
+### Get the name of the *Project Docker Repository*
 
-The *Project Docker Repository* (ACR) is named after your (partner) organization, without any dashes. If you are not sure about the correct name of the ACR, you can get a list of all ACRs within your Azure Subscription. In this case, you need to know your Azure Subscription-ID.
+The *Project Docker Repository* is an *Azure Container Registry* (*ACR*). It is named after organization owning the *Azure DevOps Environment*. If you are not sure about the correct name of the ACR, you can get a list of all ACRs within your Azure Subscription. In this case, you need to know your Azure Subscription-ID.
 
     # Execute the command within running azure-cli Docker image
     # Look for a name, that is matching your (partner) organization. This name has to be
