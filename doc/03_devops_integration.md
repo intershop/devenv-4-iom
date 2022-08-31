@@ -80,23 +80,25 @@ Since the *Project Docker Repository* is a private Docker registry too, a second
 
 The *Project Docker Repository* is an *Azure Container Registry* (*ACR*). It is named after organization owning the *Azure DevOps Environment*. If you are not sure about the correct name of the ACR, you can get a list of all ACRs within your Azure Subscription. In this case, you need to know your Azure Subscription-ID.
 
-    # Execute the command within running azure-cli Docker image
-    # Look for a name, that is matching your (partner) organization. This name has to be
+    # Execute the command within running azure-cli Docker container.
+    # Look for a name, that is matching your organization. This name has to be
     # used in subsequent commands.
     az acr list --subscription <your Azure Subscription-ID> --out table
 
 ### Get the access token for the ACR
 
-    # Execute the command within running azure-cli Docker image
-    # Get the token that's required to the Docker Registry of your project.
+    # Execute the command within running azure-cli Docker container.
+    # Get the token that's required to access the Docker Registry of your project.
     # The output provides also the name of the login-server, which is required by the
     # following command too.
-    az acr login --name <name of the project's ACR> --expose-token
+    az acr login --name <name of the project's ACR, see above> --expose-token
 
     # end the azure-cli Docker image
     exit
 
 ### Create the Kubernetes secret *project-pull-secret*
+
+The following commands have to be executed outside the azure-cli Docker container.
 
     kubectl create secret docker-registry project-pull-secret \
       --context="docker-desktop" \
@@ -108,9 +110,9 @@ The *Project Docker Repository* is an *Azure Container Registry* (*ACR*). It is 
 
 The new Kubernetes secret has also to be added to property *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
 
-    # change into the root directory of IOM project
-    # append ',project-pull-secret' to the line beginning with IMAGE_PULL_SECRET=
-    # the whole line should look like:
+    # Change into the root directory of IOM project.
+    # Append ',project-pull-secret' to the line beginning with IMAGE_PULL_SECRET=
+    # The whole line should now look like:
     # IMAGE_PULL_SECRET=intershop-pull-secret,project-pull-secret
     vi devenv.user.properties
 
