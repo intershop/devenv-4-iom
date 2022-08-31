@@ -2,19 +2,19 @@
 
 ## Overview
 
-The figure below shows the relations between *devenv-4-iom*, an IOM-project and the *Azure DevOps Environment*, which is part of the *Intershop Commerce Platform*. The *Azure DevOps Environment* is providing build-artifacts (by *IOM Maven Repo*) and the IOM Docker-images (by *ISH Docker Repo*). Both are required to develop IOM-projects.
+The figure below shows the relations between *devenv-4-iom*, an IOM-project and the *Azure DevOps Environment*, which is part of the *Intershop Commerce Platform*. The *Azure DevOps Environment* is providing build-artifacts (by *IOM Maven Repo*) and the IOM Docker-images (by *ISH Docker Repo*). Both are required by the build process of IOM-projects.
 
 Additionally, the *Azure DevOps Environment* provides project specific Docker images (by *Project Docker Repo*), which are used by *devenv-4-iom* to run the IOM project locally.
 
 ![DevOps Integration Overview](DevOps-Integration-Overview.png)
 
-## Get Access to Maven Repository
+## Get Access to IOM Maven Repository
 
 When creating a new IOM-project, the project will be tied to a certain *Azure DevOps Environment* (see [Documentation of *IOM Project Archetype*](https://github.com/intershop/iom-project-archetype/blob/main/README.md)). 
 
-The URL of the *Maven Repository*, that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) is specific for each *Azure DevOps Environment*. In order to build the IOM-project locally, the local computer needs to have read-access to this Maven Repository too.
+The URL of the *IOM Maven Repository*, that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) is specific for each *Azure DevOps Environment*. In order to build the IOM-project locally, the local computer needs to have read-access to the *IOM Maven Repository* too.
 
-To get access to this Maven Repository, the file *~/.m2/settings.xml* has to be created or modified. This file will contain the credentials for the access to the Maven Repository. The *Azure DevOps Environment* provides all the necessary information to setup *~/.m2/settings.xml*. Just follow these steps:
+To get access to the *IOM Maven Repository*, the file *~/.m2/settings.xml* has to be created or modified, if it already exists. This file will contain the credentials for the access to the *IOM Maven Repository*. The *Azure DevOps Environment* provides all the necessary information to setup *~/.m2/settings.xml*. Just follow these steps:
 
 1. Log in to *Azure DevOps Environment*
 2. Open *Artifacts* in menu on the left
@@ -25,11 +25,13 @@ To get access to this Maven Repository, the file *~/.m2/settings.xml* has to be 
 
 ## Get Access to *Intershop Docker Repository*
 
-The *Intershop Docker Repository* provides the Standard IOM Docker images. These Standard IOM Docker images have two purposes:
+The *Intershop Docker Repository* (*ISH Docker Repo* in the figure above) provides the Standard IOM Docker images. These Standard IOM Docker images have two purposes:
 * The IOM Docker image will be extended by the IOM-project with project specific customizations and configurations. Hence, when building the IOM project locally, read access to the *Intershop Docker Repository* is required.
 * The IOM dbaccount image is required to run the IOM project locally within *devenv-4-iom*. This image serves as an initialization image, that is preparing the database account.
 
 Hence, read access to *Intershop Docker Repository* is required for building the IOM project *and* for running it in *devenv-4-iom*. Both types of usage are requiring different methods to provide this access.
+
+### Get *CLI secret*
 
 In both cases the *CLI secret* is required. To get the *CLI secret*, please follow these steps:
 
@@ -42,6 +44,8 @@ In order to build the IOM project locally, you have to always log in to *docker.
 
     docker login docker.tools.intershop.com
 
+### Create Kubernete secret *intershop-pull-secret*
+
 For running the IOM project in *devenv-4-iom*, an *image pull secret* (Kubernetes secret object) has to be created for *docker.tools.intershop.com*. The *image pull secret* has to be created within the default namespace of Kubernetes and the name of the secret has to be set within the configuration of *devenv-4-iom*.
 
 The following command shows how to create the Kubernetes secret *intershop-pull-secret*:
@@ -50,7 +54,9 @@ The following command shows how to create the Kubernetes secret *intershop-pull-
       --context="docker-desktop" \
       --docker-server=docker.tools.intershop.com \
       --docker-username='<your Intershop Azure account>' \
-      --docker-password='<CLI secret>'
+      --docker-password='<CLI secret, see above>'
+
+### Add the pull-secret *intershop-pull-secret* to configuration of devenv-4-iom
 
 Finally, the name of the newly created Kubernetes secret has to be passed to *devenv-4-iom*. To do so, set the key *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
 
@@ -92,7 +98,7 @@ The *Project Docker Repository* (ACR) is named after your (partner) organization
     # end the azure-cli Docker image
     exit
 
-### Create the Kubernetes secret *project-pull-secret*:
+### Create the Kubernetes secret *project-pull-secret*
 
     kubectl create secret docker-registry project-pull-secret \
       --context="docker-desktop" \
