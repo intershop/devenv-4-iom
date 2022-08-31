@@ -12,7 +12,7 @@ Additionally, the *Azure DevOps Environment* provides project specific Docker im
 
 When creating a new IOM-project, the project will be tied to a certain *Azure DevOps Environment* (see [Documentation of *IOM Project Archetype*](https://github.com/intershop/iom-project-archetype/blob/main/README.md)). 
 
-The URL of the *IOM Maven Repository*, that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) is specific for each *Azure DevOps Environment*. In order to build the IOM-project locally, the local computer needs to have read-access to the *IOM Maven Repository* too.
+The URL of the *IOM Maven Repository* (*IOM Maven repo* in the figure above), that is providing the IOM build artifacts (//repositories/repository[id='iom-maven-artifacts']/url in *pom.xml*) is specific for each *Azure DevOps Environment*. In order to build the IOM-project locally, the local computer needs to have read-access to the *IOM Maven Repository* too.
 
 To get access to the *IOM Maven Repository*, the file *~/.m2/settings.xml* has to be created or modified, if it already exists. This file will contain the credentials for the access to the *IOM Maven Repository*. The *Azure DevOps Environment* provides all the necessary information to setup *~/.m2/settings.xml*. Just follow these steps:
 
