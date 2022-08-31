@@ -7,7 +7,7 @@ The following chapters provide a detailed insight into various aspects of instal
 - [First steps](doc/01_first_steps.md)
 - [Configuration](doc/02_configuration.md)
 - [Azure DevOps Integration](doc/03_devops_integration.md)
-- [Operation](doc/04_operations.md)
+- [Operations](doc/04_operations.md)
 - [Development process](doc/05_development_process.md)
 - [Log messages](doc/06_log_messages.md)
 - [Troubleshooting](doc/07_troubleshooting.md)

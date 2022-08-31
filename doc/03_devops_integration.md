@@ -117,4 +117,4 @@ The new Kubernetes secret has also to be added to property *IMAGE_PULL_SECRET* w
     vi devenv.user.properties
 
 ---
-[< Configuration](02_configuration.md) | [^ Index](../README.md) | [Development Process >](04_operations.md)
+[< Configuration](02_configuration.md) | [^ Index](../README.md) | [Operations >](04_operations.md)
