@@ -6,10 +6,11 @@ The following chapters provide a detailed insight into various aspects of instal
 - [Installation](doc/00_installation.md)
 - [First steps](doc/01_first_steps.md)
 - [Configuration](doc/02_configuration.md)
-- [Operation](doc/03_operations.md)
-- [Development process](doc/04_development_process.md)
-- [Log messages](doc/05_log_messages.md)
-- [Troubleshooting](doc/06_troubleshooting.md)
+- [Azure DevOps Integration](doc/03_devops_integration.md)
+- [Operation](doc/04_operations.md)
+- [Development process](doc/05_development_process.md)
+- [Log messages](doc/06_log_messages.md)
+- [Troubleshooting](doc/07_troubleshooting.md)
 
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`:
 
