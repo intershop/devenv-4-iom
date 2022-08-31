@@ -44,11 +44,9 @@ In order to build the IOM project locally, you have to always log in to *docker.
 
     docker login docker.tools.intershop.com
 
-### Create Kubernete secret *intershop-pull-secret*
+### Create Kubernetes secret *intershop-pull-secret*
 
-For running the IOM project in *devenv-4-iom*, an *image pull secret* (Kubernetes secret object) has to be created for *docker.tools.intershop.com*. The *image pull secret* has to be created within the default namespace of Kubernetes and the name of the secret has to be set within the configuration of *devenv-4-iom*.
-
-The following command shows how to create the Kubernetes secret *intershop-pull-secret*:
+For running the IOM project in *devenv-4-iom*, an *image pull secret* (Kubernetes secret object) has to be created for *docker.tools.intershop.com*. The *image pull secret* has to be created within the default namespace of Kubernetes.
 
     kubectl create secret docker-registry intershop-pull-secret \
       --context="docker-desktop" \
@@ -65,7 +63,7 @@ Finally, the name of the newly created Kubernetes secret has to be passed to *de
 
 ## Get Access to *Project Docker Repository*
 
-The *Project Docker Repository* contains all project-specific Docker images, which have passed the CI process of the *Azure DevOps Environment*. The Docker images of this repository should be used by *devenv-4-iom* to run local customizations/configurations on top of them.
+The *Project Docker Repository* (*Project Docker Repo* in the figure above) contains all project-specific Docker images, which have passed the CI process of the *Azure DevOps Environment*. The Docker images of this repository should be used by *devenv-4-iom* to run local customizations/configurations on top of them.
 
 Since the *Project Docker Repository* is a private Docker registry too, a second *image pull secret* has to be created. For this second *image pull secret* an access token is required. 
 
