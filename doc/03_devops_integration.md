@@ -85,7 +85,7 @@ The *Project Docker Repository* is an *Azure Container Registry* (*ACR*). It is 
     # used in subsequent commands.
     az acr list --subscription <your Azure Subscription-ID> --out table
 
-### Get the access token for the ACR
+### Get the token for accessing the ACR
 
     # Execute the command within running azure-cli Docker container.
     # Get the token that's required to access the Docker Registry of your project.
