@@ -50,6 +50,7 @@ For running the IOM project in *devenv-4-iom*, an *image pull secret* (Kubernete
 
     kubectl create secret docker-registry intershop-pull-secret \
       --context="docker-desktop" \
+      --namespace=default \
       --docker-server=docker.tools.intershop.com \
       --docker-username='<your Intershop Azure account>' \
       --docker-password='<CLI secret, see above>'
@@ -67,7 +68,7 @@ The *Project Docker Repository* (*Project Docker Repo* in the figure above) cont
 
 Since the *Project Docker Repository* is a private Docker registry too, a second *image pull secret* has to be created. For this second *image pull secret* an access token is required. 
 
-### Login into Azure
+### Log in to Azure
 
     # Use the azure-cli Docker image, to avoid local installation of Azure CLI tools.
     # See https://docs.microsoft.com/en-us/cli/azure/run-azure-cli-docker
@@ -96,24 +97,25 @@ The *Project Docker Repository* is an *Azure Container Registry* (*ACR*). It is 
     # end the azure-cli Docker image
     exit
 
-### Create the Kubernetes secret *project-pull-secret*
+### Create the Kubernetes secret to access the *Project Docker Repository*
 
-The following commands have to be executed outside the azure-cli Docker container.
+The according pull-secret should get a project specific name. Only this way it will be possible to switch between different projects. The example below uses the name *myproject-pull-secret*, which should be replaced by a name matching your projects name. The following commands have to be executed outside the azure-cli Docker container.
 
-    kubectl create secret docker-registry project-pull-secret \
+    kubectl create secret docker-registry myproject-pull-secret \
       --context="docker-desktop" \
+      --namespace=default \
       --docker-server='<value of loginServer, see above>' \
       --docker-username='00000000-0000-0000-0000-000000000000' \
       --docker-password='<value of accessToken, see above>'
 
-### Add the pull-secret *project-pull-secret* to configuration of *devenv-4-iom*
+### Add the pull-secret *myproject-pull-secret* to configuration of *devenv-4-iom*
 
 The new Kubernetes secret has also to be added to property *IMAGE_PULL_SECRET* within the user-specific configuration file of *devenv-4-iom* (devenv.user.properties):
 
     # Change into the root directory of IOM project.
-    # Append ',project-pull-secret' to the line beginning with IMAGE_PULL_SECRET=
+    # Append ',myproject-pull-secret' to the line beginning with IMAGE_PULL_SECRET=
     # The whole line should now look like:
-    # IMAGE_PULL_SECRET=intershop-pull-secret,project-pull-secret
+    # IMAGE_PULL_SECRET=intershop-pull-secret,myproject-pull-secret
     vi devenv.user.properties
 
 ---

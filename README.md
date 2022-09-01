@@ -33,7 +33,7 @@ Property *IMAGE_PULL_SECRET* can now hold a list of image pull secrets. The diff
 
 ### Documentation of Azure DevOps Integration <!-- 78770 -->
 
-A new chapter was added to the documentation, that describes the integration of _devenv-4-iom_ into *Intershop DevOps Environment*.
+A new chapter was added to the documentation, that describes the integration of _devenv-4-iom_ into *Azure DevOps Environment*.
 
 # Release Information 2.2.0
 
