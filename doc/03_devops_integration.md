@@ -6,7 +6,7 @@ The figure below shows the relations between *devenv-4-iom*, an IOM-project and 
 
 Additionally, the *Azure DevOps Environment* provides project specific Docker images (by *Project Docker Repo*), which are used by *devenv-4-iom* to run the IOM project locally.
 
-![DevOps Integration Overview](DevOps-Integration-Overview.png)
+![DevOps Integration Overview](DevOps-Integration-Overview.drawio.png)
 
 ## Get Access to IOM Maven Repository
 
