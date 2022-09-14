@@ -19,11 +19,12 @@ If _devenv-4-iom_ is already installed and you are looking for a short overview 
 ```
 # Compatibility
 
-The latest versions of _devenv-4-iom_ and IOM are always compatible with each other. As long as not noted otherwise, _devenv-4-iom_ is backward compatible with all versions of IOM >= 3.0. For best experience, always use the lastet version of _devenv-4-iom_, regardless of the IOM version you are currently using. To do so, please update _devenv-4-iom_ as often as possible.
+The latest versions of _devenv-4-iom_ and IOM are always compatible with each other. As long as not noted otherwise, _devenv-4-iom_ is backward
+compatible with all versions of IOM >= 3.0. For best experience, always use the lastet version of _devenv-4-iom_, regardless of the IOM version
+you are currently using. To do so, please update _devenv-4-iom_ as often as possible.
 
-There exists no backward compatibilty the other way around. There is no information given, which version of _devenv-4-iom_ is required by a certain version of IOM.
-
-Please note, that the other
+There exists no backward compatibilty the other way around. There is no information available, which version of _devenv-4-iom_ is required by
+a certain version of IOM.
 
 # Release Information 2.3.0
 
