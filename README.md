@@ -17,13 +17,16 @@ If _devenv-4-iom_ is already installed and you are looking for a short overview 
 ```
     devenv-cli.sh -h
 ```
+# Compatibility
+
+The latest versions of _devenv-4-iom_ and IOM are always compatible with each other. As long as not noted otherwise, _devenv-4-iom_ is backward
+compatible with all versions of IOM >= 3.0. For best experience, always use the lastet version of _devenv-4-iom_, regardless of the IOM version
+you are currently using. To do so, please update _devenv-4-iom_ as often as possible.
+
+There exists no backward compatibilty the other way around. There is no information available, which version of _devenv-4-iom_ is required by
+a certain version of IOM.
+
 # Release Information 2.3.0
-
-## Compatibility
-
-At the time of release of _devenv-4-iom_, it is compatible with the latest version of IOM. As long as there is no new release of _devenv-4-iom_, it is ensured, that new releases of IOM are compatible with _devenv-4-iom_. If a new version of IOM requires an update of _devenev-4-iom_, the release notes of IOM will contain an according statement.
-
-At the time of writing, _devenv-4-iom 2.3.0_ is compatible with all IOM versions between 3.0 and 4.1 (inclusive).
 
 ## New Features
 
@@ -36,12 +39,6 @@ Property *IMAGE_PULL_SECRET* can now hold a list of image pull secrets. The diff
 A new chapter was added to the documentation, that describes the integration of _devenv-4-iom_ into *Azure DevOps Environment*.
 
 # Release Information 2.2.0
-
-## Compatibility
-
-At the time of release of _devenv-4-iom_, it is compatible with the latest version of IOM. As long as there is no new release of _devenv-4-iom_, it is ensured, that new releases of IOM are compatible with _devenv-4-iom_. If a new version of IOM requires an update of _devenev-4-iom_, the release notes of IOM will contain an according statement.
-
-At the time of writing, _devenv-4-iom 2.2.0_ is compatible with all IOM versions between 3.0 and 4.1 (inclusive).
 
 ## New Features
 
@@ -57,12 +54,6 @@ The Docker repository, that is used by the default value of DB_ACCOUNT_IMAGE was
 
 # Release Information 2.1.0
 
-## Compatibility
-
-At the time of release of _devenv-4-iom_, it is compatible with the latest version of IOM. As long as there is no new release of _devenv-4-iom_, it is ensured, that new releases of IOM are compatible with _devenv-4-iom_. If a new version of IOM requires an update of _devenev-4-iom_, the release notes of IOM will contain an according statement.
-
-At the time of writing, _devenv-4-iom 2.1.0_ is compatible with all IOM versions between 3.0 and 4.1 (inclusive).
-
 ## New Features
 
 ### Support for bash completion <!-- 77729 -->
@@ -74,12 +65,6 @@ _devenv-4-iom_ now supports bash completion. In order to use this new feature, t
 When starting the IOM application server (`create iom`), a file _testframework-config.user.yaml_ is created within the project root directory, containing all necessary information to run local tests based on [IOM Test-Framework](https://github.com/intershop/iom-test-framework). Along with support for this file, one new configuration properties was added: _CREATE_TEST_CONFIG_, which controls the creation of the configuration file.
 
 # Release Information 2.0.5
-
-## Compatibility
-
-At the time of release of _devenv-4-iom_, it is compatible with the latest version of IOM. As long as there is no new release of _devenv-4-iom_, it is ensured, that new releases of IOM are compatible with _devenv-4-iom_. If a new version of IOM requires an update of _devenev-4-iom_, the release notes of IOM will contain an according statement.
-
-At the time of writing, _devenv-4-iom 2.0.5_ is compatible with all IOM versions between 3.0 and 4.1 (inclusive).
 
 ## New Features
 
@@ -125,7 +110,6 @@ The configuration of PostgreSQL-server has been changed so that the PostgreSQL s
 ### _devenv-4-iom_ Logs Are in Human Readable Format Now <!-- 70998 -->
 
 Prior to version 2, devenv-4-iom printed all messages in JSON format. This has changed to a human readable multi-line format. Please note that this change does not affect the log messages from IOM itself. These messages will still be printed in JSON format.
-
 
 ## Migration Notes
 
