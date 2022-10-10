@@ -26,6 +26,17 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 There exists no backward compatibilty the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
 
+# Release information 2.4.0
+
+## New Features
+
+## Support for Single-Sign-On (SSO) <!-- 79686 -->
+
+Three new properties were added to support configuration of SSO for IOM development:
+* *SSO_ENABLED*: allowed values are *true*|*false*.
+* *SSO_TYPE*: allowed values are *azure-ad*|*keycloak*.
+* *SSO_OIDC_CONFIG*: holds a JSON structure similar to *oidc.json*, see: [Elytron OpenID Connect Client Subsystem Configuration](https://docs.wildfly.org/26/Admin_Guide.html#Elytron_OIDC_Client)
+
 # Release Information 2.3.0
 
 ## New Features
