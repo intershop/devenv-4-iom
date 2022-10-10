@@ -161,8 +161,7 @@ JBOSS_XA_POOLSIZE_MIN="${JBOSS_XA_POOLSIZE_MIN}"
 JBOSS_XA_POOLSIZE_MAX="${JBOSS_XA_POOLSIZE_MAX}"
 
 # IOM >= 4.3 supports Single Sign On (SSO).
-# Devenv-4-iom allows the usage of SSO during development. There are two
-# properties, to control SSO.
+# Devenv-4-iom allows the usage of SSO during development. 
 # Allowed values are true|false
 SSO_ENABLED="${SSO_ENABLED}"
 # Allowed values are azure-ad|keycloak
