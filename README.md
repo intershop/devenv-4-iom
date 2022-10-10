@@ -30,7 +30,7 @@ a certain version of IOM.
 
 ## New Features
 
-## Support for Single-Sign-On (SSO) <!-- 79686 -->
+### Support for Single-Sign-On (SSO) <!-- 79686 -->
 
 Three new properties were added to support configuration of SSO for IOM development:
 * *SSO_ENABLED*: allowed values are *true*|*false*.
