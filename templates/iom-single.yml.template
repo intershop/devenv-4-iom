@@ -149,8 +149,6 @@ ${DumpsDirYml____}          mountPath: /opt/oms/dumps
             value: 'http://${HostIom}:${PORT_IOM_SERVICE}'
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
-          - name: OMS_SHARE
-            value: '${OmsShareDir}'
           - name: OMS_SMTP_HOST
             value: 'mailhog-service'
           - name: OMS_SMTP_PORT
