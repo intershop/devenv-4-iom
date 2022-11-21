@@ -204,6 +204,38 @@ If `CUSTOM_DUMP_DIR` is configured, the latest custom dump is loaded when IOM is
 _You must not set `CUSTOM_DUMPS_DIR` to a directory that does not contain a dump when starting IOM with an uninitialized database. In this case, the initialization of the database would fail since no dump to be loaded can be found. Just set `CUSTOM_DUMPS_DIR` right before creating the dump and not before starting IOM._
 - - -
 
+## Access PostgreSQL Database
+
+If you are using a GUI-tool to access the IOM database, you need to configure this tool with the right credentials and connection information. The `info postgres` command of *devenv-4-iom* provides the required information:
+
+    devenv-cli.sh info postgres
+    ...
+    Access to database:
+    ===================
+    Host:                       UsersMacPro
+    Port:                       5442
+    OMS_DB_USER:                oms_user2
+    OMS_DB_PASS:                oms_pw2
+    OMS_DB_NAME:                oms_db2
+    ...
+
+If you don't have any tool to access the database, you can access it nevertheless by using the `psql` command line tool, which is part of the *postgres* container. The according command lines are provided by `info postgres` too:
+
+    devenv-cli.sh info postgres
+    ...
+    Usefull commands:
+    =================
+    ...
+    psql into root-db:          kubectl exec --namespace iomdevelop --context="docker-desktop" postgres -it -- bash -c "PGUSER=postgres PGDATABASE=postgres psql"
+    psql into IOM-db:           kubectl exec --namespace iomdevelop --context="docker-desktop" postgres -it -- bash -c "PGUSER=oms_user2 PGDATABASE=oms_db2 psql"
+    ...
+
+- - -
+**Note**
+
+These both ways to access the IOM database require the usage of the internal PostgreSQL database server of *devenv-4-iom*. If you are using an external database server along with *devenv-4-iom*, you have to use the connection information and credentials as they are defined in configuration of *devenv-4-iom*.
+- - -
+
 ## Access E-Mails
 
 To develop e-mail templates, to test whether e-mails are successfully sent by business processes and in other use cases, it is necessary to access the e-mails. The information about links to mail server UI and REST interface is given by the command `info mailserver`, provided by the command line interface.
@@ -220,6 +252,37 @@ PDF documents are stored within the shared file system of IOM. To get easy acces
   1. [Create IOM](03_operations.md#create_iom)
 
 After that, you will have direct access to IOMs shared file system through the directory you have set for `CUSTOM_SHARE_DIR`.
+
+## Apply Custom Configurations
+
+There are some configurations, that are not handled by *devenv-4-iom*. In detail these are *cluster.properties*, *project.cluster.properties*, *quartz-jobs-custom.xml* and *initSystem.project.cluster.cli*. More information about these configurations is given within the chapter *Custom Properties* in [Directory Structure of IOM Projects](https://github.com/intershop/iom-project-archetype/wiki/Directory-Structure-of-IOM-Projects#custom-properties).
+
+In order to apply any changes you have made locally to one of the configuration files listed above, you have to build the IOM project image locally and to restart IOM within *devenv-4-iom*. Building the IOM project image is a [developer task](https://github.com/intershop/iom-project-archetype#usage-typical-developer-tasks) of projects derived from [IOM Project Archetype](https://github.com/intershop/iom-project-archetype).
+
+When building the IOM project image locally, *devenv-4-iom* has to be configured to use the localy built image. To do so, make sure the `IOM_IMAGE` variable of *devenv-4-iom* contains image-name and -tag only. If you don't specify any further repository, the image will be looked up locally. Additionally it's required to set variable `IMAGE_PULL_POLICY` to *IfNotPresent*.
+
+Finally the following commands have to be executed to apply changes to the configuration files listed above:
+
+    # build the IOM project image locally
+    mvn package -Pdocker
+
+    # delete IOM
+    devenv-cli.sh delete iom
+
+    # and create IOM again
+    devenv-cli.sh create iom
+
+## Apply Project Files
+
+Project files are any kind of files that have to be added to the IOM project image. More information about such files can be found in chapter *Project Files* of documentation of [Directory Structure of IOM Projects](https://github.com/intershop/iom-project-archetype/wiki/Directory-Structure-of-IOM-Projects#project-files).
+
+*devenv-4-iom* does not provide a process to roll out such files into a running IOM. Instead of it, you have to build the IOM projec image locally and to restart IOM within *devenv-4-iom* exactly the same way as described in previous chapter [Applying Custom Configurations](#apply-custom-configurations). The same preconditions apply for `IOM_IMAGE` and `IMAGE_PULL_POLICY` as already mentioned [above](#apply-custom-configurations).
+
+## Apply Test Data
+
+IOM projects may contain test data, see chapter *Test Data* in documentation of [Directory Structure of IOM Projects](https://github.com/intershop/iom-project-archetype/wiki/Directory-Structure-of-IOM-Projects#test-data).
+
+If you want to apply new or changed test data to IOM running in *devenv-4-iom*, you need to have access to the shared file-system of IOM. In order to be able to access the shared file-system, the configuration variable `CUSTOM_SHARE_DIR` of *devenv-4-iom* must not be empty. The shared file-system contains a sub-directory *importarticle/in*, which is observed by IOM. If you copy the test-data files to this directory, IOM will process them and import the according articles. If a file was successfully imported, it will be moved to *importarticle/done*, in case of an error, the file will be moved to *importarticle/error*.
 
 ## Testing in Context of IOM Project Development
 
