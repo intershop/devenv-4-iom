@@ -126,7 +126,7 @@ _devenv_cli() {
     # provide COMPREPLY for current input
     #---------------------------------------------------------------------------
     
-    # First argument might be the name of a property file an option or the top-level command
+    # First argument might be the name of a property file, an option or the top-level command
     if [ "$COMP_CWORD" -eq 1 ]; then
         COMPREPLY=( $(compgen -W "info create delete apply dump get log -h --help -v --version" -G "$cur*.properties" -- $cur) )
 
