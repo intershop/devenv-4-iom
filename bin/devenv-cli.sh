@@ -831,7 +831,8 @@ OVERVIEW
 
     If a directory is passed to the job, all SQL files found in this directory
     are processed in numerical order, starting with the smallest one.
-    Sub-directories are not scanned for SQL files.
+    When using IOM version >= 4.4.0, sub-directories are scanned recursively for
+    SQL files. Older versions of IOM do not scan sub-directories for SQL files.
 
     If a file is passed to the job, only this file will be executed.
 
