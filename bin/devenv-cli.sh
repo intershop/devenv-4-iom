@@ -58,6 +58,13 @@ EOF
 }
 
 #-------------------------------------------------------------------------------
+version() {
+    cat <<EOF
+devenv-4-iom version ${DEVENV4IOM_VERSION}.
+EOF
+}
+
+#-------------------------------------------------------------------------------
 help() {
     ME=$(basename "$0")
     cat <<EOF
@@ -66,6 +73,9 @@ $ME
 
 SYNOPSIS
     $ME [CONFIG-FILE] COMMAND
+
+OPTIONS
+    -v, --version      Print version information and quit.
 
 CONFIG-FILE
 $(msg_config_file 4)
@@ -3799,7 +3809,10 @@ LEVEL0=$(isCommand "$1" i  info   ||
          isCommand "$1" du dump   ||
          isCommand "$1" g  get    ||
          isCommand "$1" l  log)   ||
-    if [ "$1" = '--help' -o "$1" = '-h' ]; then
+    if [ "$1" = '--version' -o "$1" = '-v' ]; then
+	version
+	exit 0
+    elif [ "$1" = '--help' -o "$1" = '-h' ]; then
         help
         exit 0
     else

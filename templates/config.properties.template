@@ -8,6 +8,8 @@
 # has to be updated. Only the settings are taken over during this process. All
 # additional comments you may have added to the file will be lost.
 #
+# File was generated with version ${DEVENV4IOM_VERSION} of devenv-4-iom.
+#
 ################################################################################
 
 # This ID has to be defined before using this configuration the first time. All
