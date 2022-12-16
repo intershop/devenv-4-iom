@@ -71,9 +71,9 @@ The Docker repository that is used by the default value of DB_ACCOUNT_IMAGE has 
 
 _devenv-4-iom_ now supports bash completion. In order to use this new feature, the according completion script has to be installed, see [documentation of installation](doc/00_installation.md).
 
-### Support for IOM Test-Framework <!-- 75996 -->
+### Support for IOM Test Framework <!-- 75996 -->
 
-When starting the IOM application server (`create iom`), a file _testframework-config.user.yaml_ is created within the project root directory, containing all necessary information to run local tests based on [IOM Test-Framework](https://github.com/intershop/iom-test-framework). Along with support for this file, one new configuration property has been added: _CREATE_TEST_CONFIG_, which controls the creation of the configuration file.
+When starting the IOM application server (`create iom`), a file _testframework-config.user.yaml_ is created within the project root directory, containing all necessary information to run local tests based on [IOM Test Framework](https://github.com/intershop/iom-test-framework). Along with support for this file, one new configuration property has been added: _CREATE_TEST_CONFIG_, which controls the creation of the configuration file.
 
 # Release Information 2.0.5
 

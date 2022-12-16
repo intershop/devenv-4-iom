@@ -263,7 +263,7 @@ As you can see, the method shown above is not intended to show the results of yo
 
     devenv-cli.sh info postgres
     ...
-    Usefull commands:
+    Useful commands:
     =================
     Login into Pod:             kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash
     psql into root-db:          kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash -c "PGUSER=postgres PGDATABASE=postgres psql"
