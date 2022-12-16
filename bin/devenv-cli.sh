@@ -665,6 +665,7 @@ RESOURCE
     sql-config|sql-c*  apply custom SQL config
     json-config|j*     apply custom JSON config
     dbmigrate|db*      apply custom DB migration
+    cache-reset|c*     apply a reset of configuration cache
 
 Run '$ME [CONFIG-FILE] apply RESOURCE --help|-h' for more information on a command.
 EOF
@@ -1071,6 +1072,57 @@ BACKGROUND
         --template="$DEVENV_DIR/templates/dbmigrate.yml.template" \\
         --config="$CONFIG_FILES" \\
         --project-dir="$PROJECT_DIR" |
+      kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-apply-cache-reset() {
+    ME=$(basename "$0")
+    cat <<EOF
+applies a reset of the configuration-cache to the system
+
+SYNOPSIS
+    $ME [CONFIG-FILE] apply cache-reset
+
+OVERVIEW
+    IOM holds the content of configuration tables in memory, hence any changes
+    to these these tables will not be recogniced until the configuration cache
+    is reseted.
+    devenv4om is reseting the configuration automatically in following cases:
+    - apply deployment
+    - apply sql-config
+    - apply sql-scripts
+    - apply json-config
+    If you are changing configurations directly within the database, you have to
+    reset the configuration cache manually by calling "apply cache-reset".
+
+CONFIG-FILE
+$(msg_config_file 4)
+
+BACKGROUND
+    # define directory with SQL file (has to be an absolute path)
+    export SQL_SRC="$DEVENV_DIR/bin/reset-confg-cache.sql"
+
+    # start apply-sql-job
+    "$DEVENV_DIR/bin/template_engine.sh" \\
+        --template="$DEVENV_DIR/templates/apply-sql.yml.template" \\
+        --config="$CONFIG_FILES" \\
+        --project-dir="$PROJECT_DIR" | 
+      kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
+
+    # get logs of job
+    POD_NAME=\$(kubectl get pods --namespace $EnvId \\
+      --context="$KUBERNETES_CONTEXT" \\
+      -l job-name=apply-sql-job \\
+      -o jsonpath="{.items[0].metadata.name}")
+    kubectl logs \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT"
+
+    # delete apply-sql-job
+    "$DEVENV_DIR/bin/template_engine.sh" \\
+        --template="$DEVENV_DIR/templates/apply-sql.yml.template" \\
+        --config="$CONFIG_FILES" \\
+        --project-dir="$PROJECT_DIR" | 
       kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
 EOF
 }
@@ -2602,6 +2654,13 @@ apply-deployment() {
                 cat "$TMP_OUT"
                 log_msg INFO "apply-deployment: successfully applied deployments" < /dev/null
             fi
+            
+            if [ "$SUCCESS" = 'true' ]; then
+                apply-cache-reset
+                if [ $? -ne 0 ]; then
+                    SUCCESS=false
+                fi
+            fi
         fi
     else
         log_msg INFO "apply-deployment: config variable CUSTOM_APPS_DIR not set, deployment skipped" < /dev/null
@@ -2762,6 +2821,13 @@ apply-sql-scripts() {
                 if [ "$SUCCESS" != 'true' ]; then
                     log_msg ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
                 fi
+                
+                if [ "$SUCCESS" = 'true' ]; then
+                    apply-cache-reset
+                    if [ $? -ne 0 ]; then
+                        SUCCESS=false
+                    fi
+                fi
             fi
         fi
     fi
@@ -2842,6 +2908,13 @@ apply-sql-config() {
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
                     log_msg ERROR "apply-sql-config: job ended with ERROR" < /dev/null
+                fi
+                
+                if [ "$SUCCESS" = 'true' ]; then
+                    apply-cache-reset
+                    if [ $? -ne 0 ]; then
+                        SUCCESS=false
+                    fi
                 fi
             fi
         else
@@ -3013,6 +3086,80 @@ apply-dbmigrate() {
             fi
         else
             log_msg INFO "apply-dbmigrate: config variable CUSTOM_DBMIGRATE_DIR not set, db-migrate not applied" < /dev/null
+        fi
+    fi
+    rm -f "$TMP_ERR" "$TMP_OUT"
+    [ "$SUCCESS" = 'true' ]
+}
+
+#-------------------------------------------------------------------------------
+# reset configuration cache
+# -> true|false indicating success
+#-------------------------------------------------------------------------------
+apply-cache-reset() {
+    SUCCESS=true
+
+    if [ -z "$CONFIG_FILES" ]; then
+        log_msg ERROR "apply-cache-reset: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        TIMEOUT=60
+        SQL_SRC="$DEVENV_DIR/bin/reset-config-cache.sql"
+
+        # start apply-sql job
+        SQL_SRC="$SQL_SRC" \
+               "$DEVENV_DIR/bin/template_engine.sh" \
+                     --template="$DEVENV_DIR/templates/apply-sql.yml.template" \
+                     --config="$CONFIG_FILES" \
+                     --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
+        if [ $? -ne 0 ]; then
+            log_msg ERROR "apply-cache-reset: error starting job" < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_msg INFO "apply-cache-reset: job successfully started" < "$TMP_OUT"
+
+            # wait for job to finish
+            kube_job_wait apply-sql-job $TIMEOUT
+            KUBE_JOB_STATUS=$?
+            if [ "$KUBE_JOB_STATUS" = '1' ]; then
+                log_msg ERROR "apply-cache-reset: timeout of $TIMEOUT seconds reached" < /dev/null
+                SUCCESS=false
+            elif [ "$KUBE_JOB_STATUS" = '2' ]; then
+                log_msg ERROR "apply-cache-reset: job execution failed" < /dev/null
+                SUCCESS=false
+            fi
+            # get logs of job
+            POD=$(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l job-name=apply-sql-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
+            if [ -z "$POD" ]; then
+                log_msg ERROR "apply-cache-reset: error getting pod name" < "$TMP_ERR"
+                SUCCESS=false
+            else
+                kubectl logs $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" 2> "$TMP_ERR" > "$TMP_OUT"
+                if [ $? -ne 0 ]; then
+                    log_msg ERROR "apply-cache-reset: error getting logs of job" < "$TMP_ERR"
+                    SUCCESS=false
+                else
+                    # logs of job are already in json format
+                    cat "$TMP_OUT"
+                fi
+            fi
+            # delete apply-sql-job
+            "$DEVENV_DIR/bin/template_engine.sh" \
+                --template="$DEVENV_DIR/templates/apply-sql.yml.template" \
+                --config="$CONFIG_FILES" \
+                --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_msg ERROR "apply-cache-reset: error deleting job" < "$TMP_ERR"
+                SUCCESS=false
+            else
+                log_msg INFO "apply-cache-reset: successfully deleted job" < "$TMP_OUT"
+            fi
+            
+            # it's easier for the user to detect an error, if the last message
+            # is giving this information
+            if [ "$SUCCESS" != 'true' ]; then
+                log_msg ERROR "apply-cache-reset: job ended with ERROR" < /dev/null
+            fi
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -3812,8 +3959,8 @@ LEVEL0=$(isCommand "$1" i  info   ||
          isCommand "$1" g  get    ||
          isCommand "$1" l  log)   ||
     if [ "$1" = '--version' -o "$1" = '-v' ]; then
-	version
-	exit 0
+        version
+        exit 0
     elif [ "$1" = '--help' -o "$1" = '-h' ]; then
         help
         exit 0
@@ -3876,7 +4023,8 @@ elif [ "$LEVEL0" = "apply" ]; then
              isCommand "$1" sql-s sql-scripts    ||
              isCommand "$1" sql-c sql-config     ||
              isCommand "$1" j     json-config    ||
-             isCommand "$1" db    dbmigrate)     ||
+             isCommand "$1" db    dbmigrate      ||
+             isCommand "$1" c     cache-reset)   ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-apply
             exit 0

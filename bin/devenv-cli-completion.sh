@@ -99,7 +99,8 @@ _devenv_cli() {
                           _devenv_is_command $sub_cmd sql-s sql-scripts      ||
                           _devenv_is_command $sub_cmd sql-c sql-config       ||
                           _devenv_is_command $sub_cmd j     json-config      ||
-                          _devenv_is_command $sub_cmd db    dbmigrate)
+                          _devenv_is_command $sub_cmd db    dbmigrate        ||
+                          _devenv_is_command $sub_cmd c     cache-reset)
                 ;;
             dump)
                 sub_cmd=$(_devenv_is_command $sub_cmd c     create           ||
@@ -156,7 +157,7 @@ _devenv_cli() {
                 COMPREPLY=( $(compgen -W 'storage namespace mailserver postgres iom cluster -h --help' -- $cur) )
                 ;;
             apply)
-                COMPREPLY=( $(compgen -W 'deployment mail-templates xsl-templates sql-scripts sql-config json-config dbmigrate -h --help' -- $cur) )
+                COMPREPLY=( $(compgen -W 'deployment mail-templates xsl-templates sql-scripts sql-config json-config dbmigrate cache-reset -h --help' -- $cur) )
                 ;;
             dump)
                 COMPREPLY=( $(compgen -W 'create load -h --help' -- $cur) )
