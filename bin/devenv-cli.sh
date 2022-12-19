@@ -1089,7 +1089,7 @@ OVERVIEW
     IOM holds the content of configuration tables in memory, hence any changes
     to these these tables will not be recogniced until the configuration cache
     is reseted.
-    devenv4om is reseting the configuration automatically in following cases:
+    devenv4iom is reseting the configuration automatically in following cases:
     - apply deployment
     - apply sql-config
     - apply sql-scripts
@@ -1101,29 +1101,8 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 BACKGROUND
-    # define directory with SQL file (has to be an absolute path)
-    export SQL_SRC="$DEVENV_DIR/bin/reset-confg-cache.sql"
-
-    # start apply-sql-job
-    "$DEVENV_DIR/bin/template_engine.sh" \\
-        --template="$DEVENV_DIR/templates/apply-sql.yml.template" \\
-        --config="$CONFIG_FILES" \\
-        --project-dir="$PROJECT_DIR" | 
-      kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
-
-    # get logs of job
-    POD_NAME=\$(kubectl get pods --namespace $EnvId \\
-      --context="$KUBERNETES_CONTEXT" \\
-      -l job-name=apply-sql-job \\
-      -o jsonpath="{.items[0].metadata.name}")
-    kubectl logs \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT"
-
-    # delete apply-sql-job
-    "$DEVENV_DIR/bin/template_engine.sh" \\
-        --template="$DEVENV_DIR/templates/apply-sql.yml.template" \\
-        --config="$CONFIG_FILES" \\
-        --project-dir="$PROJECT_DIR" | 
-      kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
+    # see "apply sql-scripts" and apply the file 
+    # "$DEVENV_DIR/bin/reset-confg-cache.sql"
 EOF
 }
 
@@ -2656,8 +2635,7 @@ apply-deployment() {
             fi
             
             if [ "$SUCCESS" = 'true' ]; then
-                apply-cache-reset
-                if [ $? -ne 0 ]; then
+                if ! apply-cache-reset; then
                     SUCCESS=false
                 fi
             fi
@@ -2823,8 +2801,7 @@ apply-sql-scripts() {
                 fi
                 
                 if [ "$SUCCESS" = 'true' ]; then
-                    apply-cache-reset
-                    if [ $? -ne 0 ]; then
+                    if ! apply-cache-reset; then
                         SUCCESS=false
                     fi
                 fi
@@ -2911,8 +2888,7 @@ apply-sql-config() {
                 fi
                 
                 if [ "$SUCCESS" = 'true' ]; then
-                    apply-cache-reset
-                    if [ $? -ne 0 ]; then
+                    if ! apply-cache-reset; then
                         SUCCESS=false
                     fi
                 fi
