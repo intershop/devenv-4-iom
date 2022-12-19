@@ -2712,12 +2712,18 @@ apply-xsl-templates() {
 #-------------------------------------------------------------------------------
 # apply sql scripts
 # $1: sql-directory
-# $2: timeout
+# $2: timeout (number of seconds, default: 60)
+# $3: reset-cache (true|false, default: true)
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 apply-sql-scripts() {
     SUCCESS=true
 
+    RESET_CACHE='true'
+    if [ ! -z "$3" -a "$3" != 'true' ]; then
+        RESET_CACHE='false'
+    fi
+    
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "apply-sql-scripts: no config-file given!" < /dev/null
         SUCCESS=false
@@ -2727,13 +2733,7 @@ apply-sql-scripts() {
             log_msg ERROR "apply-sql-scripts: '$1' is nor a file or directory" < /dev/null
             SUCCESS=false
         else
-            case "$1" in
-                /*)
-                    SQL_SRC="$1"
-                    ;;
-                *)
-                    SQL_SRC="$(pwd)/$1"
-            esac
+            SQL_SRC="$(realpath "$1")"
         fi
 
         # check and set timeout
@@ -2800,7 +2800,7 @@ apply-sql-scripts() {
                     log_msg ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
                 fi
                 
-                if [ "$SUCCESS" = 'true' ]; then
+                if [ "$SUCCESS" = 'true' -a "$RESET_CACHE" = 'true' ]; then
                     if ! apply-cache-reset; then
                         SUCCESS=false
                     fi
@@ -3079,7 +3079,7 @@ apply-cache-reset() {
     # REST API was not used, since it adds an additional dependency to the
     # developers machine (curl). Unfortunately curl is also not included in the
     # IOM image.
-    apply-sql-scripts "$DEVENV_DIR/bin/reset-config-cache.sql" 60
+    apply-sql-scripts "$DEVENV_DIR/bin/reset-config-cache.sql" 60 false
 }
 
 ################################################################################
