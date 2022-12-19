@@ -3097,73 +3097,13 @@ apply-dbmigrate() {
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 apply-cache-reset() {
-    SUCCESS=true
-
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "apply-cache-reset: no config-file given!" < /dev/null
-        SUCCESS=false
-    else
-        TIMEOUT=60
-        SQL_SRC="$DEVENV_DIR/bin/reset-config-cache.sql"
-
-        # start apply-sql job
-        SQL_SRC="$SQL_SRC" \
-               "$DEVENV_DIR/bin/template_engine.sh" \
-                     --template="$DEVENV_DIR/templates/apply-sql.yml.template" \
-                     --config="$CONFIG_FILES" \
-                     --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "apply-cache-reset: error starting job" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_msg INFO "apply-cache-reset: job successfully started" < "$TMP_OUT"
-
-            # wait for job to finish
-            kube_job_wait apply-sql-job $TIMEOUT
-            KUBE_JOB_STATUS=$?
-            if [ "$KUBE_JOB_STATUS" = '1' ]; then
-                log_msg ERROR "apply-cache-reset: timeout of $TIMEOUT seconds reached" < /dev/null
-                SUCCESS=false
-            elif [ "$KUBE_JOB_STATUS" = '2' ]; then
-                log_msg ERROR "apply-cache-reset: job execution failed" < /dev/null
-                SUCCESS=false
-            fi
-            # get logs of job
-            POD=$(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l job-name=apply-sql-job -o jsonpath='{.items[0].metadata.name}' 2> "$TMP_ERR" )
-            if [ -z "$POD" ]; then
-                log_msg ERROR "apply-cache-reset: error getting pod name" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                kubectl logs $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" 2> "$TMP_ERR" > "$TMP_OUT"
-                if [ $? -ne 0 ]; then
-                    log_msg ERROR "apply-cache-reset: error getting logs of job" < "$TMP_ERR"
-                    SUCCESS=false
-                else
-                    # logs of job are already in json format
-                    cat "$TMP_OUT"
-                fi
-            fi
-            # delete apply-sql-job
-            "$DEVENV_DIR/bin/template_engine.sh" \
-                --template="$DEVENV_DIR/templates/apply-sql.yml.template" \
-                --config="$CONFIG_FILES" \
-                --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_msg ERROR "apply-cache-reset: error deleting job" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_msg INFO "apply-cache-reset: successfully deleted job" < "$TMP_OUT"
-            fi
-            
-            # it's easier for the user to detect an error, if the last message
-            # is giving this information
-            if [ "$SUCCESS" != 'true' ]; then
-                log_msg ERROR "apply-cache-reset: job ended with ERROR" < /dev/null
-            fi
-        fi
-    fi
-    rm -f "$TMP_ERR" "$TMP_OUT"
-    [ "$SUCCESS" = 'true' ]
+    # there are different possiblities to reset the cache:
+    # * stored procedure
+    # * REST API
+    # REST API was not used, since it adds an additional dependency to the
+    # developers machine (curl). Unfortunately curl is also not included in the
+    # IOM image.
+    apply-sql-scripts "$DEVENV_DIR/bin/reset-config-cache.sql" 60
 }
 
 ################################################################################
