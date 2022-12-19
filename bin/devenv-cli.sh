@@ -665,6 +665,7 @@ RESOURCE
     sql-config|sql-c*  apply custom SQL config
     json-config|j*     apply custom JSON config
     dbmigrate|db*      apply custom DB migration
+    cache-reset|c*     apply a reset of configuration cache
 
 Run '$ME [CONFIG-FILE] apply RESOURCE --help|-h' for more information on a command.
 EOF
@@ -1072,6 +1073,36 @@ BACKGROUND
         --config="$CONFIG_FILES" \\
         --project-dir="$PROJECT_DIR" |
       kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-apply-cache-reset() {
+    ME=$(basename "$0")
+    cat <<EOF
+applies a reset of the configuration-cache to the system
+
+SYNOPSIS
+    $ME [CONFIG-FILE] apply cache-reset
+
+OVERVIEW
+    IOM holds the content of configuration tables in memory, hence any changes
+    to these these tables will not be recogniced until the configuration cache
+    is reseted.
+    devenv4iom is reseting the configuration automatically in following cases:
+    - apply deployment
+    - apply sql-config
+    - apply sql-scripts
+    - apply json-config
+    If you are changing configurations directly within the database, you have to
+    reset the configuration cache manually by calling "apply cache-reset".
+
+CONFIG-FILE
+$(msg_config_file 4)
+
+BACKGROUND
+    # see "apply sql-scripts" and apply the file 
+    # "$DEVENV_DIR/bin/reset-confg-cache.sql"
 EOF
 }
 
@@ -2602,6 +2633,12 @@ apply-deployment() {
                 cat "$TMP_OUT"
                 log_msg INFO "apply-deployment: successfully applied deployments" < /dev/null
             fi
+            
+            if [ "$SUCCESS" = 'true' ]; then
+                if ! apply-cache-reset; then
+                    SUCCESS=false
+                fi
+            fi
         fi
     else
         log_msg INFO "apply-deployment: config variable CUSTOM_APPS_DIR not set, deployment skipped" < /dev/null
@@ -2675,12 +2712,18 @@ apply-xsl-templates() {
 #-------------------------------------------------------------------------------
 # apply sql scripts
 # $1: sql-directory
-# $2: timeout
+# $2: timeout (number of seconds, default: 60)
+# $3: reset-cache (true|false, default: true)
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 apply-sql-scripts() {
     SUCCESS=true
 
+    RESET_CACHE='true'
+    if [ ! -z "$3" -a "$3" != 'true' ]; then
+        RESET_CACHE='false'
+    fi
+    
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "apply-sql-scripts: no config-file given!" < /dev/null
         SUCCESS=false
@@ -2690,13 +2733,7 @@ apply-sql-scripts() {
             log_msg ERROR "apply-sql-scripts: '$1' is nor a file or directory" < /dev/null
             SUCCESS=false
         else
-            case "$1" in
-                /*)
-                    SQL_SRC="$1"
-                    ;;
-                *)
-                    SQL_SRC="$(pwd)/$1"
-            esac
+            SQL_SRC="$(realpath "$1")"
         fi
 
         # check and set timeout
@@ -2761,6 +2798,12 @@ apply-sql-scripts() {
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
                     log_msg ERROR "apply-sql-scripts: job ended with ERROR" < /dev/null
+                fi
+                
+                if [ "$SUCCESS" = 'true' -a "$RESET_CACHE" = 'true' ]; then
+                    if ! apply-cache-reset; then
+                        SUCCESS=false
+                    fi
                 fi
             fi
         fi
@@ -2842,6 +2885,12 @@ apply-sql-config() {
                 # is giving this information
                 if [ "$SUCCESS" != 'true' ]; then
                     log_msg ERROR "apply-sql-config: job ended with ERROR" < /dev/null
+                fi
+                
+                if [ "$SUCCESS" = 'true' ]; then
+                    if ! apply-cache-reset; then
+                        SUCCESS=false
+                    fi
                 fi
             fi
         else
@@ -3017,6 +3066,20 @@ apply-dbmigrate() {
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]
+}
+
+#-------------------------------------------------------------------------------
+# reset configuration cache
+# -> true|false indicating success
+#-------------------------------------------------------------------------------
+apply-cache-reset() {
+    # there are different possiblities to reset the cache:
+    # * stored procedure
+    # * REST API
+    # REST API was not used, since it adds an additional dependency to the
+    # developers machine (curl). Unfortunately curl is also not included in the
+    # IOM image.
+    apply-sql-scripts "$DEVENV_DIR/bin/reset-config-cache.sql" 60 false
 }
 
 ################################################################################
@@ -3812,8 +3875,8 @@ LEVEL0=$(isCommand "$1" i  info   ||
          isCommand "$1" g  get    ||
          isCommand "$1" l  log)   ||
     if [ "$1" = '--version' -o "$1" = '-v' ]; then
-	version
-	exit 0
+        version
+        exit 0
     elif [ "$1" = '--help' -o "$1" = '-h' ]; then
         help
         exit 0
@@ -3876,7 +3939,8 @@ elif [ "$LEVEL0" = "apply" ]; then
              isCommand "$1" sql-s sql-scripts    ||
              isCommand "$1" sql-c sql-config     ||
              isCommand "$1" j     json-config    ||
-             isCommand "$1" db    dbmigrate)     ||
+             isCommand "$1" db    dbmigrate      ||
+             isCommand "$1" c     cache-reset)   ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
             help-apply
             exit 0
