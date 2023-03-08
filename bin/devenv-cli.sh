@@ -718,11 +718,11 @@ SEE
 BACKGROUND
     # redeploy omt selectively
     POD_NAME=\$(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l app=iom -o jsonpath="{.items[0].metadata.name}")
-    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c redeploy omt
+    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic redeploy omt
 
     # redeploy all
     POD_NAME=\$(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l app=iom -o jsonpath="{.items[0].metadata.name}")
-    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c redeploy
+    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic redeploy
 EOF
 }
 
@@ -764,7 +764,7 @@ SEE
 
 BACKGROUND
     POD_NAME=\$(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l app=iom -o jsonpath="{.items[0].metadata.name}")
-    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c apply-templates
+    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic apply-templates
 EOF
 }
 
@@ -805,7 +805,7 @@ SEE
 
 BACKGROUND
     POD_NAME=\$(kubectl get pods --namespace $EnvId --context="$KUBERNETES_CONTEXT" -l app=iom -o jsonpath="{.items[0].metadata.name}")
-    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c apply-xslt
+    kubectl exec \$POD_NAME --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic apply-xslt
 EOF
 }
 
@@ -2619,9 +2619,9 @@ apply-deployment() {
             SUCCESS=false
         else
             if [ -z "$PATTERN" ]; then
-                kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c redeploy 2> "$TMP_ERR" > "$TMP_OUT"
+                kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic redeploy 2> "$TMP_ERR" > "$TMP_OUT"
             else
-                kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c "/opt/oms/bin/forced-redeploy.sh --pattern=$PATTERN" 2> "$TMP_ERR" > "$TMP_OUT"
+                kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic "/opt/oms/bin/forced-redeploy.sh --pattern=$PATTERN" 2> "$TMP_ERR" > "$TMP_OUT"
             fi
             if [ $? -ne 0 ]; then
                 # output is already in json format
@@ -2663,7 +2663,7 @@ apply-mail-templates() {
             log_msg ERROR "apply-mail-templates: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
         else
-            kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c apply-templates 2> "$TMP_ERR" > "$TMP_OUT"
+            kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic apply-templates 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_msg ERROR "apply-mail-templates: error applying mail templates" < "$TMP_ERR"
                 SUCCESS=false
@@ -2694,7 +2694,7 @@ apply-xsl-templates() {
             log_msg ERROR "apply-xsl-templates: error getting pod name" < "$TMP_ERR"
             SUCCESS=false
         else
-            kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -c apply-xslt 2> "$TMP_ERR" > "$TMP_OUT"
+            kubectl exec $POD --namespace $EnvId --context="$KUBERNETES_CONTEXT" -c iom -- bash -ic apply-xslt 2> "$TMP_ERR" > "$TMP_OUT"
             if [ $? -ne 0 ]; then
                 log_msg ERROR "apply-xsl-templates: error applying xsl templates" < "$TMP_ERR"
                 SUCCESS=false
