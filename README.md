@@ -10,7 +10,8 @@ The following chapters provide a detailed insight into various aspects of instal
 - [Operations](doc/04_operations.md)
 - [Development process](doc/05_development_process.md)
 - [Log messages](doc/06_log_messages.md)
-- [Troubleshooting](doc/07_troubleshooting.md)
+- [Metrics](doc/07_metrics.md)
+- [Troubleshooting](doc/08_troubleshooting.md)
 
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`:
 
@@ -25,6 +26,14 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
+
+# Release information 2.5.0
+
+## New Features
+
+### Support for sending Metrics to an _OpenTelemetry Collector_ compatible endpoint <!-- 93088 -->
+
+The new property *OTEL_COLLECTOR* was added. A new [documentation chapter](doc/07_metrics.md) explains the usage.
 
 # Release information 2.4.0
 
