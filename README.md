@@ -51,8 +51,8 @@ is now also applied automatically after deployment or configuration changes, exe
 
 ## Fixed Bugs
 
-* "deploy <pattern>" succeeds, if pattern has not matched to any deployment artifact. <!-- 79162 -->
-* commands executed by _devenv-4-iom_ inside the IOM pod are now using *-i* flag, in oder to make sure, that ~/.bashrc inside the container is read. <!-- 84293 -->
+* _deploy <pattern>_ succeeds, if pattern has not matched any deployment artifact. <!-- 79162 -->
+* commands executed by _devenv-4-iom_ inside the IOM pod are now running interactively, in oder to make sure, that ~/.bashrc inside the container is read. <!-- 84293 -->
 
 # Release information 2.4.0
 
