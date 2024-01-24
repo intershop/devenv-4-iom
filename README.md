@@ -35,6 +35,25 @@ a certain version of IOM.
 
 The new property *OTEL_COLLECTOR* was added. A new [documentation chapter](doc/07_metrics.md) explains the usage.
 
+### Support for version information <!-- 80982 -->
+
+The new command line switch _-v_ provides now the version of _devenv-4-iom_.
+
+### Support for Cache-Reset <!-- 81950 -->
+
+The new command *apply cache-reset* allows to trigger a reset of IOMs configuration cache. This cache reset
+is now also applied automatically after deployment or configuration changes, executed by _devenv-4-iom_.
+
+### Improved documentation
+
+* Added documentation how to access the PostgreSQL database <!-- 81066 -->
+* Added documentation how to handle custom configurations, that are not directly supported by _devenv-4-iom_. <!-- 81066 -->
+
+## Fixed Bugs
+
+* "deploy <pattern>" succeeds, if pattern has not matched to any deployment artifact. <!-- 79162 -->
+* commands executed by _devenv-4-iom_ inside the IOM pod are now using *-i* flag, in oder to make sure, that ~/.bashrc inside the container is read. <!-- 84293 -->
+
 # Release information 2.4.0
 
 ## New Features
