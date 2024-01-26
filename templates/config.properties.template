@@ -170,7 +170,7 @@ SSO_ENABLED="${SSO_ENABLED}"
 SSO_TYPE="${SSO_TYPE}"
 # Set a JSON structure similar to oidc.json,
 # see: https://docs.wildfly.org/26/Admin_Guide.html#Elytron_OIDC_Client
-SSO_OIDC_CONFIG="${SSO_OIDC_CONFIG}"
+SSO_OIDC_CONFIG='${SSO_OIDC_CONFIG}'
 
 # IOM 5 and newer sends metrics data of Wildfly and IOM to an endpoint, which
 # has to be compatible with OpenTelemetry format. This endpoint is defined by
