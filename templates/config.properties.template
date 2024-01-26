@@ -53,9 +53,9 @@ IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
 # example:                  postgres:11
 DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE}
 
-# mailhog image (name:tag)
-# example:                  mailhog/mailhog
-MAILHOG_IMAGE=${MAILHOG_IMAGE}
+# mail-server image (name:tag)
+# example:                  axllent/mailpit
+MAILSRV_IMAGE=${MAILSRV_IMAGE}
 
 # iom dbaccount image (name:tag)
 # examples:
