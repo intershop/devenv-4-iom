@@ -47,12 +47,12 @@ is now also applied automatically after deployment or configuration changes, exe
 ### Improved documentation
 
 * Added documentation how to access the PostgreSQL database <!-- 81066 -->
-* Added documentation how to handle custom configurations, that are not directly supported by _devenv-4-iom_. <!-- 81066 -->
+* Added documentation about how to handle custom configurations that are not directly supported by _devenv-4-iom_. <!-- 81066 -->
 
 ## Fixed Bugs
 
-* _deploy <pattern>_ succeeds, if pattern has not matched any deployment artifact. <!-- 79162 -->
-* commands executed by _devenv-4-iom_ inside the IOM pod are now running interactively, in oder to make sure, that ~/.bashrc inside the container is read. <!-- 84293 -->
+* _deploy <pattern>_ succeeds if the pattern has not matched any deployment artifact. <!-- 79162 -->
+* commands executed by _devenv-4-iom_ inside the IOM pod are now running interactively, in order to make sure that ~/.bashrc inside the container is read. <!-- 84293 -->
 
 # Release information 2.4.0
 
