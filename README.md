@@ -10,7 +10,8 @@ The following chapters provide a detailed insight into various aspects of instal
 - [Operations](doc/04_operations.md)
 - [Development process](doc/05_development_process.md)
 - [Log messages](doc/06_log_messages.md)
-- [Troubleshooting](doc/07_troubleshooting.md)
+- [Metrics](doc/07_metrics.md)
+- [Troubleshooting](doc/08_troubleshooting.md)
 
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`:
 
@@ -25,6 +26,33 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
+
+# Release information 2.5.0
+
+## New Features
+
+### Support for sending Metrics to an _OpenTelemetry Collector_ compatible endpoint <!-- 93088 -->
+
+The new property *OTEL_COLLECTOR* was added. A new [documentation chapter](doc/07_metrics.md) explains the usage.
+
+### Support for version information <!-- 80982 -->
+
+The new command line switch _-v_ provides now the version of _devenv-4-iom_.
+
+### Support for Cache-Reset <!-- 81950 -->
+
+The new command *apply cache-reset* allows to trigger a reset of IOMs configuration cache. This cache reset
+is now also applied automatically after deployment or configuration changes, executed by _devenv-4-iom_.
+
+### Improved documentation
+
+* Added documentation how to access the PostgreSQL database <!-- 81066 -->
+* Added documentation about how to handle custom configurations that are not directly supported by _devenv-4-iom_. <!-- 81066 -->
+
+## Fixed Bugs
+
+* _deploy <pattern>_ succeeds if the pattern has not matched any deployment artifact. <!-- 79162 -->
+* commands executed by _devenv-4-iom_ inside the IOM pod are now running interactively, in order to make sure that ~/.bashrc inside the container is read. <!-- 84293 -->
 
 # Release information 2.4.0
 

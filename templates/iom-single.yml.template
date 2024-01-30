@@ -143,6 +143,8 @@ ${DumpsDirYml____}          mountPath: /opt/oms/dumps
             value: '${SSO_TYPE}'
           - name: OMS_SSO_OIDC_CONFIG
             value: '${SSO_OIDC_CONFIG}'
+          - name: OMS_OTEL_COLLECTOR
+            value: '${OTEL_COLLECTOR}'
           - name: OMS_WILDFLY_READY_TIMEOUT
             value: '180'
           - name: OMS_PUBLIC_URL

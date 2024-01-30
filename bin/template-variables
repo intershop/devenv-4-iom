@@ -48,6 +48,8 @@ SSO_ENABLED="${SSO_ENABLED:-false}"
 SSO_TYPE="${SSO_TYPE}"
 SSO_OIDC_CONFIG="${SSO_OIDC_CONFIG}"
 
+OTEL_COLLECTOR="${OTEL_COLLECTOR}"
+
 # pull policy defaults to Always, which makes it easy for developers get always
 # the newest image
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
