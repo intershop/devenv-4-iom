@@ -31,6 +31,11 @@ a certain version of IOM.
 
 ## New Features
 
+### Implementation of mail-server was replaced <!-- #93089 -->
+
+The oudated mail-server _mailhog_ was replaced by [_mailpit_](https://mailpit.axllent.org). The _devenv.project.properties_ file, belonging to your project, has to be migrated according to the
+[documentation](https://github.com/intershop/devenv-4-iom/blob/main/doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
+
 ### Support for sending Metrics to an _OpenTelemetry Collector_ compatible endpoint <!-- 93088 -->
 
 The new property *OTEL_COLLECTOR* was added. A new [documentation chapter](doc/07_metrics.md) explains the usage.

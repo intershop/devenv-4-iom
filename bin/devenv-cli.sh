@@ -301,7 +301,7 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 CONFIG
-    MAILHOG_IMAGE - defines the image of the mailserver to be used
+    MAILSRV_IMAGE - defines the image of the mailserver to be used
     IMAGE_PULL_POLICY - defines when to pull the image from origin
     ID - the namespace to be used is derived from ID
 
@@ -311,7 +311,7 @@ SEE
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
-      --template="$DEVENV_DIR/templates/mailhog.yml.template" \\
+      --template="$DEVENV_DIR/templates/mailsrv.yml.template" \\
       --config="$CONFIG_FILES" \\
       --project-dir="$PROJECT_DIR" |
       kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT"  -f -
@@ -536,7 +536,7 @@ SEE
 
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
-        --template="$DEVENV_DIR/templates/mailhog.yml.template" \\
+        --template="$DEVENV_DIR/templates/mailsrv.yml.template" \\
         --config="$CONFIG_FILES" \\
         --project-dir="$PROJECT_DIR" |
       kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
@@ -1730,7 +1730,7 @@ kube_job_wait() (
 
 #-------------------------------------------------------------------------------
 # wait for pod to be in phase running
-# $1: app name (iom|postgres|mailhog)
+# $1: app name (iom|postgres|mailsrv)
 # $2: timeout [s]
 # ->: true - if pod is running before timeout
 #     false - if timeout is reached before pod is running
@@ -2087,30 +2087,30 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-Web-UI:                     http://$HostIom:$PORT_MAILHOG_UI_SERVICE
-REST:                       http://$HostIom:$PORT_MAILHOG_UI_SERVICE/api/v2/messages
+Web-UI:                     http://$HostIom:$PORT_MAILSRV_UI_SERVICE
+REST:                       http://$HostIom:$PORT_MAILSRV_UI_SERVICE/api/v1
 --------------------------------------------------------------------------------
 Docker:
 =======
-MAILHOG_IMAGE:              $MAILHOG_IMAGE
+MAILSRV_IMAGE:              $MAILSRV_IMAGE
 IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
-        POD="$(kube_get_pod mailhog)"
+        POD="$(kube_get_pod mailsrv)"
         if [ ! -z "$POD" ]; then
             cat <<EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
 
-$(kubectl get pods --namespace=$EnvId --context="$KUBERNETES_CONTEXT" -l app=mailhog)
+$(kubectl get pods --namespace=$EnvId --context="$KUBERNETES_CONTEXT" -l app=mailsrv)
 
-$(kubectl get service --namespace=$EnvId --context="$KUBERNETES_CONTEXT" mailhog-service 2> /dev/null)
+$(kubectl get service --namespace=$EnvId --context="$KUBERNETES_CONTEXT" mailsrv-service 2> /dev/null)
 --------------------------------------------------------------------------------
 Usefull commands:
 =================
 Login into Pod:             kubectl exec --namespace $EnvId --context="$KUBERNETES_CONTEXT" $POD -it -- sh
-Currently used yaml:        kubectl get pod -l app=mailhog -o yaml --namespace=$EnvId --context="$KUBERNETES_CONTEXT"
+Currently used yaml:        kubectl get pod -l app=mailsrv -o yaml --namespace=$EnvId --context="$KUBERNETES_CONTEXT"
 --------------------------------------------------------------------------------
 EOF
         fi
@@ -2288,9 +2288,9 @@ create-mailserver() {
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "create-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
-    elif ! kube_pod_started mailhog; then
+    elif ! kube_pod_started mailsrv; then
         "$DEVENV_DIR/bin/template_engine.sh" \
-            --template="$DEVENV_DIR/templates/mailhog.yml.template" \
+            --template="$DEVENV_DIR/templates/mailsrv.yml.template" \
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
@@ -2494,9 +2494,9 @@ delete-mailserver() {
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "delete-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
-    elif kube_resource_exists pods mailhog || kube_resource_exists services mailhog-service; then
+    elif kube_resource_exists pods mailsrv || kube_resource_exists services mailsrv-service; then
         "$DEVENV_DIR/bin/template_engine.sh" \
-            --template="$DEVENV_DIR/templates/mailhog.yml.template" \
+            --template="$DEVENV_DIR/templates/mailsrv.yml.template" \
             --config="$CONFIG_FILES" \
             --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
