@@ -34,7 +34,7 @@ a certain version of IOM.
 ### Implementation of mail-server was replaced <!-- #93089 -->
 
 The oudated mail-server _mailhog_ was replaced by [_mailpit_](https://mailpit.axllent.org). The _devenv.project.properties_ file, belonging to your project, has to be migrated according to the
-[documentation](https://github.com/intershop/devenv-4-iom/blob/main/doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
+[documentation](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
 
 ### Support for sending Metrics to an _OpenTelemetry Collector_ compatible endpoint <!-- 93088 -->
 
@@ -51,8 +51,8 @@ is now also applied automatically after deployment or configuration changes, exe
 
 ### Improved documentation
 
-* Added documentation how to access the PostgreSQL database <!-- 81066 -->
-* Added documentation about how to handle custom configurations that are not directly supported by _devenv-4-iom_. <!-- 81066 -->
+* Added documentation how to [access the PostgreSQL database](doc/05_development_process.md#access-postgresql-database) <!-- 81066 -->
+* Added documentation about how to [handle custom configurations](doc/05_development_process.md#apply-custom-configurations) that are not directly supported by _devenv-4-iom_. <!-- 81066 -->
 
 ## Fixed Bugs
 
