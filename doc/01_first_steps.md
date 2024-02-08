@@ -46,7 +46,7 @@ Open the newly created config-file _devenv.project.properties_ and use the value
 
     # pull images from registry
     docker pull postgres:12
-    docker pull mailhog/mailhog
+    docker pull axllent/mailpit
     docker pull docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
     docker pull docker.tools.intershop.com/iom/intershophub/iom:4.1.0
 
@@ -75,7 +75,7 @@ Due to the quite complex configuration of _devenv-4-iom_, see [Configuration | G
     IMAGE_PULL_POLICY=IfNotPresent
     IMAGE_PULL_SECRET=
     DOCKER_DB_IMAGE=postgres:12
-    MAILHOG_IMAGE=mailhog/mailhog
+    MAILSRV_IMAGE=axllent/mailpit
     IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
     IOM_CONFIG_IMAGE=
     IOM_APP_IMAGE=
@@ -263,7 +263,7 @@ As you can see, the method shown above is not intended to show the results of yo
 
     devenv-cli.sh info postgres
     ...
-    Usefull commands:
+    Useful commands:
     =================
     Login into Pod:             kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash
     psql into root-db:          kubectl exec --namespace firststeps --context="docker-desktop" postgres -it -- bash -c "PGUSER=postgres PGDATABASE=postgres psql"
