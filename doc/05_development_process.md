@@ -204,6 +204,30 @@ If `CUSTOM_DUMP_DIR` is configured, the latest custom dump is loaded when IOM is
 _You must not set `CUSTOM_DUMPS_DIR` to a directory that does not contain a dump when starting IOM with an uninitialized database. In this case, the initialization of the database would fail since no dump to be loaded can be found. Just set `CUSTOM_DUMPS_DIR` right before creating the dump and not before starting IOM._
 - - -
 
+## Access OMT Web GUI
+
+The web GUI of the *Order Management Tool* (OMT) can be simply explored in a web-browser. The according url is provided by the `info iom` command of *devenv-4-iom*:
+
+    devenv-cli.sh info iom
+    ...
+    Links:
+    ======
+    OMT:                        http://UsersMacPro:8080/omt/
+    ...
+
+
+## Access Documentation of REST- and SOAP-APIs
+
+The specifications of IOMs REST- and SOAP-APIs are part of the IOM Docker image. They can be simply explored by a web-browser. The `info iom` command of *devenv-4-iom* provides the according url:
+
+    devenv-cli.sh info iom
+    ...
+    Links:
+    ======
+    ...
+    REST+SOAP Documentation:    http://Andreas-Herolds-MacPro.local:8080/doc/
+    ...
+
 ## Access PostgreSQL Database
 
 If you are using a GUI-tool to access the IOM database, you need to configure this tool with the right credentials and connection information. The `info postgres` command of *devenv-4-iom* provides the required information:
