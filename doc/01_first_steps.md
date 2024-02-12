@@ -154,18 +154,18 @@ Once IOM is running, we can access its GUI. The `info iom` command provides the 
     --------------------------------------------------------------------------------
     Links:
     ======
-    OMT:                        http://computername.local:8080/omt/
-    Online help:                http://computername.local:8080/omt-help/
-    DBDoc:                      http://computername.local:8080/dbdoc/
+    Back Office:                http://computername.local:8080/omt/
+    REST+SOAP Documentation:    http://computername.local:8080/doc/
+    DBDoc (latest version):     https://intershop.github.io/iom-dbdoc/
     Wildfly (admin:admin):      http://computername.local:9990/console/
     --------------------------------------------------------------------------------
     ...
 
-Just copy the _OMT_ link into your browser and open the page. You should now see the login screen. The combination `admin:!InterShop00!` should give you access to OMT.
+Just copy the _Back Office_ link into your browser and open the page. You should now see the login screen. The combination `admin:!InterShop00!` should give you access to the *Back Office*.
 
 ## View Access Logs
 
-IOM is now running and we are able to use it in the browser. It is time to learn how to access some log messages. Since we can browse OMT, the access-log messages will serve as a good example. The following command prints access-log entries and also waits for new entries.
+IOM is now running and we are able to use it in the browser. It is time to learn how to access some log messages. Since we can browse the *Back Office*, the access-log messages will serve as a good example. The following command prints access-log entries and also waits for new entries.
 
     # press ^C to stop printing logs
     devenv-cli.sh log access all -f

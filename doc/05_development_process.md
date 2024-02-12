@@ -31,9 +31,9 @@ The _Wildfly Admin Console_ has to be opened in a web browser. The according URL
     --------------------------------------------------------------------------------
     Links:
     ======
-    OMT:                        http://computername.local:8080/omt/
-    Online help:                http://computername.local:8080/omt-help/
-    DBDoc:                      http://computername.local:8080/dbdoc/
+    Back office:                http://computername.local:8080/omt/
+    REST+SOAP Documentation:    http://computername.local:8080/doc/
+    DBDoc (latest version):     https://intershop.github.io/iom-dbdoc/
     Wildfly (admin:admin):      http://computername.local:9990/console/
     --------------------------------------------------------------------------------
     ...
@@ -204,15 +204,15 @@ If `CUSTOM_DUMP_DIR` is configured, the latest custom dump is loaded when IOM is
 _You must not set `CUSTOM_DUMPS_DIR` to a directory that does not contain a dump when starting IOM with an uninitialized database. In this case, the initialization of the database would fail since no dump to be loaded can be found. Just set `CUSTOM_DUMPS_DIR` right before creating the dump and not before starting IOM._
 - - -
 
-## Access OMT Web GUI
+## Access the Back Office Web GUI
 
-The web GUI of the *Order Management Tool* (OMT) can be simply explored in a web-browser. The according url is provided by the `info iom` command of *devenv-4-iom*:
+The Back Office of IOM can be simply explored in a web-browser. The according url is provided by the `info iom` command of *devenv-4-iom*:
 
     devenv-cli.sh info iom
     ...
     Links:
     ======
-    OMT:                        http://UsersMacPro:8080/omt/
+    Back Office:                http://UsersMacPro:8080/omt/
     ...
 
 
