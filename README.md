@@ -27,6 +27,13 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
 
+# Release information 2.6.0
+
+### Access to Documentation of SOAP- and REST-APIs <!-- #92163 -->
+
+The `info iom` command was extended to provide the url, that gives access to the documentation of IOMs SOAP- and REST-APIs. An according section
+was added to the document, describing the [Development process](doc/05_development_process.md).
+
 # Release information 2.5.0
 
 ## New Features
