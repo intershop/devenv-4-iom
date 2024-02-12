@@ -1916,7 +1916,8 @@ $ID
 --------------------------------------------------------------------------------
 Links:
 ======
-OMT:                        http://$HostIom:$PORT_IOM_SERVICE/omt/
+Back Office:                http://$HostIom:$PORT_IOM_SERVICE/omt/
+REST+SOAP Documentation:    http://$HostIom:$PORT_IOM_SERVICE/doc/
 DBDoc (latest version):     https://intershop.github.io/iom-dbdoc/
 Wildfly (admin:admin):      http://$HostIom:$PORT_WILDFLY_SERVICE/console/
 --------------------------------------------------------------------------------
