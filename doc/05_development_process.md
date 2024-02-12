@@ -225,7 +225,7 @@ The specifications of IOMs REST- and SOAP-APIs are part of the IOM Docker image.
     Links:
     ======
     ...
-    REST+SOAP Documentation:    http://Andreas-Herolds-MacPro.local:8080/doc/
+    REST+SOAP Documentation:    http://UsersMacPro:8080/doc/
     ...
 
 ## Access PostgreSQL Database
