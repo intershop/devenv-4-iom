@@ -396,12 +396,12 @@ SQL_SRC="${SQL_SRC}"
 # define variable containing the according absolute path
 sqlDirAbs=
 if [ ! -z "$SQL_SRC" ]; then
-    if echo "$SQL_DIR" | grep -q '^/'; then
-        sqlDirAbs="$(realpath $(dirname "$SQL_SRC"))"
+    if echo "$SQL_SRC" | grep -q '^/'; then
+        sqlDirAbs="$(realpath "$(dirname "$SQL_SRC")")"
     else
-        sqlDirAbs="$(realpath $(dirname "$PROJECT_DIR/$SQL_SRC"))"
+        sqlDirAbs="$(realpath "$(dirname "$PROJECT_DIR/$SQL_SRC")")"
     fi
-    if [ -f "$SQL_SRC" ];
+    if [ -f "$SQL_SRC" ]; then
        sqlFile=$(basename "$SQL_SRC")
     fi
 fi
