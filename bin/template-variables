@@ -399,6 +399,15 @@ else
     sqlFile=$(basename "$SQL_SRC")
     sqlDir=$(dirname "$SQL_SRC")
 fi
+# define variable containing the according absolute path
+sqlDirAbs=
+if [ ! -z "${sqlDir}" ]; then
+    if echo "$sqlDir" | grep -q '^/'; then
+        sqlDirAbs="$(realpath "$sqlDir")"
+    else
+        sqlDirAbs="$(realpath "$PROJECT_DIR/$sqlDir")"
+    fi
+fi
 
 OMS_LOGLEVEL_CONSOLE=${OMS_LOGLEVEL_CONSOLE:-WARN}
 OMS_LOGLEVEL_IOM=${OMS_LOGLEVEL_IOM:-WARN}
