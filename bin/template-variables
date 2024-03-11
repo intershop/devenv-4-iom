@@ -393,19 +393,16 @@ fi
 # A file or directory can be passed. It's necessary to split SQL_SRC into directory-
 # and file-part, as these variables are required inside the job-template.
 SQL_SRC="${SQL_SRC}"
-if [ -d "$SQL_SRC" ]; then
-    sqlDir="$SQL_SRC"
-else
-    sqlFile=$(basename "$SQL_SRC")
-    sqlDir=$(dirname "$SQL_SRC")
-fi
 # define variable containing the according absolute path
 sqlDirAbs=
-if [ ! -z "${sqlDir}" ]; then
-    if echo "$sqlDir" | grep -q '^/'; then
-        sqlDirAbs="$(realpath "$sqlDir")"
+if [ ! -z "$SQL_SRC" ]; then
+    if echo "$SQL_DIR" | grep -q '^/'; then
+        sqlDirAbs="$(realpath $(dirname "$SQL_SRC"))"
     else
-        sqlDirAbs="$(realpath "$PROJECT_DIR/$sqlDir")"
+        sqlDirAbs="$(realpath $(dirname "$PROJECT_DIR/$SQL_SRC"))"
+    fi
+    if [ -f "$SQL_SRC" ];
+       sqlFile=$(basename "$SQL_SRC")
     fi
 fi
 
