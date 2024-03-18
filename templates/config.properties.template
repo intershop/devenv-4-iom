@@ -97,12 +97,12 @@ IOM_IMAGE=${IOM_IMAGE}
 # Fill the following variables, if you want to use an external mail server.
 # If SMTP_HOST is left empty, the mail server is managed internally. Any
 # settings are known in this case and do not need to be configured otherwise.
-SMTP_HOST='${SMTP_HOST}'
-SMTP_PORT='${SMTP_PORT}'
-SMTP_USER='${SMTP_USER}'
+SMTP_HOST=${SMTP_HOST}
+SMTP_PORT=${SMTP_PORT}
+SMTP_USER=${SMTP_USER}
 SMTP_PASSWORD='${SMTP_PASSWORD}'
 # allowed values are 'auto', 'ssl', 'startTls'
-SMTP_ENCRYPTION='${SMTP_ENCRYPTION}'
+SMTP_ENCRYPTION=${SMTP_ENCRYPTION}
 
 ################################################################################
 # Database Configuration
