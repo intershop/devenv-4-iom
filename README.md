@@ -34,7 +34,7 @@ a certain version of IOM.
 ### Support for External Mail-Server <!-- 94998 -->
 
 It's now possible to use an external mail-server instead of the integrated one. A set of new configuration variables was
-added, all starting with *SMTP_*. The most important one is *SMTP_HOST*, as it decides whether the internal or an external
+added, all beeing prefixed with *SMTP_*. The most important one is *SMTP_HOST*, as it decides whether the internal or an external
 mail-server will be used.
 
 The *devenv.project.properties* file, belonging to your project, has to be migrated according to the
