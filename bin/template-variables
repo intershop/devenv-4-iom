@@ -314,6 +314,33 @@ PORT_WILDFLY_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 3 + ($INDEX * $PORT_OFFSET)))
 PORT_MAILSRV_UI_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 4 + ($INDEX * $PORT_OFFSET)))
 PORT_MAILSRV_SMTP_PUBLIC=$(($PUBLIC_NODEPORT_BASE + 5 + ($INDEX * $PORT_OFFSET)))
 
+# external mail server connection. Variables are empty, if mail server should be
+# managed internally. (with one exception: if SMTP_HOST is set to 'mailsrv-service',
+# it's treated like beeing empty too.
+SMTP_HOST="${SMTP_HOST}"
+SMTP_PORT="${SMTP_PORT}"
+SMTP_USER="${SMTP_USER}"
+SMTP_PASSWORD="${SMTP_PASSWORD}"
+SMTP_ENCRYPTION="${SMTP_ENCRYPTION:-auto}"
+
+if [ "$SMTP_HOST" = 'mailsrv-service' ]; then
+    SMTP_HOST=
+fi
+
+if [ -z "$SMTP_HOST" ]; then
+    OmsSmtpHost='mailsrv-service'
+    OmsSmtpPort="${PORT_MAILSRV_SMTP_SERVICE}"
+    OmsSmtpUser=''
+    OmsSmtpPass=''
+    OmsSmtpEncryption='auto'
+else
+    OmsSmtpHost="$SMTP_HOST"
+    OmsSmtpPort="$SMTP_PORT"
+    OmsSmtpUser="$SMTP_USER"
+    OmsSmtpPass="$SMTP_PASSWORD"
+    OmsSmtpEncryption="$SMTP_ENCRYPTION"
+fi
+
 # external database connection. Variables are empty, if postgres should be
 # managed internally. (with one exception: if set to 'postgres-service', it's
 # treated like beeing empty too.

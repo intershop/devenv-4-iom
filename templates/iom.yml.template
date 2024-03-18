@@ -128,9 +128,13 @@ ${ShareDirYml____}          mountPath: /var/opt/share
           - name: OMS_EXEC_BACKEND_APPS
             value: 'true'
           - name: OMS_SMTP_HOST
-            value: 'mailsrv-service'
+            value: '${OmsSmtpHost}'
           - name: OMS_SMTP_PORT
-            value: '${PORT_MAILSRV_SMTP_SERVICE}'
+            value: '${OmsSmtpPort}'
+          - name: OMS_SMTP_USER
+            value: '${OmsSmtpUser}'
+          - name: OMS_SMTP_PASS
+            value: '${OmsSmtpPass}'
         lifecycle:
           postStart:
             exec:
