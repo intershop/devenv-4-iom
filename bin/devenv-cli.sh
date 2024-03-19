@@ -301,6 +301,8 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 CONFIG
+    SMTP_HOST - if set, it indicates the usage of an external mail server.
+      The command will not create a mail server in this case.
     MAILSRV_IMAGE - defines the image of the mailserver to be used
     IMAGE_PULL_POLICY - defines when to pull the image from origin
     ID - the namespace to be used is derived from ID
@@ -2086,6 +2088,16 @@ info-mailserver() {
 --------------------------------------------------------------------------------
 $ID
 --------------------------------------------------------------------------------
+Configuration:
+==============
+SMTP_HOST:                  $OmsSmtpHost
+SMTP_PORT:                  $OmsSmtpPort
+SMTP_USER:                  $OmsSmtpUser
+SMTP_ENCRYPTION:            $OmsSmtpEncryption
+--------------------------------------------------------------------------------
+EOF
+        if [ -z "$SMTP_HOST" ]; then
+            cat <<EOF
 Links:
 ======
 Web-UI:                     http://$HostIom:$PORT_MAILSRV_UI_SERVICE
@@ -2097,6 +2109,7 @@ MAILSRV_IMAGE:              $MAILSRV_IMAGE
 IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
 EOF
+        fi
         POD="$(kube_get_pod mailsrv)"
         if [ ! -z "$POD" ]; then
             cat <<EOF
@@ -2289,17 +2302,21 @@ create-mailserver() {
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "create-mailserver: no config-file given!" < /dev/null
         SUCCESS=false
-    elif ! kube_pod_started mailsrv; then
-        "$DEVENV_DIR/bin/template_engine.sh" \
-            --template="$DEVENV_DIR/templates/mailsrv.yml.template" \
-            --config="$CONFIG_FILES" \
-            --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_msg INFO "create-mailserver: mailserver successfully created" < "$TMP_OUT"
+    elif [ -z "$SMTP_HOST" ]; then
+        if ! kube_pod_started mailsrv; then
+            "$DEVENV_DIR/bin/template_engine.sh" \
+                --template="$DEVENV_DIR/templates/mailsrv.yml.template" \
+                --config="$CONFIG_FILES" \
+                --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
+            if [ $? -ne 0 ]; then
+                log_msg ERROR "create-mailserver: error creating mailserver" < "$TMP_ERR"
+                SUCCESS=false
+            else
+                log_msg INFO "create-mailserver: mailserver successfully created" < "$TMP_OUT"
+            fi
         fi
+    else
+        log_msg INFO "create-mailserver: nothing to do, external mail server configured (config variable SMTP_HOST is set)" < /dev/null
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
     [ "$SUCCESS" = 'true' ]

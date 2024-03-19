@@ -27,6 +27,20 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
 
+# Release information 2.7.0
+
+## New Features
+
+### Support for External Mail-Server <!-- 94998 -->
+
+It's now possible to use an external mail-server instead of the integrated one. A set of new configuration variables was
+added, all beeing prefixed with *SMTP_*. The most important one is *SMTP_HOST*, as it decides whether the internal or an external
+mail-server will be used.
+
+The *devenv.project.properties* file, belonging to your project, has to be migrated according to the
+[documentation](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). After the migration the
+new configuation variables will appear within the configuration file along with a description.
+
 # Release information 2.6.1
 
 ## Fixed Bugs
