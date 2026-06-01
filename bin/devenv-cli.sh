@@ -2254,6 +2254,8 @@ create-storage() {
     if [ -z "$CONFIG_FILES" ]; then
         log_msg ERROR "create-storage: no config-file given!" < /dev/null
         SUCCESS=false
+    elif [ -n "$STORAGE_CLASS" ]; then
+        log_msg INFO "create-storage: nothing to do, dynamic storage provisioning via StorageClass '$STORAGE_CLASS'" < /dev/null
     elif [ "$KEEP_DATABASE_DATA" = 'true' ] && ! docker_volume_exists pgdata; then
         docker volume create --name=$EnvId-pgdata -d local 2> "$TMP_ERR" > "$TMP_OUT"
         if [ $? -ne 0 ]; then
@@ -2333,8 +2335,8 @@ create-postgres() {
         log_msg ERROR "create-postgres: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ -z "$PGHOST" ]; then
-        # link Docker volume to database storage
-        if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
+        # link Docker volume to database storage (skipped when STORAGE_CLASS is set)
+        if [ -z "$STORAGE_CLASS" ] && [ "$KEEP_DATABASE_DATA" = 'true' ]; then
             MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
                       "$DEVENV_DIR/bin/template_engine.sh" \
                         --template="$DEVENV_DIR/templates/postgres-storage.yml.template" \

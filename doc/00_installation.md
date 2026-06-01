@@ -28,6 +28,17 @@ Using _Docker-Desktop_ is recommended. It provides a _Docker_ environment and al
     - _Docker Icon > Preferences > Kubernetes > Enable Kubernetes_.
 1. Optional: Docker provides a link with information on how to set resource usage (Settings > Resources).
 
+#### Kubernetes Engine Selection
+
+Docker Desktop supports two Kubernetes cluster engines, which can be selected under _Settings > Kubernetes > Kubernetes engine_:
+
+- **kubeadm** — the classic engine, used prior to Docker Desktop 4.40.
+- **kind** — the new default engine since Docker Desktop 4.40. Requires `STORAGE_CLASS=standard` in your _devenv-4-iom_ configuration (see [Configuration](02_configuration.md)).
+
+> **Important:** _devenv-4-iom_ supports both engines. When using the kind engine, you **must** set `STORAGE_CLASS=standard` in your configuration file. Without it, the PostgreSQL storage cannot be provisioned and IOM will not start.
+
+> **Node count:** When using the kind engine, the node count must be set to **1**. _devenv-4-iom_ uses `hostPath` volumes to mount local development directories into the IOM container. These are only accessible on the node where the pod is scheduled, which requires a single-node cluster.
+
 ### jq - Command-Line JSON Processor
 _jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool.
 

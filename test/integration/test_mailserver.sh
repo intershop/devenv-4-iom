@@ -1,0 +1,66 @@
+#!/bin/bash
+# Tests: create mailserver / delete mailserver on kind engine.
+# Uses test-component.properties.kind (ID=iom-unit) to avoid collision
+# with the lifecycle test (ID=iom-test).
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/assert.sh"
+
+CLI="$DEVENV_DIR/bin/devenv-cli.sh"
+PROPS="$SCRIPT_DIR/test-component.properties.kind"
+CONTEXT="docker-desktop"
+NAMESPACE="iomunit"
+POD_TIMEOUT=60
+
+echo "=== mailserver (kind) ==="
+
+# Ensure clean state
+"$CLI" "$PROPS" delete mailserver > /dev/null 2>&1 || true
+kubectl delete namespace "$NAMESPACE" --context="$CONTEXT" --wait > /dev/null 2>&1 || true
+kubectl create namespace "$NAMESPACE" --context="$CONTEXT" > /dev/null 2>&1
+
+test_case "create mailserver succeeds"
+"$CLI" "$PROPS" create mailserver > /dev/null 2>&1
+assert_exit_success "exit code 0" $?
+
+test_case "mailsrv pod reaches Running"
+TESTS_RUN=$((TESTS_RUN + 1))
+if wait_for_pod_running mailsrv "$NAMESPACE" "$CONTEXT" "$POD_TIMEOUT"; then
+    echo "  PASS: mailsrv pod is Running"
+else
+    echo "  FAIL: mailsrv pod did not reach Running within ${POD_TIMEOUT}s"
+    kubectl describe pod mailsrv -n "$NAMESPACE" --context="$CONTEXT" 2>/dev/null | tail -20
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+test_case "mailsrv-service has external IP"
+TESTS_RUN=$((TESTS_RUN + 1))
+IP=$(kubectl get service mailsrv-service -n "$NAMESPACE" --context="$CONTEXT" \
+    -o jsonpath='{.status.loadBalancer.ingress[0].ip}{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+if [ -n "$IP" ]; then
+    echo "  PASS: mailsrv-service external IP is '$IP'"
+else
+    echo "  FAIL: mailsrv-service has no external IP (LoadBalancer pending)"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+test_case "delete mailserver succeeds"
+"$CLI" "$PROPS" delete mailserver > /dev/null 2>&1
+assert_exit_success "exit code 0" $?
+
+test_case "mailsrv pod is gone after delete"
+TESTS_RUN=$((TESTS_RUN + 1))
+sleep 5
+POD=$(kubectl get pod mailsrv -n "$NAMESPACE" --context="$CONTEXT" 2>/dev/null | grep mailsrv)
+if [ -z "$POD" ]; then
+    echo "  PASS: mailsrv pod is gone"
+else
+    echo "  FAIL: mailsrv pod still exists after delete"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+# Cleanup
+kubectl delete namespace "$NAMESPACE" --context="$CONTEXT" --wait > /dev/null 2>&1 || true
+
+test_summary

@@ -208,6 +208,13 @@ POSTGRES_ARGS=( ${PostgresArgsShell} )
 # KEEP_DATABASE_DATA to true, otherwise false.
 KEEP_DATABASE_DATA=${KEEP_DATABASE_DATA}
 
+# When using the kind engine in Docker Desktop (Settings > Kubernetes > Kubernetes engine),
+# set STORAGE_CLASS to the name of the StorageClass that provides dynamic volume provisioning.
+# For the kind engine, use: STORAGE_CLASS=standard
+# Leave empty when using the kubeadm engine (default prior to Docker Desktop 4.40).
+# See: https://github.com/intershop/devenv-4-iom/blob/main/doc/09_docker_desktop_kind.md
+STORAGE_CLASS=${STORAGE_CLASS}
+
 ################################################################################
 # Log seetings
 ################################################################################

@@ -12,6 +12,7 @@ The following chapters provide a detailed insight into various aspects of instal
 - [Log messages](doc/06_log_messages.md)
 - [Metrics](doc/07_metrics.md)
 - [Troubleshooting](doc/08_troubleshooting.md)
+- [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md)
 
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`:
 
@@ -26,6 +27,20 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
+
+# Release information 2.8.0
+
+## New Features
+
+### Support for Docker Desktop kind Engine <!-- #117544 -->
+
+Docker Desktop 4.40 introduced the _kind_ engine as the new default for Kubernetes clusters. _devenv-4-iom_ now supports both the classic _kubeadm_ engine and the new _kind_ engine.
+
+The only required change is setting `STORAGE_CLASS=standard` in your configuration when using the kind engine. See [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md) for details and a guide on switching between engines.
+
+### Updated Default PostgreSQL Version
+
+The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:15`.
 
 # Release information 2.7.0
 

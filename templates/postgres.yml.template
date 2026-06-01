@@ -1,3 +1,15 @@
+${StorageClassYml_}kind: PersistentVolumeClaim
+${StorageClassYml_}apiVersion: v1
+${StorageClassYml_}metadata:
+${StorageClassYml_}  name: postgres-pvc
+${StorageClassYml_}spec:
+${StorageClassYml_}  accessModes:
+${StorageClassYml_}  - ReadWriteOnce
+${StorageClassYml_}  storageClassName: ${STORAGE_CLASS}
+${StorageClassYml_}  resources:
+${StorageClassYml_}    requests:
+${StorageClassYml_}      storage: 1Gi
+${StorageClassYml_}---
 kind: Pod
 apiVersion: v1
 metadata:
