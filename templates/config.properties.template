@@ -205,7 +205,9 @@ OTEL_COLLECTOR="${OTEL_COLLECTOR}"
 POSTGRES_ARGS=( ${PostgresArgsShell} )
 
 # To persist database data across cluster restarts, set POSTGRES_DATA_DIR to a
-# directory on the host (absolute path or relative to the project directory).
+# directory on the host. Absolute or relative paths are supported. A relative
+# path is resolved against the directory of devenv.project.properties, or the
+# current working directory if no project-specific configuration file exists.
 # Leave empty to run postgres without persistent storage.
 # Example: POSTGRES_DATA_DIR=~/.devenv-4-iom/${ID}/pgdata
 POSTGRES_DATA_DIR=${POSTGRES_DATA_DIR}
