@@ -8,7 +8,7 @@ spec:
   volumes:
 ${KeepDatabaseYml}  - name: db-data
 ${KeepDatabaseYml}    hostPath:
-${KeepDatabaseYml}      path: "${MOUNT_PREFIX}${POSTGRES_DATA_DIR}"
+${KeepDatabaseYml}      path: "${MOUNT_PREFIX}${PostgresDataDirAbs}"
   containers:
   - name: postgres
     image: ${DOCKER_DB_IMAGE}

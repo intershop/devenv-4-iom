@@ -21,7 +21,8 @@ for ENGINE in kubeadm kind; do
 
     test_case "$ENGINE: hostPath volume present (POSTGRES_DATA_DIR set)"
     assert_contains "hostPath volume defined" "$OUTPUT" "hostPath:"
-    assert_contains "hostPath path set" "$OUTPUT" "path: \"/tmp/test-pgdata\""
+    EXPECTED_PATH="$(mkdir -p /tmp/test-pgdata && realpath /tmp/test-pgdata)"
+    assert_contains "hostPath path set (absolute)" "$OUTPUT" "path: \"$EXPECTED_PATH\""
 
     test_case "$ENGINE: no PVC in output"
     assert_not_contains "no PVC kind line" "$OUTPUT" "kind: PersistentVolumeClaim"
@@ -35,10 +36,22 @@ for ENGINE in kubeadm kind; do
 
     test_case "$ENGINE: no unsubstituted variables"
     assert_not_contains "no raw DOCKER_DB_IMAGE" "$OUTPUT" '${DOCKER_DB_IMAGE}'
-    assert_not_contains "no raw POSTGRES_DATA_DIR" "$OUTPUT" '${POSTGRES_DATA_DIR}'
+    assert_not_contains "no raw PostgresDataDirAbs" "$OUTPUT" '${PostgresDataDirAbs}'
 done
 
-# also test: POSTGRES_DATA_DIR unset → no hostPath, no volume mount
+# relative path: should be resolved against PROJECT_DIR to an absolute path
+test_case "relative POSTGRES_DATA_DIR: resolved to absolute path"
+TMPDIR_REL="$(mktemp -d)"
+TMPPROPS="$TMPDIR_REL/test.properties"
+echo "POSTGRES_DATA_DIR=pgdata" > "$TMPPROPS"
+OUTPUT_REL=$("$RENDER" --template="$TEMPLATE" --config="$TMPPROPS" --project-dir="$TMPDIR_REL" 2>&1)
+EXPECTED_REL="$(realpath "$TMPDIR_REL/pgdata")"
+assert_contains "hostPath present for relative path" "$OUTPUT_REL" "hostPath:"
+assert_not_contains "no raw relative path in output" "$OUTPUT_REL" 'path: "pgdata"'
+assert_contains "resolved to absolute path" "$OUTPUT_REL" "path: \"$EXPECTED_REL\""
+rm -rf "$TMPDIR_REL"
+
+# unset: no hostPath, no volume mount
 test_case "no POSTGRES_DATA_DIR: hostPath volume commented out"
 OUTPUT_NODATA=$("$RENDER" --template="$TEMPLATE" --config=/dev/null --project-dir="$DEVENV_DIR" 2>&1)
 assert_not_contains "no hostPath when unset" "$OUTPUT_NODATA" "hostPath:"

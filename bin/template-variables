@@ -81,8 +81,28 @@ PostgresArgsShell=$(COUNTER=0; \
 
 # Directory on the host to persist database data across cluster restarts.
 # Leave empty to run postgres without persistent storage (data lost on pod restart).
+# Absolute paths are used as-is. Relative paths are resolved against the project
+# directory (the directory containing the config file). The directory is created
+# automatically if it does not exist.
 # Example: POSTGRES_DATA_DIR=~/.devenv-4-iom/my-iom/pgdata
 POSTGRES_DATA_DIR="${POSTGRES_DATA_DIR}"
+# define variable containing the according absolute path
+PostgresDataDirAbs=
+if [ -n "$POSTGRES_DATA_DIR" ]; then
+    if echo "$POSTGRES_DATA_DIR" | grep -q '^/'; then
+        PostgresDataDirAbs="$POSTGRES_DATA_DIR"
+    else
+        PostgresDataDirAbs="$PROJECT_DIR/$POSTGRES_DATA_DIR"
+    fi
+fi
+# realpath can only be used if the directory exists — create it first
+if [ -n "$PostgresDataDirAbs" -a ! -d "$PostgresDataDirAbs" ]; then
+    mkdir -p "$PostgresDataDirAbs" > /dev/null || exit 1
+fi
+# finally use realpath to normalise the path (remove dots, symlinks)
+if [ -n "$PostgresDataDirAbs" ]; then
+    PostgresDataDirAbs="$(realpath "$PostgresDataDirAbs")"
+fi
 if [ -n "$POSTGRES_DATA_DIR" ]; then
     KeepDatabaseYml=''
 else
