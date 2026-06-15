@@ -8,50 +8,78 @@ Docker Desktop 4.40 introduced the **kind engine** as the new default for its bu
 
 ## Changes explained file by file
 
-### `templates/postgres.yml.template` — inline PVC using cluster default StorageClass
+### `templates/postgres.yml.template` — hostPath volume for persistent storage
 
-The PersistentVolumeClaim definition is now part of `postgres.yml.template` itself, gated by `${KeepDatabaseYml}` (which comments it out when `KEEP_DATABASE_DATA` is not `true`). The `storageClassName` field is deliberately omitted — Kubernetes then assigns the cluster's default StorageClass automatically:
+The old approach (Docker volume + `postgres-storage.yml.template`) is replaced by a `hostPath` volume, following the same pattern already used by `CUSTOM_*_DIR` variables in `iom-single.yml.template`. When `POSTGRES_DATA_DIR` is set, the volume definition becomes:
 
-- On the **kind engine**: `standard` (provisioner: `rancher.io/local-path`)
-- On the **kubeadm engine**: `hostpath` (provisioner: `docker.io/hostpath`)
+```yaml
+- name: db-data
+  hostPath:
+    path: "${MOUNT_PREFIX}${POSTGRES_DATA_DIR}"
+```
 
-This follows the same pattern used by Helm charts like bitnami/postgresql, which omit `storageClassName` for the same reason.
+Docker Desktop maps host home directories into both the kubeadm VM and the kind node container, so this path is accessible in both engines. Data lives on the host filesystem outside the Kubernetes namespace and therefore survives `delete cluster`. When `POSTGRES_DATA_DIR` is empty, the `${KeepDatabaseYml}` prefix comments out the volume block and postgres runs without persistent storage.
+
+The old PVC section (previously added for default StorageClass provisioning) is removed entirely — no PVC, no StorageClass dependency.
 
 ---
 
 ### `templates/postgres-storage.yml.template` — removed
 
-This template created a `local` PersistentVolume backed by a Docker volume path. It was specific to the kubeadm engine and is now superseded by the inline PVC in `postgres.yml.template`. Removing it simplifies the codebase and makes storage provisioning engine-agnostic.
+This template created a `local` PersistentVolume backed by a Docker volume path. It was specific to the kubeadm engine and is now fully superseded by the hostPath approach. Removed.
 
 ---
 
-### `bin/devenv-cli.sh` — storage logic simplified
+### `bin/template-variables` — KEEP_DATABASE_DATA replaced by POSTGRES_DATA_DIR
 
-**`create-postgres`**: the block that ran `docker volume inspect` and applied `postgres-storage.yml.template` has been removed. The PVC is now always part of `postgres.yml` and is provisioned by the cluster automatically.
+`KEEP_DATABASE_DATA` (boolean, default `true`) is replaced by:
 
-**`delete-postgres`**: the block that deleted `postgres-storage.yml` resources has been removed. PVCs are deleted along with their namespace, so no separate cleanup step is needed.
+```bash
+POSTGRES_DATA_DIR="${POSTGRES_DATA_DIR}"
+if [ -n "$POSTGRES_DATA_DIR" ]; then
+    KeepDatabaseYml=''
+else
+    KeepDatabaseYml='#'
+fi
+```
 
-**`info-storage`**: updated to show the PersistentVolumeClaim status (from `postgres-pvc` in the namespace) instead of the now-irrelevant docker volume and PV information.
+Setting `POSTGRES_DATA_DIR` to a host path enables persistent storage; leaving it empty disables it. This is the same mental model as `CUSTOM_APPS_DIR` and friends — users already know it. `KeepDatabaseSh` is removed since it was only used in now-deleted storage command help text.
 
-**`help-create-storage` / `help-delete-storage`**: help text updated to note that the kind engine has no action to take for storage.
+`DOCKER_DB_IMAGE` default also updated from `postgres:12` (end-of-life) to `postgres:15`.
 
 ---
 
-### `bin/template-variables` — postgres default image updated
+### `bin/devenv-cli.sh` — storage commands removed, cluster commands simplified
 
-`DOCKER_DB_IMAGE` default changed from `postgres:12` (end-of-life October 2023) to `postgres:15`.
+**Removed entirely**: `create storage`, `delete storage`, `info storage` commands — functions, help functions, dispatch table entries, and all mentions in other help texts. The directory lifecycle is the user's responsibility, exactly as with `CUSTOM_*_DIR`.
+
+**`docker_volume_exists()`**: helper function removed (no longer needed).
+
+**`create-cluster`**: no longer calls `create-storage` — reduced to `create-namespace && create-postgres && create-mailserver && create-iom`.
+
+**`dump-load`**: removed the `delete-storage` / `create-storage` calls and the `KEEP_DATABASE_DATA` guard. The hostPath directory is simply reused across postgres restarts, so no storage renewal is needed when loading a dump.
+
+**`info-postgres`**: `KEEP_DATABASE_DATA` label replaced with `POSTGRES_DATA_DIR`.
+
+**`help-create-postgres`** / **`help-delete-postgres`** / **`help-delete-cluster`** / **`help-delete-namespace`**: updated to describe `POSTGRES_DATA_DIR` and clarify that host data is not affected by cluster deletion.
 
 ---
 
-### `templates/config.properties.template` — STORAGE_CLASS removed
+### `templates/config.properties.template` — POSTGRES_DATA_DIR documented
 
-The `STORAGE_CLASS` variable entry has been removed since it is no longer needed.
+`KEEP_DATABASE_DATA` entry replaced with `POSTGRES_DATA_DIR`, with a comment explaining the pattern (matching the style of `CUSTOM_APPS_DIR` documentation).
 
 ---
 
 ### `doc/00_installation.md` — kind engine section updated
 
-The Kubernetes engine selection section now describes both engines as equally supported without any additional configuration requirement, and links to `doc/09_docker_desktop_kind.md` for details.
+Both engines are now described as equally supported without any additional configuration requirement. Links to `doc/09_docker_desktop_kind.md` for details.
+
+---
+
+### `doc/01_first_steps.md`, `doc/04_operations.md`, `doc/05_development_process.md` — storage commands removed
+
+All references to `create storage`, `delete storage`, `info storage`, and `KEEP_DATABASE_DATA` replaced with `POSTGRES_DATA_DIR` and the hostPath approach. The first-steps walkthrough no longer includes a separate storage creation step.
 
 ---
 
@@ -59,7 +87,7 @@ The Kubernetes engine selection section now describes both engines as equally su
 
 A complete reference for the kind engine covering:
 - Why the old approach broke on kind (Docker container node cannot access host VM Docker volumes)
-- How the default StorageClass mechanism resolves this without configuration
+- How hostPath volumes work on both engines (Docker Desktop maps host directories into both)
 - How to detect which engine is active (`kubectl get storageclass` output for each)
 - Node count requirement and why (hostPath volumes are node-local)
 - A complete example properties file (identical for both engines)
@@ -67,9 +95,9 @@ A complete reference for the kind engine covering:
 
 ---
 
-### `doc/08_troubleshooting.md` — navigation link
+### `doc/08_troubleshooting.md` — navigation link + updated example output
 
-Adds a forward navigation link to the new chapter 09.
+Adds a forward navigation link to the new chapter 09. Example `info postgres` output updated to show `POSTGRES_DATA_DIR` instead of `KEEP_DATABASE_DATA`.
 
 ---
 
@@ -88,17 +116,16 @@ Documents the project structure, CLI usage, configuration system and architectur
 
 ### `test/` — new test suite
 
-**Unit tests** (`test/unit/`, `test/run-unit-tests.sh`): no cluster required, run anywhere with bash. Render each template with both `test.properties.kubeadm` and `test.properties.kind` and assert the YAML output is structurally correct — right images, right fields present/absent, no unsubstituted `${VAR}` references.
+**Unit tests** (`test/unit/`, `test/run-unit-tests.sh`): no cluster required, run anywhere with bash. Render each template with both `test.properties.kubeadm` and `test.properties.kind` and assert the YAML output is structurally correct — right images, right fields present/absent, no unsubstituted `${VAR}` references. Both engine property files now set `POSTGRES_DATA_DIR=/tmp/test-pgdata`.
 
-**Integration tests** (`test/integration/`, `test/run-integration-tests.sh`): require a running Docker Desktop cluster with the kind engine. Four test scripts:
+**Integration tests** (`test/integration/`, `test/run-integration-tests.sh`): require a running Docker Desktop cluster with the kind engine. Three test scripts:
 
 | Script | What it tests |
 |---|---|
-| `test_storage.sh` | `create/delete storage` — no docker volume created on kind |
-| `test_postgres.sh` | PVC provisioned by default StorageClass, binds, pod reaches Running |
+| `test_postgres.sh` | hostPath volume present in pod spec, pod reaches Running |
 | `test_mailserver.sh` | mailsrv pod reaches Running, LoadBalancer gets external IP |
 | `test_cluster_lifecycle.sh` | Full `create cluster` → all 3 pods Running → all services have external IPs → `delete cluster` |
 
 `setup.sh` handles loading all images into the kind node (`docker save | docker exec -i ... ctr import`) since kind node containers have their own isolated image cache. `teardown.sh` cleans up if tests fail partway through.
 
-Two separate properties files are used to avoid namespace collisions when running all tests in sequence: `test-component.properties.kind` (`ID=iom-unit`) for the component tests and `test.properties.kind` (`ID=iom-test`) for the lifecycle test.
+Two separate properties files are used to avoid namespace collisions when running all tests in sequence: `test-component.properties.kind` (`ID=iom-unit`, `POSTGRES_DATA_DIR=/tmp/iom-unit-pgdata`) for the component tests and `test.properties.kind` (`ID=iom-test`, `POSTGRES_DATA_DIR=/tmp/iom-test-pgdata`) for the lifecycle test.
