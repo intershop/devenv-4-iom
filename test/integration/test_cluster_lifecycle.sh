@@ -16,7 +16,6 @@ echo "=== cluster lifecycle (kind) ==="
 
 # Ensure clean state from any previous run
 "$CLI" "$PROPS" delete cluster > /dev/null 2>&1 || true
-"$CLI" "$PROPS" delete storage > /dev/null 2>&1 || true
 kubectl delete namespace "$NAMESPACE" --context="$CONTEXT" --wait > /dev/null 2>&1 || true
 
 # ---- create cluster ----
@@ -102,9 +101,5 @@ if kubectl get namespace "$NAMESPACE" --context="$CONTEXT" > /dev/null 2>&1; the
 else
     echo "  PASS: namespace $NAMESPACE is gone"
 fi
-
-test_case "delete storage succeeds"
-OUTPUT=$("$CLI" "$PROPS" delete storage 2>&1)
-assert_exit_success "exit code 0" $?
 
 test_summary

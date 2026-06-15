@@ -105,9 +105,6 @@ _Cluster_ in context of _devenv-4-iom_ does not mean a scalable and high availab
 
 The process of cluster creation will take some minutes (between 2 and 10, depending on your hardware). During this time we should take a look at the statuses of the (sub-)systems.
 
-    # get status of storage
-    devenv-cli.sh info storage
-
     # get info about mail server
     devenv-cli.sh info mailserver
 
@@ -125,7 +122,7 @@ Mail server and PostgreSQL server start very fast. The output of the according `
     Kubernetes:
     ===========
     namespace:                  firststeps
-    KEEP_DATABASE_DATA:         true
+    POSTGRES_DATA_DIR:          /home/user/.devenv-4-iom/firststeps/pgdata
     NAME       READY   STATUS    RESTARTS   AGE
     postgres   1/1     Running   0          0m22s
     Kubernetes:
@@ -288,15 +285,13 @@ As you can see, the method shown above is not intended to show the results of yo
 
 ## Delete IOM Cluster
 
-Now it is time to clean up the environment. To do so, you have to execute the following two steps:
-
-* Delete IOM cluster
-* Delete persistent storage
-
-Unlike the cluster creation step, which included the creation of the persistent storage as well, the cluster deletion step does not affect the persistent storage. This way you could simply create a new cluster which uses the old database data. To delete the persistent storage, you have to do it explicitly by executing the according command.
+Now it is time to clean up the environment. Delete the IOM cluster with the following command:
 
     devenv-cli.sh delete cluster
-    devenv-cli.sh delete storage
+
+Data in `POSTGRES_DATA_DIR` on the host is not affected. You could create a new cluster at any time which will reuse the existing database data. To remove the database data as well, delete the directory manually:
+
+    rm -rf /path/to/POSTGRES_DATA_DIR
 
 After deleting all resources belonging to the IOM developer instance, it is also save to delete the configuration file.
 

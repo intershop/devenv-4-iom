@@ -176,8 +176,6 @@ When starting IOM and the connected database is empty, the IOM pod loads the ini
 * The custom dump can only be loaded if the database is empty. The `dump load` command of the command line client executes all the necessary steps to restart IOM with an empty database.
   1. [Delete IOM](03_operations.md#delete_iom)
   1. [Delete Postgres database](03_operations.md#delete_postgres)
-  1. [Delete Local _Docker_ Volume](03_operations.md#delete_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
-  1. [Create Local _Docker_ Volume](03_operations.md#create_storage), required only if `KEEP_DATABASE_DATA` is set to `true`
   1. [Create Postgres Database](03_operations.md#create_postgres)
   1. [Create IOM](03_operations.md#create_iom)
 * The custom dump can only be loaded if the database is empty. When you are using an external database (`PGHOST` is set), the steps listed above will not have any effect. You must take care of purging the external database and recreating the IOM installation yourself.

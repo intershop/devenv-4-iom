@@ -1,15 +1,3 @@
-${StorageClassYml_}kind: PersistentVolumeClaim
-${StorageClassYml_}apiVersion: v1
-${StorageClassYml_}metadata:
-${StorageClassYml_}  name: postgres-pvc
-${StorageClassYml_}spec:
-${StorageClassYml_}  accessModes:
-${StorageClassYml_}  - ReadWriteOnce
-${StorageClassYml_}  storageClassName: ${STORAGE_CLASS}
-${StorageClassYml_}  resources:
-${StorageClassYml_}    requests:
-${StorageClassYml_}      storage: 1Gi
-${StorageClassYml_}---
 kind: Pod
 apiVersion: v1
 metadata:
@@ -19,8 +7,8 @@ metadata:
 spec:
   volumes:
 ${KeepDatabaseYml}  - name: db-data
-${KeepDatabaseYml}    persistentVolumeClaim:
-${KeepDatabaseYml}      claimName: postgres-pvc
+${KeepDatabaseYml}    hostPath:
+${KeepDatabaseYml}      path: "${MOUNT_PREFIX}${POSTGRES_DATA_DIR}"
   containers:
   - name: postgres
     image: ${DOCKER_DB_IMAGE}
@@ -49,4 +37,3 @@ spec:
       targetPort: ${PORT_DB}
       name: postgres
   type: LoadBalancer
-  

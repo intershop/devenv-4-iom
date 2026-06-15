@@ -204,16 +204,11 @@ OTEL_COLLECTOR="${OTEL_COLLECTOR}"
 # Postgres arguments
 POSTGRES_ARGS=( ${PostgresArgsShell} )
 
-# If you want to keep database data even after a Kubernetes restart, you have to set
-# KEEP_DATABASE_DATA to true, otherwise false.
-KEEP_DATABASE_DATA=${KEEP_DATABASE_DATA}
-
-# When using the kind engine in Docker Desktop (Settings > Kubernetes > Kubernetes engine),
-# set STORAGE_CLASS to the name of the StorageClass that provides dynamic volume provisioning.
-# For the kind engine, use: STORAGE_CLASS=standard
-# Leave empty when using the kubeadm engine (default prior to Docker Desktop 4.40).
-# See: https://github.com/intershop/devenv-4-iom/blob/main/doc/09_docker_desktop_kind.md
-STORAGE_CLASS=${STORAGE_CLASS}
+# To persist database data across cluster restarts, set POSTGRES_DATA_DIR to a
+# directory on the host (absolute path or relative to the project directory).
+# Leave empty to run postgres without persistent storage.
+# Example: POSTGRES_DATA_DIR=~/.devenv-4-iom/${ID}/pgdata
+POSTGRES_DATA_DIR=${POSTGRES_DATA_DIR}
 
 ################################################################################
 # Log seetings

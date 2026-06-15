@@ -33,9 +33,9 @@ Using _Docker-Desktop_ is recommended. It provides a _Docker_ environment and al
 Docker Desktop supports two Kubernetes cluster engines, which can be selected under _Settings > Kubernetes > Kubernetes engine_:
 
 - **kubeadm** — the classic engine, used prior to Docker Desktop 4.40.
-- **kind** — the new default engine since Docker Desktop 4.40. Requires `STORAGE_CLASS=standard` in your _devenv-4-iom_ configuration (see [Configuration](02_configuration.md)).
+- **kind** — the new default engine since Docker Desktop 4.40.
 
-> **Important:** _devenv-4-iom_ supports both engines. When using the kind engine, you **must** set `STORAGE_CLASS=standard` in your configuration file. Without it, the PostgreSQL storage cannot be provisioned and IOM will not start.
+> **Important:** _devenv-4-iom_ supports both engines without any additional configuration. See [Docker Desktop — kind Engine](09_docker_desktop_kind.md) for details.
 
 > **Node count:** When using the kind engine, the node count must be set to **1**. _devenv-4-iom_ uses `hostPath` volumes to mount local development directories into the IOM container. These are only accessible on the node where the pod is scheduled, which requires a single-node cluster.
 

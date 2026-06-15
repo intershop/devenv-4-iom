@@ -79,28 +79,14 @@ PostgresArgsShell=$(COUNTER=0; \
                         COUNTER=$(expr $COUNTER + 1); \
                     done)
 
-# Add volumes / mounts if the user wants to keep databse data or not.
-KEEP_DATABASE_DATA="${KEEP_DATABASE_DATA:-true}"
-if [ "$KEEP_DATABASE_DATA" = true ] ; then
+# Directory on the host to persist database data across cluster restarts.
+# Leave empty to run postgres without persistent storage (data lost on pod restart).
+# Example: POSTGRES_DATA_DIR=~/.devenv-4-iom/my-iom/pgdata
+POSTGRES_DATA_DIR="${POSTGRES_DATA_DIR}"
+if [ -n "$POSTGRES_DATA_DIR" ]; then
     KeepDatabaseYml=''
-    KeepDatabaseSh=''
 else
     KeepDatabaseYml='#'
-    KeepDatabaseSh='#'
-fi
-
-# When STORAGE_CLASS is set, the Kubernetes cluster provides dynamic volume
-# provisioning (e.g. kind with rancher.io/local-path). The postgres PVC is
-# then defined inline in postgres.yml.template and references this StorageClass
-# directly. The docker volume + postgres-storage.yml.template path is skipped.
-# Leave empty to use the classic docker-volume-based path (kubeadm / Docker Desktop).
-STORAGE_CLASS="${STORAGE_CLASS}"
-if [ -z "$STORAGE_CLASS" ]; then
-    StorageClassYml_='#'
-    NoStorageClassYml_=''
-else
-    StorageClassYml_=''
-    NoStorageClassYml_='#'
 fi
 
 # remove trailing slash
@@ -404,7 +390,7 @@ OMS_DB_SQLHASH="${OMS_DB_SQLHASH:-false}"
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
-DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:12}"
+DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:15}"
 MAILSRV_IMAGE="${MAILSRV_IMAGE:-axllent/mailpit}"
 IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0}"
 IOM_CONFIG_IMAGE="${IOM_CONFIG_IMAGE}"

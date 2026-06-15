@@ -12,7 +12,4 @@ log() { echo "[teardown] $*"; }
 log "Deleting cluster resources..."
 "$CLI" "$PROPS" delete cluster 2>/dev/null || true
 
-log "Deleting storage..."
-"$CLI" "$PROPS" delete storage 2>/dev/null || true
-
 log "Teardown complete."

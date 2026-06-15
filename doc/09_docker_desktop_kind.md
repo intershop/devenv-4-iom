@@ -5,21 +5,24 @@ Docker Desktop supports two Kubernetes cluster engines, selectable under _Settin
 - **kubeadm** — the classic engine, used prior to Docker Desktop 4.40.
 - **kind** — the new default engine since Docker Desktop 4.40.
 
-_devenv-4-iom_ supports both engines. The only required change when switching to the kind engine is setting the `STORAGE_CLASS` configuration variable.
+_devenv-4-iom_ supports both engines without any configuration change.
 
-## Why a Configuration Change is Required
+## How Storage Works on Each Engine
 
-The kubeadm engine exposes a Docker-managed filesystem path directly to the Kubernetes node, which _devenv-4-iom_ uses to back the PostgreSQL PersistentVolume with a local Docker volume. With the kind engine, the Kubernetes node runs as a Docker container and does not have access to Docker volume paths from the host. Persistent storage must therefore be provided through a Kubernetes StorageClass that supports dynamic provisioning.
+### kubeadm engine
 
-The kind engine ships with the `standard` StorageClass (using `rancher.io/local-path` as provisioner), which handles this automatically.
+The kubeadm engine exposes Docker volume paths directly to the Kubernetes node. _devenv-4-iom_ previously relied on this by inspecting the Docker volume mount path and injecting it into a Kubernetes `local` PersistentVolume backed by that path.
 
-## Required Configuration
+### kind engine
 
-Add the following line to your `devenv.project.properties` or `devenv.user.properties`:
+The kind engine runs the Kubernetes node as a Docker container. That container has no access to Docker volume paths from the host VM, so the old approach breaks: the PVC never binds and PostgreSQL never starts.
 
-    STORAGE_CLASS=standard
+_devenv-4-iom_ now avoids this entirely by omitting the `storageClassName` field from the PersistentVolumeClaim. Kubernetes then uses the cluster's default StorageClass automatically:
 
-With this setting, _devenv-4-iom_ skips the Docker volume creation step entirely and lets the `standard` StorageClass provision storage for PostgreSQL automatically.
+- On the **kind engine**: `standard` (provisioner: `rancher.io/local-path`) — set as default by Docker Desktop.
+- On the **kubeadm engine**: `hostpath` (provisioner: `docker.io/hostpath`) — set as default by Docker Desktop.
+
+No configuration change is needed when switching between engines.
 
 ## Node Count
 
@@ -42,23 +45,23 @@ The output for the **kubeadm engine** contains `docker.io/hostpath` as provision
     NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION
     hostpath (default)   docker.io/hostpath   Delete          Immediate           false
 
-## Complete Example Configuration for kind Engine
+## Complete Example Configuration
+
+The configuration is the same for both engines:
 
     ID=my-iom
     KUBERNETES_CONTEXT=docker-desktop
     IMAGE_PULL_POLICY=IfNotPresent
     IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
     IOM_IMAGE=docker.tools.intershop.com/iom/intershophub/iom:5.1.0
-    STORAGE_CLASS=standard
 
 ## Switching Between Engines
 
 When switching from kubeadm to kind (or back), first delete your existing cluster and storage:
 
     devenv-cli.sh delete cluster
-    devenv-cli.sh delete storage
 
-Then change the Docker Desktop engine setting, restart Docker Desktop, and update `STORAGE_CLASS` in your configuration file before creating a new cluster.
+Then change the Docker Desktop engine setting and restart Docker Desktop before creating a new cluster.
 
 > **Note:** Persistent database data stored under the kubeadm engine is not transferable to the kind engine and vice versa. A fresh cluster always starts with an empty database.
 

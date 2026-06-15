@@ -49,7 +49,7 @@ Before searching for a problem, the status of the Postgres database should be ch
     Kubernetes:
     ===========
     namespace:                  test
-    KEEP_DATABASE_DATA:         true
+    POSTGRES_DATA_DIR:          /home/user/.devenv-4-iom/my-iom/pgdata
     NAME       READY   STATUS    RESTARTS   AGE
     postgres   1/1     Running   0          74m
     --------------------------------------------------------------------------------
