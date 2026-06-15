@@ -5,65 +5,58 @@ Docker Desktop supports two Kubernetes cluster engines, selectable under _Settin
 - **kubeadm** — the classic engine, used prior to Docker Desktop 4.40.
 - **kind** — the new default engine since Docker Desktop 4.40.
 
-_devenv-4-iom_ supports both engines without any configuration change.
+**Only the kubeadm engine is supported by _devenv-4-iom_.** The kind engine cannot be used — see below for the reason.
 
-## How Storage Works on Each Engine
+## Why the kind Engine is Not Supported
 
-### kubeadm engine
+_devenv-4-iom_ uses `hostPath` volumes to mount local directories into the Kubernetes cluster. This is how all `CUSTOM_*_DIR` settings work (custom apps, templates, XSL files, SQL config, etc.) and how `POSTGRES_DATA_DIR` persists database data across restarts.
 
-The kubeadm engine exposes Docker volume paths directly to the Kubernetes node. _devenv-4-iom_ previously relied on this by inspecting the Docker volume mount path and injecting it into a Kubernetes `local` PersistentVolume backed by that path.
+With the kind engine, the Kubernetes node runs as a Docker container. That container receives a snapshot of the host filesystem when it starts, but subsequent changes on the host are **not** propagated into the node. `hostPath` volumes therefore see a stale, read-only copy — not the live host directory. The consequence is:
 
-### kind engine
+- `CUSTOM_*_DIR` mounts are empty or frozen — development workflows do not work.
+- `POSTGRES_DATA_DIR` directory appears empty inside the node — data is not persisted.
 
-The kind engine runs the Kubernetes node as a Docker container. That container has no access to Docker volume paths from the host VM, so the old approach breaks: the PVC never binds and PostgreSQL never starts.
+There is no workaround for this within the standard Docker Desktop kind setup.
 
-_devenv-4-iom_ now avoids this entirely by omitting the `storageClassName` field from the PersistentVolumeClaim. Kubernetes then uses the cluster's default StorageClass automatically:
+## What to Do
 
-- On the **kind engine**: `standard` (provisioner: `rancher.io/local-path`) — set as default by Docker Desktop.
-- On the **kubeadm engine**: `hostpath` (provisioner: `docker.io/hostpath`) — set as default by Docker Desktop.
+**Option 1 — Switch Docker Desktop back to kubeadm**
 
-No configuration change is needed when switching between engines.
+In Docker Desktop, go to _Settings > Kubernetes > Kubernetes engine_ and select **kubeadm**. Restart Docker Desktop. The kubeadm engine exposes host directories correctly and all _devenv-4-iom_ features work.
 
-## Node Count
+> After switching engines, delete and recreate your cluster:
+>
+>     devenv-cli.sh delete cluster
+>     devenv-cli.sh create cluster
 
-When using the kind engine, the node count must be set to **1** (_Settings > Kubernetes > Node count_). _devenv-4-iom_ mounts local development directories (custom apps, templates, XSL files, etc.) as `hostPath` volumes into the IOM container. These paths are only accessible on the node where the pod is scheduled. A multi-node cluster would cause IOM pods to be scheduled on nodes where the directories are not available.
+**Option 2 — Migrate to Rancher Desktop (recommended)**
+
+[Rancher Desktop](https://rancherdesktop.io/) is the recommended platform going forward. It uses k3s in a proper virtual machine where `hostPath` volumes work correctly on all platforms. See [Rancher Desktop](10_rancher_desktop.md) for setup instructions.
 
 ## Checking Your Current Engine
 
-To verify which engine your Docker Desktop cluster is using, check the available StorageClasses:
+To verify which engine your Docker Desktop cluster is using:
 
     kubectl get storageclass
 
-The output for the **kind engine** contains `rancher.io/local-path` as provisioner:
+Output for the **kind engine** — `rancher.io/local-path` provisioner, not supported:
 
     NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION
     hostpath             rancher.io/local-path   Delete          WaitForFirstConsumer   false
     standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false
 
-The output for the **kubeadm engine** contains `docker.io/hostpath` as provisioner:
+Output for the **kubeadm engine** — `docker.io/hostpath` provisioner, supported:
 
     NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION
     hostpath (default)   docker.io/hostpath   Delete          Immediate           false
 
-## Complete Example Configuration
-
-The configuration is the same for both engines:
+## Example Configuration (kubeadm)
 
     ID=my-iom
     KUBERNETES_CONTEXT=docker-desktop
     IMAGE_PULL_POLICY=IfNotPresent
     IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
     IOM_IMAGE=docker.tools.intershop.com/iom/intershophub/iom:5.1.0
-
-## Switching Between Engines
-
-When switching from kubeadm to kind (or back), first delete your existing cluster and storage:
-
-    devenv-cli.sh delete cluster
-
-Then change the Docker Desktop engine setting and restart Docker Desktop before creating a new cluster.
-
-> **Note:** Persistent database data stored under the kubeadm engine is not transferable to the kind engine and vice versa. A fresh cluster always starts with an empty database.
 
 ---
 [< Troubleshooting](08_troubleshooting.md) | [Rancher Desktop >](10_rancher_desktop.md) | [^ Index](../README.md)
