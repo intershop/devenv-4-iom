@@ -1914,6 +1914,7 @@ EOF
 Server Settings:
 ================
 POSTGRES_ARGS:              ${POSTGRES_ARGS[*]}
+POSTGRES_DATA_DIR:          $POSTGRES_DATA_DIR
 --------------------------------------------------------------------------------
 Docker:
 =======
@@ -1928,7 +1929,6 @@ EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
-POSTGRES_DATA_DIR:          $POSTGRES_DATA_DIR
 
 $(kubectl get pods --namespace=$EnvId --context="$KUBERNETES_CONTEXT" -l app=postgres)
 
