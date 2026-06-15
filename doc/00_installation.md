@@ -17,27 +17,22 @@ If you are not able to locate `settings.json`, see [User and Workspace Settings]
 
 Bash is part of Mac OS X, there is nothing to do. It's not required that bash is your default shell.
 
-### Docker-Desktop
-Using _Docker-Desktop_ is recommended. It provides a _Docker_ environment and also _Kubernetes_ functionality, which is required to use _devenv-4-iom_. Other _Docker/Kubernetes_ implementations can be used along with _devenv-4-iom_ too, but all of them have restrictions that make their usage much more complicated.
+### Rancher Desktop
+
+[Rancher Desktop](https://rancherdesktop.io/) is the recommended Kubernetes platform for _devenv-4-iom_. It is open-source and free for commercial use. For installation and platform-specific setup instructions (including the Windows path format requirement), see [Rancher Desktop](10_rancher_desktop.md).
+
+### Docker Desktop (alternative)
+
+Docker Desktop can be used as an alternative. Both the **kubeadm** and **kind** Kubernetes engines are supported. See [Docker Desktop — kind Engine](09_docker_desktop_kind.md) for details.
 
 > **Caution:** While installing _Docker-Desktop_ on **Windows** you will be signed-out and your PC will probably be restarted. So save everything before installing.
 
-1. Install [WSL2] (https://docs.microsoft.com/en-us/windows/wsl/install)
+1. Install [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install)
 1. Download and install [Docker-Desktop](https://www.docker.com/products/docker-desktop).
 1. Enable _Kubernetes in Docker Desktop_.
     - _Docker Icon > Preferences > Kubernetes > Enable Kubernetes_.
-1. Optional: Docker provides a link with information on how to set resource usage (Settings > Resources).
 
-#### Kubernetes Engine Selection
-
-Docker Desktop supports two Kubernetes cluster engines, which can be selected under _Settings > Kubernetes > Kubernetes engine_:
-
-- **kubeadm** — the classic engine, used prior to Docker Desktop 4.40.
-- **kind** — the new default engine since Docker Desktop 4.40.
-
-> **Important:** _devenv-4-iom_ supports both engines without any additional configuration. See [Docker Desktop — kind Engine](09_docker_desktop_kind.md) for details.
-
-> **Node count:** When using the kind engine, the node count must be set to **1**. _devenv-4-iom_ uses `hostPath` volumes to mount local development directories into the IOM container. These are only accessible on the node where the pod is scheduled, which requires a single-node cluster.
+When using Docker Desktop, set `KUBERNETES_CONTEXT=docker-desktop` in your configuration file.
 
 ### jq - Command-Line JSON Processor
 _jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool.

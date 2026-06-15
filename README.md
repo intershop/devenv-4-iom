@@ -13,6 +13,7 @@ The following chapters provide a detailed insight into various aspects of instal
 - [Metrics](doc/07_metrics.md)
 - [Troubleshooting](doc/08_troubleshooting.md)
 - [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md)
+- [Rancher Desktop](doc/10_rancher_desktop.md)
 
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`:
 
@@ -32,11 +33,15 @@ a certain version of IOM.
 
 ## New Features
 
-### Support for Docker Desktop kind Engine <!-- #117544 -->
+### Rancher Desktop Support <!-- #117544 -->
 
-Docker Desktop 4.40 introduced the _kind_ engine as the new default for Kubernetes clusters. _devenv-4-iom_ now supports both the classic _kubeadm_ engine and the new _kind_ engine.
+[Rancher Desktop](https://rancherdesktop.io/) is now the recommended Kubernetes platform for _devenv-4-iom_. It is open-source, free for commercial use, and correctly exposes host directories into the Kubernetes node on macOS, Linux, and Windows. See [Rancher Desktop](doc/10_rancher_desktop.md) for installation and setup instructions.
 
-The only required change is setting `STORAGE_CLASS=standard` in your configuration when using the kind engine. See [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md) for details and a guide on switching between engines.
+Docker Desktop continues to be supported. See [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md) for details on the kubeadm and kind engines.
+
+### Persistent Database Storage via `POSTGRES_DATA_DIR` <!-- #117544 -->
+
+The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been replaced by the `POSTGRES_DATA_DIR` property. Set it to a host directory path to persist PostgreSQL data across cluster restarts. Absolute and relative paths are supported; relative paths are resolved against the directory of `devenv.project.properties`, or the current working directory if no project-specific configuration exists. Leave it empty (the default) to run PostgreSQL without persistent storage.
 
 ### Updated Default PostgreSQL Version
 

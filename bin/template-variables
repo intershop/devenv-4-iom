@@ -8,7 +8,7 @@ DEVENV4IOM_VERSION=2.8.0-SNAPSHOT
 ################################################################################
 
 # Kubernetes context must never be empty.
-KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT:-docker-desktop}"
+KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT:-rancher-desktop}"
 
 # used for calculation of automatic port forwarding
 INDEX="${INDEX:-0}"

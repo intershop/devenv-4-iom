@@ -7,9 +7,11 @@ It's possible to set the according absolute path for each `CUSTOM_*_DIR`.
 
 However, it's even better to define the `CUSTOM_*_DIR` properties in _devenv.project.properties_ which is maintained centrally along with the project code. In this case, absolute paths cannot be used, since every developer has an individual local environment. `CUSTOM_*_DIR` properties have to hold relative paths instead, which are expanded at runtime to absolute paths. The base directory for the relative paths is the directory where _devenv.propject.properties_ is located.
 
-Any directory, that is referenced by a `CUSTOM_*_DIR` property has to be [shared with _Docker_ Desktop](https://blogs.msdn.microsoft.com/stevelasker/2016/06/14/configuring-docker-for-windows-volumes/).
+Any directory that is referenced by a `CUSTOM_*_DIR` property has to be accessible inside the Kubernetes node. On macOS and Linux this works automatically. On Windows, see the note below.
 
-Depending on the version of Windows Subsystem for Linux (WSL), the property `MOUNT_PREFIX` might come into play. When using WSL2 (and only in this particular case), `MOUNT_PREFIX` has to be set to `/run/desktop/mnt/host`. In any other case, it must remain empty.
+**Windows (Git Bash + Rancher Desktop):** Git Bash uses POSIX paths like `/c/Users/myuser/myproject`, but the Rancher Desktop Kubernetes node expects paths in the form `/mnt/c/Users/myuser/myproject`. Set `MOUNT_PREFIX=/mnt` in your properties file so that _devenv-4-iom_ prepends this prefix to every `hostPath` it constructs. See [Rancher Desktop](10_rancher_desktop.md) for details.
+
+**Windows (Git Bash + Docker Desktop + WSL2):** Set `MOUNT_PREFIX=/run/desktop/mnt/host`.
 
 ## Add a New Custom Built Artifact
 

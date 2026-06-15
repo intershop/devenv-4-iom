@@ -66,4 +66,4 @@ Then change the Docker Desktop engine setting and restart Docker Desktop before 
 > **Note:** Persistent database data stored under the kubeadm engine is not transferable to the kind engine and vice versa. A fresh cluster always starts with an empty database.
 
 ---
-[< Troubleshooting](08_troubleshooting.md) | [^ Index](../README.md)
+[< Troubleshooting](08_troubleshooting.md) | [Rancher Desktop >](10_rancher_desktop.md) | [^ Index](../README.md)
