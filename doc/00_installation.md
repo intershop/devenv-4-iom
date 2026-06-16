@@ -49,10 +49,17 @@ _jq_ is not included in _devenv-4-iom_ and _devenv-4-iom_ does not depend on it 
 
 **Mac OS X**
 
-_jq_ is not part of a standard distribution of Mac OS X. To install additional tools like _jq_, it is recommended to use one of the open source package management systems. Intershop recommends using [_Mac Ports_](https://www.macports.org/). Please follow the [installation instruction](https://www.macports.org/install.php) to set up _Mac Ports_. Once _Mac Ports_ is installed, the installation of _jq_ can be done by using the following command:
-```sh
-sudo port install jq
-```
+_jq_ is not part of a standard macOS distribution. Install it using a package manager of your choice:
+
+- [Homebrew](https://brew.sh/): `brew install jq`
+- [MacPorts](https://www.macports.org/): `sudo port install jq`
+
+**Linux**
+
+Install _jq_ using your distribution's package manager, for example:
+
+- Debian/Ubuntu: `sudo apt-get install jq`
+- Fedora/RHEL: `sudo dnf install jq`
 
 ## <a name="setup_devenv"/>Setup _devenv-4-iom_
 To use _devenv-4-iom_, you need a local copy of it on your computer. This copy can be created simply by cloning the sources. The _main_ branch always contains the latest release-version.
