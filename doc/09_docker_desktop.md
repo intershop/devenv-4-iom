@@ -16,6 +16,10 @@ Docker Desktop supports two Kubernetes cluster engines, selectable under _Settin
 1. Enable Kubernetes: _Settings > Kubernetes > Enable Kubernetes_.
 1. Select the kubeadm engine: _Settings > Kubernetes > Kubernetes engine > kubeadm_.
 
+### Windows
+
+On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the Configuration section below.
+
 ## Why the kind Engine is Not Supported
 
 _devenv-4-iom_ uses `hostPath` volumes to mount local directories into the Kubernetes cluster. This is how all `CUSTOM_*_DIR` settings work (custom apps, templates, XSL files, SQL config, etc.), how `CUSTOM_SHARE_DIR` provides access to the IOM shared filesystem, and how `POSTGRES_DATA_DIR` persists database data across restarts.
@@ -62,13 +66,23 @@ Output for the **kubeadm engine** — supported. Recognisable by a single `hostp
 
 ## Configuration
 
-The only setting specific to Docker Desktop is `KUBERNETES_CONTEXT`. Set it in your `devenv.user.properties`:
+Set the following in your `devenv.user.properties`:
 
 ```
 KUBERNETES_CONTEXT=docker-desktop
 ```
 
-Docker Desktop registers its cluster under the context name `docker-desktop`, so this value must match exactly. All other configuration settings are independent of the Kubernetes platform. See [Configuration](02_configuration.md) for details on where to set this property.
+Docker Desktop registers its cluster under the context name `docker-desktop`, so this value must match exactly.
+
+For **Windows only**, also add:
+
+```
+MOUNT_PREFIX=/run/desktop/mnt/host
+```
+
+Git Bash represents Windows paths as `/c/Users/...`, but the Docker Desktop Kubernetes node expects them under `/run/desktop/mnt/host/c/Users/...`. `MOUNT_PREFIX` bridges this gap.
+
+See [Configuration](02_configuration.md) for details on where to set these properties.
 
 ---
 [< Troubleshooting](08_troubleshooting.md) | [Rancher Desktop >](10_rancher_desktop.md) | [^ Index](../README.md)

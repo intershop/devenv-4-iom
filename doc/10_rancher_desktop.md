@@ -27,30 +27,11 @@ _devenv-4-iom_ relies on `hostPath` volumes to mount local development directori
 2. Download and install [Rancher Desktop](https://rancherdesktop.io/).
 3. Kubernetes is enabled by default.
 
-#### Path Format for Windows (Git Bash)
-
-On Windows, _devenv-4-iom_ is run from Git Bash. Git Bash represents Windows paths using the POSIX convention:
-
-- Git Bash: `/c/Users/myuser/myproject`
-- Windows native: `C:\Users\myuser\myproject`
-
-Inside the Rancher Desktop WSL2 virtual machine, Windows drives are accessible at `/mnt/c/`, `/mnt/d/`, etc. The Kubernetes node sees paths in the form `/mnt/c/Users/myuser/myproject`.
-
-This means the path format that _devenv-4-iom_ passes via `CUSTOM_*_DIR` or `POSTGRES_DATA_DIR` (in Git Bash format, e.g. `/c/Users/...`) does not match what the Kubernetes node expects (`/mnt/c/Users/...`).
-
-To bridge this gap, set `MOUNT_PREFIX=/mnt` in your `devenv.user.properties` or `devenv.project.properties`:
-
-```
-MOUNT_PREFIX=/mnt
-```
-
-_devenv-4-iom_ prepends this value to every `hostPath` it constructs, turning `/c/Users/...` into `/mnt/c/Users/...` — which is exactly what the Rancher Desktop Kubernetes node expects.
-
-> **Important:** Use the Git Bash path format `/c/Users/...` for all `CUSTOM_*_DIR` and `POSTGRES_DATA_DIR` settings. Do **not** write `/mnt/c/Users/...` in those variables; the `MOUNT_PREFIX` takes care of the translation.
+On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the Configuration section below.
 
 ## Configuration
 
-The settings specific to Rancher Desktop are `KUBERNETES_CONTEXT` and, on Windows, `MOUNT_PREFIX`. Set them in your `devenv.user.properties`:
+Set the following in your `devenv.user.properties`:
 
 ```
 KUBERNETES_CONTEXT=rancher-desktop
@@ -63,6 +44,8 @@ For **Windows only**, also add:
 ```
 MOUNT_PREFIX=/mnt
 ```
+
+Git Bash represents Windows paths as `/c/Users/...`, but the Rancher Desktop Kubernetes node expects them under `/mnt/c/Users/...`. `MOUNT_PREFIX` bridges this gap — always use the Git Bash path format in `CUSTOM_*_DIR` and `POSTGRES_DATA_DIR` settings and let `MOUNT_PREFIX` handle the translation.
 
 See [Configuration](02_configuration.md) for details on where to set these properties.
 
