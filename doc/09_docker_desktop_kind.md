@@ -39,13 +39,13 @@ To verify which engine your Docker Desktop cluster is using:
 
     kubectl get storageclass
 
-Output for the **kind engine** — `rancher.io/local-path` provisioner, not supported:
+Output for the **kind engine** — not supported. Recognisable by the `standard` StorageClass and `WaitForFirstConsumer` binding mode:
 
     NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION
     hostpath             rancher.io/local-path   Delete          WaitForFirstConsumer   false
     standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false
 
-Output for the **kubeadm engine** — `docker.io/hostpath` provisioner, supported:
+Output for the **kubeadm engine** — supported. Recognisable by `docker.io/hostpath` as provisioner and `Immediate` binding mode:
 
     NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION
     hostpath (default)   docker.io/hostpath   Delete          Immediate           false
