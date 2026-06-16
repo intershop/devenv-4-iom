@@ -23,16 +23,7 @@ Bash is part of Mac OS X, there is nothing to do. It's not required that bash is
 
 ### Docker Desktop (alternative)
 
-Docker Desktop can be used as an alternative. Only the **kubeadm** engine is supported — the **kind** engine (the new default since Docker Desktop 4.40) cannot be used with _devenv-4-iom_. See [Docker Desktop](09_docker_desktop.md) for details.
-
-> **Caution:** While installing _Docker-Desktop_ on **Windows** you will be signed-out and your PC will probably be restarted. So save everything before installing.
-
-1. Install [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install)
-1. Download and install [Docker-Desktop](https://www.docker.com/products/docker-desktop).
-1. Enable _Kubernetes in Docker Desktop_.
-    - _Docker Icon > Preferences > Kubernetes > Enable Kubernetes_.
-
-When using Docker Desktop, set `KUBERNETES_CONTEXT=docker-desktop` in your configuration file.
+Docker Desktop can be used as an alternative. Only the **kubeadm** engine is supported — the **kind** engine (the new default since Docker Desktop 4.40) cannot be used with _devenv-4-iom_. For installation and setup instructions, see [Docker Desktop](09_docker_desktop.md).
 
 ### jq - Command-Line JSON Processor
 _jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool.

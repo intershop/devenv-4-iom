@@ -7,6 +7,15 @@ Docker Desktop supports two Kubernetes cluster engines, selectable under _Settin
 
 **Only the kubeadm engine is supported by _devenv-4-iom_.** The kind engine cannot be used — see below for the reason.
 
+## Installation
+
+> **Caution:** While installing Docker Desktop on **Windows** you will be signed-out and your PC will probably be restarted. Save everything before installing.
+
+1. Install [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install) (Windows only).
+1. Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop).
+1. Enable Kubernetes: _Settings > Kubernetes > Enable Kubernetes_.
+1. Select the kubeadm engine: _Settings > Kubernetes > Kubernetes engine > kubeadm_.
+
 ## Why the kind Engine is Not Supported
 
 _devenv-4-iom_ uses `hostPath` volumes to mount local directories into the Kubernetes cluster. This is how all `CUSTOM_*_DIR` settings work (custom apps, templates, XSL files, SQL config, etc.), how `CUSTOM_SHARE_DIR` provides access to the IOM shared filesystem, and how `POSTGRES_DATA_DIR` persists database data across restarts.
