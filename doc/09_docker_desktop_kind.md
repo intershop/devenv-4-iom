@@ -9,11 +9,12 @@ Docker Desktop supports two Kubernetes cluster engines, selectable under _Settin
 
 ## Why the kind Engine is Not Supported
 
-_devenv-4-iom_ uses `hostPath` volumes to mount local directories into the Kubernetes cluster. This is how all `CUSTOM_*_DIR` settings work (custom apps, templates, XSL files, SQL config, etc.) and how `POSTGRES_DATA_DIR` persists database data across restarts.
+_devenv-4-iom_ uses `hostPath` volumes to mount local directories into the Kubernetes cluster. This is how all `CUSTOM_*_DIR` settings work (custom apps, templates, XSL files, SQL config, etc.), how `CUSTOM_SHARE_DIR` provides access to the IOM shared filesystem, and how `POSTGRES_DATA_DIR` persists database data across restarts.
 
 With the kind engine, the Kubernetes node runs as a Docker container. That container receives a snapshot of the host filesystem when it starts, but subsequent changes on the host are **not** propagated into the node. `hostPath` volumes therefore see a stale, read-only copy — not the live host directory. The consequence is:
 
 - `CUSTOM_*_DIR` mounts are empty or frozen — development workflows do not work.
+- `CUSTOM_SHARE_DIR` is not accessible — shared filesystem features do not work.
 - `POSTGRES_DATA_DIR` directory appears empty inside the node — data is not persisted.
 
 There is no workaround for this within the standard Docker Desktop kind setup.
