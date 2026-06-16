@@ -39,7 +39,7 @@ To verify which engine your Docker Desktop cluster is using:
 
     kubectl get storageclass
 
-Output for the **kind engine** — not supported. Recognisable by two StorageClasses (`hostpath` and `standard`) both from the `rancher.io/local-path` provisioner:
+Output for the **kind engine** — not supported. Recognisable by two StorageClasses (`hostpath` and `standard`) both using the `rancher.io/local-path` provisioner. Note: despite the name, this provisioner is an independent open-source project (`github.com/rancher/local-path-provisioner`) bundled by kind — it is unrelated to Rancher Desktop:
 
     NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
     hostpath             rancher.io/local-path   Delete          WaitForFirstConsumer   false                  18s
