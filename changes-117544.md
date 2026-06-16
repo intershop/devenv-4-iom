@@ -4,6 +4,10 @@
 
 Docker Desktop 4.40 introduced the **kind engine** as the new default for its built-in Kubernetes cluster, replacing the classic **kubeadm engine**. devenv-4-iom broke with the kind engine because of a fundamental storage incompatibility: the existing code creates a Docker volume on the host, inspects its filesystem path via `docker volume inspect --format='{{.Mountpoint}}'`, and injects that path into a Kubernetes `local` PersistentVolume. With kind, the Kubernetes node is a Docker container — it has no access to Docker volume paths from the host VM, so the PVC never binds and postgres never starts.
 
+Deeper investigation revealed that Docker Desktop's kind engine also breaks `hostPath` volumes for live host-directory sharing: the kind node sees a stale snapshot of the host filesystem, not a live mount. Because `CUSTOM_*_DIR` features depend on live `hostPath` sharing, this means Docker Desktop kind cannot fully support devenv-4-iom.
+
+The solution is to migrate to **Rancher Desktop** as the primary supported platform. Rancher Desktop uses k3s in a proper virtual machine (Lima on macOS/Linux, WSL2 on Windows), where `hostPath` volumes work correctly on all platforms.
+
 ---
 
 ## Changes explained file by file
@@ -73,7 +77,7 @@ Setting `POSTGRES_DATA_DIR` to a host path enables persistent storage; leaving i
 
 ### `doc/00_installation.md` — kind engine section updated
 
-Both engines are now described as equally supported without any additional configuration requirement. Links to `doc/09_docker_desktop_kind.md` for details.
+Both engines are now described as equally supported without any additional configuration requirement. Links to `doc/09_docker_desktop.md` for details.
 
 ---
 
@@ -83,7 +87,7 @@ All references to `create storage`, `delete storage`, `info storage`, and `KEEP_
 
 ---
 
-### `doc/09_docker_desktop_kind.md` — new chapter
+### `doc/09_docker_desktop.md` — new chapter
 
 A complete reference for the kind engine covering:
 - Why the old approach broke on kind (Docker container node cannot access host VM Docker volumes)
@@ -101,10 +105,46 @@ Adds a forward navigation link to the new chapter 09. Example `info postgres` ou
 
 ---
 
+### `doc/10_rancher_desktop.md` — new chapter
+
+A complete setup guide for Rancher Desktop covering:
+- Why Rancher Desktop is the recommended platform (`hostPath` volumes work correctly on all platforms)
+- macOS installation (Kubernetes enabled by default, virtiofs for fast file sharing)
+- Linux installation
+- Windows installation and the Git Bash path format issue: `MOUNT_PREFIX=/mnt` bridges `/c/Users/...` (Git Bash) to `/mnt/c/Users/...` (WSL2 node)
+- Configuration: `KUBERNETES_CONTEXT=rancher-desktop`, example properties file
+- Verifying the setup with `kubectl` commands
+
+---
+
+### `doc/00_installation.md` — Rancher Desktop as primary platform
+
+Rancher Desktop now replaces Docker Desktop as the recommended Kubernetes platform. Docker Desktop remains listed as an alternative with a link to `doc/09_docker_desktop.md`.
+
+---
+
+### `doc/05_development_process.md` — MOUNT_PREFIX for Rancher Desktop Windows
+
+Updated the MOUNT_PREFIX description to cover both Rancher Desktop (`/mnt`) and Docker Desktop (`/run/desktop/mnt/host`) on Windows, with a link to `doc/10_rancher_desktop.md`.
+
+---
+
+### `templates/config.properties.template` — MOUNT_PREFIX comment updated
+
+Replaced the WSL2-only comment with a clear table covering both Rancher Desktop and Docker Desktop Windows use cases.
+
+---
+
+### `bin/template-variables` — KUBERNETES_CONTEXT default changed
+
+Default changed from `docker-desktop` to `rancher-desktop`, reflecting the new recommended platform.
+
+---
+
 ### `README.md` — index entry + release notes
 
-- Adds `doc/09_docker_desktop_kind.md` to the documentation index
-- Adds release notes for 2.8.0: kind engine support and postgres:15 default
+- Adds `doc/09_docker_desktop.md` and `doc/10_rancher_desktop.md` to the documentation index
+- Updates release notes for 2.8.0: Rancher Desktop support, `POSTGRES_DATA_DIR`, postgres:15 default
 
 ---
 

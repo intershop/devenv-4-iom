@@ -23,7 +23,7 @@ Bash is part of Mac OS X, there is nothing to do. It's not required that bash is
 
 ### Docker Desktop (alternative)
 
-Docker Desktop can be used as an alternative. Only the **kubeadm** engine is supported — the **kind** engine (the new default since Docker Desktop 4.40) cannot be used with _devenv-4-iom_. See [Docker Desktop](09_docker_desktop_kind.md) for details.
+Docker Desktop can be used as an alternative. Only the **kubeadm** engine is supported — the **kind** engine (the new default since Docker Desktop 4.40) cannot be used with _devenv-4-iom_. See [Docker Desktop](09_docker_desktop.md) for details.
 
 > **Caution:** While installing _Docker-Desktop_ on **Windows** you will be signed-out and your PC will probably be restarted. So save everything before installing.
 
