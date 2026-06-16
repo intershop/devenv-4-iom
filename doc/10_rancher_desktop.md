@@ -66,36 +66,5 @@ MOUNT_PREFIX=/mnt
 
 See [Configuration](02_configuration.md) for details on where to set these properties.
 
-## Verifying the Setup
-
-After installation, verify that the Rancher Desktop context is available and the cluster is running:
-
-```sh
-kubectl config get-contexts
-kubectl --context rancher-desktop get nodes
-```
-
-The cluster has a single node named `lima-rancher-desktop` (macOS/Linux) or `rancher-desktop` (Windows):
-
-```
-NAME                   STATUS   ROLES           AGE   VERSION
-lima-rancher-desktop   Ready    control-plane   5m    v1.35.5+k3s1
-```
-
-Check the default StorageClass:
-
-```sh
-kubectl --context rancher-desktop get storageclass
-```
-
-Expected output:
-
-```
-NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  21h
-```
-
-The `local-path` StorageClass is used automatically by any PersistentVolumeClaim that does not request a specific StorageClass.
-
 ---
 [< Docker Desktop](09_docker_desktop.md) | [^ Index](../README.md)
