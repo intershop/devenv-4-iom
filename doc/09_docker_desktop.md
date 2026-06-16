@@ -60,13 +60,15 @@ Output for the **kubeadm engine** — supported. Recognisable by a single `hostp
     NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
     hostpath (default)   docker.io/hostpath   Delete          Immediate           false                  25d
 
-## Required Configuration
+## Configuration
 
-The only setting specific to Docker Desktop is:
+The only setting specific to Docker Desktop is `KUBERNETES_CONTEXT`. Set it in your `devenv.user.properties`:
 
-    KUBERNETES_CONTEXT=docker-desktop
+```
+KUBERNETES_CONTEXT=docker-desktop
+```
 
-This tells _devenv-4-iom_ which Kubernetes cluster to operate on. Docker Desktop registers its cluster under the context name `docker-desktop`, so this value must match exactly. All other configuration settings are independent of the Kubernetes platform. See [Configuration](02_configuration.md) for details on where to set this property.
+Docker Desktop registers its cluster under the context name `docker-desktop`, so this value must match exactly. All other configuration settings are independent of the Kubernetes platform. See [Configuration](02_configuration.md) for details on where to set this property.
 
 ---
 [< Troubleshooting](08_troubleshooting.md) | [Rancher Desktop >](10_rancher_desktop.md) | [^ Index](../README.md)

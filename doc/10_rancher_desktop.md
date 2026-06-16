@@ -50,23 +50,21 @@ _devenv-4-iom_ prepends this value to every `hostPath` it constructs, turning `/
 
 ## Configuration
 
-After installing Rancher Desktop, set `KUBERNETES_CONTEXT` to `rancher-desktop` in your configuration file. This is also the default value, so if no context is configured explicitly, _devenv-4-iom_ will use Rancher Desktop automatically.
-
-**`devenv.user.properties` (or `devenv.project.properties`):**
+The settings specific to Rancher Desktop are `KUBERNETES_CONTEXT` and, on Windows, `MOUNT_PREFIX`. Set them in your `devenv.user.properties`:
 
 ```
-ID=my-iom
 KUBERNETES_CONTEXT=rancher-desktop
-IMAGE_PULL_POLICY=IfNotPresent
-IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
-IOM_IMAGE=docker.tools.intershop.com/iom/intershophub/iom:5.1.0
 ```
 
-For **Windows only**, add:
+`rancher-desktop` is also the default value, so if no context is configured explicitly, _devenv-4-iom_ will use Rancher Desktop automatically.
+
+For **Windows only**, also add:
 
 ```
 MOUNT_PREFIX=/mnt
 ```
+
+See [Configuration](02_configuration.md) for details on where to set these properties.
 
 ## Verifying the Setup
 
