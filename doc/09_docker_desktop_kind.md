@@ -51,13 +51,13 @@ Output for the **kubeadm engine** — supported. Recognisable by a single `hostp
     NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
     hostpath (default)   docker.io/hostpath   Delete          Immediate           false                  25d
 
-## Example Configuration (kubeadm)
+## Required Configuration
 
-    ID=my-iom
+The only setting specific to Docker Desktop is:
+
     KUBERNETES_CONTEXT=docker-desktop
-    IMAGE_PULL_POLICY=IfNotPresent
-    IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
-    IOM_IMAGE=docker.tools.intershop.com/iom/intershophub/iom:5.1.0
+
+This tells _devenv-4-iom_ which Kubernetes cluster to operate on. Docker Desktop registers its cluster under the context name `docker-desktop`, so this value must match exactly. All other configuration settings are independent of the Kubernetes platform.
 
 ---
 [< Troubleshooting](08_troubleshooting.md) | [Rancher Desktop >](10_rancher_desktop.md) | [^ Index](../README.md)
