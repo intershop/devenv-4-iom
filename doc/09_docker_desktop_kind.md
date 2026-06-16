@@ -39,16 +39,16 @@ To verify which engine your Docker Desktop cluster is using:
 
     kubectl get storageclass
 
-Output for the **kind engine** — not supported. Recognisable by the `standard` StorageClass and `WaitForFirstConsumer` binding mode:
+Output for the **kind engine** — not supported. Recognisable by two StorageClasses (`hostpath` and `standard`) both from the `rancher.io/local-path` provisioner:
 
-    NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION
-    hostpath             rancher.io/local-path   Delete          WaitForFirstConsumer   false
-    standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false
+    NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+    hostpath             rancher.io/local-path   Delete          WaitForFirstConsumer   false                  18s
+    standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  28s
 
-Output for the **kubeadm engine** — supported. Recognisable by `docker.io/hostpath` as provisioner and `Immediate` binding mode:
+Output for the **kubeadm engine** — supported. Recognisable by a single `hostpath (default)` StorageClass with `docker.io/hostpath` provisioner:
 
-    NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION
-    hostpath (default)   docker.io/hostpath   Delete          Immediate           false
+    NAME                 PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+    hostpath (default)   docker.io/hostpath   Delete          Immediate           false                  25d
 
 ## Example Configuration (kubeadm)
 

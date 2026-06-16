@@ -93,8 +93,8 @@ kubectl --context rancher-desktop get storageclass
 Expected output:
 
 ```
-NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION
-local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false
+NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  21h
 ```
 
 The `local-path` StorageClass is used automatically by any PersistentVolumeClaim that does not request a specific StorageClass.
