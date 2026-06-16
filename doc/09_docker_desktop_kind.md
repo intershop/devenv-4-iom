@@ -32,7 +32,7 @@ In Docker Desktop, go to _Settings > Kubernetes > Kubernetes engine_ and select 
 
 **Option 2 — Migrate to Rancher Desktop (recommended)**
 
-[Rancher Desktop](https://rancherdesktop.io/) is the recommended platform going forward. It uses k3s in a proper virtual machine where `hostPath` volumes work correctly on all platforms. See [Rancher Desktop](10_rancher_desktop.md) for setup instructions.
+[Rancher Desktop](https://rancherdesktop.io/) is the recommended platform going forward. It uses k3s in a proper virtual machine where `hostPath` volumes work correctly on all platforms. See [setup instructions](10_rancher_desktop.md) for details.
 
 ## Checking Your Current Engine
 
