@@ -12,7 +12,7 @@ The following chapters provide a detailed insight into various aspects of instal
 - [Log messages](doc/06_log_messages.md)
 - [Metrics](doc/07_metrics.md)
 - [Troubleshooting](doc/08_troubleshooting.md)
-- [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md)
+- [Docker Desktop](doc/09_docker_desktop_kind.md)
 - [Rancher Desktop](doc/10_rancher_desktop.md)
 
 If _devenv-4-iom_ is already installed and you are looking for a short overview about features, please use the integrated help. To do so, call `devenv-cli.sh` with parameter `-h` or `--help`:
@@ -37,7 +37,7 @@ a certain version of IOM.
 
 [Rancher Desktop](https://rancherdesktop.io/) is now the recommended Kubernetes platform for _devenv-4-iom_. It is open-source, free for commercial use, and correctly exposes host directories into the Kubernetes node on macOS, Linux, and Windows. See [Rancher Desktop](doc/10_rancher_desktop.md) for installation and setup instructions.
 
-Docker Desktop continues to be supported. See [Docker Desktop — kind Engine](doc/09_docker_desktop_kind.md) for details on the kubeadm and kind engines.
+Docker Desktop continues to be supported. See [Docker Desktop](doc/09_docker_desktop_kind.md) for details on the kubeadm and kind engines.
 
 ### Persistent Database Storage via `POSTGRES_DATA_DIR` <!-- #117544 -->
 

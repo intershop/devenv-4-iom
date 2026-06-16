@@ -1,4 +1,4 @@
-# Docker Desktop — kind Engine
+# Docker Desktop
 
 Docker Desktop supports two Kubernetes cluster engines, selectable under _Settings > Kubernetes > Kubernetes engine_:
 

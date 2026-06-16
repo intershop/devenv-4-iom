@@ -100,4 +100,4 @@ local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsu
 The `local-path` StorageClass is used automatically by any PersistentVolumeClaim that does not request a specific StorageClass.
 
 ---
-[< Docker Desktop — kind Engine](09_docker_desktop_kind.md) | [^ Index](../README.md)
+[< Docker Desktop](09_docker_desktop_kind.md) | [^ Index](../README.md)
