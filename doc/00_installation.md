@@ -19,7 +19,7 @@ Bash is part of Mac OS X, there is nothing to do. It's not required that bash is
 
 ### Rancher Desktop
 
-[Rancher Desktop](https://rancherdesktop.io/) is the recommended Kubernetes platform for _devenv-4-iom_. It is open-source and free for commercial use. For installation and platform-specific setup instructions (including the Windows path format requirement), see [Rancher Desktop](10_rancher_desktop.md).
+[Rancher Desktop](https://rancherdesktop.io/) is the recommended Kubernetes platform for _devenv-4-iom_. It is open-source and free for commercial use. For installation and platform-specific setup instructions (including the Windows path format requirement), see [setup instructions](10_rancher_desktop.md).
 
 ### Docker Desktop (alternative)
 
