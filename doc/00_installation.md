@@ -19,11 +19,11 @@ Bash is part of Mac OS X, there is nothing to do. It's not required that bash is
 
 ### Rancher Desktop
 
-[Rancher Desktop](https://rancherdesktop.io/) is the recommended Kubernetes platform for _devenv-4-iom_. It is open-source and free for commercial use. For installation and platform-specific setup instructions (including the Windows path format requirement), see [setup instructions](10_rancher_desktop.md).
+[Rancher Desktop](https://rancherdesktop.io/) is the recommended Kubernetes platform for _devenv-4-iom_. It is open-source and free for commercial use. For installation and platform-specific setup instructions (including the Windows path format requirement), see [Rancher Desktop setup](10_rancher_desktop.md).
 
 ### Docker Desktop (alternative)
 
-Docker Desktop can be used as an alternative. Only the **kubeadm** engine is supported — the **kind** engine (the new default since Docker Desktop 4.40) cannot be used with _devenv-4-iom_. For installation and setup instructions, see [Docker Desktop](09_docker_desktop.md).
+Docker Desktop can be used as an alternative. Only the **kubeadm** engine is supported — the **kind** engine (the new default since Docker Desktop 4.40) cannot be used with _devenv-4-iom_. For installation and setup instructions, see [Docker Desktop setup](09_docker_desktop.md).
 
 ### jq - Command-Line JSON Processor
 _jq_ is a command-line tool that allows to work with JSON messages. Since all messages created by IOM are JSON messages, it is a very useful tool.
