@@ -18,7 +18,7 @@ Docker Desktop supports two Kubernetes cluster engines, selectable under _Settin
 
 ### Windows
 
-On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the Configuration section below.
+On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the [Configuration](#configuration) section below.
 
 ## Why the kind Engine is Not Supported
 

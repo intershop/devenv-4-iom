@@ -27,7 +27,7 @@ _devenv-4-iom_ relies on `hostPath` volumes to mount local development directori
 2. Download and install [Rancher Desktop](https://rancherdesktop.io/).
 3. Kubernetes is enabled by default.
 
-On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the Configuration section below.
+On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the [Configuration](#configuration) section below.
 
 ## Configuration
 
