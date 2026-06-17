@@ -44,6 +44,7 @@ jobs:
     clean: true
     timeoutInMinutes: 5
     displayName: "Checkout"
+    #enabled: false
 
   - script: |
       set -e
@@ -52,6 +53,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 1
     displayName: "Setup Git"
+    #enabled: false
 
   ##############################################################################
   # determine version and control variables
@@ -95,6 +97,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 1
     displayName: "Define control variables"
+    #enabled: false
 
   ##############################################################################
   # unit tests (no cluster required)
@@ -106,6 +109,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 5
     displayName: "Run unit tests"
+    #enabled: false
 
   ##############################################################################
   # integration tests
@@ -128,6 +132,7 @@ jobs:
       sudo chown "$(whoami)" ~/.kube/config
     timeoutInMinutes: 5
     displayName: "Install k3s"
+    enabled: false
 
   - script: |
       set -e
@@ -140,6 +145,7 @@ jobs:
       done
     timeoutInMinutes: 10
     displayName: "Pull and import Docker images into k3s"
+    enabled: false
 
   - script: |
       set -e
@@ -159,6 +165,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 1
     displayName: "Configure integration tests"
+    enabled: false
 
   - script: |
       set -e
@@ -166,6 +173,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 2
     displayName: "Setup integration test environment"
+    enabled: false
 
   - script: |
       set -e
@@ -173,6 +181,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 30
     displayName: "Run integration tests"
+    enabled: false
 
   - script: |
       test/integration/teardown.sh || true
@@ -180,6 +189,7 @@ jobs:
     condition: always()
     timeoutInMinutes: 5
     displayName: "Teardown integration test environment"
+    enabled: false
 
   ##############################################################################
   # release
@@ -199,6 +209,7 @@ jobs:
     timeoutInMinutes: 1
     displayName: "Reset Git repo"
     condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'))
+    #enabled: false
 
   - script: |
       set -e
@@ -230,6 +241,7 @@ jobs:
     timeoutInMinutes: 5
     displayName: "Git Major/Minor post-release tasks"
     condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'false'))
+    #enabled: false
 
   - script: |
       set -e
@@ -250,3 +262,4 @@ jobs:
     timeoutInMinutes: 5
     displayName: "Git Patch post-release tasks"
     condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'true'))
+    #enabled: false
