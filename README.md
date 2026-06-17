@@ -29,7 +29,7 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
 
-# Release information 2.8.0
+# Release information 3.0.0
 
 ## New Features
 
@@ -169,7 +169,7 @@ When starting the IOM application server (`create iom`), a file _testframework-c
 
 IOM 4.0 has changed the distribution model. Instead of providing IOM in form of two _Docker_ images (_iom-app_, _iom-config_), IOM 4.0 now consists of a single image only (plus the _iom-dbaccount_ image, which is not directly part of the IOM release).
 
-To define the (single) IOM image to be used, the new configuration variable `IOM_IMAGE` has been added. The two configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` were introduced at the same time for backward compatibility with IOM prior version 4.0, but have been removed in _devenv-4-iom_ 2.8.0.
+To define the (single) IOM image to be used, the new configuration variable `IOM_IMAGE` has been added. The two configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` were introduced at the same time for backward compatibility with IOM prior version 4.0, but have been removed in _devenv-4-iom_ 3.0.0.
 
 ### Configuration Concept Has Changed for Easier Integration Into Projects <!-- 70641 -->
 
