@@ -8,24 +8,13 @@ DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/assert.sh"
 
 CLI="$DEVENV_DIR/bin/devenv-cli.sh"
-BASE_PROPS="$SCRIPT_DIR/test-component.properties.rancher-desktop"
+PROPS="$SCRIPT_DIR/test-component.properties.rancher-desktop"
 NAMESPACE="iomunit"
 POD_TIMEOUT=60
 
-# Merge base properties with optional override (set via INTEGRATION_TEST_CONFIG
-# or --config= flag on run-integration-tests.sh).  Last value wins for
-# duplicate keys, so override values take precedence.
-PROPS=$(mktemp)
-trap "rm -f '$PROPS'" EXIT
-cat "$BASE_PROPS" > "$PROPS"
-CONFIG_OVERRIDE="${INTEGRATION_TEST_CONFIG:-}"
-if [ -n "$CONFIG_OVERRIDE" ] && [ -f "$CONFIG_OVERRIDE" ]; then
-    printf '\n' >> "$PROPS"
-    cat "$CONFIG_OVERRIDE" >> "$PROPS"
-fi
-
-# Derive KUBERNETES_CONTEXT from the merged file.
-CONTEXT=$(grep '^KUBERNETES_CONTEXT=' "$PROPS" | tail -1 | cut -d= -f2-)
+# devenv-cli.sh auto-discovers devenv.project.properties next to PROPS.
+# Read KUBERNETES_CONTEXT from there for kubectl calls.
+CONTEXT=$(grep '^KUBERNETES_CONTEXT=' "$SCRIPT_DIR/devenv.project.properties" 2>/dev/null | tail -1 | cut -d= -f2-)
 CONTEXT="${CONTEXT:-rancher-desktop}"
 
 echo "=== mailserver ==="

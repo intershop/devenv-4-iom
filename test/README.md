@@ -41,11 +41,25 @@ unset-`POSTGRES_DATA_DIR` case (hostPath volume commented out).
 Integration tests run `devenv-cli.sh` against a live Kubernetes cluster and
 verify that pods reach the expected state.
 
+### Configuration
+
+The integration tests use _devenv-4-iom_'s standard two-file configuration
+mechanism (see [doc/02_configuration.md](../doc/02_configuration.md)):
+
+- `test/integration/devenv.project.properties` — project-level settings shared
+  by all test scripts: image names, `KUBERNETES_CONTEXT`, and `IMAGE_PULL_POLICY`.
+  **Edit this file to configure image names before running the tests.**
+- `test/integration/test.properties.rancher-desktop` and
+  `test-component.properties.rancher-desktop` — per-test user files containing
+  only `ID` and `POSTGRES_DATA_DIR`. These are passed as the first argument to
+  `devenv-cli.sh`; devenv then auto-discovers `devenv.project.properties` from
+  the same directory.
+
 ### Docker Images
 
-The tests require four Docker images. Two are pulled from public registries and
-need no preparation; two are project-specific and must be built or provided
-before running the tests:
+Four Docker images are required. Two are pulled from public registries
+automatically; two are project-specific and must be built or loaded into the
+local Docker daemon before running the tests.
 
 | Variable | Default value | Source |
 |---|---|---|
@@ -54,34 +68,8 @@ before running the tests:
 | `IOM_DBACCOUNT_IMAGE` | `iom-dbaccount:1.5.0` | project-specific — must be built or loaded |
 | `IOM_IMAGE` | `ci-iom:5.1.0-1.0.0-SNAPSHOT` | project-specific — must be built or loaded |
 
-The default image names in `test.properties.rancher-desktop` and
-`test-component.properties.rancher-desktop` are placeholders. Before running
-the tests, set the actual image names in an override file (see
-[Configuring Image Names](#configuring-image-names)).
-
-### Configuring Image Names
-
-All image variables and the Kubernetes context can be overridden by supplying
-a properties file on the command line. This avoids editing the versioned
-properties files and works equally well in local development and CI pipelines.
-
-Create a file — for example `test/integration/test.properties.local` — and set
-whichever values you need to override:
-
-```
-KUBERNETES_CONTEXT=rancher-desktop
-IOM_DBACCOUNT_IMAGE=iom-dbaccount:1.5.0
-IOM_IMAGE=my-iom:4.8.0
-```
-
-Then pass it with `--config`:
-
-    test/run-integration-tests.sh --config=test/integration/test.properties.local
-
-The override file is layered on top of the base properties files — values in the
-override take precedence, everything else comes from the base files. The override
-file is intentionally not committed (add it to `.gitignore` locally, or generate
-it in CI as a pipeline step).
+Set the correct image names in `test/integration/devenv.project.properties`
+before running the tests.
 
 ### Running Tests Locally (Rancher Desktop)
 
@@ -89,6 +77,7 @@ it in CI as a pipeline step).
 
 - [Rancher Desktop](https://rancherdesktop.io/) running with Kubernetes enabled
 - `docker context use rancher-desktop`
+- Image names set in `test/integration/devenv.project.properties`
 - Project-specific images built or loaded into the local Docker daemon
 
 **Setup (run once):**
@@ -97,35 +86,33 @@ it in CI as a pipeline step).
 
 **Run all tests:**
 
-    test/run-integration-tests.sh --config=<your-override-file>
+    test/run-integration-tests.sh
 
 **Filter to a single script:**
 
-    test/run-integration-tests.sh --config=<your-override-file> lifecycle
+    test/run-integration-tests.sh lifecycle
 
 **Teardown** (if tests fail partway):
 
-    test/integration/teardown.sh --config=<your-override-file>
+    test/integration/teardown.sh
 
 ### Running Tests in an Azure CI Pipeline
 
 The integration tests can run on a Linux agent with k3s installed. k3s uses the
 same `rancher.io/local-path` storage provisioner as Rancher Desktop and exposes
-host paths into the cluster without any additional configuration — no path prefix
-is required.
+host paths into the cluster without any additional configuration.
 
 #### Agent setup
 
-Install k3s in single-node mode with the Kubernetes API on a fixed port:
+Install k3s in single-node mode:
 
 ```bash
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik" sh -
 ```
 
 `traefik` is disabled because _devenv-4-iom_ manages its own LoadBalancer
-services via k3s's built-in ServiceLB (formerly klipper-lb). k3s writes a
-kubeconfig to `/etc/rancher/k3s/k3s.yaml`; copy or symlink it so that `kubectl`
-and _devenv-4-iom_ can reach it:
+services via k3s's built-in ServiceLB. Copy the kubeconfig so that `kubectl`
+and _devenv-4-iom_ can reach the cluster:
 
 ```bash
 mkdir -p ~/.kube
@@ -133,49 +120,52 @@ sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 sudo chown "$USER" ~/.kube/config
 ```
 
-The cluster context name in this file is `default`. Set that in your override
-properties file (see below).
+The kubeconfig written by k3s uses the context name `default`. Update
+`KUBERNETES_CONTEXT` accordingly:
+
+```bash
+sed -i 's/^KUBERNETES_CONTEXT=.*/KUBERNETES_CONTEXT=default/' \
+    test/integration/devenv.project.properties
+```
 
 Install the remaining required tools:
 
 ```bash
-# kubectl is bundled with k3s; install the standalone binary for convenience
-# or use: sudo k3s kubectl ...
 sudo apt-get install -y docker.io jq git    # Debian/Ubuntu
 # or: sudo yum install -y docker jq git    # RHEL/CentOS
 ```
 
-#### Pipeline step — generate override file
+#### Pipeline step — set image names
 
-In the pipeline, generate a properties file from environment variables or
-pipeline variables so that no credentials are stored in source files:
+Set `IOM_DBACCOUNT_IMAGE` and `IOM_IMAGE` in `devenv.project.properties` to
+the images built earlier in the pipeline:
 
 ```bash
-cat > test/integration/test.properties.ci <<EOF
-KUBERNETES_CONTEXT=default
-IOM_DBACCOUNT_IMAGE=$(IOM_DBACCOUNT_IMAGE)
-IOM_IMAGE=$(IOM_IMAGE)
-EOF
+sed -i "s|^IOM_DBACCOUNT_IMAGE=.*|IOM_DBACCOUNT_IMAGE=$(IOM_DBACCOUNT_IMAGE)|" \
+    test/integration/devenv.project.properties
+sed -i "s|^IOM_IMAGE=.*|IOM_IMAGE=$(IOM_IMAGE)|" \
+    test/integration/devenv.project.properties
 ```
 
-(Replace `$(IOM_DBACCOUNT_IMAGE)` with the correct Azure Pipelines variable
-syntax for your pipeline, e.g. `$(Build.BuildId)` or a pipeline variable.)
+Replace `$(IOM_DBACCOUNT_IMAGE)` and `$(IOM_IMAGE)` with the actual Azure
+Pipelines variable references for your pipeline.
 
 #### Pipeline step — run tests
 
 ```bash
-test/integration/setup.sh --config=test/integration/test.properties.ci
-test/run-integration-tests.sh --config=test/integration/test.properties.ci
+test/integration/setup.sh
+test/run-integration-tests.sh
 ```
 
 ### Structure
 
     test/integration/
       assert.sh                                     # assert library, extended with wait_for_pod_running
+      devenv.project.properties                     # shared project config: image names, KUBERNETES_CONTEXT
       setup.sh                                      # verifies cluster and Docker connectivity
       teardown.sh                                   # deletes all cluster resources created by tests
-      test.properties.rancher-desktop               # base properties for lifecycle test (ID=iom-test)
-      test-component.properties.rancher-desktop     # base properties for component tests (ID=iom-unit)
+      test.properties.rancher-desktop               # user config for lifecycle test (ID=iom-test)
+      test-component.properties.rancher-desktop     # user config for component tests (ID=iom-unit)
       test_postgres.sh                              # create/delete postgres, checks pod reaches Running
       test_mailserver.sh                            # create/delete mailserver, checks pod and external IP
       test_cluster_lifecycle.sh                     # full create cluster → verify → delete cluster cycle

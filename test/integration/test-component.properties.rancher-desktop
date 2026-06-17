@@ -1,7 +1,2 @@
 ID=iom-unit
-IMAGE_PULL_POLICY=IfNotPresent
-DOCKER_DB_IMAGE=postgres:15
-MAILSRV_IMAGE=axllent/mailpit
-IOM_DBACCOUNT_IMAGE=iom-dbaccount:1.5.0
-IOM_IMAGE=ci-iom:5.1.0-1.0.0-SNAPSHOT
 POSTGRES_DATA_DIR=/tmp/iom-unit-pgdata
