@@ -45,7 +45,9 @@ For **Windows (Git Bash) only**, also add:
 MOUNT_PREFIX=/mnt
 ```
 
-Git Bash represents Windows paths as `/c/Users/...`, but the Rancher Desktop Kubernetes node expects them under `/mnt/c/Users/...`. `MOUNT_PREFIX` bridges this gap — always use the Git Bash path format in `CUSTOM_*_DIR` and `POSTGRES_DATA_DIR` settings and let `MOUNT_PREFIX` handle the translation. When running _devenv-4-iom_ from a WSL2 shell instead of Git Bash, paths are already in the correct format — leave `MOUNT_PREFIX` empty.
+Git Bash represents Windows paths as `/c/Users/...`, but the Rancher Desktop Kubernetes node expects them under `/mnt/c/Users/...`. `MOUNT_PREFIX` bridges this gap — always use the Git Bash path format in `CUSTOM_*_DIR` and `POSTGRES_DATA_DIR` settings and let `MOUNT_PREFIX` handle the translation.
+
+When running _devenv-4-iom_ from a WSL2 shell, project files in the Windows home directory are accessible as `/mnt/c/Users/...` inside WSL2, which is already the correct format for the Rancher Desktop node — leave `MOUNT_PREFIX` empty.
 
 See [Configuration](02_configuration.md) for details on where to set these properties.
 

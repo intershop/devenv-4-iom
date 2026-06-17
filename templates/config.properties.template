@@ -255,8 +255,12 @@ OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 #       (/c/Users/... → node sees /run/desktop/mnt/host/c/Users/...)
 #
 # Windows — WSL2 shell (bash inside WSL2, not Git Bash):
-#   Paths are already in the correct format for the node (/mnt/c/Users/...).
-#   Leave MOUNT_PREFIX empty.
+#   Project files in the Windows home directory appear as /mnt/c/Users/...
+#   inside WSL2. Rancher Desktop's node sees the same paths — leave
+#   MOUNT_PREFIX empty.
+#   Docker Desktop cannot handle this case (MOUNT_PREFIX only prepends,
+#   it cannot remap /mnt/c/... to /run/desktop/mnt/host/c/...).
+#   Use Rancher Desktop for WSL2 shell with Windows home directories.
 #
 # macOS and Linux:
 #   Leave MOUNT_PREFIX empty.

@@ -79,7 +79,9 @@ For **Windows (Git Bash) only**, also add:
 MOUNT_PREFIX=/run/desktop/mnt/host
 ```
 
-Git Bash represents Windows paths as `/c/Users/...`, but the Docker Desktop Kubernetes node expects them under `/run/desktop/mnt/host/c/Users/...`. `MOUNT_PREFIX` bridges this gap. When running _devenv-4-iom_ from a WSL2 shell instead of Git Bash, paths are already in the correct format — leave `MOUNT_PREFIX` empty.
+Git Bash represents Windows paths as `/c/Users/...`, but the Docker Desktop Kubernetes node expects them under `/run/desktop/mnt/host/c/Users/...`. `MOUNT_PREFIX` bridges this gap.
+
+> **Note:** When running _devenv-4-iom_ from a WSL2 shell with project files located in the Windows home directory (`/mnt/c/Users/...` inside WSL2), Docker Desktop cannot be used — `MOUNT_PREFIX` only prepends a prefix and cannot remap `/mnt/c/...` to `/run/desktop/mnt/host/c/...`. Use [Rancher Desktop](10_rancher_desktop.md) for this scenario.
 
 See [Configuration](02_configuration.md) for details on where to set these properties.
 
