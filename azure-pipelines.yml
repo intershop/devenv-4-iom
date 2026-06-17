@@ -1,0 +1,126 @@
+variables:
+  ##############################################################################
+  # Images used for integration tests.
+  # DOCKER_DB_IMAGE and MAILSRV_IMAGE are public and pulled automatically.
+  # IOM_DBACCOUNT_IMAGE and IOM_IMAGE are project-specific; set these to the
+  # images that should be tested.
+  ##############################################################################
+
+  DOCKER_DB_IMAGE: postgres:15
+  MAILSRV_IMAGE: axllent/mailpit
+  IOM_DBACCOUNT_IMAGE: iom-dbaccount:1.5.0
+  IOM_IMAGE: ci-iom:5.1.0-1.0.0-SNAPSHOT
+
+  PROJECT_PATH: devenv-4-iom
+
+trigger:
+  branches:
+    exclude:
+      - main
+    include:
+      - '*'
+
+jobs:
+- job:
+  pool: 'ubuntu-24.04-D4ads_v5-adopt-adoptium-jdk'
+  continueOnError: false
+  timeoutInMinutes: 60
+  workspace:
+    clean: all
+
+  steps:
+
+  ##############################################################################
+  # checkout
+  ##############################################################################
+
+  - checkout: self
+    path: $(PROJECT_PATH)
+    clean: true
+    timeoutInMinutes: 5
+    displayName: "Checkout"
+
+  ##############################################################################
+  # unit tests (no cluster required)
+  ##############################################################################
+
+  - script: |
+      set -e
+      test/run-unit-tests.sh
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 5
+    displayName: "Run unit tests"
+
+  ##############################################################################
+  # integration tests
+  ##############################################################################
+
+  - script: |
+      set -e
+      # Install jq if not already present
+      if ! command -v jq > /dev/null 2>&1; then
+        sudo apt-get install -y jq
+      fi
+
+      # Install k3s — disable traefik, devenv-4-iom uses k3s's built-in ServiceLB
+      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik" sh -
+
+      # Make the k3s kubeconfig available to kubectl and devenv-4-iom.
+      # The context name written by k3s is 'default'.
+      mkdir -p ~/.kube
+      sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+      sudo chown "$(whoami)" ~/.kube/config
+    timeoutInMinutes: 5
+    displayName: "Install k3s"
+
+  - script: |
+      set -e
+      # Pull all required images via Docker and import them into k3s containerd so
+      # they are available with IMAGE_PULL_POLICY=IfNotPresent — no registry
+      # credentials are needed inside the cluster.
+      for IMAGE in "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
+        docker pull "$IMAGE"
+        docker save "$IMAGE" | sudo k3s ctr images import -
+      done
+    timeoutInMinutes: 10
+    displayName: "Pull and import Docker images into k3s"
+
+  - script: |
+      set -e
+      # Apply pipeline image variables and Kubernetes context to the integration
+      # test project config (test/integration/devenv.project.properties).
+      # k3s registers its cluster under the context name 'default'.
+      sed -i 's/^KUBERNETES_CONTEXT=.*/KUBERNETES_CONTEXT=default/' \
+          test/integration/devenv.project.properties
+      sed -i "s|^DOCKER_DB_IMAGE=.*|DOCKER_DB_IMAGE=$(DOCKER_DB_IMAGE)|" \
+          test/integration/devenv.project.properties
+      sed -i "s|^MAILSRV_IMAGE=.*|MAILSRV_IMAGE=$(MAILSRV_IMAGE)|" \
+          test/integration/devenv.project.properties
+      sed -i "s|^IOM_DBACCOUNT_IMAGE=.*|IOM_DBACCOUNT_IMAGE=$(IOM_DBACCOUNT_IMAGE)|" \
+          test/integration/devenv.project.properties
+      sed -i "s|^IOM_IMAGE=.*|IOM_IMAGE=$(IOM_IMAGE)|" \
+          test/integration/devenv.project.properties
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Configure integration tests"
+
+  - script: |
+      set -e
+      test/integration/setup.sh
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 2
+    displayName: "Setup integration test environment"
+
+  - script: |
+      set -e
+      test/run-integration-tests.sh
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 30
+    displayName: "Run integration tests"
+
+  - script: |
+      test/integration/teardown.sh || true
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    condition: always()
+    timeoutInMinutes: 5
+    displayName: "Teardown integration test environment"
