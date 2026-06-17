@@ -19,7 +19,7 @@ any script fails.
     test/unit/
       assert.sh                     # assert library (assert_contains, assert_not_contains, assert_exit_success)
       test.properties.default       # properties file used by all unit test scripts
-      test_template_iom.sh          # tests for iom-single.yml.template
+      test_template_iom.sh          # tests for iom.yml.template
       test_template_mailsrv.sh      # tests for mailsrv.yml.template
       test_template_postgres.sh     # tests for postgres.yml.template
 

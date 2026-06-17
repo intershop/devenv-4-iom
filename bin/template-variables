@@ -419,7 +419,7 @@ IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.tools.intershop.com/iom/inter
 IOM_IMAGE="${IOM_IMAGE}"
 
 IomJobImage="$IOM_IMAGE"
-IomTemplate="iom-single.yml.template"
+IomTemplate="iom.yml.template"
 ConfigBinDir=/opt/oms/bin
 ConfigBaseDir=/opt/oms
 ConfigCustomDir=project-config

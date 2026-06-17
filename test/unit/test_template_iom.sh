@@ -7,10 +7,9 @@ source "$SCRIPT_DIR/assert.sh"
 PROPS="$SCRIPT_DIR/test.properties.default"
 RENDER="$DEVENV_DIR/bin/template_engine.sh"
 
-echo "=== iom-single.yml.template ==="
+echo "=== iom.yml.template ==="
 
-# IOM_IMAGE is set in test.properties.default → iom-single.yml.template is used
-TEMPLATE="$DEVENV_DIR/templates/iom-single.yml.template"
+TEMPLATE="$DEVENV_DIR/templates/iom.yml.template"
 
 test_case "template renders without error"
 OUTPUT=$("$RENDER" --template="$TEMPLATE" --config="$PROPS" --project-dir="$DEVENV_DIR" 2>&1)
