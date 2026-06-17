@@ -200,6 +200,26 @@ If `CUSTOM_DUMP_DIR` is configured, the latest custom dump is loaded when IOM is
 _You must not set `CUSTOM_DUMPS_DIR` to a directory that does not contain a dump when starting IOM with an uninitialized database. In this case, the initialization of the database would fail since no dump to be loaded can be found. Just set `CUSTOM_DUMPS_DIR` right before creating the dump and not before starting IOM._
 - - -
 
+## Remote Debugging
+
+The IOM application server starts with the Java debug agent (JDWP) listening on port `${PORT_DEBUG}` (default: `8787`). This port is **not** exposed through the LoadBalancer service — doing so would cause k3s's built-in ServiceLB to probe the JDWP port with plain TCP connections, which the JVM logs as spurious "Debugger failed to attach" warnings.
+
+To attach a debugger, use `kubectl port-forward` on demand:
+
+    # Forward the JDWP port to localhost for the duration of the debug session.
+    # Replace the pod name with the actual name shown by 'devenv-cli.sh info iom'.
+    kubectl port-forward \
+      --namespace iomdevelop \
+      --context="rancher-desktop" \
+      pod/<iom-pod-name> \
+      8787:${PORT_DEBUG}
+
+Then configure your IDE to connect to `localhost:8787` using a standard remote JVM debug configuration. The port-forward stays active until you terminate it with Ctrl-C.
+
+The actual pod name and the correct `kubectl` invocation are shown by:
+
+    devenv-cli.sh info iom
+
 ## Access the Back Office Web GUI
 
 The Back Office of IOM can be simply explored in a web-browser. The according url is provided by the `info iom` command of *devenv-4-iom*:

@@ -216,8 +216,4 @@ spec:
       port: ${PORT_WILDFLY_SERVICE}
       targetPort: ${PORT_WILDFLY}
       nodePort: ${PORT_WILDFLY_PUBLIC}
-    - name: debug
-      port: ${PORT_DEBUG_SERVICE}
-      targetPort: ${PORT_DEBUG}
-      nodePort: ${PORT_DEBUG_PUBLIC}
   type: LoadBalancer
