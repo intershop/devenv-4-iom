@@ -13,7 +13,7 @@ ${KeepDatabaseYml}      path: "${MOUNT_PREFIX}${PostgresDataDirAbs}"
   - name: postgres
     image: ${DOCKER_DB_IMAGE}
     args: [ ${PostgresArgsYml} ]
-    imagePullPolicy: Always
+    imagePullPolicy: ${IMAGE_PULL_POLICY}
     env:
     - name: POSTGRES_DB
       value: ${PGDATABASE}

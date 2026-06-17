@@ -33,7 +33,8 @@ KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT}"
 # Docker Image Settings
 ################################################################################
 
-# The image pull policy defines when to pull docker images.
+# The image pull policy defines when to pull docker images. It applies to all
+# images managed by devenv-4-iom: IOM, dbaccount, postgres, and mail server.
 # If left empty, it defaults to "Always", which makes development easy, as
 # always the newest version of the requested Docker image will be used. It can
 # be set to any value allowed by ImagePullPolicy.
