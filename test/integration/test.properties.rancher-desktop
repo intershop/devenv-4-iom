@@ -1,5 +1,5 @@
 ID=iom-test
-KUBERNETES_CONTEXT=docker-desktop
+KUBERNETES_CONTEXT=rancher-desktop
 IMAGE_PULL_POLICY=IfNotPresent
 DOCKER_DB_IMAGE=postgres:15
 MAILSRV_IMAGE=axllent/mailpit

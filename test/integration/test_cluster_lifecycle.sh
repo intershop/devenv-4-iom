@@ -1,18 +1,18 @@
 #!/bin/bash
 # Tests: full create cluster → verify all pods running → delete cluster.
-# This is the end-to-end test covering the complete IOM stack on kind.
+# This is the end-to-end test covering the complete IOM stack.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/assert.sh"
 
 CLI="$DEVENV_DIR/bin/devenv-cli.sh"
-PROPS="$SCRIPT_DIR/test.properties.kind"
-CONTEXT="docker-desktop"
+PROPS="$SCRIPT_DIR/test.properties.rancher-desktop"
+CONTEXT="rancher-desktop"
 NAMESPACE="iomtest"
 IOM_TIMEOUT=300   # IOM startup including dbaccount init takes several minutes
 
-echo "=== cluster lifecycle (kind) ==="
+echo "=== cluster lifecycle ==="
 
 # Ensure clean state from any previous run
 "$CLI" "$PROPS" delete cluster > /dev/null 2>&1 || true
@@ -32,11 +32,6 @@ else
     echo "  FAIL: namespace $NAMESPACE not found"
     TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
-
-test_case "PVC provisioned by standard StorageClass"
-SC=$(kubectl get pvc postgres-pvc -n "$NAMESPACE" --context="$CONTEXT" \
-    -o jsonpath='{.spec.storageClassName}' 2>/dev/null)
-assert_contains "storageClassName is standard" "$SC" "standard"
 
 # ---- wait for all pods ----
 

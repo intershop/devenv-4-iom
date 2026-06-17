@@ -5,7 +5,7 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CLI="$DEVENV_DIR/bin/devenv-cli.sh"
-PROPS="$SCRIPT_DIR/test.properties.kind"
+PROPS="$SCRIPT_DIR/test.properties.rancher-desktop"
 
 log() { echo "[teardown] $*"; }
 

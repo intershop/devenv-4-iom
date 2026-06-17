@@ -1,6 +1,6 @@
 #!/bin/bash
-# Runs the integration test suite against the current Docker Desktop kind cluster.
-# Prerequisites: setup.sh must have been run first (images loaded into kind node).
+# Runs the integration test suite against the current Rancher Desktop cluster.
+# Prerequisites: setup.sh must have been run first.
 #
 # Usage:
 #   test/run-integration-tests.sh             # run all integration tests
@@ -33,8 +33,8 @@ echo " devenv-4-iom integration tests"
 echo "=============================="
 
 # Verify cluster is reachable before running any tests
-kubectl cluster-info --context=docker-desktop > /dev/null 2>&1 || {
-    echo "ERROR: Docker Desktop cluster not reachable. Start Docker Desktop with Kubernetes enabled."
+kubectl cluster-info --context=rancher-desktop > /dev/null 2>&1 || {
+    echo "ERROR: Rancher Desktop cluster not reachable. Start Rancher Desktop with Kubernetes enabled."
     exit 1
 }
 
@@ -45,9 +45,7 @@ if [ -n "$FILTER" ]; then
         run_test "$TEST"
     done
 else
-    # Run in dependency order: storage → postgres → mailserver → full lifecycle
     for TEST in \
-        "$SCRIPT_DIR/integration/test_storage.sh" \
         "$SCRIPT_DIR/integration/test_postgres.sh" \
         "$SCRIPT_DIR/integration/test_mailserver.sh" \
         "$SCRIPT_DIR/integration/test_cluster_lifecycle.sh"; do

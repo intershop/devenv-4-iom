@@ -5,39 +5,36 @@ DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/assert.sh"
 
 TEMPLATE="$DEVENV_DIR/templates/postgres.yml.template"
+PROPS="$SCRIPT_DIR/test.properties.default"
 RENDER="$DEVENV_DIR/bin/template_engine.sh"
 
 echo "=== postgres.yml.template ==="
 
-for ENGINE in kubeadm kind; do
-    PROPS="$SCRIPT_DIR/test.properties.$ENGINE"
+test_case "template renders without error"
+OUTPUT=$("$RENDER" --template="$TEMPLATE" --config="$PROPS" --project-dir="$DEVENV_DIR" 2>&1)
+assert_exit_success "exit code 0" $?
 
-    test_case "$ENGINE: template renders without error"
-    OUTPUT=$("$RENDER" --template="$TEMPLATE" --config="$PROPS" --project-dir="$DEVENV_DIR" 2>&1)
-    assert_exit_success "exit code 0" $?
+test_case "uses configured postgres image"
+assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:15"
 
-    test_case "$ENGINE: uses configured postgres image"
-    assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:15"
+test_case "hostPath volume present (POSTGRES_DATA_DIR set)"
+assert_contains "hostPath volume defined" "$OUTPUT" "hostPath:"
+EXPECTED_PATH="$(mkdir -p /tmp/test-pgdata && realpath /tmp/test-pgdata)"
+assert_contains "hostPath path set (absolute)" "$OUTPUT" "path: \"$EXPECTED_PATH\""
 
-    test_case "$ENGINE: hostPath volume present (POSTGRES_DATA_DIR set)"
-    assert_contains "hostPath volume defined" "$OUTPUT" "hostPath:"
-    EXPECTED_PATH="$(mkdir -p /tmp/test-pgdata && realpath /tmp/test-pgdata)"
-    assert_contains "hostPath path set (absolute)" "$OUTPUT" "path: \"$EXPECTED_PATH\""
+test_case "no PVC in output"
+assert_not_contains "no PVC kind line" "$OUTPUT" "kind: PersistentVolumeClaim"
+assert_not_contains "no storageClassName" "$OUTPUT" "storageClassName:"
 
-    test_case "$ENGINE: no PVC in output"
-    assert_not_contains "no PVC kind line" "$OUTPUT" "kind: PersistentVolumeClaim"
-    assert_not_contains "no storageClassName" "$OUTPUT" "storageClassName:"
+test_case "volume mount present"
+assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
 
-    test_case "$ENGINE: volume mount present"
-    assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
+test_case "service type is LoadBalancer"
+assert_contains "LoadBalancer service" "$OUTPUT" "type: LoadBalancer"
 
-    test_case "$ENGINE: service type is LoadBalancer"
-    assert_contains "LoadBalancer service" "$OUTPUT" "type: LoadBalancer"
-
-    test_case "$ENGINE: no unsubstituted variables"
-    assert_not_contains "no raw DOCKER_DB_IMAGE" "$OUTPUT" '${DOCKER_DB_IMAGE}'
-    assert_not_contains "no raw PostgresDataDirAbs" "$OUTPUT" '${PostgresDataDirAbs}'
-done
+test_case "no unsubstituted variables"
+assert_not_contains "no raw DOCKER_DB_IMAGE" "$OUTPUT" '${DOCKER_DB_IMAGE}'
+assert_not_contains "no raw PostgresDataDirAbs" "$OUTPUT" '${PostgresDataDirAbs}'
 
 # relative path: should be resolved against PROJECT_DIR to an absolute path
 test_case "relative POSTGRES_DATA_DIR: resolved to absolute path"

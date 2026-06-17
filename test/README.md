@@ -18,8 +18,7 @@ any script fails.
 
     test/unit/
       assert.sh                     # assert library (assert_contains, assert_not_contains, assert_exit_success)
-      test.properties.kubeadm       # properties file for kubeadm engine scenarios
-      test.properties.kind          # properties file for kind engine scenarios
+      test.properties.default       # properties file used by all unit test scripts
       test_template_iom.sh          # tests for iom-single.yml.template
       test_template_mailsrv.sh      # tests for mailsrv.yml.template
       test_template_postgres.sh     # tests for postgres.yml.template
@@ -32,35 +31,22 @@ individual check is introduced with `test_case "description"` and followed by
 one or more `assert_*` calls. The script ends with `test_summary`, which prints
 the pass/fail count and exits non-zero on any failure.
 
-Most templates are rendered twice — once with `test.properties.kubeadm` and
-once with `test.properties.kind` — to catch engine-specific regressions.
 `test_template_postgres.sh` additionally covers relative path resolution and the
-unset-`POSTGRES_DATA_DIR` case.
+unset-`POSTGRES_DATA_DIR` case (hostPath volume commented out).
 
 ---
 
 ## Integration Tests
 
-Integration tests run `devenv-cli.sh` against a live Kubernetes cluster and
+Integration tests run `devenv-cli.sh` against a live Rancher Desktop cluster and
 verify that pods reach the expected state.
 
-> **Note:** The integration tests are currently **out of date**. They were
-> written for the Docker Desktop kind engine and reference concepts that have
-> since been removed (PVCs, `StorageClass: standard`, `test_storage.sh`). They
-> need to be updated to target Rancher Desktop and the current `hostPath`-based
-> storage approach before they can be used.
+**Prerequisites:** Rancher Desktop must be running with Kubernetes enabled and
+`docker context use rancher-desktop` must have been run.
 
-### Structure
+**Setup (run once before tests):**
 
-    test/integration/
-      assert.sh                         # same assert library as unit tests, extended with wait_for_pod_running
-      setup.sh                          # loads images into the kind node (outdated — targets kind engine)
-      teardown.sh                       # deletes all cluster resources created by tests
-      test.properties.kind              # properties for lifecycle test (ID=iom-test)
-      test-component.properties.kind    # properties for component tests (ID=iom-unit, avoids namespace collision)
-      test_postgres.sh                  # create/delete postgres, checks pod reaches Running
-      test_mailserver.sh                # create/delete mailserver, checks pod and external IP
-      test_cluster_lifecycle.sh         # full create cluster → verify → delete cluster cycle
+    test/integration/setup.sh
 
 **Run all integration tests:**
 
@@ -73,3 +59,15 @@ An optional filter argument runs only matching scripts:
 **Teardown** (if tests fail partway):
 
     test/integration/teardown.sh
+
+### Structure
+
+    test/integration/
+      assert.sh                                     # assert library, extended with wait_for_pod_running
+      setup.sh                                      # verifies cluster and Docker connectivity
+      teardown.sh                                   # deletes all cluster resources created by tests
+      test.properties.rancher-desktop               # properties for lifecycle test (ID=iom-test)
+      test-component.properties.rancher-desktop     # properties for component tests (ID=iom-unit, avoids namespace collision)
+      test_postgres.sh                              # create/delete postgres, checks pod reaches Running
+      test_mailserver.sh                            # create/delete mailserver, checks pod and external IP
+      test_cluster_lifecycle.sh                     # full create cluster → verify → delete cluster cycle

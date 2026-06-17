@@ -1,19 +1,19 @@
 #!/bin/bash
-# Tests: create mailserver / delete mailserver on kind engine.
-# Uses test-component.properties.kind (ID=iom-unit) to avoid collision
-# with the lifecycle test (ID=iom-test).
+# Tests: create mailserver / delete mailserver on Rancher Desktop.
+# Uses test-component.properties.rancher-desktop (ID=iom-unit) to avoid
+# collision with the lifecycle test (ID=iom-test).
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/assert.sh"
 
 CLI="$DEVENV_DIR/bin/devenv-cli.sh"
-PROPS="$SCRIPT_DIR/test-component.properties.kind"
-CONTEXT="docker-desktop"
+PROPS="$SCRIPT_DIR/test-component.properties.rancher-desktop"
+CONTEXT="rancher-desktop"
 NAMESPACE="iomunit"
 POD_TIMEOUT=60
 
-echo "=== mailserver (kind) ==="
+echo "=== mailserver ==="
 
 # Ensure clean state
 "$CLI" "$PROPS" delete mailserver > /dev/null 2>&1 || true
