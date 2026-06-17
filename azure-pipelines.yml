@@ -25,6 +25,10 @@ jobs:
   pool: 'ubuntu-24.04-D4ads_v5-adopt-adoptium-jdk'
   continueOnError: false
   timeoutInMinutes: 60
+  variables:
+    GIT_USER_EMAIL: "a.herold@intershop.de"
+    GIT_USER_NAME: "Azure CI $(Build.DefinitionName)"
+    MAIN_BRANCH: main
   workspace:
     clean: all
 
@@ -36,9 +40,61 @@ jobs:
 
   - checkout: self
     path: $(PROJECT_PATH)
+    persistCredentials: true
     clean: true
     timeoutInMinutes: 5
     displayName: "Checkout"
+
+  - script: |
+      set -e
+      git config user.email "${GIT_USER_EMAIL}"
+      git config user.name "${GIT_USER_NAME}"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Setup Git"
+
+  ##############################################################################
+  # determine version and control variables
+  ##############################################################################
+
+  - script: |
+      set -e
+
+      DEVENV4IOM_VERSION=$(grep '^DEVENV4IOM_VERSION=' bin/template-variables | cut -d= -f2)
+
+      IS_RELEASE_BUILD=false
+      IS_SNAPSHOT_BUILD=false
+      if echo "$BUILD_SOURCEBRANCH" | grep -q '^refs/heads/develop$\|^refs/heads/master$\|^refs/heads/release/\|^refs/heads/hotfix/\|^refs/heads/main$'; then
+        if echo "$DEVENV4IOM_VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+          IS_RELEASE_BUILD=true
+        else
+          IS_SNAPSHOT_BUILD=true
+        fi
+      fi
+
+      VERSION_MAJOR=$(echo "$DEVENV4IOM_VERSION" | sed 's/-SNAPSHOT//' | cut -d. -f1)
+      VERSION_MINOR=$(echo "$DEVENV4IOM_VERSION" | sed 's/-SNAPSHOT//' | cut -d. -f2)
+      VERSION_PATCH=$(echo "$DEVENV4IOM_VERSION" | sed 's/-SNAPSHOT//' | cut -d. -f3)
+      IS_PATCH=$(if [ "$VERSION_PATCH" -gt 0 ]; then echo 'true'; else echo 'false'; fi)
+
+      echo "##vso[task.setvariable variable=DEVENV4IOM_VERSION]$DEVENV4IOM_VERSION"
+      echo "##vso[task.setvariable variable=IS_RELEASE_BUILD]$IS_RELEASE_BUILD"
+      echo "##vso[task.setvariable variable=IS_SNAPSHOT_BUILD]$IS_SNAPSHOT_BUILD"
+      echo "##vso[task.setvariable variable=VERSION_MAJOR]$VERSION_MAJOR"
+      echo "##vso[task.setvariable variable=VERSION_MINOR]$VERSION_MINOR"
+      echo "##vso[task.setvariable variable=VERSION_PATCH]$VERSION_PATCH"
+      echo "##vso[task.setvariable variable=IS_PATCH]$IS_PATCH"
+
+      echo "DEVENV4IOM_VERSION:  $DEVENV4IOM_VERSION"
+      echo "IS_RELEASE_BUILD:    $IS_RELEASE_BUILD"
+      echo "IS_SNAPSHOT_BUILD:   $IS_SNAPSHOT_BUILD"
+      echo "VERSION_MAJOR:       $VERSION_MAJOR"
+      echo "VERSION_MINOR:       $VERSION_MINOR"
+      echo "VERSION_PATCH:       $VERSION_PATCH"
+      echo "IS_PATCH:            $IS_PATCH"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Define control variables"
 
   ##############################################################################
   # unit tests (no cluster required)
@@ -124,3 +180,73 @@ jobs:
     condition: always()
     timeoutInMinutes: 5
     displayName: "Teardown integration test environment"
+
+  ##############################################################################
+  # release
+  ##############################################################################
+
+  - script: |
+      set -e
+
+      # revert changes made to test/integration/devenv.project.properties
+      git restore .
+      git clean -fd
+
+      SOURCE_BRANCH=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/heads/||')
+      git fetch origin --unshallow
+      git switch "$SOURCE_BRANCH"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Reset Git repo"
+    condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'))
+
+  - script: |
+      set -e
+
+      SOURCE_BRANCH=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/heads/||')
+      HOTFIX_BRANCH=hotfix/$(VERSION_MAJOR).$(VERSION_MINOR)
+
+      # merge to main, tag, push
+      git checkout "$MAIN_BRANCH"
+      git merge "$SOURCE_BRANCH" -m "chore: merged devenv-4-iom $(DEVENV4IOM_VERSION) from $SOURCE_BRANCH to $MAIN_BRANCH [skip ci]"
+      git tag "$(DEVENV4IOM_VERSION)"
+      git push origin "$MAIN_BRANCH"
+      git push origin "$(DEVENV4IOM_VERSION)"
+
+      # create hotfix branch with next patch SNAPSHOT
+      git switch "$MAIN_BRANCH"
+      git checkout -b "$HOTFIX_BRANCH"
+      sed -i "s|^DEVENV4IOM_VERSION=.*|DEVENV4IOM_VERSION=$(VERSION_MAJOR).$(VERSION_MINOR).1-SNAPSHOT|" \
+          bin/template-variables
+      git add bin/template-variables
+      git commit -m "chore: prepared new branch $HOTFIX_BRANCH [skip ci]"
+      git push origin "$HOTFIX_BRANCH"
+
+      # dummy merge hotfix into source so future merges are clean
+      git switch "$SOURCE_BRANCH"
+      git merge -s ours "$HOTFIX_BRANCH" -m "chore: dummy merge from $HOTFIX_BRANCH [skip ci]"
+      git push origin "$SOURCE_BRANCH"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 5
+    displayName: "Git Major/Minor post-release tasks"
+    condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'false'))
+
+  - script: |
+      set -e
+
+      SOURCE_BRANCH=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/heads/||')
+      NEXT_VERSION=$(VERSION_MAJOR).$(VERSION_MINOR).$(expr $(VERSION_PATCH) + 1)
+
+      git switch "$SOURCE_BRANCH"
+      git tag "$(DEVENV4IOM_VERSION)"
+      git push origin "$(DEVENV4IOM_VERSION)"
+
+      sed -i "s|^DEVENV4IOM_VERSION=.*|DEVENV4IOM_VERSION=${NEXT_VERSION}-SNAPSHOT|" \
+          bin/template-variables
+      git add bin/template-variables
+      git commit -m "chore: updated to next snapshot version [skip ci]"
+      git push origin "$SOURCE_BRANCH"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 5
+    displayName: "Git Patch post-release tasks"
+    condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'true'))
