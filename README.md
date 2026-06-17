@@ -23,7 +23,7 @@ If _devenv-4-iom_ is already installed and you are looking for a short overview 
 # Compatibility
 
 The latest versions of _devenv-4-iom_ and IOM are always compatible with each other. As long as not noted otherwise, _devenv-4-iom_ is backward
-compatible with all versions of IOM >= 3.0. For best experience, always use the latest version of _devenv-4-iom_, regardless of the IOM version
+compatible with all versions of IOM >= 4.0. For best experience, always use the latest version of _devenv-4-iom_, regardless of the IOM version
 you are currently using. To do so, please update _devenv-4-iom_ as often as possible.
 
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
@@ -46,6 +46,12 @@ The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been
 ### Updated Default PostgreSQL Version
 
 The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:15`.
+
+## Breaking Changes
+
+### Support for IOM Prior Version 4.0 Dropped <!-- #117544 -->
+
+The dual-image distribution of IOM (separate `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE`) that was used before IOM 4.0 is no longer supported. The configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` have been removed. Use `IOM_IMAGE` to define the IOM image.
 
 # Release information 2.7.0
 
@@ -163,9 +169,7 @@ When starting the IOM application server (`create iom`), a file _testframework-c
 
 IOM 4.0 has changed the distribution model. Instead of providing IOM in form of two _Docker_ images (_iom-app_, _iom-config_), IOM 4.0 now consists of a single image only (plus the _iom-dbaccount_ image, which is not directly part of the IOM release).
 
-To define the (single) IOM image to be used, the new configuration variable `IOM_IMAGE` has been added. The two configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` still exist and must be used when using _devenv-4-iom_ with IOM prior version 4.
-
-If `IOM_IMAGE` contains a value, the content of `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` will be ignored.
+To define the (single) IOM image to be used, the new configuration variable `IOM_IMAGE` has been added. The two configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` were introduced at the same time for backward compatibility with IOM prior version 4.0, but have been removed in _devenv-4-iom_ 2.8.0.
 
 ### Configuration Concept Has Changed for Easier Integration Into Projects <!-- 70641 -->
 
