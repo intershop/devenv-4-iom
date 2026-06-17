@@ -73,13 +73,13 @@ KUBERNETES_CONTEXT=docker-desktop
 
 Docker Desktop registers its cluster under the context name `docker-desktop`, so this value must match exactly.
 
-For **Windows only**, also add:
+For **Windows (Git Bash) only**, also add:
 
 ```
 MOUNT_PREFIX=/run/desktop/mnt/host
 ```
 
-Git Bash represents Windows paths as `/c/Users/...`, but the Docker Desktop Kubernetes node expects them under `/run/desktop/mnt/host/c/Users/...`. `MOUNT_PREFIX` bridges this gap.
+Git Bash represents Windows paths as `/c/Users/...`, but the Docker Desktop Kubernetes node expects them under `/run/desktop/mnt/host/c/Users/...`. `MOUNT_PREFIX` bridges this gap. When running _devenv-4-iom_ from a WSL2 shell instead of Git Bash, paths are already in the correct format — leave `MOUNT_PREFIX` empty.
 
 See [Configuration](02_configuration.md) for details on where to set these properties.
 

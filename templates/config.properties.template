@@ -242,15 +242,24 @@ OMS_LOG_REST_IDS=${OMS_LOG_REST_IDS}
 # Windows path prefix settings
 ################################################################################
 
-# On Windows (Git Bash), directory paths use the POSIX convention (/c/Users/...).
-# Inside the Kubernetes node the same paths may appear under a different prefix:
+# MOUNT_PREFIX is prepended to every hostPath volume that devenv-4-iom
+# constructs. It is only needed when the path format used in this config file
+# does not match the path format expected inside the Kubernetes node.
 #
-#   Rancher Desktop (WSL2): set MOUNT_PREFIX=/mnt
-#     Git Bash /c/Users/... → node sees /mnt/c/Users/...
+# Windows — Git Bash:
+#   Git Bash represents paths as /c/Users/... The Kubernetes node expects a
+#   different prefix depending on the platform:
+#     Rancher Desktop: MOUNT_PREFIX=/mnt
+#       (/c/Users/... → node sees /mnt/c/Users/...)
+#     Docker Desktop:  MOUNT_PREFIX=/run/desktop/mnt/host
+#       (/c/Users/... → node sees /run/desktop/mnt/host/c/Users/...)
 #
-#   Docker Desktop (WSL2): set MOUNT_PREFIX=/run/desktop/mnt/host
+# Windows — WSL2 shell (bash inside WSL2, not Git Bash):
+#   Paths are already in the correct format for the node (/mnt/c/Users/...).
+#   Leave MOUNT_PREFIX empty.
 #
-# On macOS and Linux, leave MOUNT_PREFIX empty.
+# macOS and Linux:
+#   Leave MOUNT_PREFIX empty.
 
 MOUNT_PREFIX="${MOUNT_PREFIX}"
 
