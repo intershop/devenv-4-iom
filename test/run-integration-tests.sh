@@ -1,16 +1,51 @@
 #!/bin/bash
-# Runs the integration test suite against the current Rancher Desktop cluster.
+# Runs the integration test suite against a live Kubernetes cluster.
 # Prerequisites: setup.sh must have been run first.
 #
 # Usage:
-#   test/run-integration-tests.sh             # run all integration tests
-#   test/run-integration-tests.sh lifecycle   # run only test_cluster_lifecycle.sh
+#   test/run-integration-tests.sh [--config=<file>] [filter]
+#
+# --config=<file>   Override properties file — values in this file take
+#                   precedence over the defaults in test.properties.rancher-desktop
+#                   and test-component.properties.rancher-desktop.  Use this to
+#                   supply image names and the Kubernetes context for CI environments.
+#
+# filter            Only run scripts whose name contains this string.
+#                   Example: lifecycle  →  runs only test_cluster_lifecycle.sh
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 PASSED=0
 FAILED=0
 ERRORS=()
+
+# Parse arguments
+CONFIG_OVERRIDE=""
+FILTER=""
+for ARG in "$@"; do
+    case "$ARG" in
+        --config=*) CONFIG_OVERRIDE="${ARG#--config=}" ;;
+        *) FILTER="$ARG" ;;
+    esac
+done
+
+if [ -n "$CONFIG_OVERRIDE" ] && [ ! -f "$CONFIG_OVERRIDE" ]; then
+    echo "ERROR: config file not found: $CONFIG_OVERRIDE"
+    exit 1
+fi
+
+export INTEGRATION_TEST_CONFIG="$CONFIG_OVERRIDE"
+
+# Determine Kubernetes context for the reachability check.
+# Read from override file first, fall back to the base properties file, then
+# fall back to rancher-desktop.
+KUBERNETES_CONTEXT="rancher-desktop"
+for PROPS_FILE in "$SCRIPT_DIR/integration/test.properties.rancher-desktop" "$CONFIG_OVERRIDE"; do
+    if [ -n "$PROPS_FILE" ] && [ -f "$PROPS_FILE" ]; then
+        VAL=$(grep '^KUBERNETES_CONTEXT=' "$PROPS_FILE" 2>/dev/null | tail -1 | cut -d= -f2-)
+        [ -n "$VAL" ] && KUBERNETES_CONTEXT="$VAL"
+    fi
+done
 
 run_test() {
     local TEST_FILE="$1"
@@ -32,13 +67,11 @@ echo "=============================="
 echo " devenv-4-iom integration tests"
 echo "=============================="
 
-# Verify cluster is reachable before running any tests
-kubectl cluster-info --context=rancher-desktop > /dev/null 2>&1 || {
-    echo "ERROR: Rancher Desktop cluster not reachable. Start Rancher Desktop with Kubernetes enabled."
+kubectl cluster-info --context="$KUBERNETES_CONTEXT" > /dev/null 2>&1 || {
+    echo "ERROR: Kubernetes context '$KUBERNETES_CONTEXT' is not reachable."
+    echo "       Start your cluster or pass --config=<file> with KUBERNETES_CONTEXT set."
     exit 1
 }
-
-FILTER="${1:-}"
 
 if [ -n "$FILTER" ]; then
     for TEST in "$SCRIPT_DIR/integration"/test_*"$FILTER"*.sh; do

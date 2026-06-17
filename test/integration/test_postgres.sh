@@ -1,17 +1,32 @@
 #!/bin/bash
-# Tests: create postgres / delete postgres on Rancher Desktop.
-# Uses test-component.properties.rancher-desktop (ID=iom-unit) to avoid
-# collision with the lifecycle test (ID=iom-test).
+# Tests: create postgres / delete postgres.
+# Uses the component properties file (ID=iom-unit) to avoid collision
+# with the lifecycle test (ID=iom-test).
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/assert.sh"
 
 CLI="$DEVENV_DIR/bin/devenv-cli.sh"
-PROPS="$SCRIPT_DIR/test-component.properties.rancher-desktop"
-CONTEXT="rancher-desktop"
+BASE_PROPS="$SCRIPT_DIR/test-component.properties.rancher-desktop"
 NAMESPACE="iomunit"
 POD_TIMEOUT=120
+
+# Merge base properties with optional override (set via INTEGRATION_TEST_CONFIG
+# or --config= flag on run-integration-tests.sh).  Last value wins for
+# duplicate keys, so override values take precedence.
+PROPS=$(mktemp)
+trap "rm -f '$PROPS'" EXIT
+cat "$BASE_PROPS" > "$PROPS"
+CONFIG_OVERRIDE="${INTEGRATION_TEST_CONFIG:-}"
+if [ -n "$CONFIG_OVERRIDE" ] && [ -f "$CONFIG_OVERRIDE" ]; then
+    printf '\n' >> "$PROPS"
+    cat "$CONFIG_OVERRIDE" >> "$PROPS"
+fi
+
+# Derive KUBERNETES_CONTEXT from the merged file.
+CONTEXT=$(grep '^KUBERNETES_CONTEXT=' "$PROPS" | tail -1 | cut -d= -f2-)
+CONTEXT="${CONTEXT:-rancher-desktop}"
 
 echo "=== postgres ==="
 
