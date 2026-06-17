@@ -124,10 +124,8 @@ Mail server and PostgreSQL server start very fast. The output of the according `
     Kubernetes:
     ===========
     namespace:                  firststeps
-    POSTGRES_DATA_DIR:          /home/user/.devenv-4-iom/firststeps/pgdata
     NAME       READY   STATUS    RESTARTS   AGE
     postgres   1/1     Running   0          0m22s
-    Kubernetes:
     --------------------------------------------------------------------------------
     ...
 
