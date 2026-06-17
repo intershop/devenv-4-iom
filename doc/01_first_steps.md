@@ -79,8 +79,6 @@ Due to the quite complex configuration of _devenv-4-iom_, see [Configuration | G
     DOCKER_DB_IMAGE=postgres:12
     MAILSRV_IMAGE=axllent/mailpit
     IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
-    IOM_CONFIG_IMAGE=
-    IOM_APP_IMAGE=
     IOM_IMAGE=docker.tools.intershop.com/iom/intershophub/iom:4.1.0
     ...
     --------------------------------------------------------------------------------

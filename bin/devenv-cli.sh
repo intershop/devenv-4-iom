@@ -327,9 +327,7 @@ $(msg_config_file 4)
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
-    IOM_CONFIG_IMAGE - defines the config image to be used (IOM < v.4)
-    IOM_APP_IMAGE - defines the IOM application image to be used (IOM < v.4)
-    IOM_IMAGE - defined the IOM image to be used (IOM >= v.4)
+    IOM_IMAGE - defines the IOM image to be used
     IMAGE_PULL_POLICY - defines when to pull images from origin
     IMAGE_PULL_SECRET - name of the secret to be used when pulling images from 
       origin.
@@ -722,7 +720,7 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    The docker-image defined by IOM_CONFIG_IMAGE/IOM_IMAGE contains all the 
+    The docker-image defined by IOM_IMAGE contains all the
     necessary tools to apply SQL scripts to the IOM database. Devenv4iom enables 
     you to use these tools as easily as possible. Therefore it provides a 
     Kubernetes job (apply-sql-job), that applies SQL file(s) to the IOM database.
@@ -872,8 +870,7 @@ CONFIG
     CUSTOM_JSONCONF_DIR - directory where your custom JSON confguration is
       located.
 $(msg_custom_dir JSONCONF 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
-    IOM_IMAGE - defines the image to be used when executing the job (IOM >= v.4).
+    IOM_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
       configuration.
@@ -944,8 +941,7 @@ CONFIG
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
 $(msg_custom_dir DBMIGRATE 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
-    IOM_IMAGE - defines the image to be used when executing the job (IOM >= v.4).
+    IOM_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
       the db-migration.
@@ -1057,8 +1053,7 @@ CONFIG
     CUSTOM_DUMPS_DIR - directory where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
 $(msg_custom_dir DUMPS 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
-    IOM_IMAGE - defined the image to be used when executing the job (IOM >= v.4).
+    IOM_IMAGE - defines the image to be used when executing the job.
     IMAGE_PULL_POLICY - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
     ID - the namespace used is derived from ID.
@@ -1837,8 +1832,6 @@ OMS_LOGLEVEL_SCRIPTS:       $OMS_LOGLEVEL_SCRIPTS
 Docker:
 =======
 IOM_DBACCOUNT_IMAGE:        $IOM_DBACCOUNT_IMAGE
-IOM_CONFIG_IMAGE:           $IOM_CONFIG_IMAGE
-IOM_APP_IMAGE:              $IOM_APP_IMAGE
 IOM_IMAGE:                  $IOM_IMAGE
 IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
 --------------------------------------------------------------------------------
