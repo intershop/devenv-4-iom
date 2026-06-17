@@ -26,6 +26,7 @@ jobs:
   continueOnError: false
   timeoutInMinutes: 60
   variables:
+    PROTOCOL_FILE: $(Pipeline.Workspace)/protocol.md
     GIT_USER_EMAIL: "a.herold@intershop.de"
     GIT_USER_NAME: "Azure CI $(Build.DefinitionName)"
     MAIN_BRANCH: main
@@ -87,13 +88,20 @@ jobs:
       echo "##vso[task.setvariable variable=VERSION_PATCH]$VERSION_PATCH"
       echo "##vso[task.setvariable variable=IS_PATCH]$IS_PATCH"
 
-      echo "DEVENV4IOM_VERSION:  $DEVENV4IOM_VERSION"
-      echo "IS_RELEASE_BUILD:    $IS_RELEASE_BUILD"
-      echo "IS_SNAPSHOT_BUILD:   $IS_SNAPSHOT_BUILD"
-      echo "VERSION_MAJOR:       $VERSION_MAJOR"
-      echo "VERSION_MINOR:       $VERSION_MINOR"
-      echo "VERSION_PATCH:       $VERSION_PATCH"
-      echo "IS_PATCH:            $IS_PATCH"
+      cat > "${PROTOCOL_FILE}" <<EOF
+      ## Variables
+      - DEVENV4IOM_VERSION: $DEVENV4IOM_VERSION
+      - IS_RELEASE_BUILD:   $IS_RELEASE_BUILD
+      - IS_SNAPSHOT_BUILD:  $IS_SNAPSHOT_BUILD
+      - VERSION_MAJOR:      $VERSION_MAJOR
+      - VERSION_MINOR:      $VERSION_MINOR
+      - VERSION_PATCH:      $VERSION_PATCH
+      - IS_PATCH:           $IS_PATCH
+      - DOCKER_DB_IMAGE:    $DOCKER_DB_IMAGE
+      - MAILSRV_IMAGE:      $MAILSRV_IMAGE
+      - IOM_DBACCOUNT_IMAGE: $IOM_DBACCOUNT_IMAGE
+      - IOM_IMAGE:          $IOM_IMAGE
+      EOF
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 1
     displayName: "Define control variables"
@@ -106,6 +114,11 @@ jobs:
   - script: |
       set -e
       test/run-unit-tests.sh
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Unit Tests
+      - Result: passed
+      EOF
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 5
     displayName: "Run unit tests"
@@ -178,6 +191,11 @@ jobs:
   - script: |
       set -e
       test/run-integration-tests.sh
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Integration Tests
+      - Result: passed
+      EOF
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 30
     displayName: "Run integration tests"
@@ -237,6 +255,16 @@ jobs:
       git switch "$SOURCE_BRANCH"
       git merge -s ours "$HOTFIX_BRANCH" -m "chore: dummy merge from $HOTFIX_BRANCH [skip ci]"
       git push origin "$SOURCE_BRANCH"
+
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Git
+      - merged $SOURCE_BRANCH to $MAIN_BRANCH
+      - created tag $(DEVENV4IOM_VERSION) in $MAIN_BRANCH
+      - created branch $HOTFIX_BRANCH
+      - updated version in bin/template-variables to $(VERSION_MAJOR).$(VERSION_MINOR).1-SNAPSHOT in $HOTFIX_BRANCH
+      - dummy merge from $HOTFIX_BRANCH into $SOURCE_BRANCH
+      EOF
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 5
     displayName: "Git Major/Minor post-release tasks"
@@ -258,8 +286,26 @@ jobs:
       git add bin/template-variables
       git commit -m "chore: updated to next snapshot version [skip ci]"
       git push origin "$SOURCE_BRANCH"
+
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Git
+      - created tag $(DEVENV4IOM_VERSION) in $SOURCE_BRANCH
+      - updated version in bin/template-variables to ${NEXT_VERSION}-SNAPSHOT
+      EOF
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 5
     displayName: "Git Patch post-release tasks"
     condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'true'))
+    #enabled: false
+
+  ##############################################################################
+  # protocol
+  ##############################################################################
+
+  - script: |
+      echo "##vso[task.uploadsummary]${PROTOCOL_FILE}"
+    timeoutInMinutes: 1
+    displayName: "Provide Protocol"
+    condition: always()
     #enabled: false
