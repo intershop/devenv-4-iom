@@ -43,6 +43,8 @@ Docker Desktop continues to be supported. See [Docker Desktop](doc/09_docker_des
 
 The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been replaced by the `POSTGRES_DATA_DIR` property. Set it to a host directory path to persist PostgreSQL data across cluster restarts. Absolute and relative paths are supported; relative paths are resolved against the directory of `devenv.project.properties`, or the current working directory if no project-specific configuration exists. Leave it empty (the default) to run PostgreSQL without persistent storage.
 
+**Migration:** Remove `KEEP_DATABASE_DATA` from your configuration file and add `POSTGRES_DATA_DIR` with a path of your choice, or leave it empty to run without persistent storage.
+
 ### Updated Default PostgreSQL Version
 
 The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:17`.
