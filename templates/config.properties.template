@@ -58,7 +58,15 @@ IMAGE_PULL_POLICY_MAILSRV=${IMAGE_PULL_POLICY_MAILSRV}
 IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
 
 # postgres image (name:tag)
-# example:                  postgres:17
+# The tag must start with the major version number so that devenv-4-iom can
+# determine the correct data directory layout (changed in postgres 18).
+# examples: postgres:17  postgres:18  postgres:17-alpine  postgres:18-bookworm
+#
+# WARNING: switching to a different major version requires an empty
+# POSTGRES_DATA_DIR. PostgreSQL cannot read data written by a different major
+# version without running pg_upgrade first, which is not supported by
+# devenv-4-iom. Delete the contents of POSTGRES_DATA_DIR before switching
+# versions and let IOM reinitialise the database on next start.
 POSTGRES_IMAGE=${POSTGRES_IMAGE}
 
 # DEPRECATED: DOCKER_DB_IMAGE is superseded by POSTGRES_IMAGE.
