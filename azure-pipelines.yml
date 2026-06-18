@@ -13,6 +13,9 @@ variables:
 
   PROJECT_PATH: devenv-4-iom
 
+  # Increment to force a full cache refresh of public Docker images.
+  CACHE_KEY: a
+
 trigger:
   branches:
     exclude:
@@ -27,6 +30,7 @@ jobs:
   timeoutInMinutes: 60
   variables:
     PROTOCOL_FILE: $(Pipeline.Workspace)/protocol.md
+    DOCKER_IMAGES_CACHE_DIR: $(Pipeline.Workspace)/docker-images-cache
     GIT_USER_EMAIL: "a.herold@intershop.de"
     GIT_USER_NAME: "Azure CI $(Build.DefinitionName)"
     MAIN_BRANCH: main
@@ -147,17 +151,47 @@ jobs:
     displayName: "Install k3s"
     enabled: false
 
+  - task: Cache@2
+    inputs:
+      key: '"$(DOCKER_DB_IMAGE)" | "$(MAILSRV_IMAGE)" | "$(CACHE_KEY)"'
+      path: "$(DOCKER_IMAGES_CACHE_DIR)"
+      cacheHitVar: DOCKER_IMAGES_CACHE_RESTORED
+    timeoutInMinutes: 5
+    displayName: "Create/restore cache of public Docker images"
+    enabled: false
+
   - script: |
       set -e
-      # Pull all required images via Docker and import them into k3s containerd so
-      # they are available with IMAGE_PULL_POLICY_IOM=IfNotPresent — no registry
-      # credentials are needed inside the cluster.
+      mkdir -p "${DOCKER_IMAGES_CACHE_DIR}"
+      docker pull "$(DOCKER_DB_IMAGE)"
+      docker pull "$(MAILSRV_IMAGE)"
+      docker save -o "${DOCKER_IMAGES_CACHE_DIR}/images.tar" "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)"
+    timeoutInMinutes: 10
+    displayName: "Download public Docker images"
+    condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'false'))
+    enabled: false
+
+  - script: |
+      set -e
+      docker load -i "${DOCKER_IMAGES_CACHE_DIR}/images.tar"
+    timeoutInMinutes: 5
+    displayName: "Load public Docker images from cache"
+    condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'true'))
+    enabled: false
+
+  - script: |
+      set -e
+      # Pull project-specific images (public images are already in the Docker daemon
+      # from the cache step above). Import everything into k3s containerd so images
+      # are available with IMAGE_PULL_POLICY_IOM=IfNotPresent — no registry
+      # credentials needed inside the cluster.
+      docker pull "$(IOM_DBACCOUNT_IMAGE)"
+      docker pull "$(IOM_IMAGE)"
       for IMAGE in "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
-        docker pull "$IMAGE"
         docker save "$IMAGE" | sudo k3s ctr images import -
       done
     timeoutInMinutes: 10
-    displayName: "Pull and import Docker images into k3s"
+    displayName: "Pull project-specific images and import all images into k3s"
     enabled: false
 
   - script: |
