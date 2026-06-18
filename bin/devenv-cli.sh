@@ -4,6 +4,13 @@ TMP_ERR="$(mktemp)"
 TMP_OUT="$(mktemp)"
 trap "rm -f $TMP_ERR $TMP_OUT" EXIT SIGTERM
 
+# Wrap kubectl so every call gets a consistent request timeout.
+# Prevents commands from hanging indefinitely when the cluster is unreachable.
+KUBECTL_REQUEST_TIMEOUT="${KUBECTL_REQUEST_TIMEOUT:-10s}"
+kubectl() {
+    command kubectl --request-timeout="$KUBECTL_REQUEST_TIMEOUT" "$@"
+}
+
 ################################################################################
 # display help messages
 ################################################################################
