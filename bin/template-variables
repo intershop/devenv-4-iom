@@ -52,10 +52,15 @@ OTEL_COLLECTOR="${OTEL_COLLECTOR}"
 
 # DEPRECATED: IMAGE_PULL_POLICY is superseded by the per-image variables below.
 # It is kept only as a fallback default for IMAGE_PULL_POLICY_IOM.
-# To remove in a future version: delete the next three lines and the
+# To remove in a future version: delete the next four lines and the
 # IMAGE_PULL_POLICY block in config.properties.template.
-[ -n "${IMAGE_PULL_POLICY+set}" ] && type log_msg > /dev/null 2>&1 && \
-    log_msg WARN "IMAGE_PULL_POLICY is deprecated. Use IMAGE_PULL_POLICY_IOM instead." < /dev/null
+if [ -n "${IMAGE_PULL_POLICY+set}" ] && type log_msg > /dev/null 2>&1; then
+    if [ -n "${IMAGE_PULL_POLICY_IOM+set}" ]; then
+        log_msg WARN "IMAGE_PULL_POLICY is deprecated and ignored because IMAGE_PULL_POLICY_IOM is set. Remove IMAGE_PULL_POLICY from your configuration." < /dev/null
+    else
+        log_msg WARN "IMAGE_PULL_POLICY is deprecated. Use IMAGE_PULL_POLICY_IOM instead. IMAGE_PULL_POLICY_IOM has been set to the value of IMAGE_PULL_POLICY." < /dev/null
+    fi
+fi
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
 # Per-image pull policies. IMAGE_PULL_POLICY_IOM defaults to the global
@@ -426,10 +431,15 @@ TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
 # DEPRECATED: DOCKER_DB_IMAGE is superseded by POSTGRES_IMAGE.
-# To remove in a future version: delete the next three lines and the
+# To remove in a future version: delete the next five lines and the
 # DOCKER_DB_IMAGE block in config.properties.template.
-[ -n "${DOCKER_DB_IMAGE+set}" ] && type log_msg > /dev/null 2>&1 && \
-    log_msg WARN "DOCKER_DB_IMAGE is deprecated. Use POSTGRES_IMAGE instead." < /dev/null
+if [ -n "${DOCKER_DB_IMAGE+set}" ] && type log_msg > /dev/null 2>&1; then
+    if [ -n "${POSTGRES_IMAGE+set}" ]; then
+        log_msg WARN "DOCKER_DB_IMAGE is deprecated and ignored because POSTGRES_IMAGE is set. Remove DOCKER_DB_IMAGE from your configuration." < /dev/null
+    else
+        log_msg WARN "DOCKER_DB_IMAGE is deprecated. Use POSTGRES_IMAGE instead. POSTGRES_IMAGE has been set to the value of DOCKER_DB_IMAGE." < /dev/null
+    fi
+fi
 POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:17}}"
 MAILSRV_IMAGE="${MAILSRV_IMAGE:-axllent/mailpit}"
 IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0}"
