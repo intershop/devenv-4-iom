@@ -35,7 +35,7 @@ a certain version of IOM.
 
 ### Rancher Desktop Support <!-- #117544 -->
 
-[Rancher Desktop](https://rancherdesktop.io/) is now the recommended Kubernetes platform for _devenv-4-iom_. It is open-source, free for commercial use, and correctly exposes host directories into the Kubernetes node on macOS, Linux, and Windows. See [Rancher Desktop](doc/10_rancher_desktop.md) for installation and setup instructions.
+[Rancher Desktop](https://rancherdesktop.io/) is now the recommended Kubernetes platform for _devenv-4-iom_. It is open-source, free for commercial use, and correctly exposes host directories into the Kubernetes node on macOS, Linux, and Windows. See [Rancher Desktop setup](doc/10_rancher_desktop.md) for installation and setup instructions.
 
 Docker Desktop continues to be supported. See [Docker Desktop](doc/09_docker_desktop.md) for details on the kubeadm and kind engines.
 
