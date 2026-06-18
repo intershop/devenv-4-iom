@@ -47,7 +47,7 @@ The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been
 
 ### Updated Default PostgreSQL Version
 
-The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:17`.
+The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:17`. The version `postgres:15` was used as an intermediate default and is skipped in this release note.
 
 ### Per-Image Pull Policies
 
@@ -60,6 +60,20 @@ Three new configuration variables replace the single `IMAGE_PULL_POLICY` propert
 | `IMAGE_PULL_POLICY_MAILSRV` | `IfNotPresent` | Mail server image |
 
 `IMAGE_PULL_POLICY` is deprecated. It still works as a fallback default for `IMAGE_PULL_POLICY_IOM` and will produce a warning when set. It will be removed in a future version. Replace it with `IMAGE_PULL_POLICY_IOM` in your configuration files.
+
+### Remote Debugging via `kubectl port-forward`
+
+The JDWP debug port is no longer exposed through the IOM LoadBalancer service. Exposing it caused k3s's built-in ServiceLB to repeatedly probe the port with plain TCP connections, producing `Debugger failed to attach` noise in the IOM logs. Use `kubectl port-forward` to access the debug port on demand instead:
+
+```bash
+kubectl port-forward \
+  --namespace <namespace> \
+  --context="<context>" \
+  pod/<iom-pod-name> \
+  8787:${PORT_DEBUG}
+```
+
+See [Development Process](doc/05_development_process.md) for details.
 
 ## Breaking Changes
 
