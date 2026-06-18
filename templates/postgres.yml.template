@@ -11,7 +11,7 @@ ${KeepDatabaseYml}    hostPath:
 ${KeepDatabaseYml}      path: "${MOUNT_PREFIX}${PostgresDataDirAbs}"
   containers:
   - name: postgres
-    image: ${DOCKER_DB_IMAGE}
+    image: ${POSTGRES_IMAGE}
     args: [ ${PostgresArgsYml} ]
     imagePullPolicy: ${IMAGE_PULL_POLICY_POSTGRES}
     env:

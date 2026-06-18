@@ -287,7 +287,7 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 CONFIG
-    DOCKER_DB_IMAGE - docker image to be used
+    POSTGRES_IMAGE - postgres image to be used
     PGHOST - if set, it indicates the usage of an external Postgres server.
       The command will not create a Postgres server in this case.
     POSTGRES_DATA_DIR - if set, database data is persisted to this host
@@ -1911,7 +1911,7 @@ POSTGRES_DATA_DIR:          $POSTGRES_DATA_DIR
 --------------------------------------------------------------------------------
 Docker:
 =======
-DOCKER_DB_IMAGE:            $DOCKER_DB_IMAGE
+POSTGRES_IMAGE:             $POSTGRES_IMAGE
 IMAGE_PULL_POLICY_POSTGRES: $IMAGE_PULL_POLICY_POSTGRES
 --------------------------------------------------------------------------------
 EOF

@@ -63,7 +63,7 @@ local Docker daemon before running the tests.
 
 | Variable | Default value | Source |
 |---|---|---|
-| `DOCKER_DB_IMAGE` | `postgres:17` | public — pulled automatically |
+| `POSTGRES_IMAGE` | `postgres:17` | public — pulled automatically |
 | `MAILSRV_IMAGE` | `axllent/mailpit` | public — pulled automatically |
 | `IOM_DBACCOUNT_IMAGE` | `iom-dbaccount:1.5.0` | project-specific — must be built or loaded |
 | `IOM_IMAGE` | `ci-iom:5.1.0-1.0.0-SNAPSHOT` | project-specific — must be built or loaded |

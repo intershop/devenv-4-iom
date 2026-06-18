@@ -425,7 +425,12 @@ OMS_DB_SQLHASH="${OMS_DB_SQLHASH:-false}"
 TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
-DOCKER_DB_IMAGE="${DOCKER_DB_IMAGE:-postgres:17}"
+# DEPRECATED: DOCKER_DB_IMAGE is superseded by POSTGRES_IMAGE.
+# To remove in a future version: delete the next three lines and the
+# DOCKER_DB_IMAGE block in config.properties.template.
+[ -n "${DOCKER_DB_IMAGE+set}" ] && type log_msg > /dev/null 2>&1 && \
+    log_msg WARN "DOCKER_DB_IMAGE is deprecated. Use POSTGRES_IMAGE instead." < /dev/null
+POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:17}}"
 MAILSRV_IMAGE="${MAILSRV_IMAGE:-axllent/mailpit}"
 IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0}"
 IOM_IMAGE="${IOM_IMAGE}"

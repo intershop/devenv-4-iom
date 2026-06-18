@@ -1,12 +1,12 @@
 variables:
   ##############################################################################
   # Images used for integration tests.
-  # DOCKER_DB_IMAGE and MAILSRV_IMAGE are public and pulled automatically.
+  # POSTGRES_IMAGE and MAILSRV_IMAGE are public and pulled automatically.
   # IOM_DBACCOUNT_IMAGE and IOM_IMAGE are project-specific; set these to the
   # images that should be tested.
   ##############################################################################
 
-  DOCKER_DB_IMAGE: postgres:17
+  POSTGRES_IMAGE: postgres:17
   MAILSRV_IMAGE: axllent/mailpit
   IOM_DBACCOUNT_IMAGE: iomdevopsacr.azurecr.io/iom-dbaccount:1.5.0
   IOM_IMAGE: iomdevopsacr.azurecr.io/ci-iom:5.1.11-1.0.0-SNAPSHOT
@@ -103,7 +103,7 @@ jobs:
       - VERSION_MINOR:      $VERSION_MINOR
       - VERSION_PATCH:      $VERSION_PATCH
       - IS_PATCH:           $IS_PATCH
-      - DOCKER_DB_IMAGE:    $DOCKER_DB_IMAGE
+      - POSTGRES_IMAGE:    $POSTGRES_IMAGE
       - MAILSRV_IMAGE:      $MAILSRV_IMAGE
       - IOM_DBACCOUNT_IMAGE: $IOM_DBACCOUNT_IMAGE
       - IOM_IMAGE:          $IOM_IMAGE
@@ -155,7 +155,7 @@ jobs:
 
   - task: Cache@2
     inputs:
-      key: '"$(DOCKER_DB_IMAGE)" | "$(MAILSRV_IMAGE)" | "$(CACHE_KEY)"'
+      key: '"$(POSTGRES_IMAGE)" | "$(MAILSRV_IMAGE)" | "$(CACHE_KEY)"'
       path: "$(DOCKER_IMAGES_CACHE_DIR)"
       cacheHitVar: DOCKER_IMAGES_CACHE_RESTORED
     timeoutInMinutes: 5
@@ -165,9 +165,9 @@ jobs:
   - script: |
       set -e
       mkdir -p "${DOCKER_IMAGES_CACHE_DIR}"
-      docker pull "$(DOCKER_DB_IMAGE)"
+      docker pull "$(POSTGRES_IMAGE)"
       docker pull "$(MAILSRV_IMAGE)"
-      docker save -o "${DOCKER_IMAGES_CACHE_DIR}/images.tar" "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)"
+      docker save -o "${DOCKER_IMAGES_CACHE_DIR}/images.tar" "$(POSTGRES_IMAGE)" "$(MAILSRV_IMAGE)"
     timeoutInMinutes: 10
     displayName: "Download public Docker images"
     condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'false'))
@@ -196,7 +196,7 @@ jobs:
       # containerd so images are available with IMAGE_PULL_POLICY_IOM=IfNotPresent.
       docker pull "$(IOM_DBACCOUNT_IMAGE)"
       docker pull "$(IOM_IMAGE)"
-      for IMAGE in "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
+      for IMAGE in "$(POSTGRES_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
         docker save "$IMAGE" | sudo k3s ctr images import -
       done
     timeoutInMinutes: 10
@@ -210,7 +210,7 @@ jobs:
       # k3s registers its cluster under the context name 'default'.
       sed -i 's/^KUBERNETES_CONTEXT=.*/KUBERNETES_CONTEXT=default/' \
           test/integration/devenv.project.properties
-      sed -i "s|^DOCKER_DB_IMAGE=.*|DOCKER_DB_IMAGE=$(DOCKER_DB_IMAGE)|" \
+      sed -i "s|^POSTGRES_IMAGE=.*|POSTGRES_IMAGE=$(POSTGRES_IMAGE)|" \
           test/integration/devenv.project.properties
       sed -i "s|^MAILSRV_IMAGE=.*|MAILSRV_IMAGE=$(MAILSRV_IMAGE)|" \
           test/integration/devenv.project.properties

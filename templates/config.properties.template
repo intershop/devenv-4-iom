@@ -58,7 +58,12 @@ IMAGE_PULL_POLICY_MAILSRV=${IMAGE_PULL_POLICY_MAILSRV}
 IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
 
 # postgres image (name:tag)
-# example:                  postgres:11
+# example:                  postgres:17
+POSTGRES_IMAGE=${POSTGRES_IMAGE}
+
+# DEPRECATED: DOCKER_DB_IMAGE is superseded by POSTGRES_IMAGE.
+# It is kept for backward compatibility and will be removed in a future version.
+# Replace DOCKER_DB_IMAGE with POSTGRES_IMAGE in your configuration file.
 DOCKER_DB_IMAGE=${DOCKER_DB_IMAGE}
 
 # mail-server image (name:tag)
