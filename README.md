@@ -83,6 +83,10 @@ See [Development Process](doc/05_development_process.md) for details.
 
 ## Breaking Changes
 
+### Storage Commands Removed <!-- #117544 -->
+
+The commands `create storage`, `delete storage`, and `info storage`, which managed a Docker volume for PostgreSQL data persistence, have been removed. Persistent storage is now configured via `POSTGRES_DATA_DIR` (see above).
+
 ### Support for IOM Prior Version 4.0 Dropped <!-- #117544 -->
 
 The dual-image distribution of IOM (separate `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE`) that was used before IOM 4.0 is no longer supported. The configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` have been removed. Use `IOM_IMAGE` to define the IOM image.
