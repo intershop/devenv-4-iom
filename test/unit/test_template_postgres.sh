@@ -29,6 +29,9 @@ assert_not_contains "no storageClassName" "$OUTPUT" "storageClassName:"
 test_case "volume mount present"
 assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
 
+test_case "no unsubstituted PostgresMountPath"
+assert_not_contains "no raw PostgresMountPath" "$OUTPUT" '${PostgresMountPath}'
+
 test_case "service type is LoadBalancer"
 assert_contains "LoadBalancer service" "$OUTPUT" "type: LoadBalancer"
 
@@ -58,5 +61,17 @@ OUTPUT_NODATA=$("$RENDER" --template="$TEMPLATE" --config=/dev/null --project-di
 assert_not_contains "no hostPath when unset" "$OUTPUT_NODATA" "hostPath:"
 assert_not_contains "no volumeMount when unset" "$OUTPUT_NODATA" "mountPath: /var/lib/postgresql/data"
 
+# postgres 18+: mount point moves up one level
+test_case "postgres:18 uses /var/lib/postgresql as mountPath"
+TMPDIR_PG18="$(mktemp -d)"
+echo "POSTGRES_IMAGE=postgres:18" > "$TMPDIR_PG18/test.properties"
+echo "POSTGRES_DATA_DIR=/tmp/test-pgdata" >> "$TMPDIR_PG18/test.properties"
+OUTPUT_PG18=$("$RENDER" --template="$TEMPLATE" --config="$TMPDIR_PG18/test.properties" --project-dir="$DEVENV_DIR" 2>&1)
+assert_contains "pg18 mountPath is /var/lib/postgresql" "$OUTPUT_PG18" "mountPath: /var/lib/postgresql"
+assert_not_contains "pg18 mountPath has no /data suffix" "$OUTPUT_PG18" "mountPath: /var/lib/postgresql/data"
+rm -rf "$TMPDIR_PG18"
+
+test_case "postgres:17 uses /var/lib/postgresql/data as mountPath"
+assert_contains "pg17 mountPath is /var/lib/postgresql/data" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
 
 test_summary
