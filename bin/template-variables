@@ -445,9 +445,16 @@ POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:17}}"
 # postgres 18+ requires the mount at /var/lib/postgresql (it places data in a
 # versioned subdirectory underneath). Earlier versions write directly into
 # /var/lib/postgresql/data and expect the mount there.
+# The major version must be determinable from the image tag (e.g. postgres:17,
+# postgres:18-alpine). Non-numeric alias tags like "latest" or "bookworm" are
+# not supported because the required mount path cannot be determined.
 _pg_tag="${POSTGRES_IMAGE##*:}"
 _pg_major="${_pg_tag%%[^0-9]*}"
-if [ -n "$_pg_major" ] && [ "$_pg_major" -ge 18 ] 2>/dev/null; then
+if [ -z "$_pg_major" ]; then
+    echo "ERROR: cannot determine PostgreSQL major version from POSTGRES_IMAGE='${POSTGRES_IMAGE}'." \
+         "Use a tag that starts with the major version number (e.g. postgres:17, postgres:18-alpine)." >&2
+    exit 1
+elif [ "$_pg_major" -ge 18 ] 2>/dev/null; then
     PostgresMountPath=/var/lib/postgresql
 else
     PostgresMountPath=/var/lib/postgresql/data

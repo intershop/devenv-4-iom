@@ -74,4 +74,20 @@ rm -rf "$TMPDIR_PG18"
 test_case "postgres:17 uses /var/lib/postgresql/data as mountPath"
 assert_contains "pg17 mountPath is /var/lib/postgresql/data" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
 
+test_case "non-numeric tag (latest) causes error and non-zero exit"
+TMPDIR_LATEST="$(mktemp -d)"
+echo "POSTGRES_IMAGE=postgres:latest" > "$TMPDIR_LATEST/test.properties"
+OUTPUT_LATEST=$("$RENDER" --template="$TEMPLATE" --config="$TMPDIR_LATEST/test.properties" --project-dir="$DEVENV_DIR" 2>&1)
+EXIT_LATEST=$?
+assert_contains "error message references POSTGRES_IMAGE" "$OUTPUT_LATEST" "POSTGRES_IMAGE"
+assert_contains "error message references latest" "$OUTPUT_LATEST" "latest"
+TESTS_RUN=$((TESTS_RUN + 1))
+if [ "$EXIT_LATEST" -ne 0 ]; then
+    echo "  PASS: non-zero exit for non-numeric tag"
+else
+    echo "  FAIL: expected non-zero exit for non-numeric tag"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+rm -rf "$TMPDIR_LATEST"
+
 test_summary
