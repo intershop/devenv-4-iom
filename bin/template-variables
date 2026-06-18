@@ -54,7 +54,7 @@ OTEL_COLLECTOR="${OTEL_COLLECTOR}"
 # It is kept only as a fallback default for IMAGE_PULL_POLICY_IOM.
 # To remove in a future version: delete the next three lines and the
 # IMAGE_PULL_POLICY block in config.properties.template.
-[ -n "${IMAGE_PULL_POLICY+set}" ] && \
+[ -n "${IMAGE_PULL_POLICY+set}" ] && type log_msg > /dev/null 2>&1 && \
     log_msg WARN "IMAGE_PULL_POLICY is deprecated. Use IMAGE_PULL_POLICY_IOM instead." < /dev/null
 IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
