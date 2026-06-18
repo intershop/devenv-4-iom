@@ -53,6 +53,8 @@ The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been
 
 The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:17`.
 
+**Migration:** Since the database persistence mechanism has also changed (Docker volumes replaced by `POSTGRES_DATA_DIR`), existing data from previous installations is no longer accessible regardless of the PostgreSQL version. Delete any old Docker volumes and let IOM reinitialise the database on next start.
+
 ### Per-Image Pull Policies
 
 Three new configuration variables replace the single `IMAGE_PULL_POLICY` property, allowing the pull policy to be set independently for each image group:

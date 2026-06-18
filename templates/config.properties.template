@@ -62,11 +62,11 @@ IMAGE_PULL_SECRET=${IMAGE_PULL_SECRET}
 # determine the correct data directory layout (changed in postgres 18).
 # examples: postgres:17  postgres:18  postgres:17-alpine  postgres:18-bookworm
 #
-# WARNING: switching to a different major version requires an empty
-# POSTGRES_DATA_DIR. PostgreSQL cannot read data written by a different major
-# version without running pg_upgrade first, which is not supported by
-# devenv-4-iom. Delete the contents of POSTGRES_DATA_DIR before switching
-# versions and let IOM reinitialise the database on next start.
+# WARNING: switching from postgres 17 (or earlier) to postgres 18 (or later)
+# requires an empty POSTGRES_DATA_DIR. The data directory layout changed in
+# postgres 18 and the old data cannot be read without running pg_upgrade first,
+# which is not supported by devenv-4-iom. Delete the contents of
+# POSTGRES_DATA_DIR before switching and let IOM reinitialise the database.
 POSTGRES_IMAGE=${POSTGRES_IMAGE}
 
 # DEPRECATED: DOCKER_DB_IMAGE is superseded by POSTGRES_IMAGE.
