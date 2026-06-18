@@ -23,7 +23,7 @@ ${KeepDatabaseYml}      path: "${MOUNT_PREFIX}${PostgresDataDirAbs}"
       value: ${PGPASSWORD}
     volumeMounts:
 ${KeepDatabaseYml}    - name: db-data
-${KeepDatabaseYml}      mountPath: ${PostgresMountPath}
+${KeepDatabaseYml}      mountPath: /var/lib/postgresql
 ---
 kind: Service
 apiVersion: v1

@@ -441,18 +441,6 @@ if [ -n "${DOCKER_DB_IMAGE+set}" ] && type log_msg > /dev/null 2>&1; then
     fi
 fi
 POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:17}}"
-
-# postgres 18+ changed the data directory layout: data lives under a versioned
-# subdirectory of /var/lib/postgresql, so the mount point must be one level up.
-_pg_tag="${POSTGRES_IMAGE##*:}"
-_pg_major="${_pg_tag%%[^0-9]*}"
-if [ -n "$_pg_major" ] && [ "$_pg_major" -ge 18 ] 2>/dev/null; then
-    PostgresMountPath=/var/lib/postgresql
-else
-    PostgresMountPath=/var/lib/postgresql/data
-fi
-unset _pg_tag _pg_major
-
 MAILSRV_IMAGE="${MAILSRV_IMAGE:-axllent/mailpit}"
 IOM_DBACCOUNT_IMAGE="${IOM_DBACCOUNT_IMAGE:-docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0}"
 IOM_IMAGE="${IOM_IMAGE}"
