@@ -9,7 +9,7 @@ variables:
   DOCKER_DB_IMAGE: postgres:17
   MAILSRV_IMAGE: axllent/mailpit
   IOM_DBACCOUNT_IMAGE: iomdevopsacr.azurecr.io/iom-dbaccount:1.5.0
-  IOM_IMAGE: iomdevopsacr.azurecr.io/ci-iom:5.1.0
+  IOM_IMAGE: iomdevopsacr.azurecr.io/ci-iom:5.1.11-1.0.0-SNAPSHOT
 
   IOM_DEVOPS_ACR_CONNECTION: order-iomDevopsACR-ISH-ENG-IOM
 
