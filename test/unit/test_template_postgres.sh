@@ -15,7 +15,7 @@ OUTPUT=$("$RENDER" --template="$TEMPLATE" --config="$PROPS" --project-dir="$DEVE
 assert_exit_success "exit code 0" $?
 
 test_case "uses configured postgres image"
-assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:15"
+assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:17"
 
 test_case "hostPath volume present (POSTGRES_DATA_DIR set)"
 assert_contains "hostPath volume defined" "$OUTPUT" "hostPath:"

@@ -45,7 +45,7 @@ The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been
 
 ### Updated Default PostgreSQL Version
 
-The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:15`.
+The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:17`.
 
 ### Per-Image Pull Policies
 
