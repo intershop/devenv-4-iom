@@ -48,11 +48,11 @@ User command → devenv-cli.sh
   → kubectl/docker commands execute against the cluster
 ```
 
-Kubernetes resources created per IOM instance: namespace, PersistentVolumeClaim, postgres pod, mailpit pod, IOM deployment (with config-init + app containers), and services.
+Kubernetes resources created per IOM instance: namespace, postgres pod, mailpit pod, IOM deployment (single container + dbaccount init container), and services.
 
 ## Testing
 
-No automated test framework. Validation requires a live Docker Desktop environment with Kubernetes enabled. The `doc/01_first_steps.md` walkthrough serves as the integration test guide.
+Unit tests (`test/run-unit-tests.sh`) verify template rendering without a cluster. Integration tests (`test/run-integration-tests.sh`) require a live Kubernetes cluster — Rancher Desktop is the primary supported platform. See `test/README.md` for setup instructions.
 
 ## External Dependencies
 
