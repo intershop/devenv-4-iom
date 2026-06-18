@@ -64,6 +64,25 @@ wait_for() {
     return 1
 }
 
+# Wait until a LoadBalancer service has an external IP or hostname assigned.
+# $1: service name
+# $2: namespace
+# $3: context
+# $4: timeout in seconds
+wait_for_external_ip() {
+    local svc="$1" namespace="$2" context="$3" timeout="$4"
+    local elapsed=0
+    while [ $elapsed -lt $timeout ]; do
+        local ip
+        ip=$(kubectl get service "$svc" -n "$namespace" --context="$context" \
+            -o jsonpath='{.status.loadBalancer.ingress[0].ip}{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+        [ -n "$ip" ] && echo "$ip" && return 0
+        sleep 5
+        elapsed=$((elapsed + 5))
+    done
+    return 1
+}
+
 # Wait until a pod with the given label reaches Running phase.
 # $1: app label value
 # $2: namespace

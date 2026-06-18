@@ -39,14 +39,14 @@ else
     TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
-test_case "postgres-service exists and has external IP"
+test_case "postgres-service has external IP"
 TESTS_RUN=$((TESTS_RUN + 1))
-IP=$(kubectl get service postgres-service -n "$NAMESPACE" --context="$CONTEXT" \
-    -o jsonpath='{.status.loadBalancer.ingress[0].ip}{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+IP=$(wait_for_external_ip postgres-service "$NAMESPACE" "$CONTEXT" 60)
 if [ -n "$IP" ]; then
     echo "  PASS: postgres-service external IP is '$IP'"
 else
     echo "  FAIL: postgres-service has no external IP"
+    kubectl describe service postgres-service -n "$NAMESPACE" --context="$CONTEXT" 2>/dev/null | tail -10
     TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 

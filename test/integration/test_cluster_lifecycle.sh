@@ -75,12 +75,12 @@ fi
 test_case "all three services have external IP"
 for SVC in iom-service postgres-service mailsrv-service; do
     TESTS_RUN=$((TESTS_RUN + 1))
-    IP=$(kubectl get service "$SVC" -n "$NAMESPACE" --context="$CONTEXT" \
-        -o jsonpath='{.status.loadBalancer.ingress[0].ip}{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+    IP=$(wait_for_external_ip "$SVC" "$NAMESPACE" "$CONTEXT" 60)
     if [ -n "$IP" ]; then
         echo "  PASS: $SVC external IP is '$IP'"
     else
         echo "  FAIL: $SVC has no external IP (LoadBalancer pending)"
+        kubectl describe service "$SVC" -n "$NAMESPACE" --context="$CONTEXT" 2>/dev/null | tail -10
         TESTS_FAILED=$((TESTS_FAILED + 1))
     fi
 done
