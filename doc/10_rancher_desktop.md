@@ -29,6 +29,18 @@ _devenv-4-iom_ relies on `hostPath` volumes to mount local development directori
 
 On Windows, a path prefix is required so that _devenv-4-iom_ passes the correct directory paths to the Kubernetes node. See the [Configuration](#configuration) section below.
 
+## Resource Requirements
+
+Running IOM together with a PostgreSQL pod requires enough memory in the Rancher Desktop VM. With the default of 4 GB, the Kubernetes API server can become unstable under load, causing commands to hang or fail with TLS timeout errors.
+
+**Recommended minimum: 8 GB.** Set it via the command line (Rancher Desktop will restart to apply the change):
+
+```bash
+rdctl set --virtual-machine.memory-in-gb=8
+```
+
+Or adjust it in the Rancher Desktop UI under **Preferences → Virtual Machine → Hardware**.
+
 ## Configuration
 
 Set the following in your `devenv.user.properties`:
