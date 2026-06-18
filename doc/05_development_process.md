@@ -301,7 +301,7 @@ There are some configurations, that are not handled by *devenv-4-iom*. In detail
 
 To apply changes you have made locally to any of the configuration files listed above, you must build the IOM project image locally and restart IOM within *devenv-4-iom*. Building the IOM project image is a [developer task](https://github.com/intershop/iom-project-archetype#usage-typical-developer-tasks) of projects derived from [IOM Project Archetype](https://github.com/intershop/iom-project-archetype).
 
-When building the IOM project image locally, *devenv-4-iom* has to be configured to use the locally built image. To do so, make sure the `IOM_IMAGE` variable of *devenv-4-iom* contains image-name and -tag only. If you don't specify any further repository, the image will be looked up locally. Additionally, it's required to set the variable `IMAGE_PULL_POLICY` to *IfNotPresent*.
+When building the IOM project image locally, *devenv-4-iom* has to be configured to use the locally built image. To do so, make sure the `IOM_IMAGE` variable of *devenv-4-iom* contains image-name and -tag only. If you don't specify any further repository, the image will be looked up locally. Additionally, it's required to set the variable `IMAGE_PULL_POLICY_IOM` to *IfNotPresent*.
 
 Finally the following commands have to be executed to apply changes to the configuration files listed above:
 
@@ -318,7 +318,7 @@ Finally the following commands have to be executed to apply changes to the confi
 
 Project files are any kind of files that have to be added to the IOM project image. More information about such files can be found in chapter *Project Files* of documentation of [Directory Structure of IOM Projects](https://github.com/intershop/iom-project-archetype/wiki/Directory-Structure-of-IOM-Projects#project-files).
 
-*devenv-4-iom* does not provide a process to roll out such files into a running IOM. Instead, you have to build the IOM project image locally and restart IOM within *devenv-4-iom* exactly the same way as described in the previous chapter [Applying Custom Configurations](#apply-custom-configurations). For `IOM_IMAGE` and `IMAGE_PULL_POLICY` the same preconditions as already mentioned [above](#apply-custom-configurations) apply.
+*devenv-4-iom* does not provide a process to roll out such files into a running IOM. Instead, you have to build the IOM project image locally and restart IOM within *devenv-4-iom* exactly the same way as described in the previous chapter [Applying Custom Configurations](#apply-custom-configurations). For `IOM_IMAGE` and `IMAGE_PULL_POLICY_IOM` the same preconditions as already mentioned [above](#apply-custom-configurations) apply.
 
 ## Apply Test Data
 

@@ -255,7 +255,7 @@ CONFIG
     SMTP_HOST - if set, it indicates the usage of an external mail server.
       The command will not create a mail server in this case.
     MAILSRV_IMAGE - defines the image of the mailserver to be used
-    IMAGE_PULL_POLICY - defines when to pull the image from origin
+    IMAGE_PULL_POLICY_MAILSRV - defines when to pull the mail server image
     ID - the namespace to be used is derived from ID
 
 SEE
@@ -292,7 +292,7 @@ CONFIG
       The command will not create a Postgres server in this case.
     POSTGRES_DATA_DIR - if set, database data is persisted to this host
       directory. Leave empty to run postgres without persistent storage.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin
+    IMAGE_PULL_POLICY_POSTGRES - defines when to pull the postgres image
     ID - the namespace where Postgres server and service are created. It is
       derived from the ID of the current configuration.
 
@@ -328,7 +328,7 @@ $(msg_config_file 4)
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
     IOM_IMAGE - defines the IOM image to be used
-    IMAGE_PULL_POLICY - defines when to pull images from origin
+    IMAGE_PULL_POLICY_IOM - defines when to pull IOM and dbaccount images
     IMAGE_PULL_SECRET - name of the secret to be used when pulling images from 
       origin.
 
@@ -871,7 +871,7 @@ CONFIG
       located.
 $(msg_custom_dir JSONCONF 6)
     IOM_IMAGE - defines the image to be used when executing the job.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    IMAGE_PULL_POLICY_IOM - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
       configuration.
     ID - the namespace used is derived from ID.
@@ -942,7 +942,7 @@ CONFIG
       migrations.
 $(msg_custom_dir DBMIGRATE 6)
     IOM_IMAGE - defines the image to be used when executing the job.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    IMAGE_PULL_POLICY_IOM - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
       the db-migration.
     ID - the namespace used is derived from ID.
@@ -1054,7 +1054,7 @@ CONFIG
       variable is empty, no dumps will be created.
 $(msg_custom_dir DUMPS 6)
     IOM_IMAGE - defines the image to be used when executing the job.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    IMAGE_PULL_POLICY_IOM - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
     ID - the namespace used is derived from ID.
 
@@ -1833,7 +1833,7 @@ Docker:
 =======
 IOM_DBACCOUNT_IMAGE:        $IOM_DBACCOUNT_IMAGE
 IOM_IMAGE:                  $IOM_IMAGE
-IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
+IMAGE_PULL_POLICY_IOM:      $IMAGE_PULL_POLICY_IOM
 --------------------------------------------------------------------------------
 EOF
         POD="$(kube_get_pod iom)"
@@ -1912,7 +1912,7 @@ POSTGRES_DATA_DIR:          $POSTGRES_DATA_DIR
 Docker:
 =======
 DOCKER_DB_IMAGE:            $DOCKER_DB_IMAGE
-IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
+IMAGE_PULL_POLICY_POSTGRES: $IMAGE_PULL_POLICY_POSTGRES
 --------------------------------------------------------------------------------
 EOF
         fi
@@ -1974,7 +1974,7 @@ REST:                       http://$HostIom:$PORT_MAILSRV_UI_SERVICE/api/v1
 Docker:
 =======
 MAILSRV_IMAGE:              $MAILSRV_IMAGE
-IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
+IMAGE_PULL_POLICY_MAILSRV:  $IMAGE_PULL_POLICY_MAILSRV
 --------------------------------------------------------------------------------
 EOF
         fi

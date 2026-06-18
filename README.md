@@ -47,6 +47,18 @@ The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been
 
 The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:15`.
 
+### Per-Image Pull Policies
+
+Three new configuration variables replace the single `IMAGE_PULL_POLICY` property, allowing the pull policy to be set independently for each image group:
+
+| Variable | Default | Applies to |
+|---|---|---|
+| `IMAGE_PULL_POLICY_IOM` | value of `IMAGE_PULL_POLICY` | IOM app, dbaccount, and all IOM job images |
+| `IMAGE_PULL_POLICY_POSTGRES` | `IfNotPresent` | PostgreSQL image |
+| `IMAGE_PULL_POLICY_MAILSRV` | `IfNotPresent` | Mail server image |
+
+`IMAGE_PULL_POLICY` is deprecated. It still works as a fallback default for `IMAGE_PULL_POLICY_IOM` and will produce a warning when set. It will be removed in a future version. Replace it with `IMAGE_PULL_POLICY_IOM` in your configuration files.
+
 ## Breaking Changes
 
 ### Support for IOM Prior Version 4.0 Dropped <!-- #117544 -->

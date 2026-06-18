@@ -33,7 +33,7 @@ assert_contains "DB host is postgres-service" "$OUTPUT" "value: postgres-service
 test_case "no unsubstituted variables"
 assert_not_contains "no raw IOM_IMAGE" "$OUTPUT" '${IOM_IMAGE}'
 assert_not_contains "no raw IOM_DBACCOUNT_IMAGE" "$OUTPUT" '${IOM_DBACCOUNT_IMAGE}'
-assert_not_contains "no raw IMAGE_PULL_POLICY" "$OUTPUT" '${IMAGE_PULL_POLICY}'
+assert_not_contains "no raw IMAGE_PULL_POLICY_IOM" "$OUTPUT" '${IMAGE_PULL_POLICY_IOM}'
 
 test_case "custom dir volumes commented out when CUSTOM_*_DIR unset"
 assert_contains "application-dev volume commented out" "$OUTPUT" "#      - name: application-dev"

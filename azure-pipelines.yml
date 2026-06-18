@@ -150,7 +150,7 @@ jobs:
   - script: |
       set -e
       # Pull all required images via Docker and import them into k3s containerd so
-      # they are available with IMAGE_PULL_POLICY=IfNotPresent — no registry
+      # they are available with IMAGE_PULL_POLICY_IOM=IfNotPresent — no registry
       # credentials are needed inside the cluster.
       for IMAGE in "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
         docker pull "$IMAGE"

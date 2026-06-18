@@ -27,12 +27,12 @@ There are some values in _devenv.project.properties_ that have to be set afterwa
 
 * `ID`: Every developer instance of IOM, hence every configuration file, needs to have a unique value for ID. Once you have set the `ID` and started the according IOM, you must not change it anymore. Otherwise you will loose the ability to access/control the resources associated with the IOM installation.
 * `KUBERNETES_CONTEXT`: Defines which Kubernetes cluster _devenv-4-iom_ operates on. The default value is `rancher-desktop`. If you are using Docker Desktop, change this to `docker-desktop`. See [Docker Desktop setup](09_docker_desktop.md) and [Rancher Desktop setup](10_rancher_desktop.md) for details.
-* `IMAGE_PULL_POLICY`: The value of this property has to be set to `IfNotPresent`. This makes it easier to get through the _first steps_ example. The [_operations_ part of the documentation](03_operations.md) shows a more sustainable approach to [access a private Docker registry](03_operations.md#private_docker_registry).
+* `IMAGE_PULL_POLICY_IOM`: The value of this property has to be set to `IfNotPresent`. This makes it easier to get through the _first steps_ example. The [_operations_ part of the documentation](03_operations.md) shows a more sustainable approach to [access a private Docker registry](03_operations.md#private_docker_registry).
 * `IOM_IMAGE`: You need to define the IOM image, that has to be used for the _first steps_ example. If you use IOM version 4.1.0, then the according image name is `docker.tools.intershop.com/iom/intershophub/iom:4.1.0`. The `IOM_IMAGE` property is one of the most important settings, since it defines what will be executed by _devenv-4-iom_. By defining the image, you can control that a specific project, a standard IOM product without any customizations or an image of the IOM project, you have created locally, will run in your development environment.
 
-Now set the new values for `ID`, `KUBERNETES_CONTEXT`, `IMAGE_PULL_POLICY` and `IOM_IMAGE`. Please make sure that you do NOT add any spaces around the '='!
+Now set the new values for `ID`, `KUBERNETES_CONTEXT`, `IMAGE_PULL_POLICY_IOM` and `IOM_IMAGE`. Please make sure that you do NOT add any spaces around the '='!
 
-    # set ID, IMAGE_PULL_POLICY and IOM_IMAGE in devenv.project.properties
+    # set ID, IMAGE_PULL_POLICY_IOM and IOM_IMAGE in devenv.project.properties
     vi devenv.project.properties
 
 The other values of the new configuration file are filled with default settings defined by _devenv-4-iom_. It is not necessary to change any of them for the _first steps_ example.
@@ -74,7 +74,7 @@ Due to the quite complex configuration of _devenv-4-iom_, see [Configuration | G
     ===========
     ID="first steps"
     KUBERNETES_CONTEXT=rancher-desktop
-    IMAGE_PULL_POLICY=IfNotPresent
+    IMAGE_PULL_POLICY_IOM=IfNotPresent
     IMAGE_PULL_SECRET=
     DOCKER_DB_IMAGE=postgres:12
     MAILSRV_IMAGE=axllent/mailpit

@@ -26,7 +26,11 @@ assert_contains "UI port present" "$OUTPUT" "targetPort: 8025"
 test_case "SMTP port present"
 assert_contains "SMTP port present" "$OUTPUT" "targetPort: 1025"
 
+test_case "imagePullPolicy is IfNotPresent (default)"
+assert_contains "imagePullPolicy substituted" "$OUTPUT" "imagePullPolicy: IfNotPresent"
+
 test_case "no unsubstituted variables"
-assert_not_contains "no raw variable references" "$OUTPUT" '${MAILSRV_IMAGE}'
+assert_not_contains "no raw MAILSRV_IMAGE" "$OUTPUT" '${MAILSRV_IMAGE}'
+assert_not_contains "no raw IMAGE_PULL_POLICY_MAILSRV" "$OUTPUT" '${IMAGE_PULL_POLICY_MAILSRV}'
 
 test_summary

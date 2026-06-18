@@ -47,7 +47,7 @@ The integration tests use _devenv-4-iom_'s standard two-file configuration
 mechanism (see [doc/02_configuration.md](../doc/02_configuration.md)):
 
 - `test/integration/devenv.project.properties` — project-level settings shared
-  by all test scripts: image names, `KUBERNETES_CONTEXT`, and `IMAGE_PULL_POLICY`.
+  by all test scripts: image names, `KUBERNETES_CONTEXT`, and `IMAGE_PULL_POLICY_IOM`.
   **Edit this file to configure image names before running the tests.**
 - `test/integration/test.properties.rancher-desktop` and
   `test-component.properties.rancher-desktop` — per-test user files containing

@@ -8,7 +8,7 @@ spec:
   containers:
   - name: mailsrv
     image: ${MAILSRV_IMAGE}
-    imagePullPolicy: ${IMAGE_PULL_POLICY}
+    imagePullPolicy: ${IMAGE_PULL_POLICY_MAILSRV}
 ---
 kind: Service
 apiVersion: v1

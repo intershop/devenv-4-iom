@@ -55,7 +55,7 @@ ${ImagePullSecrets}
         # securityContext:
         #   runAsUser: 0
         #
-        imagePullPolicy: ${IMAGE_PULL_POLICY}
+        imagePullPolicy: ${IMAGE_PULL_POLICY_IOM}
 ${HealthCheckYml_}        readinessProbe:
 ${HealthCheckYml_}          httpGet:
 ${HealthCheckYml_}            path: /monitoring/services/health/status
@@ -167,7 +167,7 @@ ${DumpsDirYml____}          mountPath: /opt/oms/dumps
               command: ["/bin/bash", "-c", "apply-templates > /dev/null 2>&1; apply-xslt > /dev/null 2>&1; /opt/jboss/wildfly/bin/add-user.sh -u admin -p admin"]
       initContainers:
         - name: dbaccount
-          imagePullPolicy: ${IMAGE_PULL_POLICY}
+          imagePullPolicy: ${IMAGE_PULL_POLICY_IOM}
           image: ${IOM_DBACCOUNT_IMAGE}
           volumeMounts:
           env:

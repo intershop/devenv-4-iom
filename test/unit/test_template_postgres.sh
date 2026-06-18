@@ -32,9 +32,13 @@ assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresq
 test_case "service type is LoadBalancer"
 assert_contains "LoadBalancer service" "$OUTPUT" "type: LoadBalancer"
 
+test_case "imagePullPolicy is IfNotPresent (default)"
+assert_contains "imagePullPolicy substituted" "$OUTPUT" "imagePullPolicy: IfNotPresent"
+
 test_case "no unsubstituted variables"
 assert_not_contains "no raw DOCKER_DB_IMAGE" "$OUTPUT" '${DOCKER_DB_IMAGE}'
 assert_not_contains "no raw PostgresDataDirAbs" "$OUTPUT" '${PostgresDataDirAbs}'
+assert_not_contains "no raw IMAGE_PULL_POLICY_POSTGRES" "$OUTPUT" '${IMAGE_PULL_POLICY_POSTGRES}'
 
 # relative path: should be resolved against PROJECT_DIR to an absolute path
 test_case "relative POSTGRES_DATA_DIR: resolved to absolute path"

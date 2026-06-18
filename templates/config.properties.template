@@ -33,13 +33,20 @@ KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT}"
 # Docker Image Settings
 ################################################################################
 
-# The image pull policy defines when to pull docker images. It applies to all
-# images managed by devenv-4-iom: IOM, dbaccount, postgres, and mail server.
-# If left empty, it defaults to "Always", which makes development easy, as
-# always the newest version of the requested Docker image will be used. It can
-# be set to any value allowed by ImagePullPolicy.
+# IMAGE_PULL_POLICY is the default pull policy for IOM images (IOM app,
+# dbaccount, and all IOM job images). If left empty, it defaults to "Always",
+# which makes development easy, as always the newest version of the requested
+# Docker image will be used. It can be set to any value allowed by
+# ImagePullPolicy.
 # See https://kubernetes.io/docs/concepts/configuration/overview/#container-images
 IMAGE_PULL_POLICY=${IMAGE_PULL_POLICY}
+
+# Per-image pull policies. When set, these override IMAGE_PULL_POLICY for the
+# respective image group. Leave empty to inherit from IMAGE_PULL_POLICY (IOM)
+# or use the built-in default of IfNotPresent (postgres, mail server).
+IMAGE_PULL_POLICY_IOM=${IMAGE_PULL_POLICY_IOM}
+IMAGE_PULL_POLICY_POSTGRES=${IMAGE_PULL_POLICY_POSTGRES}
+IMAGE_PULL_POLICY_MAILSRV=${IMAGE_PULL_POLICY_MAILSRV}
 
 # Name of Kubernetes secret to be used, if authentication at a private Docker
 # registry is required. The secret has to be created manually in default
