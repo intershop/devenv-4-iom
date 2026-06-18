@@ -151,7 +151,7 @@ jobs:
       sudo chown "$(whoami)" ~/.kube/config
     timeoutInMinutes: 5
     displayName: "Install k3s"
-    enabled: false
+    #enabled: false
 
   - task: Cache@2
     inputs:
@@ -160,7 +160,7 @@ jobs:
       cacheHitVar: DOCKER_IMAGES_CACHE_RESTORED
     timeoutInMinutes: 5
     displayName: "Create/restore cache of public Docker images"
-    enabled: false
+    #enabled: false
 
   - script: |
       set -e
@@ -171,7 +171,7 @@ jobs:
     timeoutInMinutes: 10
     displayName: "Download public Docker images"
     condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'false'))
-    enabled: false
+    #enabled: false
 
   - script: |
       set -e
@@ -179,7 +179,7 @@ jobs:
     timeoutInMinutes: 5
     displayName: "Load public Docker images from cache"
     condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'true'))
-    enabled: false
+    #enabled: false
 
   - task: Docker@2
     inputs:
@@ -187,7 +187,7 @@ jobs:
       containerRegistry: $(IOM_DEVOPS_ACR_CONNECTION)
     timeoutInMinutes: 1
     displayName: "Login to DevOps ACR"
-    enabled: false
+    #enabled: false
 
   - script: |
       set -e
@@ -201,7 +201,7 @@ jobs:
       done
     timeoutInMinutes: 10
     displayName: "Pull project-specific images and import all images into k3s"
-    enabled: false
+    #enabled: false
 
   - script: |
       set -e
@@ -221,7 +221,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 1
     displayName: "Configure integration tests"
-    enabled: false
+    #enabled: false
 
   - script: |
       set -e
@@ -229,7 +229,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 2
     displayName: "Setup integration test environment"
-    enabled: false
+    #enabled: false
 
   - script: |
       set -e
@@ -242,7 +242,7 @@ jobs:
     workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
     timeoutInMinutes: 30
     displayName: "Run integration tests"
-    enabled: false
+    #enabled: false
 
   - script: |
       test/integration/teardown.sh || true
@@ -250,7 +250,7 @@ jobs:
     condition: always()
     timeoutInMinutes: 5
     displayName: "Teardown integration test environment"
-    enabled: false
+    #enabled: false
 
   ##############################################################################
   # release
