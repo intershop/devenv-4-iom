@@ -46,7 +46,7 @@ Open the newly created config-file _devenv.project.properties_ and use the value
     docker login docker.tools.intershop.com
 
     # pull images from registry
-    docker pull postgres:12
+    docker pull postgres:17
     docker pull axllent/mailpit
     docker pull docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
     docker pull docker.tools.intershop.com/iom/intershophub/iom:4.1.0
@@ -76,7 +76,7 @@ Due to the quite complex configuration of _devenv-4-iom_, see [Configuration | G
     KUBERNETES_CONTEXT=rancher-desktop
     IMAGE_PULL_POLICY_IOM=IfNotPresent
     IMAGE_PULL_SECRET=
-    POSTGRES_IMAGE=postgres:12
+    POSTGRES_IMAGE=postgres:17
     MAILSRV_IMAGE=axllent/mailpit
     IOM_DBACCOUNT_IMAGE=docker.tools.intershop.com/iom/intershophub/iom-dbaccount:1.5.0
     IOM_IMAGE=docker.tools.intershop.com/iom/intershophub/iom:4.1.0
