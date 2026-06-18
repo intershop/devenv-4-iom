@@ -27,7 +27,7 @@ assert_not_contains "no PVC kind line" "$OUTPUT" "kind: PersistentVolumeClaim"
 assert_not_contains "no storageClassName" "$OUTPUT" "storageClassName:"
 
 test_case "volume mount present"
-assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql"
+assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
 
 test_case "service type is LoadBalancer"
 assert_contains "LoadBalancer service" "$OUTPUT" "type: LoadBalancer"
