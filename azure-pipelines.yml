@@ -8,8 +8,10 @@ variables:
 
   DOCKER_DB_IMAGE: postgres:17
   MAILSRV_IMAGE: axllent/mailpit
-  IOM_DBACCOUNT_IMAGE: iom-dbaccount:1.5.0
-  IOM_IMAGE: ci-iom:5.1.0-1.0.0-SNAPSHOT
+  IOM_DBACCOUNT_IMAGE: iomdevopsacr.azurecr.io/iom-dbaccount:1.5.0
+  IOM_IMAGE: iomdevopsacr.azurecr.io/ci-iom:5.1.0-1.0.0-SNAPSHOT
+
+  IOM_DEVOPS_ACR_CONNECTION: order-iomDevopsACR-ISH-ENG-IOM
 
   PROJECT_PATH: devenv-4-iom
 
@@ -179,12 +181,19 @@ jobs:
     condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'true'))
     enabled: false
 
+  - task: Docker@2
+    inputs:
+      command: login
+      containerRegistry: $(IOM_DEVOPS_ACR_CONNECTION)
+    timeoutInMinutes: 1
+    displayName: "Login to DevOps ACR"
+    enabled: false
+
   - script: |
       set -e
-      # Pull project-specific images (public images are already in the Docker daemon
-      # from the cache step above). Import everything into k3s containerd so images
-      # are available with IMAGE_PULL_POLICY_IOM=IfNotPresent — no registry
-      # credentials needed inside the cluster.
+      # Pull project-specific images from ACR (public images are already in the
+      # Docker daemon from the cache step above). Import everything into k3s
+      # containerd so images are available with IMAGE_PULL_POLICY_IOM=IfNotPresent.
       docker pull "$(IOM_DBACCOUNT_IMAGE)"
       docker pull "$(IOM_IMAGE)"
       for IMAGE in "$(DOCKER_DB_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
