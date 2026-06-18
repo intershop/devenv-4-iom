@@ -2049,7 +2049,8 @@ Properties:
 $($DEVENV_DIR/bin/template_engine.sh \
     --template="$DEVENV_DIR/templates/config.properties.template" \
     --config="$CONFIG_FILES" \
-    --project-dir="$PROJECT_DIR" | grep -v '^[ \t]*#' | grep -v '^[ \t]*$')
+    --project-dir="$PROJECT_DIR" | grep -v '^[ \t]*#' | grep -v '^[ \t]*$' \
+    | grep -v '^IMAGE_PULL_POLICY=' | grep -v '^DOCKER_DB_IMAGE=')
 --------------------------------------------------------------------------------
 EOF
     fi
