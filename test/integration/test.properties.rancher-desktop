@@ -1,0 +1,2 @@
+ID=iom-test
+POSTGRES_DATA_DIR=/tmp/iom-test-pgdata

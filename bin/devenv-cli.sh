@@ -4,6 +4,7 @@ TMP_ERR="$(mktemp)"
 TMP_OUT="$(mktemp)"
 trap "rm -f $TMP_ERR $TMP_OUT" EXIT SIGTERM
 
+
 ################################################################################
 # display help messages
 ################################################################################
@@ -109,7 +110,6 @@ RESOURCE
     iom|i*             view information about IOM
     postgres|p*        view information about Postgres
     mailserver|m*      view information about mail server
-    storage|s*         view information about storage
     cluster|cl*        view information about cluster
     config|co*         view information about configuration
 
@@ -160,20 +160,6 @@ EOF
 }
 
 #-------------------------------------------------------------------------------
-help-info-storage() {
-    ME=$(basename "$0")
-    cat <<EOF
-view information about storage
-
-SYNOPSIS
-    $ME [CONFIG-FILE] info storage
-
-CONFIG-FILE
-$(msg_config_file 4)
-EOF
-}
-
-#-------------------------------------------------------------------------------
 help-info-cluster() {
     ME=$(basename "$0")
     cat <<EOF
@@ -214,7 +200,6 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 RESOURCE
-    storage|s*         create persistant local Docker storage
     namespace|n*       create kubernetes namespace
     mailserver|m*      create mail server
     postgres|p*        create postgres server
@@ -222,39 +207,6 @@ RESOURCE
     cluster|c*         create all resources
 
 Run '$ME [CONFIG-FILE] create RESOURCE --help|-h' for more information
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-create-storage() {
-    ME=$(basename "$0")
-    cat <<EOF
-create a local Docker volume for persistent storage of DB data
-
-SYNOPSIS
-    $ME [CONFIG-FILE] create storage
-
-OVERVIEW
-    Creates a Docker volume, depending on the configuration variable
-    KEEP_DATABASE_DATA. If you want to use persistent storage, the Docker
-    volume has to be created before starting postgres.
-
-CONFIG-FILE
-$(msg_config_file 4)
-
-CONFIG
-    KEEP_DATABASE_DATA - only when set to true, the Docker volume will be
-      created.
-    ID - name of Docker volume will be derived from ID
-
-SEE
-    $ME [CONFIG-FILE] delete storage
-    $ME [CONFIG-FILE] info   storage
-    $ME [CONFIG-FILE] create postgres
-
-BACKGROUND
-    # executed only, if KEEP_DATABASE_DATA is true
-    $KeepDatabaseSh docker volume create --name=$EnvId-pgdata -d local
 EOF
 }
 
@@ -304,7 +256,7 @@ CONFIG
     SMTP_HOST - if set, it indicates the usage of an external mail server.
       The command will not create a mail server in this case.
     MAILSRV_IMAGE - defines the image of the mailserver to be used
-    IMAGE_PULL_POLICY - defines when to pull the image from origin
+    IMAGE_PULL_POLICY_MAILSRV - defines when to pull the mail server image
     ID - the namespace to be used is derived from ID
 
 SEE
@@ -330,37 +282,27 @@ SYNOPSIS
     $ME [CONFIG-FILE] create postgres
 
 OVERVIEW
-    Creates Postgres server and according service. If KEEP_DATABASE_DATA is
-    set to true, the Docker volume has to be created in advance.
+    Creates Postgres server and according service.
 
 CONFIG-FILE
 $(msg_config_file 4)
 
 CONFIG
-    DOCKER_DB_IMAGE - docker image to be used
+    POSTGRES_IMAGE - postgres image to be used
     PGHOST - if set, it indicates the usage of an external Postgres server.
       The command will not create a Postgres server in this case.
-    KEEP_DATABASE_DATA - if set to true, the command links the local Docker volume
-      to the Postgres store.
-    IMAGE_PULL_POLICY - defines when to pull the image from origin
+    POSTGRES_DATA_DIR - if set, database data is persisted to this host
+      directory. Leave empty to run postgres without persistent storage.
+    IMAGE_PULL_POLICY_POSTGRES - defines when to pull the postgres image
     ID - the namespace where Postgres server and service are created. It is
       derived from the ID of the current configuration.
 
 SEE
     $ME [CONFIG-FILE] delete postgres
-    $ME [CONFIG-FILE] create storage
     $ME [CONFIG-FILE] info pods
 
 BACKGROUND
-    # Link Docker volume to database storage (only if KEEP_DATABASE_DATA == true)
-    $KeepDatabaseSh MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-    $KeepDatabaseSh   "$DEVENV_DIR/bin/template_engine.sh" \\
-    $KeepDatabaseSh     --template="$DEVENV_DIR/templates/postgres-storage.yml.template" \\
-    $KeepDatabaseSh     --config="$CONFIG_FILES" \\
-    $KeepDatabaseSh     --project-dir="$PROJECT_DIR" |
-    $KeepDatabaseSh   kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
-
-    # create Postgres
+    # create Postgres (hostPath volume included when POSTGRES_DATA_DIR is set)
     "$DEVENV_DIR/bin/template_engine.sh" \\
         --template="$DEVENV_DIR/templates/postgres.yml.template" \\
         --config="$CONFIG_FILES" \\
@@ -386,10 +328,8 @@ $(msg_config_file 4)
 
 CONFIG
     IOM_DBACCOUNT_IMAGE - defines the dbaccount image to be used
-    IOM_CONFIG_IMAGE - defines the config image to be used (IOM < v.4)
-    IOM_APP_IMAGE - defines the IOM application image to be used (IOM < v.4)
-    IOM_IMAGE - defined the IOM image to be used (IOM >= v.4)
-    IMAGE_PULL_POLICY - defines when to pull images from origin
+    IOM_IMAGE - defines the IOM image to be used
+    IMAGE_PULL_POLICY_IOM - defines when to pull IOM and dbaccount images
     IMAGE_PULL_SECRET - name of the secret to be used when pulling images from 
       origin.
 
@@ -424,7 +364,6 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 SEE
-    $ME [CONFIG-FILE] create storage
     $ME [CONFIG-FILE] create namespace
     $ME [CONFIG-FILE] create postgres
     $ME [CONFIG-FILE] create mailserver
@@ -445,44 +384,14 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 RESOURCE
-    storage|s*         delete persistant local Docker storage
     namespace|n*       delete Kubernetes namespace including all resources
                        belonging to this namespace
     mailserver|m*      delete mail server
     postgres|p*        delete Postgres server
     iom|i*             delete IOM server
-    cluster|c*         delete all resources, except storage
+    cluster|c*         delete all resources
 
 Run '$ME [CONFIG-FILE] delete RESOURCE --help|-h' for more information
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-delete-storage() {
-    ME=$(basename "$0")
-    cat <<EOF
-deletes local Docker volume that is used for persistent storage of DB data
-
-SYNOPSIS
-    $ME [CONFIG-FILE] delete storage
-
-OVERVIEW
-    Deletes the Docker volume used for persistent storage of database data.
-    Before deleting storage, you have to delete Postgres.
-
-CONFIG-FILE
-$(msg_config_file 4)
-
-CONFIG
-    ID - the name of the Docker volume will be derived from the ID.
-
-SEE
-    $ME [CONFIG-FILE] create storage
-    $ME [CONFIG-FILE] info   storage
-    $ME [CONFIG-FILE] delete postgres
-
-BACKGROUND
-    docker volume rm $EnvId-pgdata
 EOF
 }
 
@@ -497,8 +406,8 @@ SYNOPSIS
 
 OVERVIEW
     When deleting the namespace, all resources of this namespace are deleted
-    too. These are IOM, Posgres and mail server, but not the Docker volume
-    used for persistent storage of database data.
+    too. These are IOM, Postgres and mail server. Data in POSTGRES_DATA_DIR
+    on the host is not affected.
 
 CONFIG-FILE
 $(msg_config_file 4)
@@ -569,17 +478,8 @@ SEE
     $ME [CONFIG-FILE] info   pods
 
 BACKGROUND
-    # Stop/Remove postgres database
     "$DEVENV_DIR/bin/template_engine.sh" \\
         --template="$DEVENV_DIR/templates/postgres.yml.template" \\
-        --config="$CONFIG_FILES" \\
-        --project-dir="$PROJECT_DIR" |
-      kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
-
-    # Unlink Docker volume from database storage
-    MOUNTPOINT="\"\$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \\
-      "$DEVENV_DIR/bin/template_engine.sh" \\
-        --template="$DEVENV_DIR/templates/postgres-storage.yml.template" \\
         --config="$CONFIG_FILES" \\
         --project-dir="$PROJECT_DIR" |
       kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f -
@@ -622,17 +522,15 @@ EOF
 help-delete-cluster() {
     ME=$(basename "$0")
     cat <<EOF
-deletes all resources used by IOM, except storage
+deletes all resources used by IOM
 
 SYNOPSIS
     $ME [CONFIG-FILE] delete cluster
 
 OVERVIEW
-    Deletes all resources used by IOM, except storage. These are IOM, Postgres,
-    mail server, namespace. Finally, this is a shortcut for a couple of
-    different commands only.
-    Storage will not be deleted, as it is the basic idea of persistent storage,
-    to survive the deletion of postgres.
+    Deletes all resources used by IOM: IOM, Postgres, mail server, namespace.
+    Finally, this is a shortcut for a couple of different commands only.
+    Data in POSTGRES_DATA_DIR on the host is not affected.
 
 CONFIG-FILE
 $(msg_config_file 4)
@@ -641,9 +539,7 @@ SEE
     $ME [CONFIG-FILE] delete iom
     $ME [CONFIG-FILE] delete postgres
     $ME [CONFIG-FILE] delete mailserver
-    $ME [CONFIG-FILE] delete postgres
     $ME [CONFIG-FILE] delete namespace
-    $ME [CONFIG-FILE] delete storage
 EOF
 }
 
@@ -825,7 +721,7 @@ ARGUMENTS
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
-    The docker-image defined by IOM_CONFIG_IMAGE/IOM_IMAGE contains all the 
+    The docker-image defined by IOM_IMAGE contains all the
     necessary tools to apply SQL scripts to the IOM database. Devenv4iom enables 
     you to use these tools as easily as possible. Therefore it provides a 
     Kubernetes job (apply-sql-job), that applies SQL file(s) to the IOM database.
@@ -975,9 +871,8 @@ CONFIG
     CUSTOM_JSONCONF_DIR - directory where your custom JSON confguration is
       located.
 $(msg_custom_dir JSONCONF 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
-    IOM_IMAGE - defines the image to be used when executing the job (IOM >= v.4).
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    IOM_IMAGE - defines the image to be used when executing the job.
+    IMAGE_PULL_POLICY_IOM - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of script applying JSON
       configuration.
     ID - the namespace used is derived from ID.
@@ -1047,9 +942,8 @@ CONFIG
       located. This directory needs two sub-directories: stored_procedures,
       migrations.
 $(msg_custom_dir DBMIGRATE 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
-    IOM_IMAGE - defines the image to be used when executing the job (IOM >= v.4).
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    IOM_IMAGE - defines the image to be used when executing the job.
+    IMAGE_PULL_POLICY_IOM - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls the verbosity of the script doing
       the db-migration.
     ID - the namespace used is derived from ID.
@@ -1160,9 +1054,8 @@ CONFIG
     CUSTOM_DUMPS_DIR - directory where custom dumps will be stored. If this
       variable is empty, no dumps will be created.
 $(msg_custom_dir DUMPS 6)
-    IOM_CONFIG_IMAGE - defines the image to be used when executing the job (IOM < v.4).
-    IOM_IMAGE - defined the image to be used when executing the job (IOM >= v.4).
-    IMAGE_PULL_POLICY - defines when to pull the image from origin.
+    IOM_IMAGE - defines the image to be used when executing the job.
+    IMAGE_PULL_POLICY_IOM - defines when to pull the image from origin.
     OMS_LOGLEVEL_SCRIPTS - controls verbosity of the script creating the dump.
     ID - the namespace used is derived from ID.
 
@@ -1218,8 +1111,6 @@ OVERVIEW
     database:
     - delete iom
     - delete postgres
-    - delete storage
-    - create storage
     - create postgres
     - create iom
     You should inspect the logs created when running the config container to
@@ -1243,8 +1134,6 @@ $(msg_custom_dir DUMPS 6)
 SEE
     $ME [CONFIG-FILE] delete iom
     $ME [CONFIG-FILE] delete postgres
-    $ME [CONFIG-FILE] delete storage
-    $ME [CONFIG-FILE] create storage
     $ME [CONFIG-FILE] create postgres
     $ME [CONFIG-FILE] create iom
 EOF
@@ -1771,24 +1660,6 @@ kube_namespace_exists() (
 )
 
 #-------------------------------------------------------------------------------
-# Docker volume exists
-# $1: name
-# ->: true|false
-#-------------------------------------------------------------------------------
-docker_volume_exists() (
-    NAME=$1
-    # list all volumes and check if requested volume already exists
-    VOLUME_EXISTS=false
-    for VOLUME in $(docker volume ls -q 2> /dev/null); do
-        if [ "$VOLUME" = "$EnvId-$NAME" ]; then
-            VOLUME_EXISTS=true
-            break
-        fi
-    done
-    [ "$VOLUME_EXISTS" = 'true' ]
-)
-
-#-------------------------------------------------------------------------------
 # kubernetes resource exists?
 # $1: type (pod|service)
 # $2: name
@@ -1962,10 +1833,8 @@ OMS_LOGLEVEL_SCRIPTS:       $OMS_LOGLEVEL_SCRIPTS
 Docker:
 =======
 IOM_DBACCOUNT_IMAGE:        $IOM_DBACCOUNT_IMAGE
-IOM_CONFIG_IMAGE:           $IOM_CONFIG_IMAGE
-IOM_APP_IMAGE:              $IOM_APP_IMAGE
 IOM_IMAGE:                  $IOM_IMAGE
-IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
+IMAGE_PULL_POLICY_IOM:      $IMAGE_PULL_POLICY_IOM
 --------------------------------------------------------------------------------
 EOF
         POD="$(kube_get_pod iom)"
@@ -2039,11 +1908,12 @@ EOF
 Server Settings:
 ================
 POSTGRES_ARGS:              ${POSTGRES_ARGS[*]}
+POSTGRES_DATA_DIR:          $POSTGRES_DATA_DIR
 --------------------------------------------------------------------------------
 Docker:
 =======
-DOCKER_DB_IMAGE:            $DOCKER_DB_IMAGE
-IMAGE_PULL_POLICY:          $IMAGE_PULL_POLICY
+POSTGRES_IMAGE:             $POSTGRES_IMAGE
+IMAGE_PULL_POLICY_POSTGRES: $IMAGE_PULL_POLICY_POSTGRES
 --------------------------------------------------------------------------------
 EOF
         fi
@@ -2053,7 +1923,6 @@ EOF
 Kubernetes:
 ===========
 namespace:                  $EnvId
-KEEP_DATABASE_DATA:         $KEEP_DATABASE_DATA
 
 $(kubectl get pods --namespace=$EnvId --context="$KUBERNETES_CONTEXT" -l app=postgres)
 
@@ -2106,7 +1975,7 @@ REST:                       http://$HostIom:$PORT_MAILSRV_UI_SERVICE/api/v1
 Docker:
 =======
 MAILSRV_IMAGE:              $MAILSRV_IMAGE
-IMAGE_PULL_POLICY           $IMAGE_PULL_POLICY
+IMAGE_PULL_POLICY_MAILSRV:  $IMAGE_PULL_POLICY_MAILSRV
 --------------------------------------------------------------------------------
 EOF
         fi
@@ -2125,60 +1994,6 @@ Usefull commands:
 =================
 Login into Pod:             kubectl exec --namespace $EnvId --context="$KUBERNETES_CONTEXT" $POD -it -- sh
 Currently used yaml:        kubectl get pod -l app=mailsrv -o yaml --namespace=$EnvId --context="$KUBERNETES_CONTEXT"
---------------------------------------------------------------------------------
-EOF
-        fi
-    fi
-}
-
-#-------------------------------------------------------------------------------
-# info storage
-#-------------------------------------------------------------------------------
-info-storage() {
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "info-storage: no config-file given!" < /dev/null
-        false
-    else
-        cat <<EOF
---------------------------------------------------------------------------------
-$ID
---------------------------------------------------------------------------------
-Config:
-=======
-KEEP_DATABASE_DATA:         $KEEP_DATABASE_DATA
---------------------------------------------------------------------------------
-EOF
-        if docker_volume_exists pgdata; then
-            cat <<EOF
-Docker:
-=======
-$(docker volume inspect $EnvId-pgdata)
---------------------------------------------------------------------------------
-EOF
-        else
-            cat <<EOF
-Docker:
-=======
-no docker volume with name $EnvId-pgdata exists.
---------------------------------------------------------------------------------
-EOF
-        fi
-        if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
-            cat <<EOF
-Kubernetes:
-===========
-$(kubectl get persistentvolumes --namespace=$EnvId --context="$KUBERNETES_CONTEXT")
---------------------------------------------------------------------------------
-Usefull commands:
-=================
-Currently used yaml:        kubectl get persistentvolumes -o yaml --namespace=$EnvId --context="$KUBERNETES_CONTEXT"
---------------------------------------------------------------------------------
-EOF
-        else
-            cat <<EOF
-Kubernetes:
-===========
-no persistent volume with name $EnvId-postgres-pv exists.
 --------------------------------------------------------------------------------
 EOF
         fi
@@ -2235,7 +2050,8 @@ Properties:
 $($DEVENV_DIR/bin/template_engine.sh \
     --template="$DEVENV_DIR/templates/config.properties.template" \
     --config="$CONFIG_FILES" \
-    --project-dir="$PROJECT_DIR" | grep -v '^[ \t]*#' | grep -v '^[ \t]*$')
+    --project-dir="$PROJECT_DIR" | grep -v '^[ \t]*#' | grep -v '^[ \t]*$' \
+    | grep -v '^IMAGE_PULL_POLICY=' | grep -v '^DOCKER_DB_IMAGE=')
 --------------------------------------------------------------------------------
 EOF
     fi
@@ -2244,30 +2060,6 @@ EOF
 ################################################################################
 # functions, implementing the create handlers
 ################################################################################
-
-#-------------------------------------------------------------------------------
-# create storage
-# -> true|false indicating success
-#-------------------------------------------------------------------------------
-create-storage() {
-    SUCCESS=true
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "create-storage: no config-file given!" < /dev/null
-        SUCCESS=false
-    elif [ "$KEEP_DATABASE_DATA" = 'true' ] && ! docker_volume_exists pgdata; then
-        docker volume create --name=$EnvId-pgdata -d local 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "create-storage: error creating docker volume $EnvId-pgdata" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_msg INFO "create-storage: docker volume $EnvId-pgdata was successfully created" < "$TMP_OUT"
-        fi
-    else
-        log_msg INFO "create-storage: nothing to do" < /dev/null
-    fi
-    rm -f "$TMP_ERR" "$TMP_OUT"
-    [ "$SUCCESS" = 'true' ]
-}
 
 #-------------------------------------------------------------------------------
 # create namespace
@@ -2333,22 +2125,6 @@ create-postgres() {
         log_msg ERROR "create-postgres: no config-file given!" < /dev/null
         SUCCESS=false
     elif [ -z "$PGHOST" ]; then
-        # link Docker volume to database storage
-        if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
-            MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
-                      "$DEVENV_DIR/bin/template_engine.sh" \
-                        --template="$DEVENV_DIR/templates/postgres-storage.yml.template" \
-                        --config="$CONFIG_FILES" \
-                        --project-dir="$PROJECT_DIR" | kubectl apply --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_msg ERROR "create-postgres: error linking docker volume to database storage" < "$TMP_ERR"
-                SUCCESS=false
-            else
-                log_msg INFO "create-postgres: successfully linked docker volume to database storage" < "$TMP_OUT"
-            fi
-        else
-            log_msg INFO "create-postgres: no need to link docker volume to database storage" < /dev/null
-        fi
         if [ "$SUCCESS" = 'true' ]; then
             if ! kube_pod_started postgres; then
                 # start postgres pod/service
@@ -2441,8 +2217,7 @@ create-iom() {
 # -> true|false indicating success
 #-------------------------------------------------------------------------------
 create-cluster() {
-    create-storage &&
-        create-namespace &&
+    create-namespace &&
         create-postgres &&
         create-mailserver &&
         create-iom
@@ -2452,30 +2227,6 @@ create-cluster() {
 # functions, implementing the delete handlers
 ################################################################################
 
-#---------------------------------------------------------------------------
-# delete storage
-# -> true|false indicating success
-#---------------------------------------------------------------------------
-delete-storage() {
-    SUCCESS=true
-
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "delete-storage: no config-file given!" < /dev/null
-        SUCCESS=false
-    elif docker_volume_exists pgdata; then
-        docker volume rm $EnvId-pgdata 2> "$TMP_ERR" > "$TMP_OUT"
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "delete-storage: error deleting volume $EnvId-pgdata" < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_msg INFO "delete-storage: successfully deleted volume $EnvId-pgdata" < "$TMP_OUT"
-        fi
-    else
-        log_msg INFO "delete-storage: nothing to do" < /dev/null
-    fi
-    rm -f "$TMP_ERR" "$TMP_OUT"
-    [ "$SUCCESS" = 'true' ]
-}
 
 #-------------------------------------------------------------------------------
 # delete namespace
@@ -2555,22 +2306,6 @@ delete-postgres() {
             fi
         else
             log_msg INFO "delete-postgres: nothing to do, to delete postgres" < /dev/null
-        fi
-        # unlink Docker volume from database storage
-        if kube_resource_exists persistentvolumes $EnvId-postgres-pv; then
-            MOUNTPOINT="\"$(docker volume inspect --format='{{.Mountpoint}}' $EnvId-pgdata)\"" \
-                      "$DEVENV_DIR/bin/template_engine.sh" \
-                        --template="$DEVENV_DIR/templates/postgres-storage.yml.template" \
-                        --config="$CONFIG_FILES" \
-                        --project-dir="$PROJECT_DIR" | kubectl delete --namespace $EnvId --context="$KUBERNETES_CONTEXT" -f - 2> "$TMP_ERR" > "$TMP_OUT"
-            if [ $? -ne 0 ]; then
-                log_msg ERROR "delete-postgres: error unlinking Docker volume from database storage" < "$TMP_ERR"
-                SUCCESS_VL=false
-            else
-                log_msg INFO "delete-postgres: successfully unlinked Docker volume from database storage" < "$TMP_OUT"
-            fi
-        else
-            log_msg INFO "delete-postgres: nothing to do, to unlink Docker volume from database storage" < /dev/null
         fi
     fi
     rm -f "$TMP_ERR" "$TMP_OUT"
@@ -3122,15 +2857,6 @@ dump-load() {
             fi
             if [ "$SUCCESS" = 'true' ] && ! delete-postgres; then
                 SUCCESS=false
-            fi
-            # renew Docker local store
-            if [ "$SUCCESS" = 'true' ] && ! delete-storage; then
-                SUCCESS=false
-            fi
-            if [ "$KEEP_DATABASE_DATA" = 'true' ]; then
-                if [ "$SUCCESS" = 'true' ] && ! create-storage; then
-                    SUCCESS=false
-                fi
             fi
             # create postgres and iom
             if [ "$SUCCESS" = 'true' ] && ! create-postgres; then
@@ -3912,7 +3638,6 @@ if [ "$LEVEL0" = "info" ]; then
     LEVEL1=$(isCommand "$1" i  iom        ||
              isCommand "$1" p  postgres   ||
              isCommand "$1" m  mailserver ||
-             isCommand "$1" s  storage    ||
              isCommand "$1" cl cluster    ||
              isCommand "$1" co config)    ||
         if [ "$1" = '--help' -o "$1" = '-h' ]; then
@@ -3923,8 +3648,7 @@ if [ "$LEVEL0" = "info" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = "create" ]; then
-    LEVEL1=$(isCommand "$1" s storage    ||
-             isCommand "$1" n namespace  ||
+    LEVEL1=$(isCommand "$1" n namespace  ||
              isCommand "$1" m mailserver ||
              isCommand "$1" p postgres   ||
              isCommand "$1" i iom        ||
@@ -3937,8 +3661,7 @@ elif [ "$LEVEL0" = "create" ]; then
             exit 1
         fi
 elif [ "$LEVEL0" = "delete" ]; then
-    LEVEL1=$(isCommand "$1" s storage    ||
-             isCommand "$1" n namespace  ||
+    LEVEL1=$(isCommand "$1" n namespace  ||
              isCommand "$1" m mailserver ||
              isCommand "$1" p postgres   ||
              isCommand "$1" i iom        ||

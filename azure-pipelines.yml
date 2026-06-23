@@ -1,0 +1,354 @@
+variables:
+  ##############################################################################
+  # Images used for integration tests.
+  # POSTGRES_IMAGE and MAILSRV_IMAGE are public and pulled automatically.
+  # IOM_DBACCOUNT_IMAGE and IOM_IMAGE are project-specific; set these to the
+  # images that should be tested.
+  ##############################################################################
+
+  POSTGRES_IMAGE: postgres:17
+  MAILSRV_IMAGE: axllent/mailpit
+  IOM_DBACCOUNT_IMAGE: iomdevopsacr.azurecr.io/iom-dbaccount:1.5.0
+  IOM_IMAGE: iomdevopsacr.azurecr.io/ci-iom:5.1.11-1.0.0-SNAPSHOT
+
+  IOM_DEVOPS_ACR_CONNECTION: order-iomDevopsACR-ISH-ENG-IOM
+
+  PROJECT_PATH: devenv-4-iom
+
+  # Increment to force a full cache refresh of public Docker images.
+  CACHE_KEY: a
+
+trigger:
+  branches:
+    exclude:
+      - main
+    include:
+      - '*'
+
+jobs:
+- job:
+  pool: 'ubuntu-24.04-D4ads_v5-adopt-adoptium-jdk'
+  continueOnError: false
+  timeoutInMinutes: 60
+  variables:
+    PROTOCOL_FILE: $(Pipeline.Workspace)/protocol.md
+    DOCKER_IMAGES_CACHE_DIR: $(Pipeline.Workspace)/docker-images-cache
+    GIT_USER_EMAIL: "a.herold@intershop.de"
+    GIT_USER_NAME: "Azure CI $(Build.DefinitionName)"
+    MAIN_BRANCH: main
+  workspace:
+    clean: all
+
+  steps:
+
+  ##############################################################################
+  # checkout
+  ##############################################################################
+
+  - checkout: self
+    path: $(PROJECT_PATH)
+    persistCredentials: true
+    clean: true
+    timeoutInMinutes: 5
+    displayName: "Checkout"
+    #enabled: false
+
+  - script: |
+      set -e
+      git config user.email "${GIT_USER_EMAIL}"
+      git config user.name "${GIT_USER_NAME}"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Setup Git"
+    #enabled: false
+
+  ##############################################################################
+  # determine version and control variables
+  ##############################################################################
+
+  - script: |
+      set -e
+
+      DEVENV4IOM_VERSION=$(grep '^DEVENV4IOM_VERSION=' bin/template-variables | cut -d= -f2)
+
+      IS_RELEASE_BUILD=false
+      IS_SNAPSHOT_BUILD=false
+      if echo "$BUILD_SOURCEBRANCH" | grep -q '^refs/heads/develop$\|^refs/heads/master$\|^refs/heads/release/\|^refs/heads/hotfix/\|^refs/heads/main$'; then
+        if echo "$DEVENV4IOM_VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+          IS_RELEASE_BUILD=true
+        else
+          IS_SNAPSHOT_BUILD=true
+        fi
+      fi
+
+      VERSION_MAJOR=$(echo "$DEVENV4IOM_VERSION" | sed 's/-SNAPSHOT//' | cut -d. -f1)
+      VERSION_MINOR=$(echo "$DEVENV4IOM_VERSION" | sed 's/-SNAPSHOT//' | cut -d. -f2)
+      VERSION_PATCH=$(echo "$DEVENV4IOM_VERSION" | sed 's/-SNAPSHOT//' | cut -d. -f3)
+      IS_PATCH=$(if [ "$VERSION_PATCH" -gt 0 ]; then echo 'true'; else echo 'false'; fi)
+
+      echo "##vso[task.setvariable variable=DEVENV4IOM_VERSION]$DEVENV4IOM_VERSION"
+      echo "##vso[task.setvariable variable=IS_RELEASE_BUILD]$IS_RELEASE_BUILD"
+      echo "##vso[task.setvariable variable=IS_SNAPSHOT_BUILD]$IS_SNAPSHOT_BUILD"
+      echo "##vso[task.setvariable variable=VERSION_MAJOR]$VERSION_MAJOR"
+      echo "##vso[task.setvariable variable=VERSION_MINOR]$VERSION_MINOR"
+      echo "##vso[task.setvariable variable=VERSION_PATCH]$VERSION_PATCH"
+      echo "##vso[task.setvariable variable=IS_PATCH]$IS_PATCH"
+
+      cat > "${PROTOCOL_FILE}" <<EOF
+      ## Variables
+      - DEVENV4IOM_VERSION: $DEVENV4IOM_VERSION
+      - IS_RELEASE_BUILD:   $IS_RELEASE_BUILD
+      - IS_SNAPSHOT_BUILD:  $IS_SNAPSHOT_BUILD
+      - VERSION_MAJOR:      $VERSION_MAJOR
+      - VERSION_MINOR:      $VERSION_MINOR
+      - VERSION_PATCH:      $VERSION_PATCH
+      - IS_PATCH:           $IS_PATCH
+      - POSTGRES_IMAGE:    $POSTGRES_IMAGE
+      - MAILSRV_IMAGE:      $MAILSRV_IMAGE
+      - IOM_DBACCOUNT_IMAGE: $IOM_DBACCOUNT_IMAGE
+      - IOM_IMAGE:          $IOM_IMAGE
+      EOF
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Define control variables"
+    #enabled: false
+
+  ##############################################################################
+  # unit tests (no cluster required)
+  ##############################################################################
+
+  - script: |
+      set -e
+      test/run-unit-tests.sh
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Unit Tests
+      - Result: passed
+      EOF
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 5
+    displayName: "Run unit tests"
+    #enabled: false
+
+  ##############################################################################
+  # integration tests
+  ##############################################################################
+
+  - script: |
+      set -e
+      # Install jq if not already present
+      if ! command -v jq > /dev/null 2>&1; then
+        sudo apt-get install -y jq
+      fi
+
+      # Install k3s — disable traefik, devenv-4-iom uses k3s's built-in ServiceLB
+      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik" sh -
+
+      # Make the k3s kubeconfig available to kubectl and devenv-4-iom.
+      # The context name written by k3s is 'default'.
+      mkdir -p ~/.kube
+      sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+      sudo chown "$(whoami)" ~/.kube/config
+    timeoutInMinutes: 5
+    displayName: "Install k3s"
+    #enabled: false
+
+  - task: Cache@2
+    inputs:
+      key: '"$(POSTGRES_IMAGE)" | "$(MAILSRV_IMAGE)" | "$(CACHE_KEY)"'
+      path: "$(DOCKER_IMAGES_CACHE_DIR)"
+      cacheHitVar: DOCKER_IMAGES_CACHE_RESTORED
+    timeoutInMinutes: 5
+    displayName: "Create/restore cache of public Docker images"
+    #enabled: false
+
+  - script: |
+      set -e
+      mkdir -p "${DOCKER_IMAGES_CACHE_DIR}"
+      docker pull "$(POSTGRES_IMAGE)"
+      docker pull "$(MAILSRV_IMAGE)"
+      docker save -o "${DOCKER_IMAGES_CACHE_DIR}/images.tar" "$(POSTGRES_IMAGE)" "$(MAILSRV_IMAGE)"
+    timeoutInMinutes: 10
+    displayName: "Download public Docker images"
+    condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'false'))
+    #enabled: false
+
+  - script: |
+      set -e
+      docker load -i "${DOCKER_IMAGES_CACHE_DIR}/images.tar"
+    timeoutInMinutes: 5
+    displayName: "Load public Docker images from cache"
+    condition: and(succeeded(), eq(variables.DOCKER_IMAGES_CACHE_RESTORED, 'true'))
+    #enabled: false
+
+  - task: Docker@2
+    inputs:
+      command: login
+      containerRegistry: $(IOM_DEVOPS_ACR_CONNECTION)
+    timeoutInMinutes: 1
+    displayName: "Login to DevOps ACR"
+    #enabled: false
+
+  - script: |
+      set -e
+      # Pull project-specific images from ACR (public images are already in the
+      # Docker daemon from the cache step above). Import everything into k3s
+      # containerd so images are available with IMAGE_PULL_POLICY_IOM=IfNotPresent.
+      docker pull "$(IOM_DBACCOUNT_IMAGE)"
+      docker pull "$(IOM_IMAGE)"
+      for IMAGE in "$(POSTGRES_IMAGE)" "$(MAILSRV_IMAGE)" "$(IOM_DBACCOUNT_IMAGE)" "$(IOM_IMAGE)"; do
+        docker save "$IMAGE" | sudo k3s ctr images import -
+      done
+    timeoutInMinutes: 10
+    displayName: "Pull project-specific images and import all images into k3s"
+    #enabled: false
+
+  - script: |
+      set -e
+      # Apply pipeline image variables and Kubernetes context to the integration
+      # test project config (test/integration/devenv.project.properties).
+      # k3s registers its cluster under the context name 'default'.
+      sed -i 's/^KUBERNETES_CONTEXT=.*/KUBERNETES_CONTEXT=default/' \
+          test/integration/devenv.project.properties
+      sed -i "s|^POSTGRES_IMAGE=.*|POSTGRES_IMAGE=$(POSTGRES_IMAGE)|" \
+          test/integration/devenv.project.properties
+      sed -i "s|^MAILSRV_IMAGE=.*|MAILSRV_IMAGE=$(MAILSRV_IMAGE)|" \
+          test/integration/devenv.project.properties
+      sed -i "s|^IOM_DBACCOUNT_IMAGE=.*|IOM_DBACCOUNT_IMAGE=$(IOM_DBACCOUNT_IMAGE)|" \
+          test/integration/devenv.project.properties
+      sed -i "s|^IOM_IMAGE=.*|IOM_IMAGE=$(IOM_IMAGE)|" \
+          test/integration/devenv.project.properties
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Configure integration tests"
+    #enabled: false
+
+  - script: |
+      set -e
+      test/integration/setup.sh
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 2
+    displayName: "Setup integration test environment"
+    #enabled: false
+
+  - script: |
+      set -e
+      test/run-integration-tests.sh
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Integration Tests
+      - Result: passed
+      EOF
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 30
+    displayName: "Run integration tests"
+    #enabled: false
+
+  - script: |
+      test/integration/teardown.sh || true
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    condition: always()
+    timeoutInMinutes: 5
+    displayName: "Teardown integration test environment"
+    #enabled: false
+
+  ##############################################################################
+  # release
+  ##############################################################################
+
+  - script: |
+      set -e
+
+      # revert changes made to test/integration/devenv.project.properties
+      git restore .
+      git clean -fd
+
+      SOURCE_BRANCH=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/heads/||')
+      git fetch origin --unshallow
+      git switch "$SOURCE_BRANCH"
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 1
+    displayName: "Reset Git repo"
+    condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'))
+    #enabled: false
+
+  - script: |
+      set -e
+
+      SOURCE_BRANCH=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/heads/||')
+      HOTFIX_BRANCH=hotfix/$(VERSION_MAJOR).$(VERSION_MINOR)
+
+      # merge to main, tag, push
+      git checkout "$MAIN_BRANCH"
+      git merge "$SOURCE_BRANCH" -m "chore: merged devenv-4-iom $(DEVENV4IOM_VERSION) from $SOURCE_BRANCH to $MAIN_BRANCH [skip ci]"
+      git tag "$(DEVENV4IOM_VERSION)"
+      git push origin "$MAIN_BRANCH"
+      git push origin "$(DEVENV4IOM_VERSION)"
+
+      # create hotfix branch with next patch SNAPSHOT
+      git switch "$MAIN_BRANCH"
+      git checkout -b "$HOTFIX_BRANCH"
+      sed -i "s|^DEVENV4IOM_VERSION=.*|DEVENV4IOM_VERSION=$(VERSION_MAJOR).$(VERSION_MINOR).1-SNAPSHOT|" \
+          bin/template-variables
+      git add bin/template-variables
+      git commit -m "chore: prepared new branch $HOTFIX_BRANCH [skip ci]"
+      git push origin "$HOTFIX_BRANCH"
+
+      # dummy merge hotfix into source so future merges are clean
+      git switch "$SOURCE_BRANCH"
+      git merge -s ours "$HOTFIX_BRANCH" -m "chore: dummy merge from $HOTFIX_BRANCH [skip ci]"
+      git push origin "$SOURCE_BRANCH"
+
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Git
+      - merged $SOURCE_BRANCH to $MAIN_BRANCH
+      - created tag $(DEVENV4IOM_VERSION) in $MAIN_BRANCH
+      - created branch $HOTFIX_BRANCH
+      - updated version in bin/template-variables to $(VERSION_MAJOR).$(VERSION_MINOR).1-SNAPSHOT in $HOTFIX_BRANCH
+      - dummy merge from $HOTFIX_BRANCH into $SOURCE_BRANCH
+      EOF
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 5
+    displayName: "Git Major/Minor post-release tasks"
+    condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'false'))
+    #enabled: false
+
+  - script: |
+      set -e
+
+      SOURCE_BRANCH=$(echo "$BUILD_SOURCEBRANCH" | sed 's|^refs/heads/||')
+      NEXT_VERSION=$(VERSION_MAJOR).$(VERSION_MINOR).$(expr $(VERSION_PATCH) + 1)
+
+      git switch "$SOURCE_BRANCH"
+      git tag "$(DEVENV4IOM_VERSION)"
+      git push origin "$(DEVENV4IOM_VERSION)"
+
+      sed -i "s|^DEVENV4IOM_VERSION=.*|DEVENV4IOM_VERSION=${NEXT_VERSION}-SNAPSHOT|" \
+          bin/template-variables
+      git add bin/template-variables
+      git commit -m "chore: updated to next snapshot version [skip ci]"
+      git push origin "$SOURCE_BRANCH"
+
+      cat >> "${PROTOCOL_FILE}" <<EOF
+
+      ## Git
+      - created tag $(DEVENV4IOM_VERSION) in $SOURCE_BRANCH
+      - updated version in bin/template-variables to ${NEXT_VERSION}-SNAPSHOT
+      EOF
+    workingDirectory: $(Agent.BuildDirectory)/$(PROJECT_PATH)
+    timeoutInMinutes: 5
+    displayName: "Git Patch post-release tasks"
+    condition: and(succeeded(), eq(variables.IS_RELEASE_BUILD, 'true'), eq(variables.IS_PATCH, 'true'))
+    #enabled: false
+
+  ##############################################################################
+  # protocol
+  ##############################################################################
+
+  - script: |
+      echo "##vso[task.uploadsummary]${PROTOCOL_FILE}"
+    timeoutInMinutes: 1
+    displayName: "Provide Protocol"
+    condition: always()
+    #enabled: false
