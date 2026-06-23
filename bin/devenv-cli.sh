@@ -1152,11 +1152,12 @@ CONFIG-FILE
 $(msg_config_file 4)
 
 RESOURCE
-    config|c*          get configuration file
-    ws-props|w*        get ws properties
-    geb-props|g*       get geb properties
-    soap-props|s*      get soap properties
-    bash-completion|b* get bash completion script
+    config|c*           get configuration file
+    ws-props|w*         get ws properties
+    geb-props|g*        get geb properties
+    playwright-props|p* get playwright properties
+    soap-props|s*       get soap properties
+    bash-completion|b*  get bash completion script
 
 Run '$ME [CONFIG-FILE] get RESOURCE --help|-h' for more information on a command.
 EOF
@@ -1245,6 +1246,30 @@ $(msg_config_file 4)
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
       --template="$DEVENV_DIR/templates/geb.properties.template" \\
+      --config="$CONFIG_FILES" \\
+      --project-dir="$PROJECT_DIR"
+EOF
+}
+
+#-------------------------------------------------------------------------------
+help-get-playwright-props() {
+    ME=$(basename "$0")
+    cat <<EOF
+writes playwright properties to stdout
+
+SYNOPSIS
+    $ME [CONFIG-FILE] get playwright-props
+
+OVERVIEW
+    Writes playwright properties to stdout. This file is required to run
+    playwright-tests on the managed IOM installation.
+
+CONFIG-FILE
+$(msg_config_file 4)
+
+BACKGROUND
+    "$DEVENV_DIR/bin/template_engine.sh" \\
+      --template="$DEVENV_DIR/templates/playwright.properties.template" \\
       --config="$CONFIG_FILES" \\
       --project-dir="$PROJECT_DIR"
 EOF
@@ -3037,6 +3062,31 @@ get-ws-props() {
 }
 
 #-------------------------------------------------------------------------------
+# get playwright.properties
+#-------------------------------------------------------------------------------
+get-playwright-props() {
+    SUCCESS=true
+
+    if [ -z "$CONFIG_FILES" ]; then
+        log_msg ERROR "get-playwright-props: no config-file given!" < /dev/null
+        SUCCESS=false
+    else
+        "$DEVENV_DIR/bin/template_engine.sh" \
+            --template="$DEVENV_DIR/templates/playwright.properties.template" \
+            --config="$CONFIG_FILES" \
+            --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
+        if [ $? -ne 0 ]; then
+            log_msg ERROR "get-playwright-props: error writing playwright.properties." < "$TMP_ERR"
+            SUCCESS=false
+        else
+            log_msg INFO "get-playwright-props: playwright.properties successfully written" < /dev/null
+        fi
+    fi
+    rm -f "$TMP_ERR"
+    [ "$SUCCESS" = 'true' ]
+}
+
+#-------------------------------------------------------------------------------
 # get geb.properties
 #-------------------------------------------------------------------------------
 get-geb-props() {
@@ -3702,6 +3752,7 @@ elif [ "$LEVEL0" = "dump" ]; then
 elif [ "$LEVEL0" = 'get' ]; then
     LEVEL1=$(isCommand "$1" c config           ||
              isCommand "$1" g geb-props        ||
+             isCommand "$1" p playwright-props ||
              isCommand "$1" w ws-props         ||
              isCommand "$1" s soap-props       ||
              isCommand "$1" b bash-completion) ||
