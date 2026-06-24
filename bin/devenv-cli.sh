@@ -595,7 +595,7 @@ OVERVIEW
     All you have to do is to mount a directory containing your custom built
     artifacts at /opt/oms/application-dev. To do so, you have to:
     - Set variable CUSTOM_APPS_DIR in your configuration file and make sure,
-      that the directory is shared in Docker Desktop.
+      that the directory is shared in Rancher or Docker Desktop.
     - After changing CUSTOM_APPS_DIR, IOM needs to be restarted.
     Once you have configured your developer VM this way, your custom built
     artifacts are deployed right at the start of IOM.
@@ -606,7 +606,7 @@ $(msg_config_file 4)
 
 CONFIG
     CUSTOM_APPS_DIR - directory, where your custom built artifacts are located.
-      Make sure, the directory is shared with Docker Desktop.
+      Make sure, the directory is shared with Rancher or Docker Desktop.
 $(msg_custom_dir APPS 6)
     ID - the namespace used is derived from ID
 
@@ -641,7 +641,7 @@ OVERVIEW
     If you want to roll out custom mail templates in a running developer VM, you
     have to:
     - Set variable CUSTOM_TEMPLATES_DIR in your configuration file and make sure
-      that the directory is shared in Docker Desktop.
+      that the directory is shared in Rancher or Docker Desktop.
     - After changing CUSTOM_TEMPLATES_DIR, IOM needs to be restarted.
     If CUSTOM_TEMPLATES_DIR is configured, the templates are also copied when
     starting IOM.
@@ -651,7 +651,7 @@ $(msg_config_file 4)
 
 CONFIG
     CUSTOM_TEMPLATES_DIR - directory, where your custom mail templates are
-      located. Make sure, the directory is shared with Docker Desktop.
+      located. Make sure, the directory is shared with Rancher or Docker Desktop.
 $(msg_custom_dir TEMPLATES 6)
     ID - the namespace used is derived from ID
 
@@ -682,7 +682,7 @@ OVERVIEW
     the standard directory /opt/oms/var/xslt. If you want to roll out custom xsl
     templates in a running developer VM, you have to:
     - Set variable CUSTOM_XSLT_DIR in your configuration file and make sure, that
-      the directory is shared in Docker Desktop.
+      the directory is shared in Rancher or Docker Desktop.
     - After changing CUSTOM_XSLT_DIR, IOM has to be restarted.
     If CUSTOM_XSLT_DIR is configured, the templates are also copied when
     starting IOM.
@@ -692,7 +692,7 @@ $(msg_config_file 4)
 
 CONFIG
     CUSTOM_XSLT_DIR - directory, where your custom XSL templates are located.
-      Make sure, the directory is shared with Docker Desktop.
+      Make sure, the directory is shared with Rancher or Docker Desktop.
 $(msg_custom_dir XSLT 6)
     ID - the namespace used is derived from ID.
 
@@ -717,7 +717,7 @@ SYNOPSIS
     $ME [CONFIG-FILE] apply sql-scripts DIRECTORY|FILE [TIMEOUT]
 
 ARGUMENTS
-    DIRECTORY|FILE has to be shared in Docker Desktop.
+    DIRECTORY|FILE has to be shared in Rancher or Docker Desktop.
     TIMEOUT in seconds. Defaults to 60.
 
 OVERVIEW
@@ -794,13 +794,13 @@ OVERVIEW
     is provided.
     To be able to roll out complete SQL configurations, you have to:
     - Set variable CUSTOM_SQLCONF_DIR in your configuration file and make sure,
-      that the directory is shared in Docker Desktop.
+      that the directory is shared in Rancher or Docker Desktop.
     - Set variable PROJECT_ENV_NAME in your configuratoin file to the environment
       you want to test.
     You should have an eye on the logs created by the configuration process.
     These logs are printed in JSON format. Verbosity can be controlled by the
     configuration variable OMS_LOGLEVEL_SCRIPTS.
-    If CUSTOM_SQLCONFIG_DIR is configured, the custom SQL configuration is also
+    If CUSTOM_SQLCONF_DIR is configured, the custom SQL configuration is also
     applied when starting IOM.
 
 CONFIG-FILE
@@ -857,7 +857,7 @@ OVERVIEW
     exactly in the same context as in a real IOM installation.
     To be able to roll out JSON configurations, you have to:
     - Set variable CUSTOM_JSONCONF_DIR in your configuration file and make sure,
-      that the directory is shared in Docker Desktop.
+      that the directory is shared in Rancher or Docker Desktop.
     You should have an eye on the logs created by the configuration process.
     These logs are printed in JSON format. Verbosity can be controlled by
     configuration variable OMS_LOGLEVEL_SCRIPTS.
@@ -927,7 +927,7 @@ OVERVIEW
     along with the migration scripts located at CUSTOM_DBMIGRATE_DIR. Hence, if 
     you want to roll out custom dbmigrate scripts, you have to:
     - Set the variable CUSTOM_DBMIGRATE_DIR in your configuration file and make
-      sure, that the directory is shared in Docker Desktop.
+      sure, that the directory is shared in Rancher or Docker Desktop.
     You can and should have an eye on the logs created by the migration process.
     These logs are printed in JSON format. Verbosity can be controlled by the
     configuration variable OMS_LOGLEVEL_SCRIPTS.
@@ -1038,7 +1038,7 @@ OVERVIEW
     OmsDump.year-month-day.hour.minute.second-hostname.sql.gz. To create dumps,
     you have to:
     - Set variable CUSTOM_DUMPS_DIR in your configuration file and make sure
-      that the directory is shared in Docker Desktop.
+      that the directory is shared in Rancher or Docker Desktop.
     You should check the output of the dump-job. The logs of the job are printed
     in JSON format. Verbosity can be controlled by the configuration variable
     OMS_LOGLEVEL_SCRIPTS.
@@ -1093,22 +1093,28 @@ SYNOPSIS
     $ME [CONFIG-FILE] dump load
 
 OVERVIEW
-    When starting IOM and the conneted database is empty, the config container
-    loads the initial dump. Devenv4iom allows to load a custom dump during this
-    process. This custom dump will be treated exactly as any other dump which
-    is part of the docker image.
+    When starting IOM and the connected database is empty, the config container 
+    loads the initial dump. Devenv4iom allows you to load a custom dump during 
+    this process. This custom dump will be treated exactly as any other dump 
+    that is part of the Docker image. Processes eventually defined in 
+    CUSTOM_SQLCONF_DIR, CUSTOM_DBMIGRATE_DIR, or with PROJECT_IMPORT_TEST_DATA 
+    will also be applied.
     If you want to load a custom dump, you have to:
     - Set variable CUSTOM_DUMPS_DIR in your configuration file and make sure
-      that the directory is shared in Docker Desktop. The dump you want to load
+      that the directory is shared in Rancher or Docker Desktop. The dump you want to load
       has to be located within this directory. To be recognized as a dump, it
       has to have the extension .sql.gz. If the directory contains more than one
       dump file, the script of the config container selects the one with the
       largest numerical name. You can check this with following command:
       ls *.sql.gz | sort -nr | head -n 1
 
-    The custom dump can only be loaded if the database is empty. The current
-    command executes all the necessary steps to restart IOM with an empty
-    database:
+    The custom dump will only be loaded if the database is empty. 
+    When POSTGRES_DATA_DIR is set and already contains database data, 
+    you must delete that content manually before loading a custom dump. 
+    Otherwise, the dump creation process will not replace the current data.
+    
+    The current command is a wrapper to executes all the necessary steps to restart IOM 
+    with your custom dump:
     - delete iom
     - delete postgres
     - create postgres

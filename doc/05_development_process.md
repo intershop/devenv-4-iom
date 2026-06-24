@@ -132,7 +132,7 @@ You should have an eye on the logs created by the configuration process. These l
 
     devenv-cli.sh apply sql-config
 
-If `CUSTOM_SQLCONFIG_DIR` is configured, the custom SQL configuration is also applied when starting IOM.
+If `CUSTOM_SQLCONF_DIR` is configured, the custom SQL configuration is also applied when starting IOM.
 
 ## Execute Custom _Wildfly-CLI_ Scripts
 

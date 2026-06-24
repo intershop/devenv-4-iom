@@ -440,7 +440,7 @@ if [ -n "${DOCKER_DB_IMAGE+set}" ] && type log_msg > /dev/null 2>&1; then
         log_msg WARN "DOCKER_DB_IMAGE is deprecated. Use POSTGRES_IMAGE instead. POSTGRES_IMAGE has been set to the value of DOCKER_DB_IMAGE." < /dev/null
     fi
 fi
-POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:17}}"
+POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:18}}"
 
 # postgres 18+ requires the mount at /var/lib/postgresql (it places data in a
 # versioned subdirectory underneath). Earlier versions write directly into
