@@ -15,7 +15,7 @@ OUTPUT=$("$RENDER" --template="$TEMPLATE" --config="$PROPS" --project-dir="$DEVE
 assert_exit_success "exit code 0" $?
 
 test_case "uses configured postgres image"
-assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:17"
+assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:18"
 
 test_case "hostPath volume present (POSTGRES_DATA_DIR set)"
 assert_contains "hostPath volume defined" "$OUTPUT" "hostPath:"
@@ -27,7 +27,7 @@ assert_not_contains "no PVC kind line" "$OUTPUT" "kind: PersistentVolumeClaim"
 assert_not_contains "no storageClassName" "$OUTPUT" "storageClassName:"
 
 test_case "volume mount present"
-assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
+assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql"
 
 test_case "no unsubstituted PostgresMountPath"
 assert_not_contains "no raw PostgresMountPath" "$OUTPUT" '${PostgresMountPath}'
@@ -59,7 +59,7 @@ rm -rf "$TMPDIR_REL"
 test_case "no POSTGRES_DATA_DIR: hostPath volume commented out"
 OUTPUT_NODATA=$("$RENDER" --template="$TEMPLATE" --config=/dev/null --project-dir="$DEVENV_DIR" 2>&1)
 assert_not_contains "no hostPath when unset" "$OUTPUT_NODATA" "hostPath:"
-assert_not_contains "no volumeMount when unset" "$OUTPUT_NODATA" "mountPath: /var/lib/postgresql/data"
+assert_not_contains "no volumeMount when unset" "$OUTPUT_NODATA" "mountPath: /var/lib/postgresql"
 
 # postgres 18+: mount point moves up one level
 test_case "postgres:18 uses /var/lib/postgresql as mountPath"
@@ -71,8 +71,9 @@ assert_contains "pg18 mountPath is /var/lib/postgresql" "$OUTPUT_PG18" "mountPat
 assert_not_contains "pg18 mountPath has no /data suffix" "$OUTPUT_PG18" "mountPath: /var/lib/postgresql/data"
 rm -rf "$TMPDIR_PG18"
 
-test_case "postgres:17 uses /var/lib/postgresql/data as mountPath"
-assert_contains "pg17 mountPath is /var/lib/postgresql/data" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
+test_case "postgres:18 (default) uses /var/lib/postgresql as mountPath"
+assert_contains "pg18 default mountPath is /var/lib/postgresql" "$OUTPUT" "mountPath: /var/lib/postgresql"
+assert_not_contains "pg18 default mountPath has no /data suffix" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
 
 test_case "non-numeric tag (latest) causes error and non-zero exit"
 TMPDIR_LATEST="$(mktemp -d)"

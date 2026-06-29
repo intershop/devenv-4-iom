@@ -66,4 +66,48 @@ assert_contains "warning mentions IMAGE_PULL_POLICY" "$WARNINGS" "IMAGE_PULL_POL
 assert_contains "warning says ignored" "$WARNINGS" "ignored because IMAGE_PULL_POLICY_IOM is set"
 
 rm -f /tmp/test_deprecated_warnings
+
+# ---------------------------------------------------------------------------
+# get config migration: deprecated properties must not appear in the output
+# of `get config`, while their replacements must carry the migrated value.
+# ---------------------------------------------------------------------------
+
+RENDER="$DEVENV_DIR/bin/template_engine.sh"
+CONFIG_TEMPLATE="$DEVENV_DIR/templates/config.properties.template"
+TMPDIR_MIGRATION="$(mktemp -d)"
+
+# Run the template engine in a clean environment to prevent host environment
+# variables from overriding values read from the config file.
+render_clean() {
+    env -i PATH="$PATH" HOME="$HOME" \
+        "$RENDER" "$@"
+}
+
+echo ""
+echo "=== get config migration ==="
+
+test_case "DOCKER_DB_IMAGE in input: POSTGRES_IMAGE carries its value in output"
+echo "DOCKER_DB_IMAGE=postgres:16" > "$TMPDIR_MIGRATION/old.properties"
+OUTPUT=$(render_clean \
+    --template="$CONFIG_TEMPLATE" \
+    --config="$TMPDIR_MIGRATION/old.properties" \
+    --project-dir="$DEVENV_DIR" 2>/dev/null)
+assert_contains "POSTGRES_IMAGE set to migrated value" "$OUTPUT" "POSTGRES_IMAGE=postgres:16"
+
+test_case "DOCKER_DB_IMAGE in input: DOCKER_DB_IMAGE does not appear in output"
+assert_not_contains "no DOCKER_DB_IMAGE line in output" "$OUTPUT" "DOCKER_DB_IMAGE="
+
+test_case "IMAGE_PULL_POLICY in input: IMAGE_PULL_POLICY_IOM carries its value in output"
+echo "IMAGE_PULL_POLICY=Never" > "$TMPDIR_MIGRATION/old_pull.properties"
+OUTPUT=$(render_clean \
+    --template="$CONFIG_TEMPLATE" \
+    --config="$TMPDIR_MIGRATION/old_pull.properties" \
+    --project-dir="$DEVENV_DIR" 2>/dev/null)
+assert_contains "IMAGE_PULL_POLICY_IOM set to migrated value" "$OUTPUT" "IMAGE_PULL_POLICY_IOM=Never"
+
+test_case "IMAGE_PULL_POLICY in input: IMAGE_PULL_POLICY does not appear in output"
+assert_not_contains "no IMAGE_PULL_POLICY= line in output" "$OUTPUT" "IMAGE_PULL_POLICY=Never"
+
+rm -rf "$TMPDIR_MIGRATION"
+
 test_summary

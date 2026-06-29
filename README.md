@@ -35,7 +35,7 @@ a certain version of IOM.
 
 ### Rancher Desktop Support <!-- #117544 -->
 
-[Rancher Desktop](https://rancherdesktop.io/) is now the recommended Kubernetes platform for _devenv-4-iom_. It is open-source, free for commercial use, and correctly exposes host directories into the Kubernetes node on macOS, Linux, and Windows. See [Rancher Desktop setup](doc/10_rancher_desktop.md) for installation and setup instructions.
+[Rancher Desktop](https://rancherdesktop.io/) is now the recommended Kubernetes platform for _devenv-4-iom_. It is open-source and free for commercial use. See [Rancher Desktop setup](doc/10_rancher_desktop.md) for installation and setup instructions.
 
 Docker Desktop continues to be supported. See [Docker Desktop](doc/09_docker_desktop.md) for details on the kubeadm and kind engines.
 
@@ -47,11 +47,11 @@ The default value of `KUBERNETES_CONTEXT` has changed from `docker-desktop` to `
 
 The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been replaced by the `POSTGRES_DATA_DIR` property. Set it to a host directory path to persist PostgreSQL data across cluster restarts. Absolute and relative paths are supported; relative paths are resolved against the directory of `devenv.project.properties`, or the current working directory if no project-specific configuration exists. Leave it empty (the default) to run PostgreSQL without persistent storage.
 
-**Migration:** Remove `KEEP_DATABASE_DATA` from your configuration file and add `POSTGRES_DATA_DIR` with a path of your choice, or leave it empty to run without persistent storage. Note that the previous default (`KEEP_DATABASE_DATA=true`) persisted data automatically — the new default does not. If you relied on the old default, set `POSTGRES_DATA_DIR` explicitly to avoid losing database data on pod restart.
+**Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). Afterwards, set `POSTGRES_DATA_DIR` to a path of your choice, or leave it empty to run without persistent storage. Note that there is no migration path for existing database content — let IOM reinitialise the database on next start.
 
 ### Updated Default PostgreSQL Version
 
-The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:17`.
+The default PostgreSQL image has been updated from `postgres:12` (end-of-life since October 2023) to `postgres:18`.
 
 **Migration:** Since the database persistence mechanism has also changed (Docker volumes replaced by `POSTGRES_DATA_DIR`), existing data from previous installations is no longer accessible regardless of the PostgreSQL version. Delete any old Docker volumes and let IOM reinitialise the database on next start.
 
@@ -67,11 +67,13 @@ Three new configuration variables replace the single `IMAGE_PULL_POLICY` propert
 
 `IMAGE_PULL_POLICY` is deprecated. It still works as a fallback default for `IMAGE_PULL_POLICY_IOM` and will produce a warning when set. It will be removed in a future version. Replace it with `IMAGE_PULL_POLICY_IOM` in your configuration files.
 
+**Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). The migration will automatically carry the value of `IMAGE_PULL_POLICY` over to `IMAGE_PULL_POLICY_IOM`.
+
 ### Renamed PostgreSQL Image Property
 
 `DOCKER_DB_IMAGE` has been renamed to `POSTGRES_IMAGE`. The old name is deprecated, still works as a fallback, and will produce a warning when set. It will be removed in a future version.
 
-**Migration:** Replace `DOCKER_DB_IMAGE` with `POSTGRES_IMAGE` in your configuration files.
+**Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). The migration will automatically carry the value of `DOCKER_DB_IMAGE` over to `POSTGRES_IMAGE`.
 
 ### Remote Debugging via `kubectl port-forward`
 
@@ -96,6 +98,10 @@ The commands `create storage`, `delete storage`, and `info storage`, which manag
 ### Support for IOM Prior Version 4.0 Dropped <!-- #117544 -->
 
 The dual-image distribution of IOM (separate `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE`) that was used before IOM 4.0 is no longer supported. The configuration variables `IOM_CONFIG_IMAGE` and `IOM_APP_IMAGE` have been removed. Use `IOM_IMAGE` to define the IOM image.
+
+### `CAAS_*` Configuration Variables Removed
+
+The `CAAS_ENV_NAME`, `CAAS_IMPORT_TEST_DATA`, and `CAAS_IMPORT_TEST_DATA_TIMEOUT` configuration variables, deprecated since version 2.0.5, have been removed. Use `PROJECT_ENV_NAME`, `PROJECT_IMPORT_TEST_DATA`, and `PROJECT_IMPORT_TEST_DATA_TIMEOUT` instead.
 
 # Release information 2.7.0
 
