@@ -14,21 +14,7 @@ KUBERNETES_CONTEXT="${KUBERNETES_CONTEXT:-rancher-desktop}"
 INDEX="${INDEX:-0}"
 PORT_OFFSET="${PORT_OFFSET:-10}"
 
-# environment specific configuration defaults to 'ci'
-# TODO remove if-block after deprecation period
-if [ -z "$PROJECT_ENV_NAME" -a ! -z "$CAAS_ENV_NAME" ]; then
-    PROJECT_ENV_NAME="$CAAS_ENV_NAME"
-fi
 PROJECT_ENV_NAME="${PROJECT_ENV_NAME:-ci}"
-
-# import of test-data
-# TODO remove if-blocks after deprecation period
-if [ -z "$PROJECT_IMPORT_TEST_DATA" -a ! -z "$CAAS_IMPORT_TEST_DATA" ]; then
-    PROJECT_IMPORT_TEST_DATA="$CAAS_IMPORT_TEST_DATA"
-fi
-if [ -z "$PROJECT_IMPORT_TEST_DATA_TIMEOUT" -a ! -z "$CAAS_IMPORT_TEST_DATA_TIMEOUT" ]; then
-    PROJECT_IMPORT_TEST_DATA_TIMEOUT="$CAAS_IMPORT_TEST_DATA_TIMEOUT"
-fi
 PROJECT_IMPORT_TEST_DATA="${PROJECT_IMPORT_TEST_DATA:-true}"
 PROJECT_IMPORT_TEST_DATA_TIMEOUT="${PROJECT_IMPORT_TEST_DATA_TIMEOUT:-300}"
 

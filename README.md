@@ -266,7 +266,9 @@ The following configuration variables have been renamed:
 * `CAAS_IMPORT_TEST_DATA` -> `PROJECT_IMPORT_TEST_DATA`
 * `CAAS_IMPORT_TEST_DATA_TIMEOUT` -> `PROJECT_IMPORT_TEST_DATA_TIMEOUT`
 
-Only the names have changed, the meaning of the configuration variables remains unchanged.
+Only the names have changed, the meaning of the configuration variables remains unchanged. The old `CAAS_*` names have been removed.
+
+**Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). Remove any `CAAS_*` entries from your configuration files and set the corresponding `PROJECT_*` variables instead.
 
 ### Documentation is Part of the Source Repository Now <!-- 71048 -->
 

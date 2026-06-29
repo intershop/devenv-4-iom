@@ -101,30 +101,6 @@ assert_contains "IMAGE_PULL_POLICY_IOM set to migrated value" "$OUTPUT" "IMAGE_P
 test_case "IMAGE_PULL_POLICY in input: IMAGE_PULL_POLICY does not appear in output"
 assert_not_contains "no IMAGE_PULL_POLICY= line in output" "$OUTPUT" "IMAGE_PULL_POLICY=Never"
 
-test_case "CAAS_ENV_NAME in input: PROJECT_ENV_NAME carries its value in output"
-echo "CAAS_ENV_NAME=staging" > "$TMPDIR_MIGRATION/old_caas.properties"
-OUTPUT=$("$RENDER" \
-    --template="$CONFIG_TEMPLATE" \
-    --config="$TMPDIR_MIGRATION/old_caas.properties" \
-    --project-dir="$DEVENV_DIR" 2>/dev/null)
-assert_contains "PROJECT_ENV_NAME set to migrated value" "$OUTPUT" "PROJECT_ENV_NAME=staging"
-
-test_case "CAAS_IMPORT_TEST_DATA in input: PROJECT_IMPORT_TEST_DATA carries its value in output"
-echo "CAAS_IMPORT_TEST_DATA=false" > "$TMPDIR_MIGRATION/old_caas2.properties"
-OUTPUT=$("$RENDER" \
-    --template="$CONFIG_TEMPLATE" \
-    --config="$TMPDIR_MIGRATION/old_caas2.properties" \
-    --project-dir="$DEVENV_DIR" 2>/dev/null)
-assert_contains "PROJECT_IMPORT_TEST_DATA set to migrated value" "$OUTPUT" "PROJECT_IMPORT_TEST_DATA=false"
-
-test_case "CAAS_IMPORT_TEST_DATA_TIMEOUT in input: PROJECT_IMPORT_TEST_DATA_TIMEOUT carries its value in output"
-echo "CAAS_IMPORT_TEST_DATA_TIMEOUT=600" > "$TMPDIR_MIGRATION/old_caas3.properties"
-OUTPUT=$("$RENDER" \
-    --template="$CONFIG_TEMPLATE" \
-    --config="$TMPDIR_MIGRATION/old_caas3.properties" \
-    --project-dir="$DEVENV_DIR" 2>/dev/null)
-assert_contains "PROJECT_IMPORT_TEST_DATA_TIMEOUT set to migrated value" "$OUTPUT" "PROJECT_IMPORT_TEST_DATA_TIMEOUT=600"
-
 rm -rf "$TMPDIR_MIGRATION"
 
 test_summary
