@@ -47,7 +47,7 @@ The default value of `KUBERNETES_CONTEXT` has changed from `docker-desktop` to `
 
 The previous `KEEP_DATABASE_DATA` flag and Docker-volume-based storage have been replaced by the `POSTGRES_DATA_DIR` property. Set it to a host directory path to persist PostgreSQL data across cluster restarts. Absolute and relative paths are supported; relative paths are resolved against the directory of `devenv.project.properties`, or the current working directory if no project-specific configuration exists. Leave it empty (the default) to run PostgreSQL without persistent storage.
 
-**Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). Afterwards, set `POSTGRES_DATA_DIR` to a path of your choice, or leave it empty to run without persistent storage. Note that the previous default (`KEEP_DATABASE_DATA=true`) persisted data automatically — the new default does not. If you relied on the old default, set `POSTGRES_DATA_DIR` explicitly to avoid losing database data on pod restart.
+**Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). Afterwards, set `POSTGRES_DATA_DIR` to a path of your choice, or leave it empty to run without persistent storage. Note that there is no migration path for existing database content — let IOM reinitialise the database on next start.
 
 ### Updated Default PostgreSQL Version
 
