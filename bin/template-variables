@@ -36,24 +36,19 @@ SSO_OIDC_CONFIG="${SSO_OIDC_CONFIG}"
 
 OTEL_COLLECTOR="${OTEL_COLLECTOR}"
 
-# DEPRECATED: IMAGE_PULL_POLICY is superseded by the per-image variables below.
-# It is kept only as a fallback default for IMAGE_PULL_POLICY_IOM.
-# To remove in a future version: delete the next four lines and the
-# IMAGE_PULL_POLICY block in config.properties.template.
-if [ -n "${IMAGE_PULL_POLICY+set}" ] && type log_msg > /dev/null 2>&1; then
+# DEPRECATED: IMAGE_PULL_POLICY is superseded by IMAGE_PULL_POLICY_IOM.
+# To remove in a future version: delete this block.
+if [ -n "${IMAGE_PULL_POLICY+set}" ]; then
     if [ -n "${IMAGE_PULL_POLICY_IOM+set}" ]; then
-        log_msg WARN "IMAGE_PULL_POLICY is deprecated and ignored because IMAGE_PULL_POLICY_IOM is set. Remove IMAGE_PULL_POLICY from your configuration." < /dev/null
+        type log_msg > /dev/null 2>&1 && log_msg WARN "IMAGE_PULL_POLICY is deprecated and ignored because IMAGE_PULL_POLICY_IOM is set. Remove IMAGE_PULL_POLICY from your configuration." < /dev/null
     else
-        log_msg WARN "IMAGE_PULL_POLICY is deprecated. Use IMAGE_PULL_POLICY_IOM instead. IMAGE_PULL_POLICY_IOM has been set to the value of IMAGE_PULL_POLICY." < /dev/null
+        type log_msg > /dev/null 2>&1 && log_msg WARN "IMAGE_PULL_POLICY is deprecated. Use IMAGE_PULL_POLICY_IOM instead. IMAGE_PULL_POLICY_IOM has been set to the value of IMAGE_PULL_POLICY." < /dev/null
+        IMAGE_PULL_POLICY_IOM="${IMAGE_PULL_POLICY}"
     fi
 fi
-IMAGE_PULL_POLICY="${IMAGE_PULL_POLICY:-Always}"
 
-# Per-image pull policies. IMAGE_PULL_POLICY_IOM defaults to the global
-# IMAGE_PULL_POLICY for backward compatibility. Postgres and mail server
-# default to IfNotPresent since these are versioned infrastructure images that
-# rarely change on the same tag.
-IMAGE_PULL_POLICY_IOM="${IMAGE_PULL_POLICY_IOM:-$IMAGE_PULL_POLICY}"
+# Per-image pull policies.
+IMAGE_PULL_POLICY_IOM="${IMAGE_PULL_POLICY_IOM:-Always}"
 IMAGE_PULL_POLICY_POSTGRES="${IMAGE_PULL_POLICY_POSTGRES:-IfNotPresent}"
 IMAGE_PULL_POLICY_MAILSRV="${IMAGE_PULL_POLICY_MAILSRV:-IfNotPresent}"
 
@@ -417,16 +412,16 @@ TIMEZONE="${TIMEZONE:-Europe/Berlin}"
 
 # images
 # DEPRECATED: DOCKER_DB_IMAGE is superseded by POSTGRES_IMAGE.
-# To remove in a future version: delete the next five lines and the
-# DOCKER_DB_IMAGE block in config.properties.template.
-if [ -n "${DOCKER_DB_IMAGE+set}" ] && type log_msg > /dev/null 2>&1; then
+# To remove in a future version: delete this block.
+if [ -n "${DOCKER_DB_IMAGE+set}" ]; then
     if [ -n "${POSTGRES_IMAGE+set}" ]; then
-        log_msg WARN "DOCKER_DB_IMAGE is deprecated and ignored because POSTGRES_IMAGE is set. Remove DOCKER_DB_IMAGE from your configuration." < /dev/null
+        type log_msg > /dev/null 2>&1 && log_msg WARN "DOCKER_DB_IMAGE is deprecated and ignored because POSTGRES_IMAGE is set. Remove DOCKER_DB_IMAGE from your configuration." < /dev/null
     else
-        log_msg WARN "DOCKER_DB_IMAGE is deprecated. Use POSTGRES_IMAGE instead. POSTGRES_IMAGE has been set to the value of DOCKER_DB_IMAGE." < /dev/null
+        type log_msg > /dev/null 2>&1 && log_msg WARN "DOCKER_DB_IMAGE is deprecated. Use POSTGRES_IMAGE instead. POSTGRES_IMAGE has been set to the value of DOCKER_DB_IMAGE." < /dev/null
+        POSTGRES_IMAGE="${DOCKER_DB_IMAGE}"
     fi
 fi
-POSTGRES_IMAGE="${POSTGRES_IMAGE:-${DOCKER_DB_IMAGE:-postgres:18}}"
+POSTGRES_IMAGE="${POSTGRES_IMAGE:-postgres:18}"
 
 # postgres 18+ requires the mount at /var/lib/postgresql (it places data in a
 # versioned subdirectory underneath). Earlier versions write directly into
