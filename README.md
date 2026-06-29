@@ -67,13 +67,13 @@ Three new configuration variables replace the single `IMAGE_PULL_POLICY` propert
 
 `IMAGE_PULL_POLICY` is deprecated. It still works as a fallback default for `IMAGE_PULL_POLICY_IOM` and will produce a warning when set. It will be removed in a future version. Replace it with `IMAGE_PULL_POLICY_IOM` in your configuration files.
 
-**Migration:** Replace `IMAGE_PULL_POLICY` with `IMAGE_PULL_POLICY_IOM` in your configuration files and run `get config` to update to the current template. See [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
+**Migration:** Replace `IMAGE_PULL_POLICY` with `IMAGE_PULL_POLICY_IOM` in your configuration files. Then follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
 
 ### Renamed PostgreSQL Image Property
 
 `DOCKER_DB_IMAGE` has been renamed to `POSTGRES_IMAGE`. The old name is deprecated, still works as a fallback, and will produce a warning when set. It will be removed in a future version.
 
-**Migration:** Replace `DOCKER_DB_IMAGE` with `POSTGRES_IMAGE` in your configuration files and run `get config` to update to the current template. See [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
+**Migration:** Replace `DOCKER_DB_IMAGE` with `POSTGRES_IMAGE` in your configuration files. Then follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom).
 
 ### Remote Debugging via `kubectl port-forward`
 
