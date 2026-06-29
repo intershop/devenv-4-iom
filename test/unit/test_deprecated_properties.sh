@@ -76,12 +76,19 @@ RENDER="$DEVENV_DIR/bin/template_engine.sh"
 CONFIG_TEMPLATE="$DEVENV_DIR/templates/config.properties.template"
 TMPDIR_MIGRATION="$(mktemp -d)"
 
+# Run the template engine in a clean environment to prevent host environment
+# variables from overriding values read from the config file.
+render_clean() {
+    env -i PATH="$PATH" HOME="$HOME" \
+        "$RENDER" "$@"
+}
+
 echo ""
 echo "=== get config migration ==="
 
 test_case "DOCKER_DB_IMAGE in input: POSTGRES_IMAGE carries its value in output"
 echo "DOCKER_DB_IMAGE=postgres:16" > "$TMPDIR_MIGRATION/old.properties"
-OUTPUT=$("$RENDER" \
+OUTPUT=$(render_clean \
     --template="$CONFIG_TEMPLATE" \
     --config="$TMPDIR_MIGRATION/old.properties" \
     --project-dir="$DEVENV_DIR" 2>/dev/null)
@@ -92,7 +99,7 @@ assert_not_contains "no DOCKER_DB_IMAGE line in output" "$OUTPUT" "DOCKER_DB_IMA
 
 test_case "IMAGE_PULL_POLICY in input: IMAGE_PULL_POLICY_IOM carries its value in output"
 echo "IMAGE_PULL_POLICY=Never" > "$TMPDIR_MIGRATION/old_pull.properties"
-OUTPUT=$("$RENDER" \
+OUTPUT=$(render_clean \
     --template="$CONFIG_TEMPLATE" \
     --config="$TMPDIR_MIGRATION/old_pull.properties" \
     --project-dir="$DEVENV_DIR" 2>/dev/null)
