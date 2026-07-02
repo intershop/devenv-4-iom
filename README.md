@@ -75,6 +75,10 @@ Three new configuration variables replace the single `IMAGE_PULL_POLICY` propert
 
 **Migration:** Follow the standard procedure to update to the current template: [Migrate a Configuration After Updating _devenv-4-iom_](doc/02_configuration.md#migrate-a-configuration-after-updating-devenv-4-iom). The migration will automatically carry the value of `DOCKER_DB_IMAGE` over to `POSTGRES_IMAGE`.
 
+### Playwright Test Support
+
+The new command `get playwright-props` generates a `playwright.properties` file for running Playwright-based tests against the local IOM instance, mirroring the existing `get geb-props` command. See [Development Process](doc/05_development_process.md) for usage.
+
 ### Remote Debugging via `kubectl port-forward`
 
 The JDWP debug port is no longer exposed through the IOM LoadBalancer service. Exposing it caused k3s's built-in ServiceLB to repeatedly probe the port with plain TCP connections, producing `Debugger failed to attach` noise in the IOM logs. Use `kubectl port-forward` to access the debug port on demand instead:
