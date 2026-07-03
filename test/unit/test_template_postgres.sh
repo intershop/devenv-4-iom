@@ -1,0 +1,94 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEVENV_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/assert.sh"
+
+TEMPLATE="$DEVENV_DIR/templates/postgres.yml.template"
+PROPS="$SCRIPT_DIR/test.properties.default"
+RENDER="$DEVENV_DIR/bin/template_engine.sh"
+
+echo "=== postgres.yml.template ==="
+
+test_case "template renders without error"
+OUTPUT=$("$RENDER" --template="$TEMPLATE" --config="$PROPS" --project-dir="$DEVENV_DIR" 2>&1)
+assert_exit_success "exit code 0" $?
+
+test_case "uses configured postgres image"
+assert_contains "postgres image substituted" "$OUTPUT" "image: postgres:18"
+
+test_case "hostPath volume present (POSTGRES_DATA_DIR set)"
+assert_contains "hostPath volume defined" "$OUTPUT" "hostPath:"
+EXPECTED_PATH="$(mkdir -p /tmp/test-pgdata && realpath /tmp/test-pgdata)"
+assert_contains "hostPath path set (absolute)" "$OUTPUT" "path: \"$EXPECTED_PATH\""
+
+test_case "no PVC in output"
+assert_not_contains "no PVC kind line" "$OUTPUT" "kind: PersistentVolumeClaim"
+assert_not_contains "no storageClassName" "$OUTPUT" "storageClassName:"
+
+test_case "volume mount present"
+assert_contains "volume mount included" "$OUTPUT" "mountPath: /var/lib/postgresql"
+
+test_case "no unsubstituted PostgresMountPath"
+assert_not_contains "no raw PostgresMountPath" "$OUTPUT" '${PostgresMountPath}'
+
+test_case "service type is LoadBalancer"
+assert_contains "LoadBalancer service" "$OUTPUT" "type: LoadBalancer"
+
+test_case "imagePullPolicy is IfNotPresent (default)"
+assert_contains "imagePullPolicy substituted" "$OUTPUT" "imagePullPolicy: IfNotPresent"
+
+test_case "no unsubstituted variables"
+assert_not_contains "no raw POSTGRES_IMAGE" "$OUTPUT" '${POSTGRES_IMAGE}'
+assert_not_contains "no raw PostgresDataDirAbs" "$OUTPUT" '${PostgresDataDirAbs}'
+assert_not_contains "no raw IMAGE_PULL_POLICY_POSTGRES" "$OUTPUT" '${IMAGE_PULL_POLICY_POSTGRES}'
+
+# relative path: should be resolved against PROJECT_DIR to an absolute path
+test_case "relative POSTGRES_DATA_DIR: resolved to absolute path"
+TMPDIR_REL="$(mktemp -d)"
+TMPPROPS="$TMPDIR_REL/test.properties"
+echo "POSTGRES_DATA_DIR=pgdata" > "$TMPPROPS"
+OUTPUT_REL=$("$RENDER" --template="$TEMPLATE" --config="$TMPPROPS" --project-dir="$TMPDIR_REL" 2>&1)
+EXPECTED_REL="$(realpath "$TMPDIR_REL/pgdata")"
+assert_contains "hostPath present for relative path" "$OUTPUT_REL" "hostPath:"
+assert_not_contains "no raw relative path in output" "$OUTPUT_REL" 'path: "pgdata"'
+assert_contains "resolved to absolute path" "$OUTPUT_REL" "path: \"$EXPECTED_REL\""
+rm -rf "$TMPDIR_REL"
+
+# unset: no hostPath, no volume mount
+test_case "no POSTGRES_DATA_DIR: hostPath volume commented out"
+OUTPUT_NODATA=$("$RENDER" --template="$TEMPLATE" --config=/dev/null --project-dir="$DEVENV_DIR" 2>&1)
+assert_not_contains "no hostPath when unset" "$OUTPUT_NODATA" "hostPath:"
+assert_not_contains "no volumeMount when unset" "$OUTPUT_NODATA" "mountPath: /var/lib/postgresql"
+
+# postgres 18+: mount point moves up one level
+test_case "postgres:18 uses /var/lib/postgresql as mountPath"
+TMPDIR_PG18="$(mktemp -d)"
+echo "POSTGRES_IMAGE=postgres:18" > "$TMPDIR_PG18/test.properties"
+echo "POSTGRES_DATA_DIR=/tmp/test-pgdata" >> "$TMPDIR_PG18/test.properties"
+OUTPUT_PG18=$("$RENDER" --template="$TEMPLATE" --config="$TMPDIR_PG18/test.properties" --project-dir="$DEVENV_DIR" 2>&1)
+assert_contains "pg18 mountPath is /var/lib/postgresql" "$OUTPUT_PG18" "mountPath: /var/lib/postgresql"
+assert_not_contains "pg18 mountPath has no /data suffix" "$OUTPUT_PG18" "mountPath: /var/lib/postgresql/data"
+rm -rf "$TMPDIR_PG18"
+
+test_case "postgres:18 (default) uses /var/lib/postgresql as mountPath"
+assert_contains "pg18 default mountPath is /var/lib/postgresql" "$OUTPUT" "mountPath: /var/lib/postgresql"
+assert_not_contains "pg18 default mountPath has no /data suffix" "$OUTPUT" "mountPath: /var/lib/postgresql/data"
+
+test_case "non-numeric tag (latest) causes error and non-zero exit"
+TMPDIR_LATEST="$(mktemp -d)"
+echo "POSTGRES_IMAGE=postgres:latest" > "$TMPDIR_LATEST/test.properties"
+OUTPUT_LATEST=$("$RENDER" --template="$TEMPLATE" --config="$TMPDIR_LATEST/test.properties" --project-dir="$DEVENV_DIR" 2>&1)
+EXIT_LATEST=$?
+assert_contains "error message references POSTGRES_IMAGE" "$OUTPUT_LATEST" "POSTGRES_IMAGE"
+assert_contains "error message references latest" "$OUTPUT_LATEST" "latest"
+TESTS_RUN=$((TESTS_RUN + 1))
+if [ "$EXIT_LATEST" -ne 0 ]; then
+    echo "  PASS: non-zero exit for non-numeric tag"
+else
+    echo "  FAIL: expected non-zero exit for non-numeric tag"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+rm -rf "$TMPDIR_LATEST"
+
+test_summary
