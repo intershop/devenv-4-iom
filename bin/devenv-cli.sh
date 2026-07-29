@@ -1160,7 +1160,6 @@ $(msg_config_file 4)
 RESOURCE
     config|c*           get configuration file
     ws-props|w*         get ws properties
-    geb-props|g*        get geb properties
     playwright-props|p* get playwright properties
     soap-props|s*       get soap properties
     bash-completion|b*  get bash completion script
@@ -1228,30 +1227,6 @@ $(msg_config_file 4)
 BACKGROUND
     "$DEVENV_DIR/bin/template_engine.sh" \\
       --template="$DEVENV_DIR/templates/ws.properties.template" \\
-      --config="$CONFIG_FILES" \\
-      --project-dir="$PROJECT_DIR"
-EOF
-}
-
-#-------------------------------------------------------------------------------
-help-get-geb-props() {
-    ME=$(basename "$0")
-    cat <<EOF
-writes geb properties to stdout
-
-SYNOPSIS
-    $ME [CONFIG-FILE] get geb-props
-
-OVERVIEW
-    Writes geb properties to stdout. This file is required to run geb-tests on
-    the managed IOM installation.
-
-CONFIG-FILE
-$(msg_config_file 4)
-
-BACKGROUND
-    "$DEVENV_DIR/bin/template_engine.sh" \\
-      --template="$DEVENV_DIR/templates/geb.properties.template" \\
       --config="$CONFIG_FILES" \\
       --project-dir="$PROJECT_DIR"
 EOF
@@ -3092,31 +3067,6 @@ get-playwright-props() {
 }
 
 #-------------------------------------------------------------------------------
-# get geb.properties
-#-------------------------------------------------------------------------------
-get-geb-props() {
-    SUCCESS=true
-
-    if [ -z "$CONFIG_FILES" ]; then
-        log_msg ERROR "get-geb-props: no config-file given!" < /dev/null
-        SUCCESS=false
-    else
-        "$DEVENV_DIR/bin/template_engine.sh" \
-            --template="$DEVENV_DIR/templates/geb.properties.template" \
-            --config="$CONFIG_FILES" \
-            --project-dir="$PROJECT_DIR" 2> "$TMP_ERR"
-        if [ $? -ne 0 ]; then
-            log_msg ERROR "get-geb-props: error writing geb.properties." < "$TMP_ERR"
-            SUCCESS=false
-        else
-            log_msg INFO "get-geb-props: geb.properties successfully written" < /dev/null
-        fi
-    fi
-    rm -f "$TMP_ERR"
-    [ "$SUCCESS" = 'true' ]
-}
-
-#-------------------------------------------------------------------------------
 # get soap.properties
 #-------------------------------------------------------------------------------
 get-soap-props() {
@@ -3756,7 +3706,6 @@ elif [ "$LEVEL0" = "dump" ]; then
         fi
 elif [ "$LEVEL0" = 'get' ]; then
     LEVEL1=$(isCommand "$1" c config           ||
-             isCommand "$1" g geb-props        ||
              isCommand "$1" p playwright-props ||
              isCommand "$1" w ws-props         ||
              isCommand "$1" s soap-props       ||

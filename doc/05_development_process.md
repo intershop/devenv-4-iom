@@ -348,23 +348,6 @@ To apply stored procedures, simply use the command [`apply sql-scripts`](#apply
     # oms.tests has to exist in the current working directory
     devenv-cli.sh apply sql-scripts oms.tests/tc_stored_procedures
 
-### Run Single Geb Test or a Group of Geb Tests
-
-To run a single test, use the feature name or a substring of it. For example:
-
-    # Make sure that geb.properties reflects the latest version of configuration
-    devenv-cli.sh get geb-props > geb.properties
-
-    # Go to the oms.tests directory in your oms source directory
-    # PATH_TO_IOM_SOURCES and PATH_TO_GEB_PROPERTIES have to be replaced by real values.
-    cd ${PATH_TO_IOM_SOURCES}/oms.tests
-
-    # Run a single Geb test
-    ./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
-
-    # Run a group of Geb tests
-    ./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*admin_Oms_1 lists users for role-assignment*"
-
 ### Run Playwright Tests
 
 To run Playwright tests, use the property file provided by _devenv-4-iom_:
@@ -379,7 +362,7 @@ To run Playwright tests, use the property file provided by _devenv-4-iom_:
     # Run a single Playwright test
     ./gradlew playwrightTest -Pplaywright.propFile=${PATH_TO_PLAYWRIGHT_PROPERTIES}/playwright.properties --tests="IOM: Role Assignment Management: admin_Oms_1 lists users for role-assignment"
 
-    # Run a group of Playwright tests
+    # Run a group of Playwright tests - the parameter can be there more than once
     ./gradlew playwrightTest -Pplaywright.propFile=${PATH_TO_PLAYWRIGHT_PROPERTIES}/playwright.properties --tests="*admin_Oms_1 lists users for role-assignment*"
 
 ### Run Single ws Tests or a Group of ws Tests
@@ -407,8 +390,8 @@ To run all tests of a specification, use the name of the specification. For exam
     # PATH_TO_IOM_SOURCES, PATH_TO_GEB_PROPERTIES and PATH_TO_WS_PROPERTIES have to be replaced by real values.
     cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
-    # Run all tests of a Geb test specification
-    ./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*RoleAssignmentManagementListUsersSpec*"
+    # Run all tests of a Playwright test specification
+    ./gradlew playwrightTest -Pplaywright.propFile=${PATH_TO_GEB_PROPERTIES}/playwright.properties --tests="*RoleAssignmentManagementListUsersSpec*"
 
     # Run all tests of a ws test specification
     ./gradlew wsTest -Pws.propFile=${PATH_TO_WS_PROPERTIES}/ws.properties --tests="*ReverseServiceSpec*"
@@ -422,7 +405,7 @@ To run all tests of a group of specifications, just use the name of the used pac
     cd ${PATH_TO_IOM_SOURCES}/oms.tests
 
     # Run all tests of a specification group
-    ./gradlew gebTest -Pgeb.propFile=${PATH_TO_GEB_PROPERTIES}/geb.properties --tests="*com.intershop.oms.tests.roleassignment*"
+    ./gradlew playwrightTest -Pplaywright.propFile=${PATH_TO_GEB_PROPERTIES}/playwright.properties --tests="*com.intershop.oms.tests.roleassignment*"
 
 ### Run SOAP tests
 

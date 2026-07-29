@@ -105,7 +105,6 @@ _devenv_cli() {
                 ;;
             get)
                 sub_cmd=$(_devenv_is_command $sub_cmd c     config           ||
-                          _devenv_is_command $sub_cmd g     geb-props        ||
                           _devenv_is_command $sub_cmd p     playwright-props ||
                           _devenv_is_command $sub_cmd w     ws-props         ||
                           _devenv_is_command $sub_cmd s     soap-props       ||
@@ -143,7 +142,7 @@ _devenv_cli() {
            \( "$COMP_CWORD" -eq 3 -a ! -z "$property_file" \) ]; then
         case "$cmd" in
             get)
-                COMPREPLY=( $(compgen -W 'config geb-props playwright-props ws-props soap-props bash-completion -h --help' -- $cur) )
+                COMPREPLY=( $(compgen -W 'config playwright-props ws-props soap-props bash-completion -h --help' -- $cur) )
                 ;;
             info)
                 COMPREPLY=( $(compgen -W 'iom postgres mailserver cluster config -h --help' -- $cur) )

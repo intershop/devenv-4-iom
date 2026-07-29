@@ -334,10 +334,10 @@ CUSTOM_SHARE_DIR="${CUSTOM_SHARE_DIR}"
 ################################################################################
 
 # After changing INDEX or PORT_OFFSET, the IOM cluster has to be deleted and
-# newly created. Additionally, the HTML doc and geb/ws-properties should be
+# newly created. Additionally, the HTML doc and playwright/ws-properties should be
 # updated:
 #   devenv-cli.sh update doc
-#   devenv-cli.sh update geb-props
+#   devenv-cli.sh update playwright-props
 #   devenv-cli.sh update ws-props
 
 # INDEX is used in combination with PORT_OFFSET to auto-generate a port
