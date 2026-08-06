@@ -1,10 +1,11 @@
-kind: Deployment
+kind: StatefulSet
 apiVersion: apps/v1
 metadata:
   name: iom
   labels:
     app: iom
 spec:
+  serviceName: iom-headless
   replicas: 1
   selector:
     matchLabels:
@@ -199,6 +200,22 @@ ${DumpsDirYml____}          mountPath: /opt/oms/dumps
               value: "${OMS_DB_SEARCHPATH}"
             - name: OMS_LOGLEVEL_SCRIPTS
               value: '${OMS_LOGLEVEL_SCRIPTS}'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: iom-headless
+spec:
+  clusterIP: None
+  selector:
+    app: iom
+  ports:
+    - name: http
+      port: ${PORT_IOM_SERVICE}
+      targetPort: ${PORT_IOM}
+    - name: admin
+      port: ${PORT_WILDFLY_SERVICE}
+      targetPort: ${PORT_WILDFLY}
 ---
 kind: Service
 apiVersion: v1
