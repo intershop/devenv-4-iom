@@ -1859,6 +1859,7 @@ Usefull commands:
 
 Login into Pod:             kubectl exec --namespace $EnvId $POD --context="$KUBERNETES_CONTEXT" -c iom -it -- bash
 jboss-cli:                  kubectl exec --namespace $EnvId $POD --context="$KUBERNETES_CONTEXT" -c iom -it -- /opt/jboss/wildfly/bin/jboss-cli.sh -c
+Forward debug port:         kubectl port-forward --namespace $EnvId --context="$KUBERNETES_CONTEXT" pod/$POD 8787:8787 &
 
 Currently used yaml:        kubectl get pod -l app=iom -o yaml --namespace=$EnvId --context="$KUBERNETES_CONTEXT"
 Describe iom pod:           kubectl describe --namespace $EnvId --context="$KUBERNETES_CONTEXT" pod $POD

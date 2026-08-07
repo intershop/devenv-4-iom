@@ -29,6 +29,23 @@ you are currently using. To do so, please update _devenv-4-iom_ as often as poss
 There exists no backward compatibility the other way around. There is no information available, which version of _devenv-4-iom_ is required by
 a certain version of IOM.
 
+# Release information 3.1.0
+
+## New Features
+
+### Stable Pod Name via StatefulSet
+
+The IOM deployment has been changed from a `Deployment` to a `StatefulSet`. This gives the IOM pod a stable, predictable name (e.g. `iom-0`) that does not change across restarts, which is useful for scripting, port-forwarding, and log access.
+
+### debug port
+`devenv-cli.sh info iom` now displays the command to forward the debug port to the localhost. E.g.:
+`Forward debug port:         kubectl port-forward --namespace trunklok --context="rancher-desktop" pod/iom-0 8787:8787 &`
+
+### New Property `OMS_CUSTOM_SECRET_CONFIG` for IOM 6.1
+
+The new configuration variable `OMS_CUSTOM_SECRET_CONFIG` has been added to support the secret-based custom configuration introduced in IOM 6.1. It holds sensitive project configuration — for example, values mapped from a Kubernetes secret — and makes them available to the IOM application at runtime.
+
+
 # Release information 3.0.0
 
 ## New Features

@@ -206,17 +206,17 @@ The IOM application server starts with the Java debug agent (JDWP) listening on 
 
 To attach a debugger, use `kubectl port-forward` on demand. Example:
 
-    # Forward the JDWP port to localhost for the duration of the debug session.
+    # Forward the JDWP port to localhost in the background.
     # The IOM pod name is stable ('iom-0') because IOM runs as a StatefulSet.
     kubectl port-forward \
       --namespace iomdevelop \
       --context="rancher-desktop" \
       pod/iom-0 \
-      8787:8787
+      8787:8787 &
 
-Then configure your IDE to connect to `localhost:8787` using a standard remote JVM debug configuration. The port-forward stays active until you terminate it with Ctrl-C.
+Then configure your IDE to connect to `localhost:8787` using a standard remote JVM debug configuration. With &, The port-forward runs in the background. It terminates when you close your console, or manually, with `kill %1` (or the appropriate job number) when the debug session is over.
 
-The exact `kubectl` invocation is shown by:
+The exact `kubectl` invocation (with the correct namespace and context for your environment) is shown by:
 
     devenv-cli.sh info iom
 
