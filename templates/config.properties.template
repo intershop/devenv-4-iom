@@ -92,6 +92,13 @@ SMTP_PASSWORD='${SMTP_PASSWORD}'
 # allowed values are 'auto', 'ssl', 'startTls'
 SMTP_ENCRYPTION=${SMTP_ENCRYPTION}
 
+
+################################################################################
+# custom secret configuration, injected as JSON into an environment variable
+################################################################################
+OMS_CUSTOM_SECRET="${OMS_CUSTOM_SECRET}"
+
+
 ################################################################################
 # Database Configuration
 ################################################################################

@@ -39,6 +39,7 @@ The IOM deployment has been changed from a `Deployment` to a `StatefulSet`. This
 
 ### debug port
 `devenv-cli.sh info iom` now displays the command to forward the debug port to the localhost. E.g.:
+
 `Forward debug port:         kubectl port-forward --namespace trunklok --context="rancher-desktop" pod/iom-0 8787:8787 &`
 
 ### New Property `OMS_CUSTOM_SECRET_CONFIG` for IOM 6.1

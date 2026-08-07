@@ -1,4 +1,4 @@
-DEVENV4IOM_VERSION=3.0.1-SNAPSHOT
+DEVENV4IOM_VERSION=3.1.0-SNAPSHOT
 
 ################################################################################
 # Defaults
@@ -343,6 +343,10 @@ SMTP_PORT="${SMTP_PORT}"
 SMTP_USER="${SMTP_USER}"
 SMTP_PASSWORD="${SMTP_PASSWORD}"
 SMTP_ENCRYPTION="${SMTP_ENCRYPTION:-auto}"
+
+# custom secret configuration, injected as JSON into env variable
+# OMS_CUSTOM_SECRET. Empty by default.
+OMS_CUSTOM_SECRET="${OMS_CUSTOM_SECRET}"
 
 if [ "$SMTP_HOST" = 'mailsrv-service' ]; then
     SMTP_HOST=
