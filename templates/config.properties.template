@@ -96,7 +96,7 @@ SMTP_ENCRYPTION=${SMTP_ENCRYPTION}
 ################################################################################
 # custom secret configuration, injected as JSON into an environment variable
 ################################################################################
-OMS_CUSTOM_SECRET="${OMS_CUSTOM_SECRET}"
+CUSTOM_CREDENTIALS="${CUSTOM_CREDENTIALS}"
 
 
 ################################################################################

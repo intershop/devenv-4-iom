@@ -345,8 +345,8 @@ SMTP_PASSWORD="${SMTP_PASSWORD}"
 SMTP_ENCRYPTION="${SMTP_ENCRYPTION:-auto}"
 
 # custom secret configuration, injected as JSON into env variable
-# OMS_CUSTOM_SECRET. Empty by default.
-OMS_CUSTOM_SECRET="${OMS_CUSTOM_SECRET}"
+# CUSTOM_CREDENTIALS. Empty by default.
+CUSTOM_CREDENTIALS="${CUSTOM_CREDENTIALS}"
 
 if [ "$SMTP_HOST" = 'mailsrv-service' ]; then
     SMTP_HOST=
