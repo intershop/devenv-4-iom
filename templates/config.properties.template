@@ -93,9 +93,9 @@ SMTP_PASSWORD='${SMTP_PASSWORD}'
 SMTP_ENCRYPTION=${SMTP_ENCRYPTION}
 
 
-################################################################################
-# custom secret configuration, injected as JSON into an environment variable
-################################################################################
+##################################################################################
+# project credentials configuration, injected as JSON into an environment variable
+##################################################################################
 CUSTOM_CREDENTIALS="${CUSTOM_CREDENTIALS}"
 
 

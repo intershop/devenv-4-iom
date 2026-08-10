@@ -42,9 +42,9 @@ The IOM deployment has been changed from a `Deployment` to a `StatefulSet`. This
 
 `Forward debug port:         kubectl port-forward --namespace trunklok --context="rancher-desktop" pod/iom-0 8787:8787 &`
 
-### New Property `CUSTOM_CREDENTIALS_CONFIG` for IOM 6.1
+### New Property `CUSTOM_CREDENTIALS` for IOM 6.1
 
-The new configuration variable `CUSTOM_CREDENTIALS_CONFIG` has been added to support the secret-based custom configuration introduced in IOM 6.1. It holds sensitive project configuration — for example, values mapped from a Kubernetes secret — and makes them available to the IOM application at runtime.
+The new configuration variable `CUSTOM_CREDENTIALS` has been added to support the secret-based custom configuration introduced in IOM 6.1. It holds sensitive project configuration — for example, values mapped from a Kubernetes secret — and makes them available to the IOM application at runtime.
 
 
 # Release information 3.0.0
