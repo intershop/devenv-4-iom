@@ -22,11 +22,6 @@ is.oms.db.user = ${OMS_DB_USER}${PGUSER_CONNECTION_SUFFIX}
 is.oms.db.pass = ${OMS_DB_PASS}
 is.oms.db.serverTimezone = UTC
 
-# ws user
-is.oms.ws.user = test_ws_user_neu
-is.oms.ws.pass = !InterShop00!
-is.oms.ws.role = TC_ShopServiceClient
-
 # standalone application or not
 is.oms.app.standalone = true
 
